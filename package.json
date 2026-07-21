@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "deploy": "npx wrangler pages deploy .",
-    "deploy:prod": "npx wrangler pages deploy . --branch main"
+    "deploy": "npx wrangler deploy"
   },
   "devDependencies": {
     "wrangler": "^4.0.0"

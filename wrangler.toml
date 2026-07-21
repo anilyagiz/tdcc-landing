@@ -1,3 +1,6 @@
 name = "tdcc-landing"
+main = "src/worker.js"
 compatibility_date = "2025-07-21"
-pages_build_output_dir = "."
+
+[assets]
+directory = "."
