@@ -1,0 +1,8 @@
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "https://www.decentralizedcompute.company/*"
+  to = "https://decentralizedcompute.company/:splat"
+  status = 301
+  force = true

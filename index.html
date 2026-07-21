@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#fbfbf9" />
+  <meta name="color-scheme" content="light" />
+
+  <title>The Decentralized Compute Company | Verified AI Infrastructure</title>
+  <meta name="description" content="The Decentralized Compute Company is building a verified, serverless AI execution network powered by user-owned GPUs for inference, evaluation, fine-tuning, and open-model hosting." />
+  <meta name="keywords" content="decentralized compute, distributed GPU, AI inference, open source AI, open weight models, fine tuning, GPU network, DePIN, verified compute, serverless inference" />
+  <meta name="author" content="The Decentralized Compute Company" />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+
+  <link rel="canonical" href="https://decentralizedcompute.company/" />
+  <link rel="alternate" type="text/plain" href="https://decentralizedcompute.company/llms.txt" title="LLM summary" />
+  <link rel="alternate" type="application/rss+xml" href="https://decentralizedcompute.company/feed.xml" title="TDCC updates" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="The Decentralized Compute Company" />
+  <meta property="og:title" content="The Decentralized Compute Company" />
+  <meta property="og:description" content="Verified AI inference, evaluation, fine-tuning, and model hosting powered by user-owned GPUs." />
+  <meta property="og:url" content="https://decentralizedcompute.company/" />
+  <meta property="og:image" content="https://decentralizedcompute.company/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The Decentralized Compute Company — verified AI infrastructure powered by user-owned GPUs" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The Decentralized Compute Company" />
+  <meta name="twitter:description" content="A verified, serverless AI execution network powered by user-owned GPUs." />
+  <meta name="twitter:image" content="https://decentralizedcompute.company/assets/og-image.png" />
+
+  <style>
+    :root {
+      --bg: #fbfbf9;
+      --text: #141414;
+      --muted: #7f7b78;
+      --line: #e6e4df;
+      --soft: #f3f2ee;
+      --accent: #b9ff78;
+      --accent-dark: #143a19;
+      --max-width: 720px;
+      --nav-height: 72px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; text-decoration-color: #a7a19b; text-underline-offset: 4px; }
+    a:hover { text-decoration-color: var(--text); }
+    :focus-visible { outline: 3px solid rgba(185,255,120,.78); outline-offset: 4px; border-radius: 4px; }
+    .skip-link { position: absolute; left: -9999px; top: 12px; z-index: 200; padding: 10px 14px; background: #fff; border: 1px solid var(--line); }
+    .skip-link:focus { left: 12px; }
+
+    .top-rule {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 6px;
+      background: linear-gradient(90deg, rgba(185,255,120,.15), rgba(185,255,120,.72), rgba(185,255,120,.15));
+      backdrop-filter: blur(8px);
+    }
+    .site-nav {
+      position: sticky; top: 6px; z-index: 90; height: var(--nav-height);
+      display: flex; align-items: center; justify-content: flex-end; gap: 28px;
+      padding: 0 3.5vw; background: rgba(251,251,249,.92);
+      border-bottom: 1px solid rgba(230,228,223,.65); backdrop-filter: blur(18px);
+      font-family: Arial, Helvetica, sans-serif; font-size: 13px;
+    }
+    .site-nav a { text-decoration: none; opacity: .82; transition: opacity 180ms ease; }
+    .site-nav a:hover { opacity: 1; }
+    .site-nav .join { padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; background: #fff; }
+
+    .page { width: min(calc(100% - 40px), var(--max-width)); margin: 0 auto; padding: 42px 0 120px; }
+    .hero { padding-top: 6px; min-height: 76vh; display: flex; flex-direction: column; justify-content: center; }
+    .wordmark {
+      margin: 0 0 34px; color: #a7a3a0; font-family: Arial, Helvetica, sans-serif;
+      font-size: clamp(42px, 6vw, 72px); font-weight: 300; line-height: .95;
+      letter-spacing: .055em; text-transform: uppercase;
+    }
+    .wordmark span { display: block; }
+    .announcement { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 46px; font-family: Arial, Helvetica, sans-serif; font-size: 14px; }
+    .announcement .badge { display: inline-flex; align-items: center; justify-content: center; height: 24px; padding: 0 9px; border-radius: 999px; background: var(--soft); font-size: 10px; font-weight: 700; letter-spacing: .08em; }
+    .lead { max-width: 660px; margin: 0 0 26px; font-size: clamp(19px, 2.2vw, 25px); line-height: 1.45; }
+    .hero-copy { max-width: 650px; margin: 0 0 24px; font-size: 17px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; font-family: Arial, Helvetica, sans-serif; }
+    .button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--line); text-decoration: none; transition: transform 160ms ease, border-color 160ms ease, background 160ms ease; }
+    .button:hover { transform: translateY(-1px); border-color: #c7c4be; }
+    .button.primary { background: var(--accent); color: var(--accent-dark); border-color: transparent; font-weight: 600; }
+
+    .section { padding: 70px 0; border-top: 1px solid var(--line); }
+    .section-label { margin: 0 0 16px; color: var(--muted); font-family: Arial, Helvetica, sans-serif; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+    h2 { margin: 0 0 22px; font-family: Arial, Helvetica, sans-serif; font-size: clamp(28px, 4vw, 46px); font-weight: 400; line-height: 1.12; letter-spacing: -.035em; }
+    h3 { margin: 0 0 8px; font-family: Arial, Helvetica, sans-serif; font-size: 17px; font-weight: 600; }
+    p { margin: 0 0 20px; font-size: 17px; }
+    .principles { display: grid; grid-template-columns: 1fr 1fr; gap: 30px 42px; margin-top: 38px; }
+    .principle { padding-top: 18px; border-top: 1px solid var(--line); }
+    .principle p { margin: 0; color: #3b3936; font-size: 15px; }
+    .flow { display: grid; gap: 14px; margin-top: 34px; }
+    .flow-step { display: grid; grid-template-columns: 46px 1fr; gap: 14px; align-items: start; padding: 18px 0; border-top: 1px solid var(--line); }
+    .flow-step:last-child { border-bottom: 1px solid var(--line); }
+    .flow-number { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background: var(--soft); font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+    .quote { margin: 42px 0 0; padding: 28px 30px; border: 1px solid var(--line); border-radius: 18px; background: #fff; font-size: clamp(20px, 3vw, 30px); line-height: 1.3; }
+    .workloads { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+    .chip { padding: 8px 12px; border-radius: 999px; background: var(--soft); font-family: Arial, Helvetica, sans-serif; font-size: 13px; }
+    .faq { margin-top: 30px; }
+    details { border-top: 1px solid var(--line); padding: 18px 0; }
+    details:last-child { border-bottom: 1px solid var(--line); }
+    summary { cursor: pointer; font-family: Arial, Helvetica, sans-serif; font-size: 17px; font-weight: 600; }
+    details p { margin: 14px 0 0; font-size: 16px; color: #3b3936; }
+    .join-panel { margin-top: 10px; padding: 32px; border-radius: 22px; background: var(--accent); color: var(--accent-dark); }
+    .join-panel h2 { margin-bottom: 16px; }
+    .join-panel p { max-width: 580px; }
+    .join-panel .button { background: #fff; border-color: rgba(20,58,25,.14); }
+    footer { display: flex; justify-content: space-between; gap: 24px; padding-top: 42px; color: var(--muted); border-top: 1px solid var(--line); font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 14px; }
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity 650ms ease, transform 650ms ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .button { transition: none; }
+    }
+    @media (max-width: 760px) {
+      :root { --nav-height: 62px; }
+      .site-nav { justify-content: flex-start; gap: 18px; padding: 0 20px; overflow-x: auto; white-space: nowrap; }
+      .page { width: min(calc(100% - 28px), var(--max-width)); padding-top: 22px; }
+      .hero { min-height: auto; padding: 56px 0 80px; }
+      .wordmark { font-size: 44px; }
+      .principles { grid-template-columns: 1fr; }
+      .join-panel { padding: 24px; }
+      footer { flex-direction: column; }
+    }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://decentralizedcompute.company/#organization",
+        "name": "The Decentralized Compute Company",
+        "alternateName": "TDCC",
+        "url": "https://decentralizedcompute.company/",
+        "logo": "https://decentralizedcompute.company/assets/favicon.svg",
+        "description": "A verified, serverless AI execution network powered by user-owned GPUs.",
+        "email": "anil@singularityrd.com",
+        "sameAs": [
+          "https://x.com/singularityrd",
+          "https://github.com/anilyagiz",
+          "https://www.linkedin.com/in/anilyagiz/"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://decentralizedcompute.company/#website",
+        "url": "https://decentralizedcompute.company/",
+        "name": "The Decentralized Compute Company",
+        "publisher": { "@id": "https://decentralizedcompute.company/#organization" },
+        "inLanguage": "en"
+      },
+      {
+        "@type": "Service",
+        "@id": "https://decentralizedcompute.company/#service",
+        "name": "Verified decentralized AI compute",
+        "provider": { "@id": "https://decentralizedcompute.company/#organization" },
+        "serviceType": "AI inference, evaluation, fine-tuning, and model hosting",
+        "description": "TDCC routes approved AI workloads to compatible user-owned GPUs or certified micro-clusters, verifies completed work, and settles host payouts.",
+        "areaServed": "Worldwide",
+        "audience": {
+          "@type": "Audience",
+          "audienceType": "AI developers, open-model teams, researchers, GPU hosts, and AI agents"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is The Decentralized Compute Company?",
+            "acceptedAnswer": { "@type": "Answer", "text": "TDCC is building a verified, serverless AI execution network powered by user-owned GPUs." }
+          },
+          {
+            "@type": "Question",
+            "name": "How is TDCC different from a GPU marketplace?",
+            "acceptedAnswer": { "@type": "Answer", "text": "TDCC abstracts machine selection, routing, execution, verification, reputation, and settlement behind a simple API. Developers pay for accepted AI work rather than unmanaged GPU hours." }
+          },
+          {
+            "@type": "Question",
+            "name": "Which workloads will TDCC support?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Initial workloads include batch inference, image generation, audio transcription, embeddings, evaluations, synthetic data, agent workloads, LoRA or QLoRA fine-tuning, and open-model hosting." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <div class="top-rule"></div>
+  <nav class="site-nav" aria-label="Primary navigation">
+    <a href="#mission">Mission</a>
+    <a href="#network">Network</a>
+    <a href="#workloads">Workloads</a>
+    <a href="#research">Research</a>
+    <a href="#faq">FAQ</a>
+    <a class="join" href="#join">Join us</a>
+  </nav>
+
+  <main id="content" class="page">
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title" class="wordmark">
+        <span>The Decentralized</span>
+        <span>Compute Company</span>
+      </h1>
+
+      <a class="announcement" href="#network">
+        <span class="badge">NEW</span>
+        <span>Building the verified execution layer for open AI</span>
+      </a>
+
+      <p class="lead">We are building a serverless AI execution network powered by user-owned GPUs.</p>
+
+      <p class="hero-copy">
+        Developers submit inference, evaluation, model-hosting, and fine-tuning workloads through a simple API.
+        The network routes them to capable machines, verifies completed work, and pays hosts for accepted outputs.
+      </p>
+
+      <div class="actions">
+        <a class="button primary" href="#join">Join the network</a>
+        <a class="button" href="#network">How it works</a>
+      </div>
+    </section>
+
+    <section id="mission" class="section reveal">
+      <p class="section-label">Mission</p>
+      <h2>AI infrastructure should be open, verifiable, and broadly owned.</h2>
+      <p>AI capabilities are advancing quickly, but the infrastructure required to run them remains concentrated in a small number of datacenters. Building new capacity is capital intensive, slow, and constrained by power, cooling, procurement, networking, and regulation.</p>
+      <p>At the same time, millions of capable GPUs already exist in gaming PCs, workstations, laboratories, studios, and independent datacenters. TDCC coordinates this existing capacity into a trusted execution layer for open models and AI applications.</p>
+      <div class="principles">
+        <article class="principle"><h3>Pay for completed work</h3><p>Developers pay for accepted AI outputs, not unmanaged GPU hours.</p></article>
+        <article class="principle"><h3>Make hardware productive</h3><p>GPU owners earn when their machines complete useful, approved jobs.</p></article>
+        <article class="principle"><h3>Verify every job</h3><p>Reputation, audits, and workload-specific checks improve trust.</p></article>
+        <article class="principle"><h3>Support open AI</h3><p>Serve, evaluate, fine-tune, and host open-weight models and adapters.</p></article>
+      </div>
+    </section>
+
+    <section id="network" class="section reveal">
+      <p class="section-label">The network</p>
+      <h2>One API. Heterogeneous infrastructure underneath.</h2>
+      <p>TDCC does not pretend that every GPU is identical. The scheduler understands model compatibility, VRAM, runtime support, latency, reliability, price, and reputation before assigning a workload.</p>
+      <div class="flow">
+        <article class="flow-step"><div class="flow-number">01</div><div><h3>Submit</h3><p>A developer or AI agent submits a supported workload through the TDCC API.</p></div></article>
+        <article class="flow-step"><div class="flow-number">02</div><div><h3>Route</h3><p>The scheduler selects a compatible host or certified micro-cluster.</p></div></article>
+        <article class="flow-step"><div class="flow-number">03</div><div><h3>Execute and verify</h3><p>Approved runtimes execute the job. The network checks the result and records performance history.</p></div></article>
+        <article class="flow-step"><div class="flow-number">04</div><div><h3>Settle</h3><p>Accepted work is settled automatically and the host earns for the useful compute delivered.</p></div></article>
+      </div>
+      <div class="quote">We do not rent GPUs. We sell verified AI work.</div>
+    </section>
+
+    <section id="workloads" class="section reveal">
+      <p class="section-label">Initial workloads</p>
+      <h2>Start with AI work that maps well to distributed hardware.</h2>
+      <p>The initial network focuses on workloads that can be routed safely and efficiently across heterogeneous machines. Larger real-time models can be assigned to capable nodes or certified low-latency clusters.</p>
+      <div class="workloads" aria-label="Supported workloads">
+        <span class="chip">Batch inference</span><span class="chip">Image generation</span><span class="chip">Audio transcription</span><span class="chip">Embeddings</span><span class="chip">Evaluations</span><span class="chip">Synthetic data</span><span class="chip">Agent workloads</span><span class="chip">LoRA / QLoRA fine-tuning</span><span class="chip">Open-model hosting</span><span class="chip">Adapter serving</span>
+      </div>
+    </section>
+
+    <section id="research" class="section reveal">
+      <p class="section-label">Research and engineering</p>
+      <h2>Distributed systems, inference, and security belong together.</h2>
+      <p>A permissionless compute network must tolerate unreliable machines, malicious behavior, model mismatches, inconsistent performance, and disputes over completed work.</p>
+      <p>TDCC combines distributed scheduling, secure runtimes, model-aware routing, proof-of-service, reputation, and programmable settlement into one execution layer.</p>
+    </section>
+
+    <section id="faq" class="section reveal">
+      <p class="section-label">FAQ</p>
+      <h2>Clear answers for developers and GPU hosts.</h2>
+      <div class="faq">
+        <details><summary>Is TDCC another raw GPU marketplace?</summary><p>No. TDCC is designed around completed AI work. Developers interact with a conventional API while routing, verification, reputation, failover, and settlement happen underneath.</p></details>
+        <details><summary>Does TDCC combine random GPUs into one giant GPU?</summary><p>No. Independent jobs are routed to compatible nodes. Workloads that require tightly coupled multi-GPU execution are assigned only to capable hosts or certified low-latency micro-clusters.</p></details>
+        <details><summary>Why use decentralized infrastructure?</summary><p>It can bring existing capacity online faster, broaden ownership of AI infrastructure, improve geographic diversity, and create a direct earning path for GPU owners.</p></details>
+        <details><summary>What can GPU hosts earn from?</summary><p>Hosts earn for accepted workloads completed on their hardware. Earnings depend on hardware capability, reliability, workload demand, energy cost, and network pricing.</p></details>
+      </div>
+    </section>
+
+    <section id="join" class="section reveal">
+      <div class="join-panel">
+        <p class="section-label">Join the early network</p>
+        <h2>Contribute compute or build on TDCC.</h2>
+        <p>We are opening early conversations with GPU hosts, open-model teams, AI infrastructure developers, researchers, and pilot customers.</p>
+        <div class="actions">
+          <a class="button" href="mailto:anil@singularityrd.com?subject=TDCC%20Early%20Network">Contact the founder</a>
+          <a class="button" href="https://github.com/anilyagiz" target="_blank" rel="noreferrer">View GitHub</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2026 The Decentralized Compute Company</span>
+      <div class="footer-links"><a href="/facts.html">Facts</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
+    </footer>
+  </main>
+
+  <script>
+    const revealItems = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      revealItems.forEach((item) => observer.observe(item));
+    } else {
+      revealItems.forEach((item) => item.classList.add('visible'));
+    }
+  </script>
+</body>
+</html>

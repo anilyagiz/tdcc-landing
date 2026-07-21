@@ -1,0 +1,32 @@
+# The Decentralized Compute Company
+
+Official domain: https://decentralizedcompute.company/
+
+TDCC is building a verified, serverless AI execution network powered by user-owned GPUs.
+
+## Core product
+- A conventional developer API for supported AI workloads.
+- Model-aware routing across heterogeneous GPU hosts and certified micro-clusters.
+- Secure, approved execution environments.
+- Workload-specific verification and reputation.
+- Settlement and payouts for accepted work.
+
+## Initial workloads
+- Batch inference
+- Image generation
+- Audio transcription
+- Embeddings
+- Evaluations
+- Synthetic data
+- Agent workloads
+- LoRA / QLoRA fine-tuning
+- Open-model hosting
+- Adapter serving
+
+## Differentiation
+TDCC is output-first rather than inventory-first. Developers pay for accepted AI work instead of managing raw GPU hours.
+
+## Canonical pages
+- Home: https://decentralizedcompute.company/
+- Facts: https://decentralizedcompute.company/facts.html
+- Contact: anil@singularityrd.com
