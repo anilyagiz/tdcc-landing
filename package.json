@@ -1,0 +1,12 @@
+{
+  "name": "tdcc-landing",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "npx wrangler pages deploy .",
+    "deploy:prod": "npx wrangler pages deploy . --branch main"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
