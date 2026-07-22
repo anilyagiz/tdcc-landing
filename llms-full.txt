@@ -28,8 +28,9 @@ TDCC is output-first rather than inventory-first. Developers pay for accepted AI
 
 ## Canonical pages
 - Home: https://decentralizedcompute.company/
+- Litepaper: https://decentralizedcompute.company/litepaper.html
 - Facts: https://decentralizedcompute.company/facts.html
-- Contact: anil@singularityrd.com
+- Contact: anil@decentralizedcompute.company
 
 ## Mission
 AI infrastructure should be open, verifiable, and broadly owned.

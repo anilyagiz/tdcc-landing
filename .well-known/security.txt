@@ -1,4 +1,4 @@
-Contact: mailto:anil@singularityrd.com
+Contact: mailto:anil@decentralizedcompute.company
 Canonical: https://decentralizedcompute.company/.well-known/security.txt
 Preferred-Languages: en, tr
 Expires: 2027-07-31T23:59:59Z
