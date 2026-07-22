@@ -2,16 +2,16 @@
 
 Official domain: https://decentralizedcompute.company/
 
-TDCC is building a verified, serverless AI execution network powered by user-owned GPUs.
+TDCC connects AI companies with data centers and GPUs for training, fine-tuning, and inference.
 
 ## Core product
-- A conventional developer API for supported AI workloads.
-- Model-aware routing across heterogeneous GPU hosts and certified micro-clusters.
-- Secure, approved execution environments.
-- Workload-specific verification and reputation.
-- Settlement and payouts for accepted work.
+- One API for AI training, fine-tuning, inference, and evaluation.
+- Routing to data centers and compatible GPU hosts.
+- Verified results and payouts for accepted work.
 
 ## Initial workloads
+- Training
+- Fine-tuning
 - Batch inference
 - Image generation
 - Audio transcription
@@ -24,7 +24,7 @@ TDCC is building a verified, serverless AI execution network powered by user-own
 - Adapter serving
 
 ## Differentiation
-TDCC is output-first rather than inventory-first. Developers pay for accepted AI work instead of managing raw GPU hours.
+TDCC sells verified AI work, not raw GPU hours.
 
 ## Canonical pages
 - Home: https://decentralizedcompute.company/
