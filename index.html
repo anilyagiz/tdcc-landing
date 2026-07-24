@@ -7,7 +7,7 @@
   <meta name="color-scheme" content="light" />
 
   <title>The Decentralized Compute Company | Verified AI Infrastructure</title>
-  <meta name="description" content="TDCC connects AI companies with data centers and GPUs to train, fine-tune, and run AI models." />
+  <meta name="description" content="TDCC is a verified AI compute layer connecting teams to data centers and GPUs, designed to work across Avalanche and Solana ecosystems." />
   <meta name="keywords" content="decentralized compute, distributed GPU, AI inference, open source AI, open weight models, fine tuning, GPU network, DePIN, verified compute, serverless inference" />
   <meta name="author" content="The Decentralized Compute Company" />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
@@ -22,7 +22,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="The Decentralized Compute Company" />
   <meta property="og:title" content="The Decentralized Compute Company" />
-  <meta property="og:description" content="The simple compute layer for AI training, fine-tuning, and inference." />
+  <meta property="og:description" content="A verified AI compute layer designed for Avalanche coordination and Solana-scale developer workflows." />
   <meta property="og:url" content="https://decentralizedcompute.company/" />
   <meta property="og:image" content="https://decentralizedcompute.company/assets/og-image.png" />
   <meta property="og:image:width" content="1200" />
@@ -31,7 +31,7 @@
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="The Decentralized Compute Company" />
-  <meta name="twitter:description" content="The simple compute layer for AI training, fine-tuning, and inference." />
+  <meta name="twitter:description" content="A verified AI compute layer designed for Avalanche coordination and Solana-scale developer workflows." />
   <meta name="twitter:image" content="https://decentralizedcompute.company/assets/og-image.png" />
 
   <style>
@@ -113,6 +113,11 @@
     .flow-step:last-child { border-bottom: 1px solid var(--line); }
     .flow-number { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background: var(--soft); font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
     .quote { margin: 42px 0 0; padding: 28px 30px; border: 1px solid var(--line); border-radius: 18px; background: #fff; font-size: clamp(20px, 3vw, 30px); line-height: 1.3; }
+    .ecosystem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 32px; }
+    .ecosystem-card { padding: 24px; border: 1px solid var(--line); border-radius: 18px; background: #fff; }
+    .ecosystem-card h3 { margin-bottom: 12px; font-size: 20px; }
+    .ecosystem-card p { margin: 0; color: #3b3936; font-size: 15px; }
+    .ecosystem-note { margin-top: 24px; color: var(--muted); font-size: 15px; }
     .workloads { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
     .chip { padding: 8px 12px; border-radius: 999px; background: var(--soft); font-family: Arial, Helvetica, sans-serif; font-size: 13px; }
     .faq { margin-top: 30px; }
@@ -123,6 +128,15 @@
     .join-panel { margin-top: 10px; padding: 32px; border-radius: 22px; background: var(--accent); color: var(--accent-dark); }
     .join-panel h2 { margin-bottom: 16px; }
     .join-panel p { max-width: 580px; }
+    .early-access-form { display: flex; flex-wrap: wrap; gap: 10px; margin: 26px 0 12px; font-family: Arial, Helvetica, sans-serif; }
+    .early-access-form input { flex: 1 1 220px; min-height: 44px; padding: 0 16px; border: 1px solid rgba(20,58,25,.2); border-radius: 999px; background: #fff; color: var(--text); font: inherit; }
+    .early-access-form input::placeholder { color: #777; }
+    .early-access-form .button { cursor: pointer; font: inherit; }
+    .early-access-form .button.primary { background: var(--accent-dark); color: #fff; }
+    .early-access-share { margin-top: 8px; font-family: Arial, Helvetica, sans-serif; font-size: 13px; }
+    .early-access-message { margin: 0 0 22px; padding: 14px 16px; border: 1px solid rgba(20,58,25,.16); border-radius: 12px; background: rgba(255,255,255,.58); font-family: Arial, Helvetica, sans-serif; font-size: 14px; }
+    .early-access-message.error { border-color: #b76b5b; background: #fff4f0; color: #6e281b; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
     .join-panel .button { background: #fff; border-color: rgba(20,58,25,.14); }
     footer { display: flex; justify-content: space-between; gap: 24px; padding-top: 42px; color: var(--muted); border-top: 1px solid var(--line); font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
     .footer-links { display: flex; flex-wrap: wrap; gap: 14px; }
@@ -140,7 +154,7 @@
       .page { width: min(calc(100% - 28px), var(--max-width)); padding-top: 22px; }
       .hero { min-height: auto; padding: 56px 0 80px; }
       .wordmark { font-size: 44px; }
-      .principles { grid-template-columns: 1fr; }
+      .principles, .ecosystem-grid { grid-template-columns: 1fr; }
       .join-panel { padding: 24px; }
       footer { flex-direction: column; }
     }
@@ -157,7 +171,7 @@
         "alternateName": "TDCC",
         "url": "https://decentralizedcompute.company/",
         "logo": "https://decentralizedcompute.company/assets/favicon.svg",
-        "description": "TDCC connects AI companies with data centers and GPUs for training, fine-tuning, and inference.",
+        "description": "TDCC connects AI companies with data centers and GPUs for training, fine-tuning, and inference, with an ecosystem strategy designed for Avalanche and Solana.",
         "email": "anil@decentralizedcompute.company",
         "sameAs": [
           "https://x.com/singularityrd",
@@ -178,7 +192,7 @@
         "name": "Verified decentralized AI compute",
         "provider": { "@id": "https://decentralizedcompute.company/#organization" },
         "serviceType": "AI inference, evaluation, fine-tuning, and model hosting",
-        "description": "TDCC routes approved AI workloads to compatible user-owned GPUs or certified micro-clusters, verifies completed work, and settles host payouts.",
+        "description": "TDCC routes approved AI workloads to compatible user-owned GPUs or certified micro-clusters, verifies completed work, and settles host payouts through an ecosystem-neutral API.",
         "areaServed": "Worldwide",
         "audience": {
           "@type": "Audience",
@@ -202,6 +216,11 @@
             "@type": "Question",
             "name": "Which workloads will TDCC support?",
             "acceptedAnswer": { "@type": "Answer", "text": "Initial workloads include batch inference, image generation, audio transcription, embeddings, evaluations, synthetic data, agent workloads, LoRA or QLoRA fine-tuning, and open-model hosting." }
+          },
+          {
+            "@type": "Question",
+            "name": "How does TDCC fit Avalanche and Solana?",
+            "acceptedAnswer": { "@type": "Answer", "text": "TDCC remains chain-agnostic at the compute layer. Avalanche is a natural fit for verifiable coordination and customizable infrastructure, while Solana is a natural fit for high-throughput developer, agent, and micro-workflow experiences. The two ecosystems support different product surfaces rather than competing for the same role." }
           }
         ]
       }
@@ -216,7 +235,7 @@
     <a href="#mission">Mission</a>
     <a href="#network">Network</a>
     <a href="#workloads">Workloads</a>
-    <a href="#research">Research</a>
+    <a href="#ecosystem">Ecosystem fit</a>
     <a href="/litepaper.html">Litepaper</a>
     <a href="#faq">FAQ</a>
     <a class="join" href="#join">Join us</a>
@@ -233,10 +252,10 @@
 
       <a class="announcement" href="#network"><span class="badge">TDCC</span><span>The simple compute layer for AI</span></a>
 
-      <p class="lead">Train, fine-tune, and run AI models on a network built for AI.</p>
+      <p class="lead">Train, fine-tune, and run AI models on a verifiable network built for AI.</p>
 
       <p class="hero-copy">
-        TDCC connects AI companies to data centers and available GPUs. Submit a job through one API. We find the right hardware, run the job, and verify the result.
+        TDCC connects AI companies to data centers and available GPUs. Submit a job through one API. We find the right hardware, run the job, and verify the result across an open, ecosystem-neutral compute layer.
       </p>
 
       <div class="actions">
@@ -271,6 +290,23 @@
       <div class="quote">AI teams bring the models. TDCC brings the compute.</div>
     </section>
 
+    <section id="ecosystem" class="section reveal">
+      <p class="section-label">Ecosystem fit</p>
+      <h2>One compute layer. Different strengths, clearly separated.</h2>
+      <p>TDCC is chain-agnostic where it should be: workloads run in approved compute environments, not on a blockchain. The surrounding coordination and application layers can use the ecosystem that best fits the job.</p>
+      <div class="ecosystem-grid">
+        <article class="ecosystem-card">
+          <h3>Avalanche</h3>
+          <p>A natural home for verifiable coordination, policy-aware execution, and customizable infrastructure. TDCC can use Avalanche L1s for auditable workload state, provider coordination, and deployments that need explicit control over rules and participants.</p>
+        </article>
+        <article class="ecosystem-card">
+          <h3>Solana</h3>
+          <p>A natural home for high-throughput user experiences around AI. TDCC can support Solana builders with fast agent actions, frequent job events, low-friction payments, and developer-facing applications that need responsive execution at scale.</p>
+        </article>
+      </div>
+      <p class="ecosystem-note"><strong>Shared principle:</strong> Avalanche and Solana are complementary integration paths around the same verified compute service. TDCC does not force every workload into one chain; it makes useful AI compute accessible to both communities through a consistent API.</p>
+    </section>
+
     <section id="workloads" class="section reveal">
       <p class="section-label">Initial workloads</p>
       <h2>Everything AI teams need to run models.</h2>
@@ -294,14 +330,23 @@
         <details><summary>Do I need to manage a GPU?</summary><p>No. Send your job through the API. TDCC handles routing and execution.</p></details>
         <details><summary>Can data centers join?</summary><p>Yes. Data centers and GPU operators can provide capacity and earn from accepted AI jobs.</p></details>
         <details><summary>What makes TDCC different?</summary><p>We sell verified AI work, not raw GPU hours.</p></details>
+        <details><summary>How does TDCC fit Avalanche and Solana?</summary><p>TDCC stays chain-agnostic at the compute layer. Avalanche fits verifiable coordination and customizable infrastructure, while Solana fits high-throughput developer, agent, and micro-workflow experiences. They are complementary integration paths, not competing compute backends.</p></details>
       </div>
     </section>
 
     <section id="join" class="section reveal">
       <div class="join-panel">
-        <p class="section-label">Join the early network</p>
-        <h2>Bring your AI to more compute.</h2>
-        <p>We are looking for AI companies, data centers, GPU operators, and early users.</p>
+        <p class="section-label">Early access</p>
+        <h2>Be early to the compute network.</h2>
+        <p>Enter your early believer code to check access to the first TDCC cohort.</p>
+        <form id="early-access-form" class="early-access-form">
+          <label class="sr-only" for="early-access-code">Early access code</label>
+          <input id="early-access-code" name="code" type="text" autocomplete="off" autocapitalize="characters" placeholder="Enter your access code" required />
+          <button class="button primary" type="submit">Check access</button>
+        </form>
+        <button id="copy-invite-link" class="button early-access-share" type="button">Copy invite link</button>
+        <p id="early-access-message" class="early-access-message" role="status" aria-live="polite" hidden></p>
+        <p>We are also looking for AI companies, data centers, GPU operators, and ecosystem partners.</p>
         <div class="actions">
           <a class="button" href="mailto:anil@decentralizedcompute.company?subject=TDCC%20Early%20Network">Contact the founder</a>
           <a class="button" href="/litepaper.html">Read the litepaper</a>
@@ -329,6 +374,43 @@
       revealItems.forEach((item) => observer.observe(item));
     } else {
       revealItems.forEach((item) => item.classList.add('visible'));
+    }
+
+    const earlyAccessForm = document.querySelector('#early-access-form');
+    const earlyAccessCode = document.querySelector('#early-access-code');
+    const earlyAccessMessage = document.querySelector('#early-access-message');
+    const copyInviteLink = document.querySelector('#copy-invite-link');
+    const inviteLink = 'https://decentralizedcompute.company/?code=TDCCBETA20';
+
+    const showEarlyAccessMessage = (message, isError = false) => {
+      earlyAccessMessage.hidden = false;
+      earlyAccessMessage.classList.toggle('error', isError);
+      earlyAccessMessage.textContent = message;
+    };
+
+    earlyAccessForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const isValidCode = earlyAccessCode.value.trim().toUpperCase() === 'TDCCBETA20';
+      showEarlyAccessMessage(isValidCode
+        ? 'Thank you for moving quickly and for being an early believer in TDCC. Unfortunately, the first access allocation is already full, so there is no capacity left in this cohort. We appreciate your support and will share the next opening as soon as possible.'
+        : 'That code does not match. Please check your code and try again.', !isValidCode);
+    });
+
+    copyInviteLink.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(inviteLink);
+        showEarlyAccessMessage('Invite link copied. Thank you for helping TDCC reach its early believers.');
+      } catch (error) {
+        earlyAccessCode.value = 'TDCCBETA20';
+        earlyAccessCode.focus();
+        showEarlyAccessMessage(`Copy failed. Share this link instead: ${inviteLink}`, true);
+      }
+    });
+
+    const codeFromLink = new URLSearchParams(window.location.search).get('code');
+    if (codeFromLink) {
+      earlyAccessCode.value = codeFromLink;
+      earlyAccessForm.requestSubmit();
     }
   </script>
 </body>
