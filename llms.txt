@@ -28,6 +28,7 @@ TDCC sells verified AI work, not raw GPU hours.
 
 ## Canonical pages
 - Home: https://decentralizedcompute.company/
+- App (console, CLI, SDKs, job API): https://decentralizedcompute.company/app.html
 - Litepaper: https://decentralizedcompute.company/litepaper.html
 - Facts: https://decentralizedcompute.company/facts.html
 - Contact: anil@decentralizedcompute.company

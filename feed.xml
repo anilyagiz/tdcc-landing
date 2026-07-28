@@ -1,2 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0"><channel><title>The Decentralized Compute Company</title><link>https://decentralizedcompute.company/</link><description>Updates from TDCC.</description><language>en</language></channel></rss>
+<rss version="2.0"><channel><title>The Decentralized Compute Company</title><link>https://decentralizedcompute.company/</link><description>Updates from TDCC.</description><language>en</language>
+<item>
+  <title>The TDCC App: console, CLI, SDKs, and job API enter early access</title>
+  <link>https://decentralizedcompute.company/app.html</link>
+  <guid isPermaLink="true">https://decentralizedcompute.company/app.html</guid>
+  <pubDate>Tue, 28 Jul 2026 09:00:00 GMT</pubDate>
+  <description>The TDCC App is the product surface of the compute network: submit training, fine-tuning, inference, and evaluation jobs through a console, CLI, Python/TypeScript SDKs, or REST API. Jobs are matched to suitable hardware, run in approved isolated runtimes, verified against acceptance criteria, and billed only when accepted. Rolling out in staged early-access cohorts with the pilot network.</description>
+</item>
+</channel></rss>

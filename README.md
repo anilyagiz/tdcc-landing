@@ -4,6 +4,7 @@ This package preserves the minimalist, academic landing-page aesthetic while add
 
 ## Included
 - Responsive dependency-free website
+- `app.html` — TDCC App release page (console, CLI, SDKs, job API) with SoftwareApplication/FAQ/Breadcrumb JSON-LD
 - SEO metadata and canonical URLs
 - Open Graph and X social cards
 - JSON-LD for Organization, WebSite, Service, and FAQ

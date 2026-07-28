@@ -26,8 +26,15 @@ TDCC connects AI companies with data centers and GPUs for training, fine-tuning,
 ## Differentiation
 TDCC sells verified AI work, not raw GPU hours.
 
+## The TDCC App
+The product surface of the network: a web console, a CLI, Python and TypeScript SDKs, and a REST job API.
+Submit a job with constraints, the router matches hardware, execution runs in an approved isolated runtime,
+results are verified against acceptance criteria, and only accepted work is billed and paid out.
+Version 1.0 ships in staged early-access cohorts with the pilot network.
+
 ## Canonical pages
 - Home: https://decentralizedcompute.company/
+- App: https://decentralizedcompute.company/app.html
 - Litepaper: https://decentralizedcompute.company/litepaper.html
 - Facts: https://decentralizedcompute.company/facts.html
 - Contact: anil@decentralizedcompute.company
