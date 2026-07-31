@@ -890,6 +890,52 @@ tdcc receipts show job_8fq1za --verify</pre>
       </div>
     </section>
 
+    <!-- TOOLS -->
+    <section id="tools" class="section reveal">
+      <div class="wrap">
+        <div class="feature" style="padding:0; border:0">
+          <div class="feature-copy">
+            <p class="eyebrow">Use in your tools</p>
+            <h2>Plug the API into the agents you already run.</h2>
+            <p>One gateway endpoint, OpenAI- and Anthropic-compatible, so Claude Code, Codex, OpenCode, and anything that speaks either protocol can point at the same URL. Credentials are resolved server-side and never appear in your tool configuration.</p>
+            <ul class="checks">
+              <li><strong>One endpoint</strong> — <code>decentralizedcompute.company/api</code> speaks both protocols</li>
+              <li><strong>Server-side credentials</strong> — upstream keys never leave the gateway</li>
+              <li><strong>Streaming</strong> — token-by-token responses work out of the box</li>
+            </ul>
+          </div>
+          <div>
+            <div class="code-block">
+              <div class="code-tabs" role="tablist" aria-label="Tool configuration">
+                <button type="button" role="tab" id="tab-cc" aria-controls="panel-cc" aria-selected="true">Claude Code</button>
+                <button type="button" role="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="false">Codex</button>
+                <button type="button" role="tab" id="tab-oc" aria-controls="panel-oc" aria-selected="false">OpenCode</button>
+                <button type="button" class="code-copy" id="code-copy-tools" aria-label="Copy the visible code sample">Copy</button>
+              </div>
+              <pre id="panel-cc" role="tabpanel" aria-labelledby="tab-cc"><span class="c"># shell profile (~/.zshrc or equivalent)</span>
+<span class="c">export</span> ANTHROPIC_BASE_URL=<span class="s">"https://decentralizedcompute.company/api/anthropic"</span>
+<span class="c">export</span> ANTHROPIC_API_KEY=<span class="s">"$TDCC_API_KEY"</span>
+<span class="c">export</span> ANTHROPIC_MODEL=<span class="s">"deepseek/deepseek-v4-flash-free"</span></pre>
+              <pre id="panel-codex" role="tabpanel" aria-labelledby="tab-codex" hidden><span class="c"># ~/.codex/config.toml</span>
+[model_providers.tdcc]
+base_url = <span class="s">"https://decentralizedcompute.company/api/v1"</span>
+env_key = <span class="s">"TDCC_API_KEY"</span></pre>
+              <pre id="panel-oc" role="tabpanel" aria-labelledby="tab-oc" hidden><span class="c">// opencode.json</span>
+{
+  <span class="k">"provider"</span>: {
+    <span class="k">"tdcc"</span>: {
+      <span class="k">"baseURL"</span>: <span class="s">"https://decentralizedcompute.company/api/v1"</span>,
+      <span class="k">"apiKey"</span>: <span class="s">"{env:TDCC_API_KEY}"</span>
+    }
+  }
+}</pre>
+            </div>
+            <p class="code-note">Set <code>TDCC_API_KEY</code> to your project key. The gateway resolves the upstream model credential server-side, so no secret appears in your tool configuration.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- SPECS -->
     <section id="specs" class="section reveal">
       <div class="wrap">
@@ -1074,37 +1120,41 @@ tdcc receipts show job_8fq1za --verify</pre>
       }
     });
 
-    // code tabs
-    const tabs = Array.from(document.querySelectorAll('.code-tabs [role="tab"]'));
-    const selectTab = (tab) => {
-      tabs.forEach((item) => {
-        const selected = item === tab;
-        item.setAttribute('aria-selected', String(selected));
-        document.getElementById(item.getAttribute('aria-controls')).hidden = !selected;
-      });
-    };
-    tabs.forEach((tab, index) => {
-      tab.addEventListener('click', () => selectTab(tab));
-      tab.addEventListener('keydown', (event) => {
-        if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
-        event.preventDefault();
-        const next = tabs[(index + (event.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
-        next.focus();
-        selectTab(next);
+    // code tabs (scoped per code block)
+    document.querySelectorAll('.code-block').forEach((block) => {
+      const tabs = Array.from(block.querySelectorAll('.code-tabs [role="tab"]'));
+      const selectTab = (tab) => {
+        tabs.forEach((item) => {
+          const selected = item === tab;
+          item.setAttribute('aria-selected', String(selected));
+          document.getElementById(item.getAttribute('aria-controls')).hidden = !selected;
+        });
+      };
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => selectTab(tab));
+        tab.addEventListener('keydown', (event) => {
+          if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+          event.preventDefault();
+          const next = tabs[(index + (event.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+          next.focus();
+          selectTab(next);
+        });
       });
     });
 
-    // copy visible code sample
-    const copyButton = document.querySelector('#code-copy');
-    copyButton.addEventListener('click', async () => {
-      const visible = document.querySelector('.code-block pre:not([hidden])');
-      try {
-        await navigator.clipboard.writeText(visible.textContent.trim());
-        copyButton.textContent = 'Copied ✓';
-      } catch (error) {
-        copyButton.textContent = 'Select & copy';
-      }
-      setTimeout(() => { copyButton.textContent = 'Copy'; }, 1800);
+    // copy visible code sample (scoped per code block)
+    document.querySelectorAll('.code-copy').forEach((copyButton) => {
+      copyButton.addEventListener('click', async () => {
+        const block = copyButton.closest('.code-block');
+        const visible = block.querySelector('pre:not([hidden])');
+        try {
+          await navigator.clipboard.writeText(visible.textContent.trim());
+          copyButton.textContent = 'Copied ✓';
+        } catch (error) {
+          copyButton.textContent = 'Select & copy';
+        }
+        setTimeout(() => { copyButton.textContent = 'Copy'; }, 1800);
+      });
     });
 
     // reading progress in the top rule
