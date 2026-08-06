@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#fbfbf9" />
+  <meta name="color-scheme" content="light" />
+
+  <title>Team | The Decentralized Compute Company</title>
+  <meta name="description" content="Meet the people building TDCC, the verified AI compute layer — founder Anil Yagiz, operations and development lead Zeynep Cengiz, and a growing team. We're hiring." />
+  <meta name="author" content="The Decentralized Compute Company" />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1" />
+
+  <link rel="canonical" href="https://decentralizedcompute.company/team.html" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="The Decentralized Compute Company" />
+  <meta property="og:title" content="The team behind TDCC" />
+  <meta property="og:description" content="A small team, hands on the actual work. No stock photos, no inflated org chart — and we're hiring." />
+  <meta property="og:url" content="https://decentralizedcompute.company/team.html" />
+  <meta property="og:image" content="https://decentralizedcompute.company/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The team behind TDCC" />
+  <meta name="twitter:description" content="A small team, hands on the actual work. No stock photos, no inflated org chart — and we're hiring." />
+  <meta name="twitter:image" content="https://decentralizedcompute.company/assets/og-image.png" />
+
+  <style>
+    :root {
+      --bg: #fbfbf9;
+      --text: #141414;
+      --muted: #7f7b78;
+      --line: #e6e4df;
+      --soft: #f3f2ee;
+      --accent: #b9ff78;
+      --accent-dark: #143a19;
+      --max-width: 720px;
+      --nav-height: 72px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    [id] { scroll-margin-top: calc(var(--nav-height) + 28px); }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; text-decoration-color: #a7a19b; text-underline-offset: 4px; }
+    a:hover { text-decoration-color: var(--text); }
+    :focus-visible { outline: 3px solid rgba(185,255,120,.78); outline-offset: 4px; border-radius: 4px; }
+    .skip-link { position: absolute; left: -9999px; top: 12px; z-index: 200; padding: 10px 14px; background: #fff; border: 1px solid var(--line); }
+    .skip-link:focus { left: 12px; }
+
+    .top-rule {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 6px;
+      background: linear-gradient(90deg, rgba(185,255,120,.15), rgba(185,255,120,.72), rgba(185,255,120,.15));
+      backdrop-filter: blur(8px);
+    }
+    .site-nav {
+      position: sticky; top: 6px; z-index: 90; height: var(--nav-height);
+      display: flex; align-items: center; justify-content: flex-end; gap: 28px;
+      padding: 0 3.5vw; background: rgba(251,251,249,.92);
+      border-bottom: 1px solid rgba(230,228,223,.65); backdrop-filter: blur(18px);
+      font-family: Arial, Helvetica, sans-serif; font-size: 13px;
+    }
+    .site-nav a { text-decoration: none; opacity: .82; transition: opacity 180ms ease; }
+    .site-nav a:hover { opacity: 1; }
+    .site-nav a.active { opacity: 1; font-weight: 700; color: var(--accent-dark); }
+    .site-nav .join { padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; background: #fff; }
+
+    .page { width: min(calc(100% - 40px), var(--max-width)); margin: 0 auto; padding: 42px 0 120px; }
+    .page-hero { padding: 64px 0 28px; }
+    .section-label { margin: 0 0 16px; color: var(--muted); font-family: Arial, Helvetica, sans-serif; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 0 0 22px; font-family: Arial, Helvetica, sans-serif; font-size: clamp(34px, 5vw, 56px); font-weight: 400; line-height: 1.08; letter-spacing: -.04em; }
+    h2 { margin: 0 0 22px; font-family: Arial, Helvetica, sans-serif; font-size: clamp(28px, 4vw, 46px); font-weight: 400; line-height: 1.12; letter-spacing: -.035em; }
+    h3 { margin: 0 0 8px; font-family: Arial, Helvetica, sans-serif; font-size: 17px; font-weight: 600; }
+    p { margin: 0 0 20px; font-size: 17px; }
+    .lead { max-width: 640px; font-size: clamp(19px, 2.2vw, 24px); line-height: 1.4; color: #3b3936; }
+
+    .section { padding: 70px 0; border-top: 1px solid var(--line); }
+    .team-list { display: grid; grid-template-columns: 1fr 1fr; gap: 30px 42px; margin-top: 38px; }
+    .team-member { padding-top: 18px; border-top: 1px solid var(--line); }
+    .team-role { margin: 0 0 10px; color: var(--muted); font-family: Arial, Helvetica, sans-serif; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+    .team-member .bio { margin: 0; color: #3b3936; font-size: 15px; }
+    .team-note { margin-top: 30px; color: var(--muted); font-size: 15px; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; font-family: Arial, Helvetica, sans-serif; }
+    .button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--line); text-decoration: none; transition: transform 160ms ease, border-color 160ms ease, background 160ms ease; }
+    .button:hover { transform: translateY(-1px); border-color: #c7c4be; }
+    .button.primary { background: var(--accent); color: var(--accent-dark); border-color: transparent; font-weight: 600; }
+
+    .hiring-panel { margin-top: 10px; padding: 32px; border-radius: 22px; background: var(--accent); color: var(--accent-dark); }
+    .hiring-panel h2 { margin-bottom: 16px; }
+    .hiring-panel p { max-width: 580px; }
+    .hiring-panel .button { background: #fff; border-color: rgba(20,58,25,.14); }
+
+    footer { display: flex; justify-content: space-between; gap: 24px; padding-top: 42px; color: var(--muted); border-top: 1px solid var(--line); font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 14px; }
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity 650ms ease, transform 650ms ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .button { transition: none; }
+    }
+    @media (max-width: 760px) {
+      :root { --nav-height: 62px; }
+      .site-nav { justify-content: flex-start; gap: 18px; padding: 0 20px; overflow-x: auto; white-space: nowrap; }
+      .page { width: min(calc(100% - 28px), var(--max-width)); padding-top: 22px; }
+      .page-hero { padding: 44px 0 16px; }
+      .team-list { grid-template-columns: 1fr; }
+      .hiring-panel { padding: 24px; }
+      footer { flex-direction: column; }
+    }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "AboutPage",
+        "@id": "https://decentralizedcompute.company/team.html#webpage",
+        "url": "https://decentralizedcompute.company/team.html",
+        "name": "Team — The Decentralized Compute Company",
+        "isPartOf": { "@id": "https://decentralizedcompute.company/#website" },
+        "about": { "@id": "https://decentralizedcompute.company/#organization" },
+        "inLanguage": "en"
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://decentralizedcompute.company/#organization",
+        "name": "The Decentralized Compute Company",
+        "alternateName": "TDCC",
+        "url": "https://decentralizedcompute.company/",
+        "email": "anil@decentralizedcompute.company",
+        "founder": {
+          "@type": "Person",
+          "name": "Anil Yagiz",
+          "jobTitle": "Founder & Developer",
+          "sameAs": "https://www.linkedin.com/in/anilyagiz/"
+        },
+        "employee": [
+          { "@type": "Person", "name": "Anil Yagiz", "jobTitle": "Founder & Developer" },
+          { "@type": "Person", "name": "Zeynep Cengiz", "jobTitle": "Operations & Development" }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <div class="top-rule"></div>
+  <nav class="site-nav" aria-label="Primary navigation">
+    <a href="/#mission">Mission</a>
+    <a href="/#network">Network</a>
+    <a href="/app.html">App</a>
+    <a href="/#workloads">Workloads</a>
+    <a href="/#ecosystem">Ecosystem fit</a>
+    <a class="active" href="/team.html" aria-current="page">Team</a>
+    <a href="/litepaper.html">Litepaper</a>
+    <a class="join" href="/#join">Join us</a>
+  </nav>
+
+  <main id="content" class="page">
+    <header class="page-hero">
+      <p class="section-label">Team</p>
+      <h1>A small team, hands on the actual work.</h1>
+      <p class="lead">No stock photos, no inflated org chart. These are the people building TDCC today — and the team is growing.</p>
+    </header>
+
+    <section id="people" class="section reveal" aria-label="Team members">
+      <div class="team-list">
+        <article class="team-member">
+          <h3>Anil Yagiz</h3>
+          <p class="team-role">Founder &amp; Developer</p>
+          <p class="bio">Previously at EA, J.P. Morgan, and AWS. Research internships with Berkeley AI Safety, the ASU security lab, and the Clemson autonomous-vehicle security lab, with contributions to 30+ published papers.</p>
+        </article>
+        <article class="team-member">
+          <h3>Zeynep Cengiz</h3>
+          <p class="team-role">Operations &amp; Development</p>
+          <p class="bio">Built her experience through internships across many companies, then secured seed funding from Shell for an earlier venture. She now manages operations and development at TDCC.</p>
+        </article>
+        <article class="team-member">
+          <h3>Alpaslan</h3>
+          <p class="team-role">Joining soon</p>
+          <p class="bio">Recently resigned from a defense-sector role and is completing the formal notice period before the position at TDCC can be announced publicly. Full profile to follow.</p>
+        </article>
+        <article class="team-member">
+          <h3>Two new team members</h3>
+          <p class="team-role">Onboarding</p>
+          <p class="bio">Two recent hires are currently onboarding. Their profiles will be added here once they are fully on the team.</p>
+        </article>
+        <!-- Template for additional team members — fill in with real, confirmed people only.
+             First-name-only entries are fine for anyone under a confidentiality period (like Alpaslan above).
+        <article class="team-member">
+          <h3>Name</h3>
+          <p class="team-role">Role</p>
+          <p class="bio">One or two short sentences.</p>
+        </article>
+        -->
+      </div>
+      <p class="team-note">This page only lists real people. More profiles will appear as new hires finish onboarding and notice periods end.</p>
+    </section>
+
+    <section id="advisors" class="section reveal">
+      <p class="section-label">Advisors</p>
+      <h2>Experienced voices around the table.</h2>
+      <p>We are assembling a small advisory group across AI infrastructure, security, and capital markets. Advisors will be listed here as each engagement is formalized.</p>
+      <!-- Template for advisor entries — add only advisors who have confirmed in writing that they can be named publicly.
+      <div class="team-list">
+        <article class="team-member">
+          <h3>Name</h3>
+          <p class="team-role">Advisor — area (e.g. AI infrastructure)</p>
+          <p class="bio">One-line background.</p>
+        </article>
+      </div>
+      -->
+      <p class="team-note">Interested in advising TDCC? <a href="mailto:anil@decentralizedcompute.company?subject=TDCC%20Advisory">Reach out to the founder</a>.</p>
+    </section>
+
+    <section id="hiring" class="section reveal">
+      <div class="hiring-panel">
+        <p class="section-label">Careers</p>
+        <h2>We're hiring.</h2>
+        <p>If you want to build verified AI infrastructure — engineering, operations, or research — we'd like to hear from you. Tell us what you've built and what you want to work on.</p>
+        <div class="actions">
+          <a class="button" href="mailto:anil@decentralizedcompute.company?subject=Joining%20the%20TDCC%20team">Join the team</a>
+          <a class="button" href="/app.html">Explore the app</a>
+          <a class="button" href="/litepaper.html">Read the litepaper</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2026 The Decentralized Compute Company</span>
+      <div class="footer-links"><a href="/">Home</a><a href="/app.html">App</a><a href="/litepaper.html">Litepaper</a><a href="/facts.html">Facts</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
+    </footer>
+  </main>
+
+  <script>
+    const revealItems = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      revealItems.forEach((item) => observer.observe(item));
+    } else {
+      revealItems.forEach((item) => item.classList.add('visible'));
+    }
+  </script>
+</body>
+</html>
