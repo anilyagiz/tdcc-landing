@@ -121,29 +121,35 @@
     .release-story { position: relative; }
     .release-intro { max-width: 650px; }
     .release-card { margin-top: 34px; overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: #fff; }
-    .release-card-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(270px, .8fr); }
-    .release-copy { padding: 32px; }
-    .release-copy .release-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: var(--muted); }
-    .release-copy h3 { max-width: 480px; margin-bottom: 14px; font-size: clamp(24px, 3vw, 34px); font-weight: 400; line-height: 1.12; }
+    .release-card-top { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(280px, .95fr); }
+    .release-copy { padding: 34px; }
+    .release-copy .release-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: .06em; color: var(--muted); }
+    .release-copy h3 { max-width: 480px; margin-bottom: 14px; font-size: clamp(25px, 3vw, 35px); font-weight: 400; line-height: 1.1; }
     .release-copy p { max-width: 510px; margin-bottom: 22px; color: #3b3936; font-size: 16px; }
-    .release-visual { display: flex; flex-direction: column; justify-content: space-between; min-height: 310px; padding: 24px; background: var(--accent-dark); color: #eef5e9; font-family: Arial, Helvetica, sans-serif; }
+    .release-visual { display: flex; flex-direction: column; justify-content: space-between; min-height: 338px; padding: 24px; background: var(--accent-dark); color: #eef5e9; font-family: Arial, Helvetica, sans-serif; }
     .release-visual-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: rgba(238,245,233,.66); font-family: "SFMono-Regular", ui-monospace, monospace; font-size: 11px; }
     .release-visual-bar span:last-child { color: var(--accent); }
-    .release-flow { display: grid; grid-template-columns: minmax(0,1fr) 20px minmax(0,1fr) 20px minmax(0,1fr); gap: 10px; align-items: center; margin: 28px 0 8px; }
-    .release-node { min-height: 76px; padding: 13px; border: 1px solid rgba(233,239,230,.23); border-radius: 12px; background: rgba(255,255,255,.045); }
-    .release-node small { display: block; margin-bottom: 8px; color: rgba(238,245,233,.66); font-family: "SFMono-Regular", ui-monospace, monospace; font-size: 9px; letter-spacing: .08em; }
-    .release-node strong { display: block; font-size: 14px; font-weight: 600; }
-    .release-node.active { border-color: rgba(185,255,120,.62); background: rgba(185,255,120,.1); }
-    .release-node.active small { color: var(--accent); }
-    .release-arrow { position: relative; width: 20px; height: 1px; background: rgba(238,245,233,.5); }
-    .release-arrow::after { position: absolute; top: -3px; right: 0; width: 6px; height: 6px; border-top: 1px solid rgba(238,245,233,.75); border-right: 1px solid rgba(238,245,233,.75); content: ""; transform: rotate(45deg); }
+    .product-graph { display: block; width: 100%; height: auto; margin: 10px 0; overflow: visible; }
+    .product-graph .graph-rail { fill: none; stroke: rgba(238,245,233,.24); stroke-width: 1.4; }
+    .product-graph .graph-dash { fill: none; stroke: rgba(185,255,120,.86); stroke-width: 1.5; stroke-dasharray: 4 5; }
+    .product-graph .graph-node { fill: rgba(255,255,255,.045); stroke: rgba(238,245,233,.28); stroke-width: 1; }
+    .product-graph .graph-node-core { fill: rgba(185,255,120,.12); stroke: rgba(185,255,120,.85); stroke-width: 1; }
+    .product-graph .graph-dot { fill: var(--accent); }
+    .product-graph .graph-label { fill: rgba(238,245,233,.66); font-family: "SFMono-Regular", ui-monospace, monospace; font-size: 8px; letter-spacing: .12em; }
+    .product-graph .graph-title { fill: #eef5e9; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: 600; }
     .release-visual-note { margin: 0; color: rgba(238,245,233,.66); font-size: 12px; line-height: 1.45; }
     .release-points { display: grid; grid-template-columns: repeat(3, 1fr); }
-    .release-point { padding: 24px 28px 28px; }
+    .release-point { min-height: 208px; padding: 24px 26px 28px; }
     .release-point + .release-point { border-left: 1px solid var(--line); }
-    .release-point h3 { margin: 9px 0 10px; font-size: 17px; }
+    .release-point h3 { margin: 11px 0 10px; font-size: 18px; line-height: 1.18; }
     .release-point p { margin: 0; color: #3b3936; font-size: 14px; }
+    .release-point a { color: var(--accent-dark); text-decoration-color: rgba(20,58,25,.35); text-underline-offset: 3px; }
     .release-point .section-label { margin-bottom: 0; font-size: 10px; }
+    .release-point.tdcc { background: var(--soft); }
+    .release-legend { display: flex; flex-wrap: wrap; gap: 9px 16px; padding: 16px 26px; border-top: 1px solid var(--line); background: #fdfdfb; color: var(--muted); font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 1.45; }
+    .release-legend strong { color: var(--text); font-weight: 600; }
+    .release-blog-link { flex-basis: 100%; display: inline-flex; width: fit-content; align-items: center; gap: 8px; margin-top: 3px; color: var(--accent-dark); font-size: 13px; font-weight: 600; text-decoration-color: rgba(20,58,25,.35); text-underline-offset: 3px; }
+    .release-blog-link::after { content: "→"; font-size: 16px; line-height: 1; }
     .workloads { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
     .chip { padding: 8px 12px; border-radius: 999px; background: var(--soft); font-family: Arial, Helvetica, sans-serif; font-size: 13px; }
     .faq { margin-top: 30px; }
@@ -184,9 +190,6 @@
       .release-card-top, .release-points { grid-template-columns: 1fr; }
       .release-visual { min-height: 280px; }
       .release-point + .release-point { border-top: 1px solid var(--line); border-left: 0; }
-      .release-flow { grid-template-columns: 1fr; gap: 8px; }
-      .release-arrow { width: 1px; height: 16px; justify-self: center; }
-      .release-arrow::after { top: auto; right: -3px; bottom: 0; transform: rotate(135deg); }
       .join-panel { padding: 24px; }
       footer { flex-direction: column; }
     }
@@ -307,52 +310,65 @@
     </section>
 
     <section id="release" class="section release-story reveal" aria-labelledby="release-title">
-      <p class="section-label">Release note · v0.73.0-rc.1</p>
-      <h2 id="release-title">The TDCC App enters desktop beta.</h2>
-      <p class="release-intro">Our first public desktop release gives early users a simpler way to enter the compute network: start from one place, send work when it is ready, and follow the job from request to result.</p>
+      <p class="section-label">Product reveal · The TDCC difference</p>
+      <h2 id="release-title">The shift: from renting machines to receiving verified AI work.</h2>
+      <p class="release-intro">The strongest AI products hide an awkward layer of complexity. TDCC is being built around a simple change in the unit of value: instead of starting with a machine, start with the work you need completed.</p>
 
       <article class="release-card">
         <div class="release-card-top">
           <div class="release-copy">
-            <div class="release-meta"><span>PUBLIC BETA</span><span>·</span><span>WINDOWS X64</span><span>·</span><span>26 AUG 2026</span></div>
-            <h3>A more direct way to step into the compute network.</h3>
-            <p>This release adds Windows desktop downloads, published checksums, and a clear preview warning. It is a deliberately narrow first step—not a claim that every platform or workload is production-ready.</p>
+            <div class="release-meta"><span>PRODUCT REVEAL</span><span>·</span><span>WORKLOAD-FIRST</span><span>·</span><span>EARLY ACCESS</span></div>
+            <h3>The product unit is the accepted AI job.</h3>
+            <p>AI teams should be able to describe a workload, not assemble infrastructure around it. TDCC routes the job to suitable capacity, runs it in an approved environment, and evaluates the result against clear acceptance criteria.</p>
             <div class="actions">
-              <a class="button primary" href="/app.html#downloads">See desktop downloads</a>
-              <a class="button" href="/app.html#changelog">Read the full changelog</a>
+              <a class="button primary" href="/app.html">Explore the product</a>
+              <a class="button" href="/litepaper.html">Read the litepaper</a>
             </div>
           </div>
 
-          <div class="release-visual" aria-label="A simplified TDCC job flow: submit, match, run, return a result">
-            <div class="release-visual-bar"><span>TDCC / JOB PATH</span><span>01 → 04</span></div>
-            <div class="release-flow">
-              <div class="release-node"><small>YOUR TEAM</small><strong>Submit an AI job</strong></div>
-              <span class="release-arrow" aria-hidden="true"></span>
-              <div class="release-node active"><small>TDCC</small><strong>Match suitable compute</strong></div>
-              <span class="release-arrow" aria-hidden="true"></span>
-              <div class="release-node"><small>NETWORK</small><strong>Run and return a result</strong></div>
-            </div>
-            <p class="release-visual-note">One clear path for early users. The matching and verification work remains behind the interface.</p>
+          <div class="release-visual">
+            <div class="release-visual-bar"><span>TDCC / PRODUCT PATH</span><span>WORK → RESULT</span></div>
+            <svg class="product-graph" viewBox="0 0 460 248" role="img" aria-labelledby="product-graph-title product-graph-description">
+              <title id="product-graph-title">A workload-to-result TDCC product flow</title>
+              <desc id="product-graph-description">A workload enters TDCC, moves through coordinated compute, and ends as an accepted result.</desc>
+              <path class="graph-rail" d="M93 154 C145 154, 148 76, 230 76 S316 154, 370 154"></path>
+              <path class="graph-dash" d="M125 143 C154 116, 171 88, 210 80 S294 115, 338 143"></path>
+              <circle class="graph-dot" cx="93" cy="154" r="4"></circle>
+              <circle class="graph-dot" cx="230" cy="76" r="4"></circle>
+              <circle class="graph-dot" cx="370" cy="154" r="4"></circle>
+              <rect class="graph-node" x="22" y="116" width="142" height="76" rx="13"></rect>
+              <text class="graph-label" x="40" y="141">01 / REQUEST</text>
+              <text class="graph-title" x="40" y="165">AI workload</text>
+              <rect class="graph-node-core" x="159" y="38" width="142" height="76" rx="13"></rect>
+              <text class="graph-label" x="177" y="63">02 / TDCC</text>
+              <text class="graph-title" x="177" y="87">Coordinate work</text>
+              <rect class="graph-node" x="296" y="116" width="142" height="76" rx="13"></rect>
+              <text class="graph-label" x="314" y="141">03 / ACCEPT</text>
+              <text class="graph-title" x="314" y="165">Useful result</text>
+            </svg>
+            <p class="release-visual-note">The interface asks for the job. The network carries the machine-level coordination.</p>
           </div>
         </div>
 
-        <div class="release-points">
-          <div class="release-point">
-            <p class="section-label">What shipped</p>
-            <h3>Desktop beta, with the basics covered.</h3>
-            <p>Windows x64 MSI and setup downloads are now available, alongside checksum links and an explicit unsigned-preview notice.</p>
-          </div>
-          <div class="release-point">
-            <p class="section-label">How it works</p>
-            <h3>Simple outside. Purposeful underneath.</h3>
-            <p>Submit training, fine-tuning, inference, or evaluation work. TDCC finds suitable compute, runs the job, and checks the result before it is accepted.</p>
-          </div>
-          <div class="release-point">
-            <p class="section-label">The beta boundary</p>
-            <h3>We are shipping in public, carefully.</h3>
-            <p>More installer support, signing, and broader workload coverage are still ahead. This release is for learning with real users and improving the path.</p>
-          </div>
-        </div>
+        <section class="release-points" aria-labelledby="comparison-title">
+          <h3 id="comparison-title" class="sr-only">Where TDCC fits</h3>
+          <article class="release-point">
+            <p class="section-label">01 / Research layer</p>
+            <h3>Exa makes web knowledge easier to ask for.</h3>
+            <p><a href="https://exa.ai/" target="_blank" rel="noreferrer">Exa</a> is a useful reference point: describe a question, then receive organized information from the web. It changes how a research request begins.</p>
+          </article>
+          <article class="release-point">
+            <p class="section-label">02 / Capacity layer</p>
+            <h3>Vast makes GPU capacity easier to access.</h3>
+            <p><a href="https://vast.ai/" target="_blank" rel="noreferrer">Vast</a> exposes a broad GPU marketplace where a user can find and rent an instance. It changes how a compute rental begins.</p>
+          </article>
+          <article class="release-point tdcc">
+            <p class="section-label">03 / Work layer</p>
+            <h3>TDCC is building for the accepted outcome.</h3>
+            <p>A job is matched to suitable capacity and evaluated against its acceptance criteria. In TDCC's intended model, settlement follows only after useful work is accepted.</p>
+          </article>
+        </section>
+        <div class="release-legend"><strong>Different layers, not a head-to-head benchmark.</strong><span>Exa focuses on web intelligence. Vast exposes GPU capacity. TDCC is being built as an execution and verification layer between workload intent and accepted AI work.</span><a class="release-blog-link" href="/two-laptops-80-tps.html">Engineering note: two laptops, one 27B workload, 80 tok/s</a></div>
       </article>
     </section>
 

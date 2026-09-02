@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#fbfbf9" />
+  <meta name="color-scheme" content="light" />
+  <meta name="robots" content="index,follow" />
+  <title>Two Laptops, One Faster Stream | TDCC Engineering Note</title>
+  <meta name="description" content="An internal TDCC benchmark: two compact laptops, one Qwen 3.8 27B workload, and 80 tok/s without changing model weights or intended output behavior." />
+  <link rel="canonical" href="https://decentralizedcompute.company/two-laptops-80-tps.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="The Decentralized Compute Company" />
+  <meta property="og:title" content="Two Laptops, One Faster Stream" />
+  <meta property="og:description" content="An internal TDCC benchmark: two compact laptops, one Qwen 3.8 27B workload, and 80 tok/s without changing model weights or intended output behavior." />
+  <meta property="og:url" content="https://decentralizedcompute.company/two-laptops-80-tps.html" />
+  <meta property="og:image" content="https://decentralizedcompute.company/assets/og-image.png" />
+  <meta property="article:published_time" content="2026-09-02" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Two Laptops, One Faster Stream" />
+  <meta name="twitter:description" content="An internal TDCC benchmark: two compact laptops, one Qwen 3.8 27B workload, and 80 tok/s without changing model weights or intended output behavior." />
+  <meta name="twitter:image" content="https://decentralizedcompute.company/assets/og-image.png" />
+
+  <style>
+    :root {
+      --bg: #fbfbf9;
+      --ink: #141414;
+      --body: #3b3936;
+      --muted: #797571;
+      --line: #e6e4df;
+      --soft: #f3f2ee;
+      --green: #b9ff78;
+      --forest: #143a19;
+      --cream: #eef5e9;
+      --page: 980px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; text-decoration-color: #aaa49d; text-underline-offset: 4px; }
+    a:hover { text-decoration-color: var(--ink); }
+    :focus-visible { outline: 3px solid rgba(185,255,120,.78); outline-offset: 4px; border-radius: 4px; }
+    .skip-link { position: absolute; top: 12px; left: -9999px; z-index: 5; padding: 10px 14px; background: #fff; border: 1px solid var(--line); font-family: Arial, Helvetica, sans-serif; }
+    .skip-link:focus { left: 12px; }
+
+    .top-rule { height: 6px; background: linear-gradient(90deg, rgba(185,255,120,.12), rgba(185,255,120,.82), rgba(185,255,120,.12)); }
+    .page { width: min(calc(100% - 40px), var(--page)); margin: 0 auto; }
+    .masthead { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px 0; border-bottom: 1px solid var(--line); font-family: Arial, Helvetica, sans-serif; font-size: 13px; }
+    .brand { font-weight: 700; letter-spacing: .1em; text-decoration: none; text-transform: uppercase; }
+    .brand span { color: var(--muted); font-weight: 400; }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--body); text-decoration: none; }
+    .back-link::before { content: "←"; font-size: 17px; line-height: 1; }
+
+    .article { padding: 70px 0 100px; }
+    .eyebrow { margin: 0 0 18px; color: var(--muted); font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; }
+    h1, h2, h3 { font-family: Arial, Helvetica, sans-serif; letter-spacing: -.035em; }
+    h1 { max-width: 900px; margin: 0; font-size: clamp(42px, 7vw, 82px); font-weight: 400; line-height: .98; }
+    .dek { max-width: 690px; margin: 30px 0 0; color: var(--body); font-size: clamp(20px, 2.4vw, 27px); line-height: 1.38; }
+    .article-meta { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 30px; color: var(--muted); font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+    .article-meta span + span::before { content: "·"; margin-right: 18px; color: #b3afa9; }
+
+    .hero-figure { margin: 54px 0 0; overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: #fff; }
+    .figure-topline { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 17px 24px; border-bottom: 1px solid var(--line); color: var(--muted); font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    .figure-topline strong { color: var(--forest); font-weight: 700; }
+    .topology { display: block; width: 100%; height: auto; }
+    .topology .canvas { fill: #fff; }
+    .topology .guide { fill: none; stroke: #dedcd6; stroke-width: 1.2; }
+    .topology .dashed { fill: none; stroke: #b9ff78; stroke-width: 2; stroke-dasharray: 5 6; }
+    .topology .device { fill: #f7f7f4; stroke: #d7d5cf; stroke-width: 1.2; }
+    .topology .device-screen { fill: #143a19; }
+    .topology .model { fill: #f0ffdf; stroke: #6caa42; stroke-width: 1.2; }
+    .topology .result { fill: #143a19; }
+    .topology .node-title { fill: #141414; font-family: Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 700; }
+    .topology .node-copy { fill: #797571; font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+    .topology .mono { fill: #797571; font-family: "SFMono-Regular", Consolas, monospace; font-size: 10px; letter-spacing: .1em; }
+    .topology .result-label { fill: #eef5e9; font-family: Arial, Helvetica, sans-serif; font-size: 15px; font-weight: 700; }
+    .topology .result-copy { fill: rgba(238,245,233,.7); font-family: Arial, Helvetica, sans-serif; font-size: 11px; }
+    .topology .spark { fill: #b9ff78; }
+    .figure-caption { margin: 0; padding: 17px 24px 20px; color: var(--body); border-top: 1px solid var(--line); font-size: 14px; }
+
+    .content-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr); gap: 70px; margin-top: 80px; }
+    .story > p { margin: 0 0 20px; color: var(--body); font-size: 17px; }
+    h2 { margin: 0 0 20px; font-size: clamp(30px, 4vw, 48px); font-weight: 400; line-height: 1.08; }
+    h3 { margin: 0; font-size: 18px; line-height: 1.18; }
+    .margin-note { align-self: start; padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: var(--soft); }
+    .margin-note .note-label { margin: 0 0 10px; color: var(--forest); font-family: Arial, Helvetica, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .margin-note p { margin: 0; color: var(--body); font-size: 14px; line-height: 1.52; }
+
+    .section { padding-top: 78px; margin-top: 78px; border-top: 1px solid var(--line); }
+    .section-heading { display: grid; grid-template-columns: 145px minmax(0, 1fr); gap: 24px; align-items: start; margin-bottom: 34px; }
+    .section-heading .eyebrow { padding-top: 9px; }
+    .section-heading h2 { max-width: 660px; margin: 0; }
+
+    .benchmark { overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: #fff; }
+    .benchmark-copy { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 30px; padding: 28px 30px 4px; }
+    .benchmark-copy h3 { font-size: 25px; font-weight: 400; }
+    .benchmark-copy p { margin: 0; color: var(--body); font-size: 15px; }
+    .performance-chart { display: block; width: 100%; height: auto; margin-top: 6px; }
+    .performance-chart .gridline { stroke: #e6e4df; stroke-width: 1; }
+    .performance-chart .baseline { stroke: #bdb9b2; stroke-width: 1.2; }
+    .performance-chart .bar-old { fill: #dcdbd6; }
+    .performance-chart .bar-new { fill: #b9ff78; }
+    .performance-chart .axis { fill: #797571; font-family: "SFMono-Regular", Consolas, monospace; font-size: 10px; }
+    .performance-chart .bar-label { fill: #141414; font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: 700; }
+    .performance-chart .bar-sub { fill: #797571; font-family: Arial, Helvetica, sans-serif; font-size: 11px; }
+    .performance-chart .delta { fill: #143a19; font-family: Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 700; }
+    .performance-chart .delta-sub { fill: #4f6d4d; font-family: "SFMono-Regular", Consolas, monospace; font-size: 10px; letter-spacing: .08em; }
+    .benchmark-footer { display: flex; align-items: flex-start; gap: 11px; padding: 18px 30px 22px; border-top: 1px solid var(--line); background: #fdfdfb; color: var(--body); font-family: Arial, Helvetica, sans-serif; font-size: 13px; line-height: 1.5; }
+    .benchmark-footer::before { content: "i"; display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; width: 17px; height: 17px; border: 1px solid #aaa69f; border-radius: 50%; color: var(--muted); font-family: Georgia, "Times New Roman", serif; font-size: 12px; font-style: italic; }
+
+    .principle-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: #fff; }
+    .principle { min-height: 310px; padding: 28px; }
+    .principle + .principle { border-left: 1px solid var(--line); }
+    .principle-index { display: block; margin-bottom: 34px; color: var(--muted); font-family: "SFMono-Regular", Consolas, monospace; font-size: 11px; letter-spacing: .08em; }
+    .principle svg { display: block; width: 100%; height: 72px; margin-bottom: 28px; overflow: visible; }
+    .principle h3 { margin-bottom: 10px; font-size: 20px; }
+    .principle p { margin: 0; color: var(--body); font-size: 14px; }
+    .diagram-line { fill: none; stroke: #b8b5ae; stroke-width: 1.35; }
+    .diagram-active { fill: none; stroke: #5b9b36; stroke-width: 1.8; }
+    .diagram-dot { fill: #b9ff78; stroke: #346d20; stroke-width: 1; }
+    .diagram-pale { fill: #f2f8eb; stroke: #c7dcb9; stroke-width: 1; }
+    .diagram-text { fill: #797571; font-family: "SFMono-Regular", Consolas, monospace; font-size: 9px; letter-spacing: .08em; }
+
+    .quote { margin-top: 80px; padding: 42px clamp(28px, 5vw, 58px); border-radius: 22px; background: var(--forest); color: var(--cream); }
+    .quote .eyebrow { color: rgba(238,245,233,.62); }
+    .quote blockquote { max-width: 760px; margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: clamp(25px, 4vw, 43px); font-weight: 400; letter-spacing: -.035em; line-height: 1.12; }
+
+    .release-close { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 30px; align-items: end; padding: 54px 0 0; }
+    .release-close p { max-width: 620px; margin: 0; color: var(--body); font-size: 17px; }
+    .button { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 20px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--ink); font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-weight: 600; text-decoration: none; transition: transform 160ms ease, border-color 160ms ease; }
+    .button:hover { transform: translateY(-1px); border-color: #bdb9b2; }
+    .button.primary { border-color: transparent; background: var(--green); color: var(--forest); }
+    footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 80px; padding: 24px 0 42px; border-top: 1px solid var(--line); color: var(--muted); font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .button { transition: none; }
+    }
+    @media (max-width: 760px) {
+      .page { width: min(calc(100% - 28px), var(--page)); }
+      .masthead { align-items: flex-start; }
+      .brand { max-width: 150px; line-height: 1.3; }
+      .article { padding-top: 48px; }
+      .article-meta span + span::before { margin-right: 10px; }
+      .figure-topline { padding: 15px 18px; }
+      .topology { min-width: 610px; }
+      .hero-figure { overflow-x: auto; }
+      .figure-caption { padding: 15px 18px 18px; }
+      .content-grid, .benchmark-copy, .release-close { grid-template-columns: 1fr; }
+      .content-grid { gap: 26px; margin-top: 56px; }
+      .section { margin-top: 58px; padding-top: 58px; }
+      .section-heading { grid-template-columns: 1fr; gap: 6px; }
+      .section-heading .eyebrow { padding-top: 0; }
+      .benchmark-copy { gap: 18px; padding: 24px 20px 2px; }
+      .benchmark-footer { padding: 16px 20px 18px; }
+      .principle-grid { grid-template-columns: 1fr; }
+      .principle { min-height: auto; padding: 24px; }
+      .principle + .principle { border-top: 1px solid var(--line); border-left: 0; }
+      .principle-index { margin-bottom: 24px; }
+      .principle svg { margin-bottom: 22px; }
+      .quote { margin-top: 58px; }
+      .release-close { gap: 24px; padding-top: 42px; }
+      .release-close .button { width: fit-content; }
+      footer { flex-direction: column; margin-top: 58px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#story">Skip to article</a>
+  <div class="top-rule"></div>
+
+  <div class="page">
+    <header class="masthead">
+      <a class="brand" href="/">TDCC <span>/ engineering note</span></a>
+      <a class="back-link" href="/">Back to home</a>
+    </header>
+
+    <main id="story" class="article">
+      <p class="eyebrow">Internal benchmark · release note</p>
+      <h1>Two compact laptops. One 27B workload. 80 tokens per second.</h1>
+      <p class="dek">We paired two small machines for a Qwen 3.8 27B workload and moved a roughly 50 tok/s run to 80 tok/s—without changing the model weights or the intended output behavior.</p>
+      <div class="article-meta" aria-label="Article details">
+        <span>TDCC engineering</span><span>Performance note</span><span>September 2026</span>
+      </div>
+
+      <figure class="hero-figure" aria-labelledby="topology-caption">
+        <div class="figure-topline"><span>Diagram 01 · shared generation path</span><strong>Two devices, one stream</strong></div>
+        <svg class="topology" viewBox="0 0 960 398" role="img" aria-label="A prompt flows to two compact laptops coordinated around one Qwen 3.8 27B workload, then returns as a single token stream.">
+          <rect class="canvas" x="0" y="0" width="960" height="398" />
+          <path class="guide" d="M112 199 H222 M418 132 H501 M418 266 H501 M687 199 H798" />
+          <path class="dashed" d="M418 132 C465 132 468 172 501 199 M418 266 C465 266 468 226 501 199" />
+
+          <g transform="translate(38 144)">
+            <rect class="model" x="0" y="0" width="148" height="110" rx="14" />
+            <text class="mono" x="18" y="30">REQUEST</text>
+            <text class="node-title" x="18" y="58">Prompt in</text>
+            <text class="node-copy" x="18" y="82">one model request</text>
+            <circle class="spark" cx="120" cy="28" r="5" />
+          </g>
+
+          <g transform="translate(222 72)">
+            <rect class="device" x="0" y="0" width="196" height="120" rx="14" />
+            <rect class="device-screen" x="19" y="19" width="158" height="65" rx="7" />
+            <path d="M36 104 H160" stroke="#c2c0ba" stroke-width="4" stroke-linecap="round" />
+            <text class="mono" x="20" y="44" fill="#b9ff78">DEVICE A</text>
+            <text class="result-copy" x="20" y="66">active work</text>
+          </g>
+          <g transform="translate(222 206)">
+            <rect class="device" x="0" y="0" width="196" height="120" rx="14" />
+            <rect class="device-screen" x="19" y="19" width="158" height="65" rx="7" />
+            <path d="M36 104 H160" stroke="#c2c0ba" stroke-width="4" stroke-linecap="round" />
+            <text class="mono" x="20" y="44" fill="#b9ff78">DEVICE B</text>
+            <text class="result-copy" x="20" y="66">active work</text>
+          </g>
+
+          <g transform="translate(501 134)">
+            <rect class="model" x="0" y="0" width="186" height="130" rx="65" />
+            <text class="mono" x="31" y="46">QWEN 3.8 27B</text>
+            <text class="node-title" x="31" y="75">One workload</text>
+            <text class="node-copy" x="31" y="99">coordinated path</text>
+            <circle class="spark" cx="153" cy="42" r="5" />
+          </g>
+
+          <g transform="translate(798 144)">
+            <rect class="result" x="0" y="0" width="124" height="110" rx="14" />
+            <text class="mono" x="18" y="30" fill="#b9ff78">RESULT</text>
+            <text class="result-label" x="18" y="58">One stream</text>
+            <text class="result-copy" x="18" y="82">tokens out</text>
+          </g>
+
+          <text class="mono" x="214" y="43">COMPACT LAPTOPS</text>
+          <text class="mono" x="458" y="324">COORDINATED GENERATION</text>
+        </svg>
+        <figcaption id="topology-caption" class="figure-caption">The point is not to make two devices look like one large machine. It is to keep a single generation path moving across the compute that is already available.</figcaption>
+      </figure>
+
+      <div class="content-grid">
+        <div class="story">
+          <p class="eyebrow">The short version</p>
+          <h2>More of the same hardware spent time generating.</h2>
+          <p>Distributed AI is often framed as a search for bigger clusters. This benchmark started from the opposite constraint: two compact laptops, an open model workload, and no interest in changing what the model is meant to produce.</p>
+          <p>On our internal test, the unoptimized path landed near 50 tokens per second. With TDCC’s coordination layer in place, the same Qwen 3.8 27B workload reached 80 tokens per second. That is a 60% improvement in observed generation throughput.</p>
+          <p>We did not alter model weights, swap in a smaller model, or aim for a different output behavior. The work was in the path around generation: coordinating when work moves, reducing avoidable idle time, and keeping the stream moving across both devices.</p>
+        </div>
+        <aside class="margin-note" aria-label="Benchmark boundary">
+          <p class="note-label">What this is</p>
+          <p>An internal TDCC benchmark, shared as an engineering result—not as a universal performance promise or a hardware purchasing guide.</p>
+        </aside>
+      </div>
+
+      <section class="section" aria-labelledby="benchmark-title">
+        <div class="section-heading">
+          <p class="eyebrow">Diagram 02 · observed throughput</p>
+          <h2 id="benchmark-title">50 → 80 tok/s, with the model’s intended behavior unchanged.</h2>
+        </div>
+
+        <div class="benchmark">
+          <div class="benchmark-copy">
+            <div>
+              <h3>Internal benchmark result</h3>
+            </div>
+            <p>Same two-device setup. Same Qwen 3.8 27B workload. The comparison is about keeping the generation path productive, not modifying the model itself.</p>
+          </div>
+          <svg class="performance-chart" viewBox="0 0 960 360" role="img" aria-label="Bar chart comparing approximately 50 tokens per second before TDCC optimization to 80 tokens per second with TDCC coordination, an increase of 60 percent.">
+            <line class="gridline" x1="108" y1="284" x2="892" y2="284" />
+            <line class="gridline" x1="108" y1="207" x2="892" y2="207" />
+            <line class="gridline" x1="108" y1="130" x2="892" y2="130" />
+            <line class="gridline" x1="108" y1="53" x2="892" y2="53" />
+            <line class="baseline" x1="108" y1="284" x2="892" y2="284" />
+            <text class="axis" x="70" y="288">0</text>
+            <text class="axis" x="60" y="211">30</text>
+            <text class="axis" x="60" y="134">60</text>
+            <text class="axis" x="60" y="57">90</text>
+            <text class="axis" x="108" y="323">TOKENS / SECOND</text>
+
+            <rect class="bar-old" x="213" y="156" width="184" height="128" rx="10" />
+            <rect class="bar-new" x="561" y="79" width="184" height="205" rx="10" />
+            <text class="bar-label" x="213" y="140">~50 tok/s</text>
+            <text class="bar-sub" x="213" y="310">BASELINE PATH</text>
+            <text class="bar-label" x="561" y="63">80 tok/s</text>
+            <text class="bar-sub" x="561" y="310">TDCC-COORDINATED PATH</text>
+
+            <path d="M415 154 C467 154 494 79 541 79" fill="none" stroke="#5b9b36" stroke-width="1.8" stroke-dasharray="5 6" />
+            <path d="M531 74 L542 79 L534 90" fill="none" stroke="#5b9b36" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+            <text class="delta" x="437" y="110">+60%</text>
+            <text class="delta-sub" x="437" y="129">OBSERVED UPLIFT</text>
+          </svg>
+          <div class="benchmark-footer">Measurement note: performance varies by hardware, context length, prompt, sampling settings, operating-system state, and thermal conditions. Treat these numbers as a point-in-time internal result, not a guaranteed outcome.</div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="principles-title">
+        <div class="section-heading">
+          <p class="eyebrow">Diagram 03 · the high-level work</p>
+          <h2 id="principles-title">Three ways to leave less useful time on the table.</h2>
+        </div>
+
+        <div class="principle-grid">
+          <article class="principle">
+            <span class="principle-index">01 / COORDINATE</span>
+            <svg viewBox="0 0 220 72" role="img" aria-label="Two lanes being coordinated into a single active generation path.">
+              <path class="diagram-line" d="M5 20 H67 C89 20 96 36 116 36 H215" />
+              <path class="diagram-line" d="M5 54 H67 C89 54 96 36 116 36" />
+              <path class="diagram-active" d="M5 20 H67 C89 20 96 36 116 36 H215" />
+              <circle class="diagram-dot" cx="116" cy="36" r="6" />
+              <text class="diagram-text" x="5" y="12">A</text><text class="diagram-text" x="5" y="70">B</text><text class="diagram-text" x="178" y="26">PATH</text>
+            </svg>
+            <h3>Coordinate the work.</h3>
+            <p>Give available devices a shared, orderly role in the generation path instead of treating them as isolated endpoints.</p>
+          </article>
+          <article class="principle">
+            <span class="principle-index">02 / REDUCE IDLE TIME</span>
+            <svg viewBox="0 0 220 72" role="img" aria-label="A timeline with fewer idle gaps between active segments.">
+              <rect class="diagram-pale" x="5" y="16" width="42" height="16" rx="4" />
+              <rect class="diagram-pale" x="71" y="16" width="42" height="16" rx="4" />
+              <rect class="diagram-pale" x="137" y="16" width="42" height="16" rx="4" />
+              <path class="diagram-line" d="M5 58 H215" />
+              <rect class="diagram-dot" x="5" y="47" width="65" height="16" rx="4" />
+              <rect class="diagram-dot" x="74" y="47" width="65" height="16" rx="4" />
+              <rect class="diagram-dot" x="143" y="47" width="72" height="16" rx="4" />
+              <text class="diagram-text" x="5" y="11">GAPPED</text><text class="diagram-text" x="5" y="43">ACTIVE</text>
+            </svg>
+            <h3>Reduce avoidable waiting.</h3>
+            <p>Keep each handoff purposeful so capable hardware spends less time waiting for the next useful unit of work.</p>
+          </article>
+          <article class="principle">
+            <span class="principle-index">03 / KEEP STREAMING</span>
+            <svg viewBox="0 0 220 72" role="img" aria-label="A continuous token stream travelling from left to right.">
+              <path class="diagram-line" d="M5 37 H215" />
+              <path class="diagram-active" d="M5 37 H215" stroke-dasharray="5 5" />
+              <circle class="diagram-dot" cx="38" cy="37" r="7" />
+              <circle class="diagram-dot" cx="91" cy="37" r="7" />
+              <circle class="diagram-dot" cx="144" cy="37" r="7" />
+              <circle class="diagram-dot" cx="197" cy="37" r="7" />
+              <text class="diagram-text" x="5" y="17">TOKEN</text><text class="diagram-text" x="172" y="61">OUTPUT</text>
+            </svg>
+            <h3>Keep generation streaming.</h3>
+            <p>Once output starts, protect continuity. The aim is one coherent stream for the user, not a visible sequence of device boundaries.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="quote" aria-label="Engineering principle">
+        <p class="eyebrow">What we are testing</p>
+        <blockquote>Useful compute is not only about having more hardware. It is about helping the hardware you already have spend more time doing useful work.</blockquote>
+      </section>
+
+      <section class="release-close" aria-labelledby="next-title">
+        <div>
+          <p class="eyebrow">What is next</p>
+          <h2 id="next-title">A benchmark is a signal, not a finish line.</h2>
+          <p>We will keep testing across more real-world conditions and turn the lessons into a simpler TDCC experience. The product goal stays clear: make distributed compute feel like one dependable place to run AI work.</p>
+        </div>
+        <a class="button primary" href="/app.html">Explore the TDCC App</a>
+      </section>
+    </main>
+
+    <footer>
+      <span>© 2026 The Decentralized Compute Company</span>
+      <a href="/">decentralizedcompute.company</a>
+    </footer>
+  </div>
+</body>
+</html>
