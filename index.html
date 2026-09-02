@@ -118,6 +118,32 @@
     .ecosystem-card h3 { margin-bottom: 12px; font-size: 20px; }
     .ecosystem-card p { margin: 0; color: #3b3936; font-size: 15px; }
     .ecosystem-note { margin-top: 24px; color: var(--muted); font-size: 15px; }
+    .release-story { position: relative; }
+    .release-intro { max-width: 650px; }
+    .release-card { margin-top: 34px; overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: #fff; }
+    .release-card-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(270px, .8fr); }
+    .release-copy { padding: 32px; }
+    .release-copy .release-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: var(--muted); }
+    .release-copy h3 { max-width: 480px; margin-bottom: 14px; font-size: clamp(24px, 3vw, 34px); font-weight: 400; line-height: 1.12; }
+    .release-copy p { max-width: 510px; margin-bottom: 22px; color: #3b3936; font-size: 16px; }
+    .release-visual { display: flex; flex-direction: column; justify-content: space-between; min-height: 310px; padding: 24px; background: var(--accent-dark); color: #eef5e9; font-family: Arial, Helvetica, sans-serif; }
+    .release-visual-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: rgba(238,245,233,.66); font-family: "SFMono-Regular", ui-monospace, monospace; font-size: 11px; }
+    .release-visual-bar span:last-child { color: var(--accent); }
+    .release-flow { display: grid; grid-template-columns: minmax(0,1fr) 20px minmax(0,1fr) 20px minmax(0,1fr); gap: 10px; align-items: center; margin: 28px 0 8px; }
+    .release-node { min-height: 76px; padding: 13px; border: 1px solid rgba(233,239,230,.23); border-radius: 12px; background: rgba(255,255,255,.045); }
+    .release-node small { display: block; margin-bottom: 8px; color: rgba(238,245,233,.66); font-family: "SFMono-Regular", ui-monospace, monospace; font-size: 9px; letter-spacing: .08em; }
+    .release-node strong { display: block; font-size: 14px; font-weight: 600; }
+    .release-node.active { border-color: rgba(185,255,120,.62); background: rgba(185,255,120,.1); }
+    .release-node.active small { color: var(--accent); }
+    .release-arrow { position: relative; width: 20px; height: 1px; background: rgba(238,245,233,.5); }
+    .release-arrow::after { position: absolute; top: -3px; right: 0; width: 6px; height: 6px; border-top: 1px solid rgba(238,245,233,.75); border-right: 1px solid rgba(238,245,233,.75); content: ""; transform: rotate(45deg); }
+    .release-visual-note { margin: 0; color: rgba(238,245,233,.66); font-size: 12px; line-height: 1.45; }
+    .release-points { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .release-point { padding: 24px 28px 28px; }
+    .release-point + .release-point { border-left: 1px solid var(--line); }
+    .release-point h3 { margin: 9px 0 10px; font-size: 17px; }
+    .release-point p { margin: 0; color: #3b3936; font-size: 14px; }
+    .release-point .section-label { margin-bottom: 0; font-size: 10px; }
     .workloads { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
     .chip { padding: 8px 12px; border-radius: 999px; background: var(--soft); font-family: Arial, Helvetica, sans-serif; font-size: 13px; }
     .faq { margin-top: 30px; }
@@ -155,6 +181,12 @@
       .hero { min-height: auto; padding: 56px 0 80px; }
       .wordmark { font-size: 44px; }
       .principles, .ecosystem-grid { grid-template-columns: 1fr; }
+      .release-card-top, .release-points { grid-template-columns: 1fr; }
+      .release-visual { min-height: 280px; }
+      .release-point + .release-point { border-top: 1px solid var(--line); border-left: 0; }
+      .release-flow { grid-template-columns: 1fr; gap: 8px; }
+      .release-arrow { width: 1px; height: 16px; justify-self: center; }
+      .release-arrow::after { top: auto; right: -3px; bottom: 0; transform: rotate(135deg); }
       .join-panel { padding: 24px; }
       footer { flex-direction: column; }
     }
@@ -238,6 +270,7 @@
   <a class="skip-link" href="#content">Skip to content</a>
   <div class="top-rule"></div>
   <nav class="site-nav" aria-label="Primary navigation">
+    <a href="#release">Release</a>
     <a href="#mission">Mission</a>
     <a href="#network">Network</a>
     <a href="/app.html">App</a>
@@ -258,7 +291,7 @@
 
       <a class="backed" href="https://x.com/stardotfun/status/2080051528732193280" target="_blank" rel="noreferrer"><img src="https://haitvpqsyfvinxxhxyvz.supabase.co/storage/v1/object/public/project-icons//favicon.png" alt="star.fun logo"><span>Backed by <strong>star.fun</strong> to solve the AI compute bottleneck</span></a>
 
-      <a class="announcement" href="/app.html"><span class="badge">NEW</span><span>The TDCC App is entering early access — see the console, CLI, and API</span></a>
+      <a class="announcement" href="#release"><span class="badge">NEW</span><span>TDCC App desktop beta is here — read the release note</span></a>
 
       <p class="lead">Train, fine-tune, and run AI models on a verifiable network built for AI.</p>
 
@@ -269,8 +302,58 @@
       <div class="actions">
         <a class="button primary" href="#join">Join the network</a>
         <a class="button" href="/app.html">Explore the app</a>
-        <a class="button" href="#network">How it works</a>
+        <a class="button" href="#release">What shipped</a>
       </div>
+    </section>
+
+    <section id="release" class="section release-story reveal" aria-labelledby="release-title">
+      <p class="section-label">Release note · v0.73.0-rc.1</p>
+      <h2 id="release-title">The TDCC App enters desktop beta.</h2>
+      <p class="release-intro">Our first public desktop release gives early users a simpler way to enter the compute network: start from one place, send work when it is ready, and follow the job from request to result.</p>
+
+      <article class="release-card">
+        <div class="release-card-top">
+          <div class="release-copy">
+            <div class="release-meta"><span>PUBLIC BETA</span><span>·</span><span>WINDOWS X64</span><span>·</span><span>26 AUG 2026</span></div>
+            <h3>A more direct way to step into the compute network.</h3>
+            <p>This release adds Windows desktop downloads, published checksums, and a clear preview warning. It is a deliberately narrow first step—not a claim that every platform or workload is production-ready.</p>
+            <div class="actions">
+              <a class="button primary" href="/app.html#downloads">See desktop downloads</a>
+              <a class="button" href="/app.html#changelog">Read the full changelog</a>
+            </div>
+          </div>
+
+          <div class="release-visual" aria-label="A simplified TDCC job flow: submit, match, run, return a result">
+            <div class="release-visual-bar"><span>TDCC / JOB PATH</span><span>01 → 04</span></div>
+            <div class="release-flow">
+              <div class="release-node"><small>YOUR TEAM</small><strong>Submit an AI job</strong></div>
+              <span class="release-arrow" aria-hidden="true"></span>
+              <div class="release-node active"><small>TDCC</small><strong>Match suitable compute</strong></div>
+              <span class="release-arrow" aria-hidden="true"></span>
+              <div class="release-node"><small>NETWORK</small><strong>Run and return a result</strong></div>
+            </div>
+            <p class="release-visual-note">One clear path for early users. The matching and verification work remains behind the interface.</p>
+          </div>
+        </div>
+
+        <div class="release-points">
+          <div class="release-point">
+            <p class="section-label">What shipped</p>
+            <h3>Desktop beta, with the basics covered.</h3>
+            <p>Windows x64 MSI and setup downloads are now available, alongside checksum links and an explicit unsigned-preview notice.</p>
+          </div>
+          <div class="release-point">
+            <p class="section-label">How it works</p>
+            <h3>Simple outside. Purposeful underneath.</h3>
+            <p>Submit training, fine-tuning, inference, or evaluation work. TDCC finds suitable compute, runs the job, and checks the result before it is accepted.</p>
+          </div>
+          <div class="release-point">
+            <p class="section-label">The beta boundary</p>
+            <h3>We are shipping in public, carefully.</h3>
+            <p>More installer support, signing, and broader workload coverage are still ahead. This release is for learning with real users and improving the path.</p>
+          </div>
+        </div>
+      </article>
     </section>
 
     <section id="mission" class="section reveal">
@@ -375,7 +458,7 @@
 
     <footer>
       <span>© 2026 The Decentralized Compute Company</span>
-      <div class="footer-links"><a href="/app.html">App</a><a href="/team.html">Team</a><a href="/litepaper.html">Litepaper</a><a href="/facts.html">Facts</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
+      <div class="footer-links"><a href="#release">Release</a><a href="/app.html">App</a><a href="/team.html">Team</a><a href="/litepaper.html">Litepaper</a><a href="/facts.html">Facts</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
     </footer>
   </main>
 
