@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"><channel><title>The Decentralized Compute Company</title><link>https://decentralizedcompute.company/</link><description>Updates from TDCC.</description><language>en</language>
 <item>
+  <title>CASK-Q: a new joint query–key quantization algorithm from TDCC</title>
+  <link>https://decentralizedcompute.company/cask-q.html</link>
+  <guid isPermaLink="true">https://decentralizedcompute.company/cask-q.html</guid>
+  <pubDate>Mon, 12 Oct 2026 09:00:00 GMT</pubDate>
+  <description>TDCC publishes CASK-Q, a calibration algorithm that jointly quantizes attention query and key weights using centered causal sketches. In a controlled 30-seed synthetic-attention study it reduces attention-output error by 25.20% at 2-bit and 28.13% at 3-bit versus independent Q/K reconstruction, at identical serialized weight size.</description>
+</item>
+<item>
   <title>The TDCC App: console, CLI, SDKs, and job API enter early access</title>
   <link>https://decentralizedcompute.company/app.html</link>
   <guid isPermaLink="true">https://decentralizedcompute.company/app.html</guid>
