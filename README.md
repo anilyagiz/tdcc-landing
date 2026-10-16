@@ -15,11 +15,44 @@ This package preserves the minimalist, academic landing-page aesthetic while add
 - Security headers and `security.txt`
 - Privacy, terms, and custom 404 pages
 
-## Local preview
+## GPU marketplace
+
+`marketplace.html` and `account.html` are backed by a small API in the
+Cloudflare Worker (`src/api.js`) with a D1 (SQLite) database:
+
+- Anyone can browse listings. Creating an account takes a name, email and
+  password; the same account can rent GPUs and list its own.
+- Hosts list a GPU from the marketplace form, then pause, edit, or remove it
+  from **My account**. Optionally they link the machine with
+  `tdcc market link <token>` (tdcc-mesh) so the listing shows as online with
+  the GPUs the node actually reports.
+- Renters send a request (count, hours, environment, access, SSH key). The
+  host accepts or declines. Emails and the SSH key are only revealed to the
+  other party after acceptance. No payments are processed during early access.
+
+Security: PBKDF2-SHA256 password hashes, hashed session tokens in an
+HttpOnly/Secure/SameSite `__Host-` cookie, Origin checks plus JSON-only bodies
+against CSRF, D1-backed rate limits on sign-up/login/writes, server-side
+validation of every field, output escaping in the pages, and single-statement
+capacity checks so a listing cannot be overbooked.
+
+### Local development
 ```bash
-python -m http.server 8080
+npm install
+npm test        # API tests against an in-memory SQLite stand-in for D1
+npm run dev     # wrangler dev with a local D1 database on http://localhost:8787
 ```
-Open `http://localhost:8080`.
+
+### First deploy (Cloudflare Workers)
+```bash
+npx wrangler login
+npx wrangler d1 create tdcc-market      # copy the database_id into wrangler.toml
+npm run deploy                          # tests, remote migrations, deploy
+```
+Static files are served from the repository root; `.assetsignore` keeps the
+Worker source, migrations, and tests out of the public assets. Netlify and
+Vercel can still serve the static pages, but the marketplace API needs the
+Worker.
 
 ## Vercel
 1. Create a new Vercel project.

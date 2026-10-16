@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0c0b09" />
   <meta name="color-scheme" content="dark" />
   <title>GPU Marketplace | The Decentralized Compute Company</title>
-  <meta name="description" content="Rent GPUs from data centers, micro-clusters, and independent hosts on the TDCC network, or submit the work as a job and pay only for accepted results. Early-access preview." />
+  <meta name="description" content="Rent GPUs from data centers, micro-clusters, and independent hosts on the TDCC network, or list your own GPU in two minutes. Free to list, no card needed to request." />
   <link rel="canonical" href="https://decentralizedcompute.company/marketplace.html" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
@@ -141,6 +141,13 @@
       .summary div + div { border-left: 0; border-top: 1px solid var(--line); }
       .form .two { grid-template-columns: 1fr; }
     }
+    .online { color: var(--ok); font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; }
+    .online::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--ok); vertical-align: 1px; }
+    .loading { padding: 40px 20px; text-align: center; color: var(--muted); border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; }
+    .d-desc { margin-top: 12px; color: var(--body); font-size: 14px; white-space: pre-line; }
+    .done { display: grid; gap: 12px; padding: 28px; border: 1px solid rgba(185,217,154,.35); background: rgba(185,217,154,.05); }
+    .done h3 { font-family: var(--serif); font-size: 28px; }
+    .done p { color: var(--body); font-size: 14.5px; }
   </style>
 </head>
 <body>
@@ -154,7 +161,6 @@
       <g fill="currentColor"><rect x="59.5" y="26.5" width="5" height="5" /><rect x="45" y="39" width="5" height="5" /><rect x="74" y="39" width="5" height="5" /><rect x="59.5" y="42" width="5" height="5" /><rect x="33" y="52" width="4.5" height="4.5" /><rect x="86.5" y="52" width="4.5" height="4.5" /><rect x="59.5" y="57" width="5" height="5" /></g>
     </symbol>
   </svg>
-
   <header class="nav">
     <div class="wrap nav-inner">
       <a class="brand" href="/" aria-label="The Decentralized Compute Company home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">tdcc</span></a>
@@ -166,7 +172,7 @@
         <a href="/app.html">App</a>
         <a href="/team.html">Team</a>
         <a href="/cask-q.html">Research</a>
-        <a class="btn solid sm" href="/#join">Get early access</a>
+        <a class="btn solid sm" href="#hosts">List your GPU</a>
       </nav>
       <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
     </div>
@@ -181,42 +187,49 @@
             <h1 class="display">Rent a GPU from the TDCC network.</h1>
           </div>
           <div>
-            <p class="lede">Data centers, certified micro-clusters, and independent hosts list their GPUs here. Rent a machine by the hour, or hand the same hardware a job and pay only when the result is accepted.</p>
+            <p class="lede">Data centers, micro-clusters, and independent hosts list their GPUs here and set their own hourly price. Pick a machine, send a request, and the host confirms it.</p>
+            <div class="actions" style="margin-top:24px"><a class="btn solid" href="#market">Find a GPU</a><a class="btn" href="#hosts">List your GPU</a></div>
           </div>
         </div>
-        <div class="notice" role="note"><b>PREVIEW</b><span>The marketplace is in early access. Listings and prices below are indicative and nothing is charged here. A rental request goes to our team, and we confirm hardware and price with you before anything starts.</span></div>
+        <div class="notice" role="note"><b>EARLY ACCESS</b><span>No card is needed and nothing is charged on this site. When a host accepts your request, you both see each other's email and agree on payment and start time directly. Hosts with a linked TDCC node show as <span class="online">online</span> with hardware reported by the machine itself.</span></div>
       </div>
     </section>
 
-    <section class="market" aria-label="GPU listings">
+    <section class="market" id="market" aria-label="GPU listings">
       <div class="wrap">
         <div class="summary" aria-label="Listing summary">
-          <div><div class="n" id="s-gpus">0</div><p>GPUs in this preview</p></div>
-          <div><div class="n" id="s-hosts">0</div><p>Hosts across data centers, clusters, and homes</p></div>
-          <div><div class="n" id="s-regions">0</div><p>Regions</p></div>
+          <div><div class="n" id="s-gpus">–</div><p>GPUs free right now</p></div>
+          <div><div class="n" id="s-hosts">–</div><p>Listings from data centers, clusters, and homes</p></div>
+          <div><div class="n" id="s-regions">–</div><p>Regions</p></div>
         </div>
 
         <div class="toolbar">
-          <div class="seg" role="group" aria-label="How you want to buy">
-            <button type="button" aria-pressed="true" data-mode="rent">Rent a GPU</button>
-            <button type="button" aria-pressed="false" data-mode="job">Run as a job</button>
-          </div>
           <div class="chips" role="group" aria-label="Memory">
             <button type="button" aria-pressed="true" data-vram="all">All</button>
             <button type="button" aria-pressed="false" data-vram="80">80GB+</button>
-            <button type="button" aria-pressed="false" data-vram="48">48GB</button>
-            <button type="button" aria-pressed="false" data-vram="24">24GB</button>
-            <button type="button" aria-pressed="false" data-vram="exact">Exact Core</button>
+            <button type="button" aria-pressed="false" data-vram="40">40–79GB</button>
+            <button type="button" aria-pressed="false" data-vram="24">24–39GB</button>
+            <button type="button" aria-pressed="false" data-vram="small">Under 24GB</button>
           </div>
           <label class="field">Region <select id="f-region"><option value="all">Any</option></select></label>
           <label class="field">Search <input id="f-q" type="search" placeholder="H100, 4090…" autocomplete="off" /></label>
+          <label class="field"><input id="f-online" type="checkbox" style="width:auto;height:auto;accent-color:var(--sand)" /> Online only</label>
           <span class="spacer"></span>
-          <label class="field">Sort <select id="f-sort"><option value="price">Price, low first</option><option value="vram">Memory, high first</option><option value="rep">Reputation</option></select></label>
+          <label class="field">Sort <select id="f-sort"><option value="price">Price, low first</option><option value="vram">Memory, high first</option><option value="rep">Completed rentals</option><option value="new">Newest</option></select></label>
         </div>
 
         <div class="table" role="table" aria-label="Available GPUs">
-          <div class="row headrow" role="row"><span role="columnheader">GPU</span><span role="columnheader" class="c-region">Region</span><span role="columnheader" class="c-host">Host</span><span role="columnheader" class="c-avail">Available</span><span role="columnheader" class="c-rep">Reputation</span><span role="columnheader">Price</span><span role="columnheader"><span class="sr-only">Action</span></span></div>
-          <div id="rows"></div>
+          <div class="row headrow" role="row"><span role="columnheader">GPU</span><span role="columnheader" class="c-region">Region</span><span role="columnheader" class="c-host">Host</span><span role="columnheader" class="c-avail">Available</span><span role="columnheader" class="c-rep">Track record</span><span role="columnheader">Price</span><span role="columnheader" class="act"><span class="sr-only">Action</span></span></div>
+          <div id="rows"><div class="loading">Loading listings…</div></div>
+          <div class="row exact" role="row">
+            <span class="gpu" role="cell"><b>Exact Core · FPGA card</b><span>Bit-exact, re-checkable</span></span>
+            <span class="c-region" role="cell">eu-central</span>
+            <span class="c-host" role="cell">TDCC</span>
+            <span class="c-avail" role="cell"><span class="avail soon"><i></i>Coming</span></span>
+            <span class="c-rep rep" role="cell"><span class="meter"><i style="width:100%"></i></span>exact</span>
+            <span class="price" role="cell"><span style="margin:0;color:var(--body)">USDC escrow per job</span></span>
+            <span class="act" role="cell"><a class="btn sm" href="/exact-core.html">Details</a></span>
+          </div>
         </div>
         <p class="count" id="count" style="margin-top:14px"></p>
       </div>
@@ -226,29 +239,36 @@
       <div class="wrap hosts-grid">
         <div>
           <p class="eyebrow">For GPU owners</p>
-          <h2 class="h2" id="hosts-title">List your GPU once. It earns from rentals and from jobs.</h2>
+          <h2 class="h2" id="hosts-title">List your GPU in two minutes.</h2>
           <ol class="host-steps">
-            <li><div><b>Install the desktop app</b><span>TDCC Desktop 0.73.0-rc.1 is out for Windows x64; Linux is next.</span></div></li>
-            <li><div><b>Publish hardware, availability, and price</b><span>You set the hourly rate and the hours your machine is available.</span></div></li>
-            <li><div><b>Pass screening</b><span>Hosts are checked before they get work. Reputation grows from verified outcomes.</span></div></li>
-            <li><div><b>Get paid for accepted work</b><span>Rentals pay for the time used. Routed jobs pay when the result is accepted.</span></div></li>
+            <li><div><b>Fill in the form</b><span>GPU, how many, region, and your hourly price. You will be asked to create a free account.</span></div></li>
+            <li><div><b>Your listing goes live</b><span>Renters see it right away. Pause it or change the price any time from your account.</span></div></li>
+            <li><div><b>Optional: link your machine</b><span>Run <code>tdcc market link</code> with the token from your account. Your listing then shows as online with the GPUs the machine actually reports.</span></div></li>
+            <li><div><b>Accept the requests you want</b><span>You see each request first. Contact details are shared only after you accept.</span></div></li>
           </ol>
-          <div class="actions" style="margin-top:28px"><a class="btn" href="/app.html#downloads">Download the desktop app</a></div>
         </div>
-        <form class="form" id="host-form" aria-labelledby="host-form-title">
-          <h3 id="host-form-title">Tell us about your hardware</h3>
-          <label>GPU model<select class="inp" name="gpu" required><option value="">Choose…</option><option>H200 141GB</option><option>H100 80GB</option><option>A100 80GB</option><option>L40S 48GB</option><option>RTX 6000 Ada 48GB</option><option>RTX A6000 48GB</option><option>RTX 4090 24GB</option><option>RTX 3090 24GB</option><option>Other</option></select></label>
-          <div class="two">
-            <label>How many<input class="inp" name="count" type="number" min="1" max="10000" value="1" required /></label>
-            <label>Region<select class="inp" name="region"><option>Europe</option><option>North America</option><option>Asia</option><option>Middle East</option><option>Other</option></select></label>
-          </div>
-          <div class="two">
-            <label>Setting<select class="inp" name="kind"><option>Data center</option><option>Micro-cluster</option><option>Home / office</option></select></label>
-            <label>Hourly price you want (USD)<input class="inp" name="price" type="number" min="0" step="0.01" placeholder="optional" /></label>
-          </div>
-          <button class="btn solid" type="submit">Send to the TDCC team →</button>
-          <small>This opens an email in your mail app with these details filled in. Nothing is stored on this page.</small>
-        </form>
+        <div id="host-wrap">
+          <form class="form" id="host-form" aria-labelledby="host-form-title" novalidate>
+            <h3 id="host-form-title">List a GPU</h3>
+            <div class="form-err" id="host-err" role="alert"></div>
+            <div class="two">
+              <label>GPU model<input class="inp" name="gpu_model" list="gpu-models" maxlength="60" placeholder="RTX 4090" required /></label>
+              <label>Memory per GPU (GB)<input class="inp" name="vram_gb" type="number" min="1" max="1024" placeholder="24" required /></label>
+            </div>
+            <datalist id="gpu-models"><option value="H200"><option value="H100 SXM"><option value="H100 PCIe"><option value="A100"><option value="L40S"><option value="RTX 6000 Ada"><option value="RTX A6000"><option value="RTX 5090"><option value="RTX 4090"><option value="RTX 3090"><option value="RX 7900 XTX"><option value="Apple M3 Max"></datalist>
+            <div class="two">
+              <label>How many GPUs<input class="inp" name="gpu_count" type="number" min="1" max="512" value="1" required /></label>
+              <label>Price per GPU-hour (USD)<input class="inp" name="price" type="number" min="0.01" max="1000" step="0.01" placeholder="0.35" required /></label>
+            </div>
+            <div class="two">
+              <label>Region<select class="inp" name="region" id="host-region" required></select></label>
+              <label>Setting<select class="inp" name="host_kind"><option value="independent">Home / office</option><option value="cluster">Micro-cluster</option><option value="datacenter">Data center</option></select></label>
+            </div>
+            <label>Short description <small style="text-transform:none;letter-spacing:0">(optional)</small><textarea class="inp" name="description" maxlength="600" placeholder="e.g. 64 GB RAM, 1 Gbit uplink, available evenings and weekends"></textarea></label>
+            <button class="btn solid" type="submit" id="host-submit">List my GPU →</button>
+            <small>Free to list. You decide which requests to accept.</small>
+          </form>
+        </div>
       </div>
     </section>
 
@@ -259,11 +279,11 @@
           <h2 class="h2" id="faq-title">Before you rent.</h2>
         </div>
         <div>
-          <details><summary>What is the difference between renting and running a job?</summary><p>Renting gives you the machine for a period of time and you run whatever you like on it. Running a job means you describe the work, TDCC picks matching hardware, and you pay only when the result passes its acceptance checks. Both use the same hosts and the same account.</p></details>
-          <details><summary>Are these prices final?</summary><p>No. The marketplace is in early access and the prices shown are indicative. We confirm the hardware and the price with you before a rental starts.</p></details>
-          <details><summary>What happens if a host goes offline during a job?</summary><p>Jobs are requeued to another host automatically, and work that fails verification is not billed. For rentals we confirm the terms with you when the request is accepted.</p></details>
-          <details><summary>What is an Exact Core listing?</summary><p>Exact Core is TDCC's own accelerator card. Its output can be replayed bit for bit on a laptop, so a renter can check that the work was actually done. Jobs on it are paid through USDC escrow on Solana. <a href="/exact-core.html" class="link" style="text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:inherit">Read the announcement</a>.</p></details>
-          <details><summary>Do I need a wallet?</summary><p>No. Rentals and regular jobs work with a normal TDCC account. Only Exact Core jobs settle on Solana today.</p></details>
+          <details><summary>How does renting work?</summary><p>Choose a GPU, set how many and for how long, and send the request. The host sees it in their account and accepts or declines. Once accepted, you both see each other's email and the host sends you access details (SSH, Jupyter, or an API endpoint).</p></details>
+          <details><summary>How do I pay?</summary><p>During early access nothing is charged on this site. The price you see is the host's hourly rate, and the total in your request is what you both agreed to. You settle payment with the host directly after they accept. Built-in payments with escrow are on the way.</p></details>
+          <details><summary>What does “online” mean?</summary><p>The host linked a running TDCC node to the listing with <code>tdcc market link</code>. The node reports in every minute with the GPUs it actually sees, so you know the machine is real and switched on right now.</p></details>
+          <details><summary>Is my data safe?</summary><p>Passwords are stored only as salted hashes, sessions use secure HttpOnly cookies, and your email is never shown publicly. A host or renter sees your email only after a request is accepted. You can delete your account at any time from your account page.</p></details>
+          <details><summary>What is an Exact Core listing?</summary><p>Exact Core is TDCC's own accelerator card. Its output can be replayed bit for bit on a laptop, so a renter can check that the work was actually done. Jobs on it will be paid through USDC escrow on Solana.</p></details>
         </div>
       </div>
     </section>
@@ -277,159 +297,150 @@
         <button class="x" type="button" data-close aria-label="Close">×</button>
       </div>
       <div class="d-body">
+        <p class="d-desc" id="d-desc" hidden></p>
         <div class="d-sec">
           <span class="lbl">GPUs</span>
           <div style="display:flex;align-items:center"><div class="stepper"><button type="button" id="c-dec" aria-label="Fewer GPUs">−</button><output id="c-val">1</output><button type="button" id="c-inc" aria-label="More GPUs">+</button></div><span id="c-max"></span></div>
         </div>
-        <div class="d-sec" id="sec-dur">
+        <div class="d-sec">
           <span class="lbl">Duration</span>
           <div class="opts" id="dur"><button type="button" data-h="1" aria-pressed="false">1 hour</button><button type="button" data-h="8" aria-pressed="true">8 hours</button><button type="button" data-h="24" aria-pressed="false">1 day</button><button type="button" data-h="168" aria-pressed="false">1 week</button></div>
-          <div class="hrs"><input class="inp" id="hours" type="number" min="1" max="2160" value="8" aria-label="Hours" /><span>hours</span></div>
+          <div class="hrs"><input class="inp" id="hours" type="number" min="1" max="2160" value="8" aria-label="Hours" /><span id="hrs-note">hours</span></div>
         </div>
         <div class="d-sec">
           <span class="lbl">Environment</span>
-          <div class="opts" id="env"><button type="button" aria-pressed="true" data-v="pytorch">PyTorch</button><button type="button" aria-pressed="false" data-v="vllm">vLLM</button><button type="button" aria-pressed="false" data-v="ubuntu">Ubuntu base</button><button type="button" aria-pressed="false" data-v="custom">Own image</button></div>
-          <input class="inp" id="image" type="text" placeholder="registry/image@sha256:…" style="margin-top:10px" hidden aria-label="Container image" />
+          <div class="opts" id="env"><button type="button" aria-pressed="true" data-v="pytorch">PyTorch</button><button type="button" aria-pressed="false" data-v="vllm">vLLM</button><button type="button" aria-pressed="false" data-v="ubuntu">Ubuntu base</button><button type="button" aria-pressed="false" data-v="custom">My own image</button></div>
+          <input class="inp" id="image" type="text" maxlength="255" placeholder="registry/image:tag" style="margin-top:10px" hidden aria-label="Container image" />
         </div>
-        <div class="d-sec" id="sec-access">
+        <div class="d-sec">
           <span class="lbl">Access</span>
           <div class="opts" id="access"><button type="button" aria-pressed="true" data-v="ssh">SSH</button><button type="button" aria-pressed="false" data-v="jupyter">Jupyter</button><button type="button" aria-pressed="false" data-v="api">API only</button></div>
+          <label class="fl" id="ssh-wrap" style="margin-top:12px">Your SSH public key<textarea class="inp" id="ssh" rows="3" maxlength="4000" placeholder="ssh-ed25519 AAAA… you@laptop" spellcheck="false"></textarea><small>The single line from <code>~/.ssh/id_ed25519.pub</code>. Shared with the host only after they accept.</small></label>
         </div>
-        <div class="d-sec" id="sec-job" hidden>
-          <span class="lbl">Job</span>
-          <div class="opts" id="jobtype"><button type="button" aria-pressed="true" data-v="inference.batch">Batch inference</button><button type="button" aria-pressed="false" data-v="finetune.lora">LoRA fine-tune</button><button type="button" aria-pressed="false" data-v="embeddings">Embeddings</button><button type="button" aria-pressed="false" data-v="eval.suite">Evaluation</button></div>
-          <label class="lbl" for="budget" style="margin-top:16px;display:block">Max spend (USD)</label>
-          <input class="inp" id="budget" type="number" min="1" value="40" />
+        <div class="d-sec">
+          <label class="lbl" for="msg">Message to the host <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
+          <textarea class="inp" id="msg" maxlength="1000" placeholder="What you plan to run, when you want to start…"></textarea>
         </div>
+        <div class="form-err" id="rent-err" role="alert" style="margin-top:16px"></div>
         <div class="est">
           <div class="est-row"><span id="e-line">1 × GPU × 8 h</span><span id="e-rate"></span></div>
-          <div class="est-row total"><span>Estimate</span><b id="e-total">$0</b></div>
-          <p id="e-note">Indicative only. We confirm the final price before anything is charged.</p>
+          <div class="est-row total"><span>Total</span><b id="e-total">$0</b></div>
+          <p>Nothing is charged now. The host confirms before anything starts.</p>
         </div>
       </div>
       <div class="d-foot">
-        <button class="btn solid" type="button" id="request">Request this rental →</button>
-        <button class="btn" type="button" id="copy-spec">Copy as job spec</button>
+        <button class="btn solid" type="button" id="request">Send rental request →</button>
       </div>
     </aside>
   </div>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <footer>
     <div class="wrap">
       <div class="foot">
         <a class="brand" href="/"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
-        <div class="foot-links"><a href="/exact-core.html">Exact Core</a><a href="/marketplace.html">Marketplace</a><a href="/app.html">App</a><a href="/team.html">Team</a><a href="/litepaper.html">Litepaper</a><a href="/cask-q.html">Research</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
+        <div class="foot-links"><a href="/exact-core.html">Exact Core</a><a href="/marketplace.html">Marketplace</a><a href="/account.html">My account</a><a href="/app.html">App</a><a href="/team.html">Team</a><a href="/litepaper.html">Litepaper</a><a href="/cask-q.html">Research</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
       </div>
       <p class="legal">© 2026 The Decentralized Compute Company</p>
     </div>
   </footer>
 
+  <script src="/js/market.js"></script>
   <script>
     (() => {
-      const menuBtn = document.getElementById('menu-btn'), links = document.getElementById('nav-links');
+      const { api, esc, money, toast, requireUser } = window.TDCC;
+      const $ = (id) => document.getElementById(id);
+      const menuBtn = $('menu-btn'), links = $('nav-links');
       menuBtn.addEventListener('click', () => menuBtn.setAttribute('aria-expanded', String(links.classList.toggle('open'))));
+      links.addEventListener('click', (e) => { if (e.target.closest('a')) { links.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); } });
 
-      // Preview inventory. Prices are indicative, per GPU-hour.
-      const L = [
-        { id: 'h200-dc-fra', gpu: 'H200', vram: 141, region: 'eu-central', host: 'Data center', avail: 16, rep: .97, price: 2.4 },
-        { id: 'h100-dc-iad', gpu: 'H100 SXM', vram: 80, region: 'us-east', host: 'Data center', avail: 32, rep: .96, price: 1.95 },
-        { id: 'h100-mc-ams', gpu: 'H100 PCIe', vram: 80, region: 'eu-west', host: 'Micro-cluster', avail: 4, rep: .93, price: 1.7 },
-        { id: 'a100-dc-bom', gpu: 'A100', vram: 80, region: 'ap-south', host: 'Data center', avail: 8, rep: .95, price: 1.2 },
-        { id: 'a100-mc-ist', gpu: 'A100', vram: 80, region: 'eu-central', host: 'Micro-cluster', avail: 2, rep: .9, price: 1.05 },
-        { id: 'l40s-dc-sjc', gpu: 'L40S', vram: 48, region: 'us-west', host: 'Data center', avail: 12, rep: .94, price: .85 },
-        { id: 'rtx6000-mc-dxb', gpu: 'RTX 6000 Ada', vram: 48, region: 'me-central', host: 'Micro-cluster', avail: 4, rep: .91, price: .8 },
-        { id: 'a6000-ind-waw', gpu: 'RTX A6000', vram: 48, region: 'eu-central', host: 'Independent', avail: 2, rep: .88, price: .55 },
-        { id: '4090-mc-sgp', gpu: 'RTX 4090', vram: 24, region: 'ap-south', host: 'Micro-cluster', avail: 8, rep: .9, price: .38 },
-        { id: '4090-ind-ber', gpu: 'RTX 4090', vram: 24, region: 'eu-west', host: 'Independent', avail: 1, rep: .86, price: .34 },
-        { id: '3090-ind-ist', gpu: 'RTX 3090', vram: 24, region: 'eu-central', host: 'Independent', avail: 2, rep: .84, price: .22 },
-        { id: '3090-ind-aus', gpu: 'RTX 3090', vram: 24, region: 'us-west', host: 'Independent', avail: 1, rep: .82, price: .2 },
-        { id: 'exact-core-01', gpu: 'Exact Core', vram: 4, region: 'eu-central', host: 'TDCC', avail: 0, rep: 1, price: null, exact: true }
-      ];
-      const fmt = (n) => '$' + (n >= 100 ? Math.round(n).toLocaleString('en-US') : n.toFixed(2));
-      const st = { mode: 'rent', vram: 'all', region: 'all', q: '', sort: 'price' };
+      let L = [], REGIONS = {};
+      const st = { vram: 'all', region: 'all', q: '', sort: 'price', online: false };
+      const rowsEl = $('rows');
 
-      document.getElementById('s-gpus').textContent = L.reduce((a, l) => a + l.avail, 0);
-      document.getElementById('s-hosts').textContent = L.length;
-      const regions = [...new Set(L.map((l) => l.region))].sort();
-      document.getElementById('s-regions').textContent = regions.length;
-      const regionSel = document.getElementById('f-region');
-      regions.forEach((r) => regionSel.insertAdjacentHTML('beforeend', `<option value="${r}">${r}</option>`));
+      const load = async () => {
+        try {
+          const d = await api('GET', '/api/listings');
+          L = d.listings; REGIONS = d.regions;
+        } catch (err) {
+          rowsEl.innerHTML = `<div class="empty">${esc(err.message)}</div>`;
+          return;
+        }
+        $('s-gpus').textContent = L.reduce((a, l) => a + l.available, 0);
+        $('s-hosts').textContent = L.length;
+        const regions = [...new Set(L.map((l) => l.region))].sort();
+        $('s-regions').textContent = regions.length;
+        const sel = $('f-region');
+        sel.innerHTML = '<option value="all">Any</option>' + regions.map((r) => `<option value="${esc(r)}">${esc(REGIONS[r] || r)}</option>`).join('');
+        sel.value = regions.includes(st.region) ? st.region : 'all';
+        const hostRegion = $('host-region');
+        if (hostRegion && hostRegion.options.length < 2) hostRegion.innerHTML = '<option value="">Choose…</option>' + Object.entries(REGIONS).map(([k, v]) => `<option value="${esc(k)}">${esc(v)}</option>`).join('');
+        render();
+        const want = new URLSearchParams(location.search).get('gpu');
+        if (want && L.some((l) => l.id === want)) open(want);
+      };
 
-      const rowsEl = document.getElementById('rows');
       const render = () => {
-        let list = L.filter((l) => {
-          if (st.vram === 'exact') return l.exact;
-          if (st.vram === '80' && l.vram < 80) return false;
-          if (st.vram === '48' && l.vram !== 48) return false;
-          if (st.vram === '24' && l.vram !== 24) return false;
+        const list = L.filter((l) => {
+          if (st.vram === '80' && l.vram_gb < 80) return false;
+          if (st.vram === '40' && (l.vram_gb < 40 || l.vram_gb >= 80)) return false;
+          if (st.vram === '24' && (l.vram_gb < 24 || l.vram_gb >= 40)) return false;
+          if (st.vram === 'small' && l.vram_gb >= 24) return false;
           if (st.region !== 'all' && l.region !== st.region) return false;
-          if (st.q && !(l.gpu + ' ' + l.host).toLowerCase().includes(st.q)) return false;
+          if (st.online && !l.online) return false;
+          if (st.q && !(l.gpu_model + ' ' + l.host_kind_label + ' ' + l.description).toLowerCase().includes(st.q)) return false;
           return true;
         });
-        list.sort((a, b) => st.sort === 'vram' ? b.vram - a.vram : st.sort === 'rep' ? b.rep - a.rep : (a.price ?? 99) - (b.price ?? 99));
+        list.sort((a, b) => st.sort === 'vram' ? b.vram_gb - a.vram_gb : st.sort === 'rep' ? b.host_completed - a.host_completed : st.sort === 'new' ? b.created_at - a.created_at : a.price_cents - b.price_cents);
+        const max = Math.max(1, ...L.map((l) => l.host_completed));
         rowsEl.innerHTML = list.length ? list.map((l) => {
-          const av = l.exact ? '<span class="avail soon"><i></i>Coming</span>' : `<span class="avail${l.avail < 3 ? ' low' : ''}"><i></i>${l.avail} free</span>`;
-          const price = l.exact ? '<span class="price"><span style="margin:0;color:var(--body)">USDC escrow per job</span></span>' : st.mode === 'rent'
-            ? `<span class="price"><b>${fmt(l.price)}</b><span>/ GPU·h</span></span>`
-            : `<span class="price"><span style="margin:0;color:var(--body)">Pay per accepted job</span></span>`;
-          const act = l.exact ? '<a class="btn sm" href="/exact-core.html">Details</a>' : `<button class="btn sm${st.mode === 'rent' ? ' solid' : ''}" type="button" data-rent="${l.id}">${st.mode === 'rent' ? 'Rent' : 'Use for job'}</button>`;
-          return `<div class="row${l.exact ? ' exact' : ''}" role="row">
-            <span class="gpu" role="cell"><b>${l.gpu} · ${l.exact ? 'FPGA card' : l.vram + 'GB'}</b><span>${l.exact ? 'Bit-exact, re-checkable' : l.id}</span></span>
-            <span class="c-region" role="cell">${l.region}</span>
-            <span class="c-host" role="cell">${l.host}</span>
+          const av = l.available ? `<span class="avail${l.available < 2 ? ' low' : ''}"><i></i>${l.available} of ${l.gpu_count} free</span>` : '<span class="avail soon"><i></i>All rented</span>';
+          return `<div class="row" role="row">
+            <span class="gpu" role="cell"><b>${esc(l.gpu_model)} · ${l.vram_gb}GB</b><span>${l.online ? '<span class="online">online</span>' : esc(l.host_kind_label)}</span></span>
+            <span class="c-region" role="cell">${esc(l.region_label)}</span>
+            <span class="c-host" role="cell">${esc(l.host_name)} · ${esc(l.host_kind_label)}</span>
             <span class="c-avail" role="cell">${av}</span>
-            <span class="c-rep rep" role="cell"><span class="meter"><i style="width:${l.rep * 100}%"></i></span>${l.exact ? 'exact' : l.rep.toFixed(2)}</span>
-            ${price}
-            <span class="act" role="cell">${act}</span>
+            <span class="c-rep rep" role="cell"><span class="meter"><i style="width:${Math.round((l.host_completed / max) * 100)}%"></i></span>${l.host_completed} done</span>
+            <span class="price" role="cell"><b>${money(l.price_cents)}</b><span>/ GPU·h</span></span>
+            <span class="act" role="cell"><button class="btn sm solid" type="button" data-rent="${esc(l.id)}"${l.available ? '' : ' disabled'}>Rent</button></span>
           </div>`;
-        }).join('') : '<div class="empty">Nothing matches these filters.</div>';
-        document.getElementById('count').textContent = `${list.length} listing${list.length === 1 ? '' : 's'} · prices indicative`;
+        }).join('') : `<div class="empty">${L.length ? 'Nothing matches these filters.' : 'No GPUs are listed yet. <a class="link" href="#hosts">Be the first to list one →</a>'}</div>`;
+        $('count').textContent = `${list.length} listing${list.length === 1 ? '' : 's'} · prices set by hosts, per GPU-hour`;
       };
 
       const press = (group, btn) => group.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
-      document.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => { press(b.parentElement, b); st.mode = b.dataset.mode; render(); }));
       document.querySelectorAll('.chips button').forEach((b) => b.addEventListener('click', () => { press(b.parentElement, b); st.vram = b.dataset.vram; render(); }));
-      regionSel.addEventListener('change', () => { st.region = regionSel.value; render(); });
-      document.getElementById('f-q').addEventListener('input', (e) => { st.q = e.target.value.trim().toLowerCase(); render(); });
-      document.getElementById('f-sort').addEventListener('change', (e) => { st.sort = e.target.value; render(); });
-      render();
+      $('f-region').addEventListener('change', (e) => { st.region = e.target.value; render(); });
+      $('f-q').addEventListener('input', (e) => { st.q = e.target.value.trim().toLowerCase(); render(); });
+      $('f-sort').addEventListener('change', (e) => { st.sort = e.target.value; render(); });
+      $('f-online').addEventListener('change', (e) => { st.online = e.target.checked; render(); });
 
       // ---------- rent drawer ----------
-      const rent = document.getElementById('rent'), drawer = rent.querySelector('.drawer');
-      const cfg = { l: null, count: 1, hours: 8, env: 'pytorch', image: '', access: 'ssh', job: 'inference.batch', budget: 40 };
-      const $ = (id) => document.getElementById(id);
+      const rent = $('rent'), drawer = rent.querySelector('.drawer');
+      const cfg = { l: null, count: 1, hours: 8, env: 'pytorch', access: 'ssh' };
       let lastFocus = null;
 
+      const rentErr = (msg) => { const e = $('rent-err'); e.textContent = msg || ''; e.classList.toggle('show', !!msg); };
       const update = () => {
-        const l = cfg.l, isJob = st.mode === 'job';
-        $('c-val').textContent = cfg.count;
-        $('c-max').textContent = `of ${l.avail} available`;
-        $('sec-dur').hidden = isJob; $('sec-access').hidden = isJob; $('sec-job').hidden = !isJob;
-        if (isJob) {
-          $('e-line').textContent = `${cfg.count} × ${l.gpu} · ${cfg.job}`;
-          $('e-rate').textContent = 'ceiling';
-          $('e-total').textContent = fmt(cfg.budget);
-          $('e-note').textContent = 'You set a spending ceiling. A job is billed only if its result passes the acceptance checks.';
-          $('request').textContent = 'Request this job →';
-        } else {
-          const total = l.price * cfg.count * cfg.hours;
-          $('e-line').textContent = `${cfg.count} × ${l.gpu} × ${cfg.hours} h`;
-          $('e-rate').textContent = `${fmt(l.price)} / GPU·h`;
-          $('e-total').textContent = fmt(total);
-          $('e-note').textContent = 'Indicative only. We confirm the final price before anything is charged.';
-          $('request').textContent = 'Request this rental →';
-        }
-      };
-      const spec = () => {
         const l = cfg.l;
-        if (st.mode === 'job') return `# job.yaml\ntype: ${cfg.job}\nhardware:\n  gpu: "${l.gpu}"\n  min_vram_gb: ${l.vram}\n  count: ${cfg.count}\n  region: ${l.region}\naccept:\n  min_verifications: 2\nbudget:\n  max_usd: ${cfg.budget}\n`;
-        return `# rental request\nlisting: ${l.id}\ngpu: "${l.gpu} ${l.vram}GB"\ncount: ${cfg.count}\nhours: ${cfg.hours}\nregion: ${l.region}\nenvironment: ${cfg.env === 'custom' ? (cfg.image || 'own image') : cfg.env}\naccess: ${cfg.access}\nestimate_usd: ${(l.price * cfg.count * cfg.hours).toFixed(2)}\n`;
+        $('c-val').textContent = cfg.count;
+        $('c-max').textContent = `of ${l.available} free`;
+        $('hrs-note').textContent = l.min_hours > 1 ? `hours · minimum ${l.min_hours}` : 'hours';
+        $('e-line').textContent = `${cfg.count} × ${l.gpu_model} × ${cfg.hours} h`;
+        $('e-rate').textContent = `${money(l.price_cents)} / GPU·h`;
+        $('e-total').textContent = money(l.price_cents * cfg.count * cfg.hours);
       };
       const open = (id) => {
-        cfg.l = L.find((l) => l.id === id); cfg.count = 1;
-        $('d-title').textContent = `${cfg.l.gpu} · ${cfg.l.vram}GB`;
-        $('d-sub').textContent = `${cfg.l.region} · ${cfg.l.host} · reputation ${cfg.l.rep.toFixed(2)}`;
+        cfg.l = L.find((l) => l.id === id);
+        if (!cfg.l) return;
+        cfg.count = 1;
+        cfg.hours = Math.max(cfg.hours, cfg.l.min_hours);
+        $('hours').value = cfg.hours;
+        $('d-title').textContent = `${cfg.l.gpu_model} · ${cfg.l.vram_gb}GB`;
+        $('d-sub').textContent = `${cfg.l.region_label} · ${cfg.l.host_name} · ${cfg.l.host_kind_label}${cfg.l.online ? ' · online' : ''}`;
+        const gpus = cfg.l.node_gpus.length ? `Machine reports: ${cfg.l.node_gpus.map((g) => g.name + (g.vram_gb ? ` (${g.vram_gb} GB)` : '')).join(', ')}` : '';
+        const desc = [cfg.l.description, gpus].filter(Boolean).join('\n');
+        $('d-desc').textContent = desc; $('d-desc').hidden = !desc;
+        rentErr('');
         update();
         lastFocus = document.activeElement;
         rent.classList.add('open'); rent.setAttribute('aria-hidden', 'false');
@@ -443,34 +454,74 @@
       };
       rowsEl.addEventListener('click', (e) => { const b = e.target.closest('[data-rent]'); if (b) open(b.dataset.rent); });
       rent.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', close));
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && rent.classList.contains('open')) close(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && rent.classList.contains('open') && !document.querySelector('.modal.open')) close(); });
       $('c-dec').addEventListener('click', () => { cfg.count = Math.max(1, cfg.count - 1); update(); });
-      $('c-inc').addEventListener('click', () => { cfg.count = Math.min(cfg.l.avail, cfg.count + 1); update(); });
-      $('dur').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; press($('dur'), b); cfg.hours = +b.dataset.h; $('hours').value = cfg.hours; update(); });
-      $('hours').addEventListener('input', (e) => { cfg.hours = Math.max(1, Math.min(2160, +e.target.value || 1)); press($('dur'), null); update(); });
+      $('c-inc').addEventListener('click', () => { cfg.count = Math.min(cfg.l.available, cfg.count + 1); update(); });
+      $('dur').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; press($('dur'), b); cfg.hours = Math.max(+b.dataset.h, cfg.l.min_hours); $('hours').value = cfg.hours; update(); });
+      $('hours').addEventListener('input', (e) => { cfg.hours = Math.max(1, Math.min(2160, Math.round(+e.target.value) || 1)); press($('dur'), null); update(); });
       $('env').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; press($('env'), b); cfg.env = b.dataset.v; $('image').hidden = cfg.env !== 'custom'; });
-      $('image').addEventListener('input', (e) => { cfg.image = e.target.value.trim(); });
-      $('access').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; press($('access'), b); cfg.access = b.dataset.v; });
-      $('jobtype').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; press($('jobtype'), b); cfg.job = b.dataset.v; update(); });
-      $('budget').addEventListener('input', (e) => { cfg.budget = Math.max(1, +e.target.value || 1); update(); });
+      $('access').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; press($('access'), b); cfg.access = b.dataset.v; $('ssh-wrap').hidden = cfg.access !== 'ssh'; });
 
-      const toast = (msg) => { const t = $('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2400); };
-      $('copy-spec').addEventListener('click', async () => {
-        try { await navigator.clipboard.writeText(spec()); toast('Copied to clipboard'); }
-        catch { toast('Copy failed. Your browser blocked clipboard access.'); }
-      });
-      $('request').addEventListener('click', () => {
-        const subject = st.mode === 'job' ? `TDCC job request: ${cfg.l.gpu}` : `TDCC rental request: ${cfg.count}x ${cfg.l.gpu}`;
-        location.href = `mailto:anil@decentralizedcompute.company?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(spec())}`;
+      $('request').addEventListener('click', async () => {
+        rentErr('');
+        if (cfg.hours < cfg.l.min_hours) return rentErr(`This host rents for at least ${cfg.l.min_hours} hours.`);
+        const ssh = $('ssh').value.trim();
+        if (cfg.access === 'ssh' && !ssh) { rentErr('Paste your SSH public key so the host can give you access, or choose Jupyter or API access.'); $('ssh').focus(); return; }
+        if (cfg.env === 'custom' && !$('image').value.trim()) { rentErr('Enter the container image you want to run.'); $('image').focus(); return; }
+        const user = await requireUser('Create a free account or sign in to send your request. It takes a few seconds.');
+        if (!user) return;
+        const btn = $('request'); btn.disabled = true;
+        try {
+          await api('POST', '/api/rentals', {
+            listing_id: cfg.l.id, gpu_count: cfg.count, hours: cfg.hours, environment: cfg.env,
+            image: $('image').value.trim(), access: cfg.access, ssh_key: cfg.access === 'ssh' ? ssh : '', message: $('msg').value.trim(),
+          });
+          close();
+          $('msg').value = '';
+          toast('Request sent. Track it in My account.');
+          setTimeout(() => { location.href = '/account.html#rentals'; }, 900);
+        } catch (err) {
+          rentErr(err.message);
+        } finally {
+          btn.disabled = false;
+        }
       });
 
       // ---------- host form ----------
-      $('host-form').addEventListener('submit', (e) => {
+      const hostErr = (msg, field) => {
+        const e = $('host-err'); e.textContent = msg || ''; e.classList.toggle('show', !!msg);
+        const form = $('host-form');
+        form.querySelectorAll('.inp').forEach((i) => i.removeAttribute('aria-invalid'));
+        if (field && form[field]) { form[field].setAttribute('aria-invalid', 'true'); form[field].focus(); }
+      };
+      $('host-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const f = new FormData(e.target);
-        const body = `GPU: ${f.get('gpu')}\nCount: ${f.get('count')}\nRegion: ${f.get('region')}\nSetting: ${f.get('kind')}\nHourly price wanted: ${f.get('price') || 'not set'}\n`;
-        location.href = `mailto:anil@decentralizedcompute.company?subject=${encodeURIComponent('List my GPU on TDCC')}&body=${encodeURIComponent(body)}`;
+        const f = e.target;
+        const body = Object.fromEntries(new FormData(f).entries());
+        body.vram_gb = Number(body.vram_gb); body.gpu_count = Number(body.gpu_count); body.price = Number(body.price);
+        if (!body.gpu_model.trim()) return hostErr('Which GPU is it?', 'gpu_model');
+        if (!body.vram_gb) return hostErr('How much memory does each GPU have?', 'vram_gb');
+        if (!body.price) return hostErr('Set your price per GPU-hour.', 'price');
+        if (!body.region) return hostErr('Choose the region the machine is in.', 'region');
+        hostErr('');
+        const user = await requireUser('Create a free account or sign in to publish your listing.');
+        if (!user) return;
+        const btn = $('host-submit'); btn.disabled = true;
+        try {
+          const { listing } = await api('POST', '/api/listings', body);
+          $('host-wrap').innerHTML = `<div class="done"><h3>Your ${esc(listing.gpu_model)} is listed.</h3>
+            <p>Renters can find it now. You will see their requests in your account, and you decide which to accept.</p>
+            <p>To show it as <span class="online">online</span>, open your account, press <b>Link machine</b>, and run the command it shows on that machine.</p>
+            <div class="actions"><a class="btn solid" href="/account.html#listings">Go to my account →</a><a class="btn" href="/marketplace.html#market">See the marketplace</a></div></div>`;
+          load();
+        } catch (err) {
+          hostErr(err.message, err.field);
+        } finally {
+          btn.disabled = false;
+        }
       });
+
+      load();
     })();
   </script>
 </body>

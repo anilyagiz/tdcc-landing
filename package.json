@@ -3,9 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "deploy": "npx wrangler deploy"
+    "dev": "wrangler d1 migrations apply tdcc-market --local && wrangler dev --local",
+    "test": "node --test --no-warnings test/*.test.mjs",
+    "db:migrate": "wrangler d1 migrations apply tdcc-market --remote",
+    "deploy": "npm test && wrangler d1 migrations apply tdcc-market --remote && wrangler deploy"
   },
   "devDependencies": {
     "wrangler": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=22.5"
   }
 }

@@ -4,3 +4,16 @@ compatibility_date = "2025-07-21"
 
 [assets]
 directory = "."
+binding = "ASSETS"
+# The API must reach the Worker even though static files are served first.
+run_worker_first = ["/api/*"]
+
+# GPU marketplace storage. Create once with
+#   npx wrangler d1 create tdcc-market
+# paste the printed database_id below, then apply migrations with
+#   npx wrangler d1 migrations apply tdcc-market --remote
+[[d1_databases]]
+binding = "DB"
+database_name = "tdcc-market"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"

@@ -1,6 +1,12 @@
+import { handleApi } from "./api.js";
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    if (url.pathname === "/api" || url.pathname.startsWith("/api/")) {
+      return handleApi(request, env);
+    }
 
     if (url.pathname === "/" || !url.pathname.includes(".")) {
       const response = await env.ASSETS.fetch(request);
