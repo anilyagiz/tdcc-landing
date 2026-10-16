@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#fbfbf9" />
-  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#0c0b09" />
+  <meta name="color-scheme" content="dark" />
 
-  <title>The Decentralized Compute Company | Verified AI Infrastructure</title>
-  <meta name="description" content="TDCC is a verified AI compute layer connecting teams to data centers and GPUs, designed to work across Avalanche and Solana ecosystems." />
-  <meta name="keywords" content="decentralized compute, distributed GPU, AI inference, open source AI, open weight models, fine tuning, GPU network, DePIN, verified compute, serverless inference" />
+  <title>The Decentralized Compute Company | The Grid for AI Compute</title>
+  <meta name="description" content="TDCC is an AI inference and compute network. One API routes training, fine-tuning, and inference across data centers and independent GPUs, and verifies every result before anyone is paid." />
+  <meta name="keywords" content="AI inference, AI compute, decentralized compute, distributed GPU, open weight models, fine tuning, GPU network, DePIN, verified compute, serverless inference, inference gateway" />
   <meta name="author" content="The Decentralized Compute Company" />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
 
@@ -21,8 +21,8 @@
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="The Decentralized Compute Company" />
-  <meta property="og:title" content="The Decentralized Compute Company" />
-  <meta property="og:description" content="A verified AI compute layer designed for Avalanche coordination and Solana-scale developer workflows." />
+  <meta property="og:title" content="The Decentralized Compute Company — the grid for AI compute" />
+  <meta property="og:description" content="One API for inference, fine-tuning, and training across every available GPU. Verified before it is paid." />
   <meta property="og:url" content="https://decentralizedcompute.company/" />
   <meta property="og:image" content="https://decentralizedcompute.company/assets/og-image.png" />
   <meta property="og:image:width" content="1200" />
@@ -30,21 +30,32 @@
   <meta property="og:image:alt" content="The Decentralized Compute Company — verified AI infrastructure powered by user-owned GPUs" />
 
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="The Decentralized Compute Company" />
-  <meta name="twitter:description" content="A verified AI compute layer designed for Avalanche coordination and Solana-scale developer workflows." />
+  <meta name="twitter:site" content="@computecompany" />
+  <meta name="twitter:title" content="The Decentralized Compute Company — the grid for AI compute" />
+  <meta name="twitter:description" content="One API for inference, fine-tuning, and training across every available GPU. Verified before it is paid." />
   <meta name="twitter:image" content="https://decentralizedcompute.company/assets/og-image.png" />
 
   <style>
     :root {
-      --bg: #fbfbf9;
-      --text: #141414;
-      --muted: #7f7b78;
-      --line: #e6e4df;
-      --soft: #f3f2ee;
-      --accent: #b9ff78;
-      --accent-dark: #143a19;
-      --max-width: 720px;
-      --nav-height: 72px;
+      --bg: #0c0b09;
+      --bg-2: #12100d;
+      --panel: #16140f;
+      --line: rgba(236, 224, 202, .1);
+      --line-2: rgba(236, 224, 202, .18);
+      --text: #efe8dc;
+      --body: #c4bbad;
+      --muted: #8d8475;
+      --sand: #d8bf94;
+      --sand-2: #b89a6a;
+      --sand-glow: rgba(216, 191, 148, .14);
+      --cream: #f5eee4;
+      --ink: #1a1611;
+      --ok: #b9d99a;
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+      --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+      --wrap: 1240px;
+      --gutter: clamp(16px, 4vw, 48px);
     }
 
     * { box-sizing: border-box; }
@@ -53,145 +64,523 @@
       margin: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: Georgia, "Times New Roman", serif;
-      line-height: 1.55;
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
+      overflow-x: hidden;
     }
-    a { color: inherit; text-decoration-color: #a7a19b; text-underline-offset: 4px; }
-    a:hover { text-decoration-color: var(--text); }
-    :focus-visible { outline: 3px solid rgba(185,255,120,.78); outline-offset: 4px; border-radius: 4px; }
-    .skip-link { position: absolute; left: -9999px; top: 12px; z-index: 200; padding: 10px 14px; background: #fff; border: 1px solid var(--line); }
+    a { color: inherit; text-decoration: none; }
+    img, svg, canvas { display: block; max-width: 100%; }
+    ::selection { background: var(--sand); color: var(--ink); }
+    :focus-visible { outline: 2px solid var(--sand); outline-offset: 4px; border-radius: 2px; }
+    .skip-link { position: absolute; left: -9999px; top: 12px; z-index: 200; padding: 10px 14px; background: var(--cream); color: var(--ink); }
     .skip-link:focus { left: 12px; }
-
-    .top-rule {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 6px;
-      background: linear-gradient(90deg, rgba(185,255,120,.15), rgba(185,255,120,.72), rgba(185,255,120,.15));
-      backdrop-filter: blur(8px);
-    }
-    .site-nav {
-      position: sticky; top: 6px; z-index: 90; height: var(--nav-height);
-      display: flex; align-items: center; justify-content: flex-end; gap: 28px;
-      padding: 0 3.5vw; background: rgba(251,251,249,.92);
-      border-bottom: 1px solid rgba(230,228,223,.65); backdrop-filter: blur(18px);
-      font-family: Arial, Helvetica, sans-serif; font-size: 13px;
-    }
-    .site-nav a { text-decoration: none; opacity: .82; transition: opacity 180ms ease; }
-    .site-nav a:hover { opacity: 1; }
-    .site-nav .join { padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; background: #fff; }
-
-    .page { width: min(calc(100% - 40px), var(--max-width)); margin: 0 auto; padding: 42px 0 120px; }
-    .hero { padding-top: 6px; min-height: 76vh; display: flex; flex-direction: column; justify-content: center; }
-    .wordmark {
-      margin: 0 0 34px; color: #a7a3a0; font-family: Arial, Helvetica, sans-serif;
-      font-size: clamp(42px, 6vw, 72px); font-weight: 300; line-height: .95;
-      letter-spacing: .055em; text-transform: uppercase;
-    }
-    .wordmark span { display: block; }
-    .announcement { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 28px; font-family: Arial, Helvetica, sans-serif; font-size: 14px; }
-    .announcement .badge { display: inline-flex; align-items: center; justify-content: center; height: 24px; padding: 0 9px; border-radius: 999px; background: var(--soft); font-size: 10px; font-weight: 700; letter-spacing: .08em; }
-    .backed { display: inline-flex; align-items: center; gap: 10px; width: fit-content; margin-bottom: 38px; padding: 8px 12px 8px 8px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: #3b3936; font: 12px Arial, Helvetica, sans-serif; text-decoration: none; }
-    .backed img { width: 25px; height: 25px; border-radius: 7px; object-fit: cover; }
-    .backed strong { color: var(--text); }
-    .lead { max-width: 660px; margin: 0 0 26px; font-size: clamp(22px, 2.5vw, 30px); line-height: 1.35; }
-    .hero-copy { max-width: 620px; margin: 0 0 24px; font-size: 17px; color: #3b3936; }
-    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; font-family: Arial, Helvetica, sans-serif; }
-    .button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--line); text-decoration: none; transition: transform 160ms ease, border-color 160ms ease, background 160ms ease; }
-    .button:hover { transform: translateY(-1px); border-color: #c7c4be; }
-    .button.primary { background: var(--accent); color: var(--accent-dark); border-color: transparent; font-weight: 600; }
-
-    .section { padding: 70px 0; border-top: 1px solid var(--line); }
-    .section-label { margin: 0 0 16px; color: var(--muted); font-family: Arial, Helvetica, sans-serif; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
-    h2 { margin: 0 0 22px; font-family: Arial, Helvetica, sans-serif; font-size: clamp(28px, 4vw, 46px); font-weight: 400; line-height: 1.12; letter-spacing: -.035em; }
-    h3 { margin: 0 0 8px; font-family: Arial, Helvetica, sans-serif; font-size: 17px; font-weight: 600; }
-    p { margin: 0 0 20px; font-size: 17px; }
-    .principles { display: grid; grid-template-columns: 1fr 1fr; gap: 30px 42px; margin-top: 38px; }
-    .principle { padding-top: 18px; border-top: 1px solid var(--line); }
-    .principle p { margin: 0; color: #3b3936; font-size: 15px; }
-    .flow { display: grid; gap: 14px; margin-top: 34px; }
-    .flow-step { display: grid; grid-template-columns: 46px 1fr; gap: 14px; align-items: start; padding: 18px 0; border-top: 1px solid var(--line); }
-    .flow-step:last-child { border-bottom: 1px solid var(--line); }
-    .flow-number { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background: var(--soft); font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
-    .quote { margin: 42px 0 0; padding: 28px 30px; border: 1px solid var(--line); border-radius: 18px; background: #fff; font-size: clamp(20px, 3vw, 30px); line-height: 1.3; }
-    .ecosystem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 32px; }
-    .ecosystem-card { padding: 24px; border: 1px solid var(--line); border-radius: 18px; background: #fff; }
-    .ecosystem-card h3 { margin-bottom: 12px; font-size: 20px; }
-    .ecosystem-card p { margin: 0; color: #3b3936; font-size: 15px; }
-    .ecosystem-note { margin-top: 24px; color: var(--muted); font-size: 15px; }
-    .release-story { position: relative; }
-    .release-intro { max-width: 650px; }
-    .release-card { margin-top: 34px; overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: #fff; }
-    .release-card-top { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(280px, .95fr); }
-    .release-copy { padding: 34px; }
-    .release-copy .release-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: .06em; color: var(--muted); }
-    .release-copy h3 { max-width: 480px; margin-bottom: 14px; font-size: clamp(25px, 3vw, 35px); font-weight: 400; line-height: 1.1; }
-    .release-copy p { max-width: 510px; margin-bottom: 22px; color: #3b3936; font-size: 16px; }
-    .release-visual { display: flex; flex-direction: column; justify-content: space-between; min-height: 338px; padding: 24px; background: var(--accent-dark); color: #eef5e9; font-family: Arial, Helvetica, sans-serif; }
-    .release-visual-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: rgba(238,245,233,.66); font-family: "SFMono-Regular", ui-monospace, monospace; font-size: 11px; }
-    .release-visual-bar span:last-child { color: var(--accent); }
-    .product-graph { display: block; width: 100%; height: auto; margin: 10px 0; overflow: visible; }
-    .product-graph .graph-rail { fill: none; stroke: rgba(238,245,233,.24); stroke-width: 1.4; }
-    .product-graph .graph-dash { fill: none; stroke: rgba(185,255,120,.86); stroke-width: 1.5; stroke-dasharray: 4 5; }
-    .product-graph .graph-node { fill: rgba(255,255,255,.045); stroke: rgba(238,245,233,.28); stroke-width: 1; }
-    .product-graph .graph-node-core { fill: rgba(185,255,120,.12); stroke: rgba(185,255,120,.85); stroke-width: 1; }
-    .product-graph .graph-dot { fill: var(--accent); }
-    .product-graph .graph-label { fill: rgba(238,245,233,.66); font-family: "SFMono-Regular", ui-monospace, monospace; font-size: 8px; letter-spacing: .12em; }
-    .product-graph .graph-title { fill: #eef5e9; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: 600; }
-    .release-visual-note { margin: 0; color: rgba(238,245,233,.66); font-size: 12px; line-height: 1.45; }
-    .release-points { display: grid; grid-template-columns: repeat(3, 1fr); }
-    .release-point { min-height: 208px; padding: 24px 26px 28px; }
-    .release-point + .release-point { border-left: 1px solid var(--line); }
-    .release-point h3 { margin: 11px 0 10px; font-size: 18px; line-height: 1.18; }
-    .release-point p { margin: 0; color: #3b3936; font-size: 14px; }
-    .release-point a { color: var(--accent-dark); text-decoration-color: rgba(20,58,25,.35); text-underline-offset: 3px; }
-    .release-point .section-label { margin-bottom: 0; font-size: 10px; }
-    .release-point.tdcc { background: var(--soft); }
-    .release-legend { display: flex; flex-wrap: wrap; gap: 9px 16px; padding: 16px 26px; border-top: 1px solid var(--line); background: #fdfdfb; color: var(--muted); font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 1.45; }
-    .release-legend strong { color: var(--text); font-weight: 600; }
-    .release-blog-link { flex-basis: 100%; display: inline-flex; width: fit-content; align-items: center; gap: 8px; margin-top: 3px; color: var(--accent-dark); font-size: 13px; font-weight: 600; text-decoration-color: rgba(20,58,25,.35); text-underline-offset: 3px; }
-    .release-blog-link::after { content: "→"; font-size: 16px; line-height: 1; }
-    .workloads { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
-    .chip { padding: 8px 12px; border-radius: 999px; background: var(--soft); font-family: Arial, Helvetica, sans-serif; font-size: 13px; }
-    .faq { margin-top: 30px; }
-    details { border-top: 1px solid var(--line); padding: 18px 0; }
-    details:last-child { border-bottom: 1px solid var(--line); }
-    summary { cursor: pointer; font-family: Arial, Helvetica, sans-serif; font-size: 17px; font-weight: 600; }
-    details p { margin: 14px 0 0; font-size: 16px; color: #3b3936; }
-    .join-panel { margin-top: 10px; padding: 32px; border-radius: 22px; background: var(--accent); color: var(--accent-dark); }
-    .join-panel h2 { margin-bottom: 16px; }
-    .join-panel p { max-width: 580px; }
-    .early-access-form { display: flex; flex-wrap: wrap; gap: 10px; margin: 26px 0 12px; font-family: Arial, Helvetica, sans-serif; }
-    .early-access-form input { flex: 1 1 220px; min-height: 44px; padding: 0 16px; border: 1px solid rgba(20,58,25,.2); border-radius: 999px; background: #fff; color: var(--text); font: inherit; }
-    .early-access-form input::placeholder { color: #777; }
-    .early-access-form .button { cursor: pointer; font: inherit; }
-    .early-access-form .button.primary { background: var(--accent-dark); color: #fff; }
-    .early-access-share { margin-top: 8px; font-family: Arial, Helvetica, sans-serif; font-size: 13px; }
-    .early-access-message { margin: 0 0 22px; padding: 14px 16px; border: 1px solid rgba(20,58,25,.16); border-radius: 12px; background: rgba(255,255,255,.58); font-family: Arial, Helvetica, sans-serif; font-size: 14px; }
-    .early-access-message.error { border-color: #b76b5b; background: #fff4f0; color: #6e281b; }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-    .join-panel .button { background: #fff; border-color: rgba(20,58,25,.14); }
-    footer { display: flex; justify-content: space-between; gap: 24px; padding-top: 42px; color: var(--muted); border-top: 1px solid var(--line); font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
-    .footer-links { display: flex; flex-wrap: wrap; gap: 14px; }
-    .reveal { opacity: 0; transform: translateY(14px); transition: opacity 650ms ease, transform 650ms ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
+
+    /* ---------- type primitives ---------- */
+    .mono { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+    .eyebrow { display: flex; align-items: center; gap: 10px; margin: 0 0 22px; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 6px; height: 6px; background: var(--sand); }
+    h1, h2, h3 { margin: 0; font-weight: 400; }
+    .display { font-family: var(--serif); font-size: clamp(44px, 7.4vw, 104px); line-height: .98; letter-spacing: -.025em; }
+    .display em, .h2 em { font-style: italic; color: var(--sand); }
+    .h2 { font-family: var(--serif); font-size: clamp(34px, 4.6vw, 64px); line-height: 1.04; letter-spacing: -.02em; max-width: 16ch; }
+    .h3 { font-size: 19px; font-weight: 500; letter-spacing: -.01em; }
+    .lede { max-width: 58ch; color: var(--body); font-size: clamp(17px, 1.5vw, 20px); line-height: 1.55; }
+    p { margin: 0; }
+
+    /* ---------- buttons ---------- */
+    .btn { display: inline-flex; align-items: center; gap: 10px; min-height: 46px; padding: 0 20px; border: 1px solid var(--line-2); font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--text); background: transparent; cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease; }
+    .btn:hover { border-color: var(--sand); color: var(--sand); }
+    .btn.solid { background: var(--cream); border-color: var(--cream); color: var(--ink); }
+    .btn.solid:hover { background: var(--sand); border-color: var(--sand); color: var(--ink); }
+    .btn .arr { transition: transform .2s ease; }
+    .btn:hover .arr { transform: translateX(3px); }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .link { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--sand); }
+    .link:hover { color: var(--text); }
+
+    /* ---------- nav ---------- */
+    .nav { position: fixed; inset: 0 0 auto 0; z-index: 100; transition: background .3s ease, border-color .3s ease; border-bottom: 1px solid transparent; }
+    .nav.scrolled { background: rgba(12, 11, 9, .82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom-color: var(--line); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 24px; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; color: var(--cream); }
+    .brand svg { width: 42px; height: 28px; color: var(--sand); }
+    .brand-name { font-family: var(--serif); font-size: 21px; letter-spacing: -.01em; }
+    .brand-name small { display: none; }
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+    .nav-links a { white-space: nowrap; padding: 8px 9px; color: var(--body); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; transition: color .2s ease; }
+    .nav-links a::before { content: "[ "; color: var(--muted); opacity: 0; transition: opacity .2s ease; }
+    .nav-links a::after { content: " ]"; color: var(--muted); opacity: 0; transition: opacity .2s ease; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::before, .nav-links a:hover::after { opacity: 1; }
+    .nav-cta { min-height: 38px; padding: 0 14px; font-size: 11px; }
+    .menu-btn { display: none; width: 42px; height: 42px; border: 1px solid var(--line-2); background: transparent; color: var(--text); cursor: pointer; }
+    .menu-btn span { display: block; width: 16px; height: 1px; margin: 4px auto; background: currentColor; }
+
+    /* ---------- hero ---------- */
+    .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; justify-content: flex-end; padding: 120px 0 0; overflow: hidden; background:
+      radial-gradient(ellipse 70% 55% at 50% 38%, rgba(216, 191, 148, .09), transparent 70%),
+      linear-gradient(180deg, #0c0b09 0%, #110f0b 60%, #0c0b09 100%); }
+    .hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .hero-grid { position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 96px 96px; mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, transparent 30%, #000 100%); opacity: .35; }
+    .hero-content { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 48px; align-items: end; padding-bottom: 56px; }
+    .hero-content .display { max-width: 10ch; }
+    .hero-content .display em { display: block; }
+    .hero-side { display: grid; gap: 26px; padding-bottom: 8px; }
+    .hero-side .lede { font-size: 18px; }
+    .pill { display: inline-flex; align-items: center; gap: 10px; width: fit-content; padding: 6px 12px 6px 6px; border: 1px solid var(--line-2); background: rgba(12, 11, 9, .5); backdrop-filter: blur(8px); font-family: var(--mono); font-size: 11px; letter-spacing: .08em; color: var(--body); transition: border-color .2s ease; }
+    .pill:hover { border-color: var(--sand); }
+    .pill b { padding: 3px 7px; background: var(--sand); color: var(--ink); font-weight: 600; letter-spacing: .12em; }
+    .hero-top { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 34px; }
+    .terminal { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid var(--line); background: rgba(12, 11, 9, .6); font-family: var(--mono); font-size: 13px; color: var(--body); }
+    .terminal .p { color: var(--sand); }
+    .terminal .caret { display: inline-block; width: 8px; height: 15px; margin-left: 2px; vertical-align: -2px; background: var(--sand); animation: blink 1s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .hero-foot { position: relative; z-index: 2; border-top: 1px solid var(--line); background: rgba(12, 11, 9, .55); backdrop-filter: blur(10px); }
+    .backers { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; padding-top: 18px; padding-bottom: 18px; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+    .backers a { color: var(--body); }
+    .backers a:hover { color: var(--sand); }
+    .backers .sep { color: var(--line-2); }
+    .star { display: inline-flex; align-items: center; gap: 8px; color: var(--text) !important; }
+    .star svg { width: 14px; height: 14px; color: var(--sand); }
+
+    /* ---------- sections ---------- */
+    section.block { position: relative; padding: clamp(88px, 12vw, 160px) 0; border-top: 1px solid var(--line); }
+    .head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 64px; align-items: end; margin-bottom: clamp(48px, 6vw, 80px); }
+    .head .lede { justify-self: end; }
+    .fig { display: flex; justify-content: space-between; gap: 16px; padding: 12px 16px; border-bottom: 1px solid var(--line); color: var(--muted); font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; }
+    .fig b { color: var(--sand); font-weight: 500; }
+
+    /* stats */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .stat { padding: 34px 28px 30px; }
+    .stat + .stat { border-left: 1px solid var(--line); }
+    .stat .n { font-family: var(--serif); font-size: clamp(40px, 4.6vw, 64px); line-height: 1; letter-spacing: -.02em; color: var(--cream); }
+    .stat .n sup { font-size: .38em; color: var(--sand); vertical-align: top; margin-left: 4px; font-family: var(--mono); letter-spacing: .06em; }
+    .stat p { margin-top: 14px; max-width: 30ch; color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+    /* thesis */
+    .thesis { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0; border: 1px solid var(--line); }
+    .thesis-col { padding: clamp(28px, 4vw, 52px); }
+    .thesis-col + .thesis-col { border-left: 1px solid var(--line); background: linear-gradient(180deg, var(--sand-glow), transparent 60%); }
+    .thesis-col .mono { color: var(--muted); }
+    .thesis-col h3 { margin: 18px 0 18px; font-family: var(--serif); font-size: clamp(26px, 2.6vw, 36px); line-height: 1.1; }
+    .thesis-col ul { list-style: none; margin: 0; padding: 0; }
+    .thesis-col li { display: grid; grid-template-columns: 24px 1fr; gap: 8px; padding: 14px 0; border-top: 1px solid var(--line); color: var(--body); font-size: 15px; }
+    .thesis-col li::before { content: "—"; color: var(--muted); }
+    .thesis-col + .thesis-col li::before { content: "+"; color: var(--sand); }
+
+    /* layers */
+    .layers { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 28px; border: 1px solid var(--line); }
+    .layer { position: relative; padding: 28px; min-height: 230px; }
+    .layer + .layer { border-left: 1px solid var(--line); }
+    .layer .mono { color: var(--muted); }
+    .layer h3 { margin: 16px 0 10px; font-size: 18px; font-weight: 500; line-height: 1.3; }
+    .layer p { color: var(--body); font-size: 14.5px; }
+    .layer a { color: var(--sand); border-bottom: 1px solid rgba(216,191,148,.35); }
+    .layer.us { background: var(--cream); color: var(--ink); }
+    .layer.us .mono { color: #7d6a4c; }
+    .layer.us p { color: #4b4337; }
+    .layers-note { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 32px; padding: 18px 0 0; color: var(--muted); font-size: 14px; }
+
+    /* stack (platform) */
+    .stack { border-top: 1px solid var(--line); }
+    .stack-row { display: grid; grid-template-columns: 90px minmax(0, 1fr) minmax(0, 1.15fr); gap: 0 48px; padding: clamp(40px, 5vw, 64px) 0; border-bottom: 1px solid var(--line); }
+    .stack-num { font-family: var(--mono); font-size: 13px; color: var(--sand); letter-spacing: .1em; }
+    .stack-copy h3 { font-family: var(--serif); font-size: clamp(30px, 3.2vw, 44px); line-height: 1.05; letter-spacing: -.015em; }
+    .stack-copy > p { margin: 18px 0 26px; color: var(--body); max-width: 46ch; }
+    .specs { list-style: none; margin: 0 0 28px; padding: 0; }
+    .specs li { display: grid; grid-template-columns: 44px 1fr; padding: 12px 0; border-top: 1px solid var(--line); color: var(--body); font-size: 14.5px; }
+    .specs li span { font-family: var(--mono); font-size: 11px; color: var(--muted); padding-top: 3px; }
+    .tag { display: inline-block; margin-left: 8px; padding: 1px 6px; border: 1px solid var(--line-2); color: var(--muted); font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; vertical-align: 2px; }
+    .tag.live { border-color: rgba(185, 217, 154, .4); color: var(--ok); }
+    .panel { align-self: start; border: 1px solid var(--line); background: var(--panel); overflow: hidden; }
+    .code { margin: 0; padding: 20px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; line-height: 1.75; color: var(--body); white-space: pre; }
+    .code .c { color: #6f685d; }
+    .code .k { color: var(--sand); }
+    .code .s { color: #c9d6b2; }
+    .rows { display: grid; }
+    .rows div { display: grid; grid-template-columns: 130px 1fr auto; gap: 16px; align-items: center; padding: 12px 20px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; color: var(--body); }
+    .rows div:first-child { border-top: 0; }
+    .rows .k { color: var(--muted); }
+    .rows .ok { color: var(--ok); }
+    .rows .warn { color: var(--sand); }
+    .bar { height: 4px; background: var(--line); position: relative; overflow: hidden; }
+    .bar i { position: absolute; inset: 0 auto 0 0; width: 61%; background: var(--sand); animation: grow 6s ease-in-out infinite alternate; }
+    @keyframes grow { from { width: 34%; } to { width: 88%; } }
+
+    /* pipeline */
+    .pipeline { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); }
+    .pipeline::before { content: ""; position: absolute; left: 0; right: 0; top: 74px; height: 1px; background: var(--line-2); }
+    .pipeline::after { content: ""; position: absolute; top: 71px; left: 0; width: 80px; height: 7px; background: linear-gradient(90deg, transparent, var(--sand)); animation: travel 5s linear infinite; }
+    @keyframes travel { from { left: -80px; } to { left: 100%; } }
+    .step { position: relative; padding: 28px 26px 34px; }
+    .step + .step { border-left: 1px solid var(--line); }
+    .step .mono { color: var(--muted); }
+    .step .dot { position: relative; z-index: 1; width: 13px; height: 13px; margin: 22px 0 26px; background: var(--bg); border: 1px solid var(--sand); transform: rotate(45deg); }
+    .step h3 { font-size: 20px; font-weight: 500; margin-bottom: 10px; }
+    .step p { color: var(--body); font-size: 14.5px; }
+    .quote-line { margin-top: clamp(56px, 7vw, 96px); font-family: var(--serif); font-size: clamp(30px, 4vw, 56px); line-height: 1.1; letter-spacing: -.015em; max-width: 22ch; }
+    .quote-line em { color: var(--sand); }
+
+    /* developers */
+    .dev { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 48px; }
+    .dev-list { list-style: none; margin: 30px 0 34px; padding: 0; }
+    .dev-list li { display: grid; grid-template-columns: 120px 1fr; gap: 16px; padding: 14px 0; border-top: 1px solid var(--line); font-size: 14.5px; color: var(--body); }
+    .dev-list li b { font-family: var(--mono); font-size: 11.5px; font-weight: 400; letter-spacing: .1em; text-transform: uppercase; color: var(--text); padding-top: 2px; }
+    .tabs { display: flex; border-bottom: 1px solid var(--line); overflow-x: auto; }
+    .tabs button { flex: none; padding: 13px 18px; border: 0; border-right: 1px solid var(--line); background: transparent; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+    .tabs button[aria-selected="true"] { color: var(--ink); background: var(--sand); }
+    .tabs .spacer { flex: 1; }
+    .tab-pane[hidden] { display: none; }
+    .tools { margin-top: 24px; }
+    .tools .fig { border-top: 0; }
+
+    /* audiences */
+    .aud { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); }
+    .aud article { padding: clamp(26px, 3vw, 40px); display: flex; flex-direction: column; gap: 14px; }
+    .aud article + article { border-left: 1px solid var(--line); }
+    .aud .letter { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line-2); font-family: var(--serif); font-size: 20px; color: var(--sand); }
+    .aud h3 { font-family: var(--serif); font-size: 28px; line-height: 1.1; margin-top: 18px; }
+    .aud p { color: var(--body); font-size: 15px; }
+    .hw { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+    .chip { padding: 7px 12px; border: 1px solid var(--line); font-family: var(--mono); font-size: 11.5px; color: var(--body); letter-spacing: .04em; }
+
+    /* benchmark */
+    .bench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border: 1px solid var(--line); }
+    .bench-copy { padding: clamp(28px, 4vw, 56px); display: flex; flex-direction: column; gap: 22px; }
+    .bench-copy h3 { font-family: var(--serif); font-size: clamp(30px, 3.4vw, 48px); line-height: 1.05; letter-spacing: -.015em; }
+    .bench-copy p { color: var(--body); }
+    .bench-viz { border-left: 1px solid var(--line); background: var(--panel); display: flex; flex-direction: column; }
+    .bars { flex: 1; display: grid; gap: 26px; align-content: center; padding: 36px clamp(24px, 3vw, 44px); }
+    .bars .row { display: grid; gap: 10px; }
+    .bars .lbl { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11.5px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+    .bars .lbl b { font-family: var(--serif); font-size: 34px; font-weight: 400; letter-spacing: -.02em; color: var(--text); text-transform: none; }
+    .bars .track { height: 44px; border: 1px solid var(--line); position: relative; overflow: hidden; }
+    .bars .fill { position: absolute; inset: 0 auto 0 0; width: 0; transition: width 1.6s cubic-bezier(.2, .7, .1, 1); background: repeating-linear-gradient(90deg, var(--line-2) 0 2px, transparent 2px 6px); }
+    .bars .fill.hot { background: repeating-linear-gradient(90deg, var(--sand) 0 2px, transparent 2px 6px); }
+    .in .bars .fill { width: var(--w); }
+    .bench-foot { padding: 14px clamp(24px, 3vw, 44px); border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; }
+
+    /* catalogue */
+    .table-wrap { border: 1px solid var(--line); overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; }
+    th, td { padding: 15px 20px; text-align: left; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+    th { color: var(--muted); font-family: var(--mono); font-size: 10.5px; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; }
+    td { color: var(--body); }
+    td:first-child { color: var(--text); }
+    td code { font-family: var(--mono); font-size: 12.5px; color: var(--sand); }
+    tr:last-child td { border-bottom: 0; }
+    tbody tr { transition: background .2s ease; }
+    tbody tr:hover { background: rgba(236, 224, 202, .03); }
+
+    /* rails / web3 */
+    .rails { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0; border: 1px solid var(--line); }
+    .rail { padding: clamp(28px, 4vw, 48px); }
+    .rail + .rail { border-left: 1px solid var(--line); }
+    .rail h3 { font-family: var(--serif); font-size: 34px; margin: 16px 0 14px; }
+    .rail p { color: var(--body); font-size: 15px; }
+    .rail .mono { color: var(--muted); }
+    .layer-map { margin-top: 28px; display: grid; border: 1px solid var(--line); }
+    .layer-map div { display: grid; grid-template-columns: 200px 1fr auto; gap: 24px; align-items: center; padding: 16px 22px; border-top: 1px solid var(--line); font-size: 14.5px; color: var(--body); }
+    .layer-map div:first-child { border-top: 0; }
+    .layer-map b { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; font-weight: 400; text-transform: uppercase; color: var(--text); }
+    .layer-map i { font-style: normal; font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--sand); }
+
+    /* manifesto (light) */
+    .light { background: var(--cream); color: var(--ink); border-top: 0 !important; }
+    .light .eyebrow { color: #7d6a4c; }
+    .light .eyebrow::before { background: var(--ink); }
+    .manifesto { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 64px; align-items: start; }
+    .manifesto .h2 { max-width: 18ch; }
+    .manifesto .h2 em { color: #8a6c3e; }
+    .manifesto-body { display: grid; gap: 18px; margin-top: 36px; max-width: 60ch; color: #4b4337; font-size: 18px; }
+    .logo-card { aspect-ratio: 1; border: 1px solid rgba(26, 22, 17, .12); background: #fbf6ef; display: grid; place-items: center; position: relative; }
+    .logo-card img { width: 78%; height: auto; mix-blend-mode: multiply; }
+    .logo-card .mono { position: absolute; left: 16px; right: 16px; display: flex; justify-content: space-between; color: #8b7a62; font-size: 10px; }
+    .logo-card .mono.t { top: 14px; }
+    .logo-card .mono.b { bottom: 14px; }
+    .principles { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: clamp(56px, 7vw, 96px); border-top: 1px solid rgba(26, 22, 17, .14); }
+    .principles article { padding: 26px 24px 0 0; }
+    .principles article + article { padding-left: 24px; border-left: 1px solid rgba(26, 22, 17, .14); }
+    .principles .mono { color: #8b7a62; }
+    .principles h3 { margin: 14px 0 8px; font-size: 18px; font-weight: 600; }
+    .principles p { color: #4b4337; font-size: 15px; }
+
+    /* team */
+    .team { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: end; }
+    .team .lede { margin: 22px 0 30px; }
+
+    /* faq */
+    .faq-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 64px; }
+    details { border-top: 1px solid var(--line); }
+    details:last-child { border-bottom: 1px solid var(--line); }
+    summary { display: flex; justify-content: space-between; gap: 24px; padding: 22px 0; cursor: pointer; list-style: none; font-size: 18px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; font-family: var(--mono); color: var(--sand); transition: transform .2s ease; }
+    details[open] summary::after { transform: rotate(45deg); }
+    details p { padding: 0 0 24px; max-width: 64ch; color: var(--body); }
+
+    /* join */
+    .join { position: relative; overflow: hidden; border: 1px solid var(--line-2); background: radial-gradient(ellipse 60% 80% at 85% 20%, rgba(216, 191, 148, .16), transparent 70%), var(--bg-2); padding: clamp(32px, 6vw, 80px); }
+    .join .display { font-size: clamp(40px, 6vw, 84px); max-width: 14ch; }
+    .join .lede { margin: 24px 0 0; }
+    .early-access-form { display: flex; flex-wrap: wrap; gap: 10px; margin: 34px 0 12px; max-width: 620px; }
+    .early-access-form input { flex: 1 1 240px; min-height: 48px; padding: 0 16px; border: 1px solid var(--line-2); background: rgba(12, 11, 9, .7); color: var(--text); font-family: var(--mono); font-size: 13px; letter-spacing: .08em; }
+    .early-access-form input::placeholder { color: var(--muted); }
+    .early-access-form input:focus { outline: none; border-color: var(--sand); }
+    .early-access-message { max-width: 620px; margin: 6px 0 0; padding: 14px 16px; border: 1px solid rgba(216, 191, 148, .3); background: rgba(216, 191, 148, .06); color: var(--text); font-size: 14px; }
+    .early-access-message.error { border-color: rgba(220, 130, 110, .45); background: rgba(220, 130, 110, .07); color: #f0c4b8; }
+    .join-foot { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 34px; padding-top: 28px; border-top: 1px solid var(--line); color: var(--body); font-size: 15px; }
+    .join-foot p { flex: 1 1 320px; }
+    .join-foot a.inline { color: var(--sand); border-bottom: 1px solid rgba(216,191,148,.35); }
+    .ghost-btn { min-height: 40px; padding: 0 14px; font-size: 11px; }
+
+    /* footer */
+    footer { padding: 72px 0 32px; border-top: 1px solid var(--line); }
+    .foot-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); gap: 32px; }
+    .foot-grid h4 { margin: 0 0 14px; color: var(--muted); font-family: var(--mono); font-size: 10.5px; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; }
+    .foot-grid ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .foot-grid a { color: var(--body); font-size: 14.5px; }
+    .foot-grid a:hover { color: var(--sand); }
+    .foot-grid .about { color: var(--muted); font-size: 14px; max-width: 34ch; margin-top: 18px; }
+    .wordmark { margin-top: 72px; font-family: var(--serif); font-size: clamp(34px, 7.6vw, 108px); line-height: .95; letter-spacing: -.035em; color: transparent; -webkit-text-stroke: 1px rgba(216, 191, 148, .32); white-space: nowrap; overflow: hidden; }
+    .legal { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 28px; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+
+    /* reveal */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .8s ease, transform .8s cubic-bezier(.2, .7, .1, 1); }
+    .reveal.in { opacity: 1; transform: none; }
+
+
+    /* ---------- premium layer ---------- */
+    body::after { content: ""; position: fixed; inset: 0; z-index: 300; pointer-events: none; opacity: .055; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    .hero-vignette { position: absolute; inset: 0; pointer-events: none; z-index: 1; background: linear-gradient(180deg, rgba(12,11,9,0) 0%, rgba(12,11,9,0) 42%, rgba(12,11,9,.7) 74%, rgba(12,11,9,.92) 100%); }
+    .hud { position: absolute; inset: 92px var(--gutter) auto; z-index: 1; pointer-events: none; font-family: var(--mono); font-size: 10px; letter-spacing: .16em; color: rgba(216,191,148,.5); }
+    .hud span { position: absolute; right: 0; }
+    .hud-tr { top: 0; }
+    .hud-bl { top: 20px; color: rgba(141,132,117,.6); }
+    .title-in .ln { display: block; overflow: hidden; padding-bottom: .16em; margin-bottom: -.16em; }
+    .title-in .ln > span { display: block; transform: translateY(110%); animation: rise 1.1s cubic-bezier(.16, 1, .3, 1) .15s forwards; }
+    .title-in .ln:nth-child(2) > span { animation-delay: .27s; }
+    .title-in .ln:nth-child(3) > span { animation-delay: .39s; }
+    .title-in .ln:nth-child(4) > span { animation-delay: .51s; }
+    @keyframes rise { to { transform: none; } }
+    .fade-in { opacity: 0; animation: fade 1s ease var(--d, 0s) forwards; }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .display em { background: linear-gradient(100deg, #b89a6a 0%, #f3dfb8 40%, #d8bf94 60%, #a8875a 100%); background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: sheen 7s ease-in-out infinite; padding-right: .08em; }
+    @keyframes sheen { 0%, 100% { background-position: 0% 0; } 50% { background-position: 100% 0; } }
+
+    .ticker { display: flex; align-items: stretch; border-bottom: 1px solid var(--line); background: var(--bg-2); font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; color: var(--body); overflow: hidden; }
+    .ticker-label { flex: none; display: flex; align-items: center; gap: 10px; padding: 14px var(--gutter); border-right: 1px solid var(--line); color: var(--muted); text-transform: uppercase; letter-spacing: .14em; font-size: 10.5px; }
+    .ticker-label i { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); animation: ping 1.8s ease-out infinite; }
+    @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(185,217,154,.6); } 70%, 100% { box-shadow: 0 0 0 8px rgba(185,217,154,0); } }
+    .ticker-track { flex: 1; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+    .ticker-move { display: flex; width: max-content; animation: marquee 70s linear infinite; }
+    .ticker-move > span { display: inline-flex; gap: 12px; padding: 14px 28px; border-right: 1px solid var(--line); white-space: nowrap; }
+    .ticker-move b { font-weight: 400; color: var(--text); }
+    .ticker-move .v { color: var(--ok); }
+    .ticker-move .m { color: var(--sand); }
+    @keyframes marquee { to { transform: translateX(-50%); } }
+
+    .statement { padding: clamp(96px, 14vw, 200px) 0 clamp(40px, 6vw, 80px); }
+    .statement-text { max-width: 22ch; font-family: var(--serif); font-size: clamp(36px, 5.6vw, 84px); line-height: 1.06; letter-spacing: -.022em; }
+    .statement-text .w { color: rgba(239,232,220,.13); transition: color .35s ease; }
+    .statement-text .w.on { color: var(--text); }
+    .statement-text .w.acc.on { color: var(--sand); font-style: italic; }
+
+    .spot-group > * { position: relative; isolation: isolate; }
+    .spot-group > *::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity .35s ease;
+      background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(216,191,148,.10), transparent 60%); }
+    .spot-group > *:hover::after { opacity: 1; }
+    .layer.us::after { display: none; }
+    .panel { box-shadow: 0 40px 80px -40px rgba(0,0,0,.8); }
+    .btn.solid { position: relative; overflow: hidden; }
+    .btn.solid::before { content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent); transform: skewX(-20deg); transition: left .7s ease; }
+    .btn.solid:hover::before { left: 130%; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .title-in .ln > span, .fade-in { animation: none; transform: none; opacity: 1; }
+      .display em, .ticker-move, .ticker-label i { animation: none; }
+      .statement-text .w { color: var(--text); }
+    }
+    @media (max-width: 860px) {
+      .hud, .ticker-label { display: none; }
+    }
+
+
+    /* ---------- exact core (chip) ---------- */
+    .chip-sec { background: radial-gradient(ellipse 50% 60% at 75% 35%, rgba(216,191,148,.12), transparent 70%), var(--bg); overflow: hidden; }
+    .chip-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+    .chip-hero .pill { margin-bottom: 28px; }
+    .chip-h { max-width: 15ch; margin-bottom: 26px; }
+    .chip-stage { position: relative; aspect-ratio: 1; perspective: 1400px; display: grid; place-items: center; }
+    .chip-tilt { position: relative; width: 82%; aspect-ratio: 1; transform-style: preserve-3d; transform: rotateX(var(--rx, 52deg)) rotateZ(var(--rz, -38deg)); transition: transform .5s cubic-bezier(.2, .7, .1, 1); }
+    .chip-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .chip-shadow { position: absolute; inset: 6%; transform: translateZ(-60px); background: rgba(0,0,0,.75); filter: blur(30px); border-radius: 20px; }
+    .chip-lid { position: absolute; left: 27.5%; top: 27.5%; width: 45%; aspect-ratio: 1; transform: translateZ(var(--lift, 90px)); transition: transform .8s cubic-bezier(.2, .7, .1, 1); filter: drop-shadow(0 30px 30px rgba(0,0,0,.55)); }
+    .chip-lid svg { width: 100%; height: 100%; }
+    .chip-stage:hover .chip-lid { --lift: 140px; }
+    .lid-t { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; fill: #2a2117; font-weight: 600; }
+    .lid-s { font-family: var(--mono); font-size: 7px; letter-spacing: .16em; fill: #4a3b28; }
+    .chip-lbl { font-family: var(--mono); font-size: 7px; letter-spacing: .14em; fill: rgba(216,191,148,.75); }
+    .traces-live path { stroke-dasharray: 14 400; stroke-dashoffset: 14; animation: flow 3.6s linear infinite; animation-delay: var(--dl); filter: drop-shadow(0 0 3px #f3dfb8); }
+    @keyframes flow { to { stroke-dashoffset: -400; } }
+    .mm-glow { animation: mm 2.4s ease-in-out infinite; }
+    @keyframes mm { 0%, 100% { opacity: .15; } 50% { opacity: 1; } }
+    .log-rows rect { animation: log 2s steps(1) infinite; }
+    .log-rows rect:nth-child(2n) { animation-delay: .5s; }
+    .log-rows rect:nth-child(3n) { animation-delay: 1s; }
+    @keyframes log { 50% { opacity: .25; } }
+    .seq-run { animation: seq 1.8s steps(6) infinite; }
+    @keyframes seq { to { transform: translateX(96px); } }
+    .chip-caption { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+
+    .chip-blocks { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: clamp(48px, 6vw, 80px); border: 1px solid var(--line); }
+    .chip-blocks article { padding: 24px; }
+    .chip-blocks article + article { border-left: 1px solid var(--line); }
+    .chip-blocks .mono { color: var(--sand); margin-bottom: 10px; }
+    .chip-blocks p:not(.mono) { color: var(--body); font-size: 14.5px; }
+    .chip-blocks .hl .mono { color: var(--ok); }
+    .chip-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 48px; margin-top: clamp(56px, 7vw, 96px); align-items: start; }
+    .exact-steps { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+    .exact-steps li { counter-increment: s; display: grid; grid-template-columns: 44px 90px 1fr; gap: 12px; padding: 16px 0; border-top: 1px solid var(--line); color: var(--body); font-size: 15px; }
+    .exact-steps li::before { content: "0" counter(s); font-family: var(--mono); font-size: 11px; color: var(--muted); padding-top: 3px; }
+    .exact-steps b { font-family: var(--serif); font-size: 21px; font-weight: 400; color: var(--text); line-height: 1.1; }
+    .prog { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; font-family: var(--mono); letter-spacing: .04em; word-break: break-all; }
+    .prog code { color: var(--sand); }
+    .chip-results { margin-top: clamp(48px, 6vw, 80px); border: 1px solid var(--line); }
+    .res { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .res > div { padding: 28px 24px; }
+    .res > div + div { border-left: 1px solid var(--line); }
+    .res .n { font-family: var(--serif); font-size: clamp(40px, 4.4vw, 60px); line-height: 1; color: var(--cream); letter-spacing: -.02em; }
+    .res .u { margin-left: 6px; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--sand); text-transform: uppercase; }
+    .res p { margin-top: 12px; color: var(--muted); font-size: 13.5px; }
+    .honest { padding: 16px 24px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; }
+    .honest b { color: var(--body); font-weight: 500; }
+
+    /* ---------- marketplace ---------- */
+    .market { border: 1px solid var(--line); background: var(--bg-2); }
+    .market-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+    .seg { display: inline-flex; border: 1px solid var(--line-2); }
+    .seg button, .filters button { border: 0; background: transparent; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 9px 14px; cursor: pointer; transition: color .2s ease, background .2s ease; }
+    .seg button[aria-selected="true"] { background: var(--cream); color: var(--ink); }
+    .filters { display: flex; flex-wrap: wrap; gap: 4px; }
+    .filters button { border: 1px solid var(--line); padding: 7px 11px; }
+    .filters button.on { color: var(--sand); border-color: var(--sand); }
+    .filters button:hover, .seg button:hover { color: var(--text); }
+    .market-note { margin-left: auto; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+    .listings { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .listing { display: flex; flex-direction: column; gap: 10px; padding: 22px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); transition: background .25s ease, opacity .3s ease; }
+    .listing:nth-child(3n) { border-right: 0; }
+    .listing:hover { background: rgba(236,224,202,.035); }
+    .listing[hidden] { display: none; }
+    .l-top { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+    .l-av { display: inline-flex; align-items: center; gap: 6px; color: var(--ok); }
+    .l-av i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .l-av.soon { color: var(--sand); }
+    .listing h3 { font-family: var(--serif); font-size: 24px; line-height: 1.15; margin-top: 6px; }
+    .l-spec { color: var(--body); font-size: 14px; font-family: var(--mono); font-size: 12px; }
+    .l-rep { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; margin-top: 4px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .l-rep b { color: var(--text); font-weight: 400; }
+    .meter { height: 3px; background: var(--line); position: relative; }
+    .meter i { position: absolute; inset: 0 auto 0 0; background: var(--sand); }
+    .l-foot { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); }
+    .price::before { content: attr(data-rent); font-size: 13.5px; color: var(--text); }
+    .market.job .price::before { content: attr(data-job); }
+    .l-cta { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--sand); }
+    .listing.exact { background: linear-gradient(160deg, rgba(216,191,148,.12), transparent 60%); }
+    .listing.exact .meter i { background: var(--ok); }
+    .market-sides { display: grid; grid-template-columns: 1fr 1fr; margin-top: 28px; border: 1px solid var(--line); }
+    .market-sides article { padding: clamp(26px, 3.4vw, 44px); display: flex; flex-direction: column; }
+    .market-sides article + article { border-left: 1px solid var(--line); }
+    .market-sides .mono { color: var(--muted); }
+    .market-sides h3 { font-family: var(--serif); font-size: clamp(26px, 2.6vw, 34px); margin: 14px 0 12px; line-height: 1.1; }
+    .market-sides p:not(.mono) { color: var(--body); font-size: 15px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .traces-live path, .mm-glow, .log-rows rect, .seq-run { animation: none; }
+    }
+    @media (max-width: 1080px) {
+      .chip-hero, .chip-grid { grid-template-columns: minmax(0, 1fr); }
+      .chip-stage { max-width: 560px; width: 100%; margin: 0 auto; }
+      .listings { grid-template-columns: 1fr 1fr; }
+      .listing:nth-child(3n) { border-right: 1px solid var(--line); }
+      .listing:nth-child(2n) { border-right: 0; }
+    }
+    @media (max-width: 860px) {
+      .chip-blocks, .res { grid-template-columns: 1fr 1fr; }
+      .chip-blocks article:nth-child(3), .res > div:nth-child(3) { border-left: 0; }
+      .chip-blocks article:nth-child(n+3), .res > div:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .market-sides { grid-template-columns: 1fr; }
+      .market-sides article + article { border-left: 0; border-top: 1px solid var(--line); }
+      .market-note { margin-left: 0; }
+    }
+    @media (max-width: 560px) {
+      .listings { grid-template-columns: 1fr; }
+      .listing, .listing:nth-child(3n) { border-right: 0; }
+      .exact-steps li { grid-template-columns: 36px 1fr; }
+      .exact-steps li span { grid-column: 2; }
+    }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .reveal { opacity: 1; transform: none; transition: none; }
-      .button { transition: none; }
+      .pipeline::after, .bar i, .terminal .caret { animation: none; }
+      .bars .fill { transition: none; }
     }
-    @media (max-width: 760px) {
-      :root { --nav-height: 62px; }
-      .site-nav { justify-content: flex-start; gap: 18px; padding: 0 20px; overflow-x: auto; white-space: nowrap; }
-      .page { width: min(calc(100% - 28px), var(--max-width)); padding-top: 22px; }
-      .hero { min-height: auto; padding: 56px 0 80px; }
-      .wordmark { font-size: 44px; }
-      .principles, .ecosystem-grid { grid-template-columns: 1fr; }
-      .release-card-top, .release-points { grid-template-columns: 1fr; }
-      .release-visual { min-height: 280px; }
-      .release-point + .release-point { border-top: 1px solid var(--line); border-left: 0; }
-      .join-panel { padding: 24px; }
-      footer { flex-direction: column; }
+
+    @media (max-width: 1080px) {
+      .nav-links { display: none; position: absolute; top: 68px; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 8px var(--gutter) 20px; background: rgba(12, 11, 9, .97); border-bottom: 1px solid var(--line); }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
+      .nav-links a::before, .nav-links a::after { display: none; }
+      .nav-links .nav-cta { margin-top: 14px; justify-content: center; border-bottom: 1px solid var(--cream); }
+      .menu-btn { display: block; }
+      .stack-row { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+      .dev, .faq-grid, .manifesto, .team { grid-template-columns: minmax(0, 1fr); }
+      .logo-card { max-width: 420px; }
+    }
+    @media (max-width: 860px) {
+      .hero-content, .head, .thesis, .bench, .rails { grid-template-columns: minmax(0, 1fr); }
+      .head .lede { justify-self: start; }
+      .hero-content { gap: 28px; padding-bottom: 36px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .stat:nth-child(3) { border-left: 0; }
+      .stat:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .thesis-col + .thesis-col, .bench-viz, .rail + .rail { border-left: 0; border-top: 1px solid var(--line); }
+      .layers, .aud { grid-template-columns: 1fr; }
+      .layer + .layer, .aud article + article { border-left: 0; border-top: 1px solid var(--line); }
+      .layer { min-height: 0; }
+      .pipeline { grid-template-columns: 1fr 1fr; }
+      .pipeline::before, .pipeline::after { display: none; }
+      .step:nth-child(3) { border-left: 0; }
+      .step:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .principles { grid-template-columns: 1fr 1fr; }
+      .principles article { padding: 24px 16px 24px 0; }
+      .principles article + article { padding-left: 0; border-left: 0; }
+      .principles article:nth-child(even) { padding-left: 16px; border-left: 1px solid rgba(26, 22, 17, .14); }
+      .principles article:nth-child(n+3) { border-top: 1px solid rgba(26, 22, 17, .14); }
+      .layer-map div { grid-template-columns: 1fr; gap: 6px; }
+      .foot-grid { grid-template-columns: 1fr 1fr; }
+      .foot-grid > div:first-child { grid-column: 1 / -1; }
+      .rows div { grid-template-columns: 96px 1fr auto; padding: 12px 16px; }
+    }
+    @media (max-width: 520px) {
+      .stats { grid-template-columns: 1fr; }
+      .stat + .stat { border-left: 0; border-top: 1px solid var(--line); }
+      .pipeline { grid-template-columns: 1fr; }
+      .step + .step { border-left: 0; border-top: 1px solid var(--line); }
+      .principles { grid-template-columns: 1fr; }
+      .principles article, .principles article:nth-child(even) { padding: 22px 0; border-left: 0; }
+      .principles article + article { border-top: 1px solid rgba(26, 22, 17, .14); }
+      .dev-list li { grid-template-columns: 1fr; gap: 4px; }
+      .terminal { font-size: 12px; }
+      .hero-top .pill:nth-child(2) { display: none; }
     }
   </style>
 
@@ -205,8 +594,8 @@
         "name": "The Decentralized Compute Company",
         "alternateName": "TDCC",
         "url": "https://decentralizedcompute.company/",
-        "logo": "https://decentralizedcompute.company/assets/favicon.svg",
-        "description": "TDCC connects AI companies with data centers and GPUs for training, fine-tuning, and inference, with an ecosystem strategy designed for Avalanche and Solana.",
+        "logo": "https://decentralizedcompute.company/assets/tdcc-logo.png",
+        "description": "TDCC is an AI inference and compute network connecting AI companies with data centers and GPUs for training, fine-tuning, and inference, with verification before payment and settlement rails designed for Avalanche and Solana.",
         "email": "anil@decentralizedcompute.company",
         "founder": {
           "@type": "Person",
@@ -233,7 +622,7 @@
         "name": "Verified decentralized AI compute",
         "provider": { "@id": "https://decentralizedcompute.company/#organization" },
         "serviceType": "AI inference, evaluation, fine-tuning, and model hosting",
-        "description": "TDCC routes approved AI workloads to compatible user-owned GPUs or certified micro-clusters, verifies completed work, and settles host payouts through an ecosystem-neutral API.",
+        "description": "TDCC routes approved AI workloads to compatible data-center capacity, certified micro-clusters, or user-owned GPUs, verifies completed work, and settles host payouts through an ecosystem-neutral API.",
         "areaServed": "Worldwide",
         "audience": {
           "@type": "Audience",
@@ -246,7 +635,7 @@
           {
             "@type": "Question",
             "name": "What is The Decentralized Compute Company?",
-            "acceptedAnswer": { "@type": "Answer", "text": "TDCC connects AI companies with data centers and GPUs for training, fine-tuning, and inference." }
+            "acceptedAnswer": { "@type": "Answer", "text": "TDCC is an AI inference and compute network that connects AI companies with data centers and GPUs for training, fine-tuning, and inference." }
           },
           {
             "@type": "Question",
@@ -257,6 +646,11 @@
             "@type": "Question",
             "name": "Which workloads will TDCC support?",
             "acceptedAnswer": { "@type": "Answer", "text": "Initial workloads include batch inference, image generation, audio transcription, embeddings, evaluations, synthetic data, agent workloads, LoRA or QLoRA fine-tuning, and open-model hosting." }
+          },
+          {
+            "@type": "Question",
+            "name": "Do I need a wallet or crypto to use TDCC?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. TDCC is used through an API key, like any AI infrastructure provider. Payouts are off-chain at launch; optional on-chain settlement records via Avalanche and Solana integrations are planned for teams that want public, auditable records." }
           },
           {
             "@type": "Question",
@@ -271,229 +665,1103 @@
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
-  <div class="top-rule"></div>
-  <nav class="site-nav" aria-label="Primary navigation">
-    <a href="#release">Release</a>
-    <a href="#mission">Mission</a>
-    <a href="#network">Network</a>
-    <a href="/app.html">App</a>
-    <a href="#workloads">Workloads</a>
-    <a href="#ecosystem">Ecosystem fit</a>
-    <a href="/team.html">Team</a>
-    <a href="/litepaper.html">Litepaper</a>
-    <a href="#faq">FAQ</a>
-    <a class="join" href="#join">Join us</a>
-  </nav>
 
-  <main id="content" class="page">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="0 0 120 80">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z" />
+        <g stroke-width="1.4" opacity=".85">
+          <path d="M62 14 V70" />
+          <path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" />
+          <path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" />
+          <path d="M38 26 Q62 31 86 26" /><path d="M31 39 Q62 45 93 39" /><path d="M29 54 Q62 60 95 54" />
+        </g>
+      </g>
+      <g fill="currentColor">
+        <rect x="59.5" y="26.5" width="5" height="5" /><rect x="45" y="39" width="5" height="5" /><rect x="74" y="39" width="5" height="5" />
+        <rect x="59.5" y="42" width="5" height="5" /><rect x="33" y="52" width="4.5" height="4.5" /><rect x="86.5" y="52" width="4.5" height="4.5" />
+        <rect x="59.5" y="57" width="5" height="5" /><rect x="47" y="27" width="4" height="4" /><rect x="73" y="27" width="4" height="4" />
+      </g>
+    </symbol>
+  </svg>
+
+  <header class="nav" id="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="/" aria-label="The Decentralized Compute Company — home">
+        <svg aria-hidden="true"><use href="#mark" /></svg>
+        <span class="brand-name">tdcc</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
+        <a href="#exact-core">Exact Core</a>
+        <a href="#marketplace">Marketplace</a>
+        <a href="#platform">Platform</a>
+        <a href="#developers">Developers</a>
+                <a href="/app.html">App</a>
+        <a href="/team.html">Team</a>
+        <a href="/litepaper.html">Litepaper</a>
+        <a class="btn solid nav-cta" href="#join">Get early access</a>
+      </nav>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main id="content">
+    <!-- ================= HERO ================= -->
     <section class="hero" aria-labelledby="hero-title">
-      <h1 id="hero-title" class="wordmark">
-        <span>The Decentralized</span>
-        <span>Compute Company</span>
-      </h1>
+      <canvas class="hero-canvas" id="globe" aria-hidden="true"></canvas>
+      <div class="hero-vignette" aria-hidden="true"></div>
+      <div class="hud" aria-hidden="true"><span class="hud-tr" id="hud-clock">LAT 00.00 · ROT 000°</span><span class="hud-bl">TDCC / NETWORK VIEW · ILLUSTRATIVE</span></div>
+      <div class="hero-grid" aria-hidden="true"></div>
 
-      <a class="backed" href="https://x.com/stardotfun/status/2080051528732193280" target="_blank" rel="noreferrer"><img src="https://haitvpqsyfvinxxhxyvz.supabase.co/storage/v1/object/public/project-icons//favicon.png" alt="star.fun logo"><span>Backed by <strong>star.fun</strong> to solve the AI compute bottleneck</span></a>
+      <div class="wrap">
+        <div class="hero-top fade-in" style="--d:.2s">
+          <a class="pill" href="/app.html#downloads"><b>NEW</b>TDCC Desktop 0.73.0-rc.1 — public beta</a>
+          <a class="pill" href="#exact-core"><b>CHIP</b>Announcing TDCC Exact Core</a>
+        </div>
+      </div>
 
-      <a class="announcement" href="#release"><span class="badge">NEW</span><span>TDCC App desktop beta is here — read the release note</span></a>
+      <div class="wrap hero-content">
+        <div>
+          <p class="eyebrow fade-in" style="--d:.1s">AI inference &amp; compute network</p>
+          <h1 id="hero-title" class="display title-in"><span class="ln"><span>Every GPU</span></span><span class="ln"><span>on Earth,</span></span><span class="ln"><span>working</span></span><span class="ln"><span><em>as one.</em></span></span></h1>
+        </div>
+        <div class="hero-side fade-in" style="--d:.9s">
+          <p class="lede">TDCC turns the world's scattered GPUs — hyperscale data centers, regional clusters, the card under someone's desk — into one inference and compute layer. Send the job through one API. We route it, run it, and verify the result before anyone gets paid.</p>
+          <div class="actions">
+            <a class="btn solid" href="#join">Get early access <span class="arr">→</span></a>
+            <a class="btn" href="/app.html">Explore the app</a>
+          </div>
+          <div class="terminal" aria-label="Example command"><span class="p">$</span><span id="typed">tdcc jobs submit ./job.yaml --watch</span><span class="caret" aria-hidden="true"></span></div>
+        </div>
+      </div>
 
-      <p class="lead">Train, fine-tune, and run AI models on a verifiable network built for AI.</p>
-
-      <p class="hero-copy">
-        TDCC connects AI companies to data centers and available GPUs. Submit a job through one API. We find the right hardware, run the job, and verify the result across an open, ecosystem-neutral compute layer.
-      </p>
-
-      <div class="actions">
-        <a class="button primary" href="#join">Join the network</a>
-        <a class="button" href="/app.html">Explore the app</a>
-        <a class="button" href="#release">What shipped</a>
+      <div class="hero-foot">
+        <div class="wrap backers">
+          <span>Backed by</span>
+          <a class="star" href="https://x.com/stardotfun/status/2080051528732193280" target="_blank" rel="noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.5l2.6 7.9H23l-6.8 4.9 2.6 7.9L12 17.3l-6.8 4.9 2.6-7.9L1 9.4h8.4z"/></svg>
+            star.fun
+          </a>
+          <span class="sep">/</span>
+          <span>$50K raised in ~10 minutes</span>
+          <span class="sep">/</span>
+          <span>Building with Avalanche &amp; Solana</span>
+        </div>
       </div>
     </section>
 
-    <section id="release" class="section release-story reveal" aria-labelledby="release-title">
-      <p class="section-label">Product reveal · The TDCC difference</p>
-      <h2 id="release-title">The shift: from renting machines to receiving verified AI work.</h2>
-      <p class="release-intro">The strongest AI products hide an awkward layer of complexity. TDCC is being built around a simple change in the unit of value: instead of starting with a machine, start with the work you need completed.</p>
+    <!-- ================= LIVE FEED ================= -->
+    <div class="ticker" aria-label="Illustrative network activity">
+      <span class="ticker-label"><i></i>Network feed · illustrative</span>
+      <div class="ticker-track"><div class="ticker-move" id="ticker"></div></div>
+    </div>
 
-      <article class="release-card">
-        <div class="release-card-top">
-          <div class="release-copy">
-            <div class="release-meta"><span>PRODUCT REVEAL</span><span>·</span><span>WORKLOAD-FIRST</span><span>·</span><span>EARLY ACCESS</span></div>
-            <h3>The product unit is the accepted AI job.</h3>
-            <p>AI teams should be able to describe a workload, not assemble infrastructure around it. TDCC routes the job to suitable capacity, runs it in an approved environment, and evaluates the result against clear acceptance criteria.</p>
-            <div class="actions">
-              <a class="button primary" href="/app.html">Explore the product</a>
-              <a class="button" href="/litepaper.html">Read the litepaper</a>
+    <!-- ================= STATS ================= -->
+    <section class="wrap" aria-label="TDCC at a glance" style="padding-top:clamp(64px,8vw,112px)">
+      <div class="stats reveal spot-group">
+        <div class="stat"><div class="n"><span data-count="80">80</span><sup>TOK/S</sup></div><p>Qwen 3.8 27B served across two compact laptops — up from ~50 tok/s. Same weights, same output.</p></div>
+        <div class="stat"><div class="n">1<sup>API</sup></div><p>Training, fine-tuning, inference, and evaluation behind a single job model.</p></div>
+        <div class="stat"><div class="n">0<sup>HRS</sup></div><p>Idle or failed GPU time billed to you. You pay for accepted work, not rented hours.</p></div>
+        <div class="stat"><div class="n"><span data-count="10">10</span><sup>MIN</sup></div><p>To raise $50K through star.fun at an $8M campaign valuation, July 2026.</p></div>
+      </div>
+    </section>
+
+    <!-- ================= STATEMENT ================= -->
+    <section class="statement" aria-label="What TDCC is">
+      <div class="wrap">
+        <p class="eyebrow">In one sentence</p>
+        <p class="statement-text" id="statement">We don't rent you machines. We deliver verified intelligence — from every GPU on Earth, through one API, paid for only when the work is right.</p>
+      </div>
+    </section>
+
+    <!-- ================= EXACT CORE (chip) ================= -->
+    <section class="block chip-sec" id="exact-core" aria-labelledby="chip-title">
+      <div class="wrap">
+        <div class="chip-hero">
+          <div class="reveal">
+            <a class="pill" href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer"><b>SILICON</b>Announcing TDCC Exact Core · open source</a>
+            <h2 id="chip-title" class="h2 chip-h">An AI chip whose every answer <em>anyone can re-check.</em></h2>
+            <p class="lede">Exact Core is TDCC's own accelerator, built on the open-source openTPU design. The card produces the same bits as its simulator — so any laptop can replay a job, and a dishonest run is caught down to the first instruction it got wrong.</p>
+            <div class="actions" style="margin-top:30px">
+              <a class="btn solid" href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">View on GitHub <span class="arr">→</span></a>
+              <a class="btn" href="#exact-flow">How TDCC Exact works</a>
+            </div>
+            <div class="terminal" style="margin-top:22px;max-width:460px"><span class="p">$</span><span>pip install -e . &amp;&amp; tdcc-exact demo</span></div>
+          </div>
+
+          <div class="chip-stage reveal" id="chip-stage" aria-label="Illustration of the TDCC Exact Core chip">
+            <div class="chip-tilt" id="chip-tilt">
+              <div class="chip-shadow"></div>
+              <svg class="chip-svg" viewBox="0 0 400 400" role="img" aria-labelledby="chip-svg-title">
+                <title id="chip-svg-title">TDCC Exact Core package with matrix unit, vector unit, trace log, and sequencer</title>
+                <defs>
+                  <linearGradient id="sub" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a241b"/><stop offset="1" stop-color="#15120d"/></linearGradient>
+                  <linearGradient id="die" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a3024"/><stop offset=".5" stop-color="#1d1913"/><stop offset="1" stop-color="#2c251b"/></linearGradient>
+                  <linearGradient id="lid" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3e3c4"/><stop offset=".45" stop-color="#cfb184"/><stop offset="1" stop-color="#8f7348"/></linearGradient>
+                  <pattern id="cells" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="none"/><rect x="1" y="1" width="6" height="6" fill="rgba(216,191,148,.16)"/></pattern>
+                  <pattern id="lines" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="1" fill="rgba(216,191,148,.22)"/></pattern>
+                </defs>
+                <!-- substrate -->
+                <rect x="20" y="20" width="360" height="360" rx="18" fill="url(#sub)" stroke="rgba(216,191,148,.35)"/>
+                <g fill="#c9ab7c" opacity=".85">
+                  <g id="pins-top"><rect x="44" y="24" width="6" height="10" rx="1"/><rect x="62" y="24" width="6" height="10" rx="1"/><rect x="80" y="24" width="6" height="10" rx="1"/><rect x="98" y="24" width="6" height="10" rx="1"/><rect x="116" y="24" width="6" height="10" rx="1"/><rect x="134" y="24" width="6" height="10" rx="1"/><rect x="152" y="24" width="6" height="10" rx="1"/><rect x="170" y="24" width="6" height="10" rx="1"/><rect x="188" y="24" width="6" height="10" rx="1"/><rect x="206" y="24" width="6" height="10" rx="1"/><rect x="224" y="24" width="6" height="10" rx="1"/><rect x="242" y="24" width="6" height="10" rx="1"/><rect x="260" y="24" width="6" height="10" rx="1"/><rect x="278" y="24" width="6" height="10" rx="1"/><rect x="296" y="24" width="6" height="10" rx="1"/><rect x="314" y="24" width="6" height="10" rx="1"/><rect x="332" y="24" width="6" height="10" rx="1"/><rect x="350" y="24" width="6" height="10" rx="1"/></g>
+                  <use href="#pins-top" transform="translate(0 342)"/>
+                  <use href="#pins-top" transform="rotate(90 200 200)"/>
+                  <use href="#pins-top" transform="rotate(-90 200 200)"/>
+                </g>
+                <!-- traces from die to pins -->
+                <g class="traces" fill="none" stroke="rgba(216,191,148,.28)" stroke-width="1">
+                  <path d="M120 120 L60 60 L60 34"/><path d="M280 120 L340 60 L340 34"/><path d="M120 280 L60 340 L60 366"/><path d="M280 280 L340 340 L340 366"/>
+                  <path d="M150 110 V34"/><path d="M200 110 V34"/><path d="M250 110 V34"/>
+                  <path d="M150 290 V366"/><path d="M200 290 V366"/><path d="M250 290 V366"/>
+                  <path d="M110 150 H34"/><path d="M110 200 H34"/><path d="M110 250 H34"/>
+                  <path d="M290 150 H366"/><path d="M290 200 H366"/><path d="M290 250 H366"/>
+                </g>
+                <g class="traces-live" fill="none" stroke="#f3dfb8" stroke-width="1.6" stroke-linecap="round">
+                  <path d="M200 110 V34" style="--dl:0s"/><path d="M110 200 H34" style="--dl:.7s"/><path d="M290 250 H366" style="--dl:1.3s"/><path d="M250 290 V366" style="--dl:1.9s"/><path d="M120 120 L60 60 L60 34" style="--dl:2.4s"/><path d="M280 280 L340 340 L340 366" style="--dl:3s"/>
+                </g>
+                <!-- die -->
+                <rect x="104" y="104" width="192" height="192" rx="6" fill="url(#die)" stroke="rgba(243,223,184,.55)"/>
+                <!-- matrix unit -->
+                <rect x="116" y="116" width="104" height="104" rx="3" fill="url(#cells)" stroke="rgba(216,191,148,.45)"/>
+                <rect class="mm-glow" x="116" y="116" width="104" height="104" rx="3" fill="rgba(243,223,184,.12)"/>
+                <text x="120" y="232" class="chip-lbl">MATRIX · INT8</text>
+                <!-- vector unit -->
+                <rect x="228" y="116" width="56" height="64" rx="3" fill="url(#lines)" stroke="rgba(216,191,148,.45)"/>
+                <text x="231" y="190" class="chip-lbl">VECTOR</text>
+                <!-- trace log -->
+                <rect x="228" y="196" width="56" height="88" rx="3" fill="rgba(185,217,154,.08)" stroke="rgba(185,217,154,.55)"/>
+                <g class="log-rows" fill="rgba(185,217,154,.7)"><rect x="234" y="204" width="44" height="2"/><rect x="234" y="211" width="36" height="2"/><rect x="234" y="218" width="40" height="2"/><rect x="234" y="225" width="30" height="2"/><rect x="234" y="232" width="44" height="2"/><rect x="234" y="239" width="26" height="2"/><rect x="234" y="246" width="38" height="2"/><rect x="234" y="253" width="42" height="2"/></g>
+                <text x="231" y="278" class="chip-lbl" fill="rgba(185,217,154,.9)">TRACE</text>
+                <!-- sequencer + dma -->
+                <rect x="116" y="240" width="104" height="44" rx="3" fill="none" stroke="rgba(216,191,148,.45)"/>
+                <g fill="rgba(216,191,148,.5)"><rect x="124" y="250" width="10" height="10"/><rect x="140" y="250" width="10" height="10"/><rect x="156" y="250" width="10" height="10"/><rect x="172" y="250" width="10" height="10"/><rect x="188" y="250" width="10" height="10"/><rect x="204" y="250" width="10" height="10"/></g>
+                <rect class="seq-run" x="124" y="250" width="10" height="10" fill="#f3dfb8"/>
+                <text x="120" y="278" class="chip-lbl">SEQ · DMA</text>
+              </svg>
+              <!-- lid / heat spreader, lifted -->
+              <div class="chip-lid">
+                <svg viewBox="0 0 180 180" aria-hidden="true">
+                  <rect x="1" y="1" width="178" height="178" rx="8" fill="url(#lid)" />
+                  <g transform="translate(46 38) scale(.74)" fill="none" stroke="#3a2e1f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity=".8">
+                    <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z"/>
+                    <path d="M62 14 V70 M62 14 C49 22 46 46 48 70 M62 14 C75 22 78 46 76 70 M38 26 Q62 31 86 26 M31 39 Q62 45 93 39 M29 54 Q62 60 95 54" stroke-width="1.4"/>
+                  </g>
+                  <text x="90" y="128" text-anchor="middle" class="lid-t">TDCC EXACT CORE</text>
+                  <text x="90" y="144" text-anchor="middle" class="lid-s">OPENTPU · BIT-EXACT</text>
+                  <text x="90" y="160" text-anchor="middle" class="lid-s">XC7K480T · EC-01</text>
+                </svg>
+              </div>
+            </div>
+            <div class="chip-caption"><span>FIG. 6 — Exact Core, exploded</span><span>Illustration</span></div>
+          </div>
+        </div>
+
+        <div class="chip-blocks reveal spot-group">
+          <article><p class="mono">Matrix unit</p><p>The heavy LLM math in 8-bit numbers, in a fixed order.</p></article>
+          <article><p class="mono">Vector unit</p><p>Softmax and norms with fixed rounding, so the bits never drift.</p></article>
+          <article class="hl"><p class="mono">Trace log</p><p>Records every step, so a dispute points to the one step that differs.</p></article>
+          <article><p class="mono">Sequencer + DMA</p><p>One instruction per cycle; every data movement is an instruction.</p></article>
+        </div>
+
+        <div class="chip-grid">
+          <div class="reveal" id="exact-flow">
+            <p class="eyebrow">How TDCC Exact works</p>
+            <ol class="exact-steps">
+              <li><b>Rent</b><span>A renter opens a job on Solana; the USDC waits in escrow.</span></li>
+              <li><b>Run</b><span>A provider runs it on Exact Core and posts the answer's fingerprint.</span></li>
+              <li><b>Check</b><span>Any verifier re-runs it on a laptop. A mismatch opens a challenge.</span></li>
+              <li><b>Settle</b><span>Honest providers get paid — 80% host, 20% TDCC. A cheater loses its stake; the renter is refunded and the verifier takes a share.</span></li>
+            </ol>
+            <p class="prog">Solana program <code>HzpKeqHLg7Mmjh1JmGymef7Z7hf3JXhaagp6UgTSH24A</code></p>
+          </div>
+          <div class="panel reveal">
+            <div class="fig"><span>FIG. 7 — tdcc-exact demo</span><b>CHEATER CAUGHT</b></div>
+<pre class="code"><span class="c">1. renter opens a yes/no oracle job, locks 2.00 USDC</span>
+<span class="c">2. provider A runs honestly; B skips layer 1</span>
+   A: NO  <span class="k">3c85c23e…</span>
+   B: NO  <span class="k">5013c640…</span>  <span class="c">same answer, other fingerprint</span>
+<span class="c">3. a verifier re-runs the job on this laptop</span>
+   A: match    → <span class="s">accept</span>
+   B: MISMATCH → <span class="k">challenge</span>
+<span class="c">4. bisecting B's trace</span>
+   first fault: <span class="k">step 659</span>, slice 0, pc 11
+<span class="c">5. settlement</span>
+   final: {'A': <span class="s">'Settled'</span>, 'B': <span class="k">'Slashed'</span>}</pre>
+          </div>
+        </div>
+
+        <div class="chip-results reveal">
+          <div class="fig"><span>Measured on the card · Kintex-7 xc7k480t, two DDR3 channels</span><b>Same tokens as the simulator, bit for bit</b></div>
+          <div class="res">
+            <div><span class="n">85.8</span><span class="u">tok/s</span><p>LFM2.5-230M, 4-bit · device decode</p></div>
+            <div><span class="n">31.3</span><span class="u">tok/s</span><p>Qwen3-0.6B, 4-bit · device decode</p></div>
+            <div><span class="n">24.5</span><span class="u">tok/s</span><p>Qwen3.5-0.8B, 4-bit · device decode</p></div>
+            <div><span class="n">10</span><span class="u">models</span><p>Modern models running with real weights on the card</p></div>
+          </div>
+          <p class="honest"><b>Honest status.</b> The Exact layer — trace log, fingerprint, dispute — runs on the bit-exact simulator today. The trace log in hardware and its speed on the card are not built or measured yet.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= THESIS ================= -->
+    <section class="block" id="thesis" aria-labelledby="thesis-title" style="border-top:0">
+      <div class="wrap">
+        <div class="head reveal">
+          <div>
+            <p class="eyebrow">The thesis</p>
+            <h2 id="thesis-title" class="h2">Intelligence is becoming a utility. Utilities need <em>a grid.</em></h2>
+          </div>
+          <p class="lede">Demand for AI compute compounds every year, while supply sits fragmented across thousands of operators that no single team can reach. Data centers have capacity they cannot fill; AI teams have workloads they cannot place. TDCC is the grid between them.</p>
+        </div>
+
+        <div class="thesis reveal spot-group">
+          <div class="thesis-col">
+            <p class="mono">Today · renting machines</p>
+            <h3>You buy hours and inherit every risk.</h3>
+            <ul>
+              <li>Pick hardware, drivers, regions, and images yourself</li>
+              <li>A stalled run at hour six is still billed</li>
+              <li>Silent failures look exactly like success</li>
+              <li>Capacity is locked to whichever cloud you chose</li>
+            </ul>
+          </div>
+          <div class="thesis-col">
+            <p class="mono" style="color:var(--sand)">TDCC · receiving work</p>
+            <h3>You buy accepted results. The network carries the risk.</h3>
+            <ul>
+              <li>Describe the workload, not the machine</li>
+              <li>Failed or stalled jobs requeue automatically to another host</li>
+              <li>Every result is checked against acceptance criteria</li>
+              <li>One API reaches data centers and independent GPUs alike</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="layers reveal spot-group" aria-labelledby="layers-title">
+          <h3 id="layers-title" class="sr-only">Where TDCC fits</h3>
+          <article class="layer">
+            <p class="mono">01 / Research layer</p>
+            <h3>Exa makes web knowledge easier to ask for.</h3>
+            <p><a href="https://exa.ai/" target="_blank" rel="noreferrer">Exa</a> lets you describe a question and receive organized information from the web. It changed how a research request begins.</p>
+          </article>
+          <article class="layer">
+            <p class="mono">02 / Capacity layer</p>
+            <h3>Vast makes GPU capacity easier to rent.</h3>
+            <p><a href="https://vast.ai/" target="_blank" rel="noreferrer">Vast</a> exposes a broad GPU marketplace where you find and rent an instance. It changed how a compute rental begins.</p>
+          </article>
+          <article class="layer us">
+            <p class="mono">03 / Work layer</p>
+            <h3>TDCC is built for the accepted outcome.</h3>
+            <p>A job is matched to suitable capacity and evaluated against its acceptance criteria. Settlement follows only after useful work is accepted.</p>
+          </article>
+        </div>
+        <div class="layers-note reveal"><span>Different layers, not a head-to-head benchmark.</span><a class="link" href="/litepaper.html">Read the litepaper →</a></div>
+      </div>
+    </section>
+
+    <!-- ================= PLATFORM ================= -->
+    <section class="block" id="platform" aria-labelledby="platform-title">
+      <div class="wrap">
+        <div class="head reveal">
+          <div>
+            <p class="eyebrow">The platform</p>
+            <h2 id="platform-title" class="h2">One stack, from first token to <em>final weights.</em></h2>
+          </div>
+          <p class="lede">Simple on the surface. Serious underneath — scheduling, secure runtimes, model compatibility, verification, reputation, and payments, so your team only ever sees a job, a state, and a receipt.</p>
+        </div>
+
+        <div class="stack">
+          <article class="stack-row reveal">
+            <div class="stack-num">01</div>
+            <div class="stack-copy">
+              <h3>Inference <span class="tag live">Live</span></h3>
+              <p>Serve open-weight models and batch jobs through one OpenAI- and Anthropic-compatible gateway. Point the tools you already use at a single URL.</p>
+              <ul class="specs">
+                <li><span>1.1</span>Batch inference and dedicated open-model endpoints</li>
+                <li><span>1.2</span>Drop-in gateway for Claude Code, Codex, and OpenCode</li>
+                <li><span>1.3</span>Streaming responses; upstream credentials resolved server-side</li>
+              </ul>
+              <a class="link" href="#developers">Use the gateway →</a>
+            </div>
+            <div class="panel">
+              <div class="fig"><span>FIG. 1 — Gateway</span><b>OPENAI · ANTHROPIC</b></div>
+<pre class="code"><span class="c"># point any compatible tool at TDCC</span>
+<span class="k">export</span> ANTHROPIC_BASE_URL=<span class="s">"https://decentralizedcompute.company/api/anthropic"</span>
+<span class="k">export</span> ANTHROPIC_API_KEY=<span class="s">"$TDCC_API_KEY"</span>
+
+<span class="c"># or the OpenAI-compatible surface</span>
+base_url = <span class="s">"https://decentralizedcompute.company/api/v1"</span></pre>
+            </div>
+          </article>
+
+          <article class="stack-row reveal">
+            <div class="stack-num">02</div>
+            <div class="stack-copy">
+              <h3>Fine-tuning <span class="tag">Pilot</span></h3>
+              <p>LoRA and QLoRA runs matched to hardware that fits the model, memory, deadline, and budget — with failover if a host drops mid-run.</p>
+              <ul class="specs">
+                <li><span>2.1</span>Constraints for VRAM, region, deadline, and max spend</li>
+                <li><span>2.2</span>Dry-run estimates before a job is committed</li>
+                <li><span>2.3</span>Accepted on eval delta against a held-out set</li>
+              </ul>
+              <a class="link" href="/app.html">See the console →</a>
+            </div>
+            <div class="panel">
+              <div class="fig"><span>FIG. 2 — job_8fq2c1 · finetune.lora</span><b>RUNNING</b></div>
+              <div class="rows">
+                <div><span class="k">Matched</span><span>eu-central · 1× 80GB</span><span class="ok">done</span></div>
+                <div><span class="k">Provisioned</span><span>runtime · sha 4c9a…</span><span class="ok">done</span></div>
+                <div><span class="k">Training</span><span><span class="bar"><i></i></span></span><span class="warn">step 1840</span></div>
+                <div><span class="k">Verification</span><span>2 passes queued</span><span>pending</span></div>
+                <div><span class="k">Budget</span><span>$38.40 / $120.00</span><span>32%</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="stack-row reveal">
+            <div class="stack-num">03</div>
+            <div class="stack-copy">
+              <h3>Training &amp; evaluation <span class="tag">Planned</span></h3>
+              <p>Reproducible evaluation suites today; multi-node training on data-center clusters next, with checkpoint continuity and eval gates.</p>
+              <ul class="specs">
+                <li><span>3.1</span>Reproducible scoring runs for any model</li>
+                <li><span>3.2</span>Synthetic data generation with schema and duplication checks</li>
+                <li><span>3.3</span>Full pre-training on multi-node clusters</li>
+              </ul>
+              <a class="link" href="#workloads">Workload catalogue →</a>
+            </div>
+            <div class="panel">
+              <div class="fig"><span>FIG. 3 — Live stream</span><b>SSE</b></div>
+<pre class="code"><span class="c">14:02:11</span>  loss 1.284  lr 1.4e-4  tok/s <span class="k">5,910</span>
+<span class="c">14:02:38</span>  loss 1.241  lr 1.4e-4  tok/s <span class="k">6,042</span>
+<span class="c">14:03:05</span>  checkpoint written  <span class="s">adapter-1840.safetensors</span>
+<span class="c">14:03:06</span>  budget used $38.40 / $120.00</pre>
+            </div>
+          </article>
+
+          <article class="stack-row reveal">
+            <div class="stack-num">04</div>
+            <div class="stack-copy">
+              <h3>Verification &amp; settlement</h3>
+              <p>Verification is the product. Every completed job carries a receipt: what ran, where, against which criteria, and what was paid. Work that fails is never billed and never paid out.</p>
+              <ul class="specs">
+                <li><span>4.1</span>Acceptance criteria attached to the job up front</li>
+                <li><span>4.2</span>Redundant or sampled verification passes per workload</li>
+                <li><span>4.3</span>Host reputation built from verified outcomes, not self-reports</li>
+              </ul>
+              <a class="link" href="#rails">How settlement works →</a>
+            </div>
+            <div class="panel">
+              <div class="fig"><span>FIG. 4 — Receipt · job_8fq1za</span><b>ACCEPTED</b></div>
+              <div class="rows">
+                <div><span class="k">Workload</span><span>inference.batch · llama-3.1-8b</span><span></span></div>
+                <div><span class="k">Items</span><span>1,240 / 1,240</span><span class="ok">✓</span></div>
+                <div><span class="k">Criteria</span><span>schema_valid ∧ 2/2 passes</span><span class="ok">✓</span></div>
+                <div><span class="k">Charged</span><span>$27.94</span><span></span></div>
+                <div><span class="k">Host payout</span><span>$23.75</span><span class="warn">settled</span></div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MARKETPLACE ================= -->
+    <section class="block" id="marketplace" aria-labelledby="market-title">
+      <div class="wrap">
+        <div class="head reveal">
+          <div>
+            <p class="eyebrow">GPU marketplace</p>
+            <h2 id="market-title" class="h2">Rent the machine, or <em>buy the result.</em></h2>
+          </div>
+          <p class="lede">Every GPU on the network is also listed in the TDCC marketplace. Rent raw capacity when you want the box. Submit a job when you want the answer. Same hosts, same reputation, one account.</p>
+        </div>
+
+        <div class="market reveal">
+          <div class="market-bar">
+            <div class="seg" role="tablist" aria-label="Marketplace mode">
+              <button type="button" role="tab" aria-selected="true" data-mode="rent">Rent a GPU</button>
+              <button type="button" role="tab" aria-selected="false" data-mode="job">Submit a job</button>
+            </div>
+            <div class="filters" aria-label="Hardware filter">
+              <button type="button" class="on" data-f="all">All</button>
+              <button type="button" data-f="80">80GB</button>
+              <button type="button" data-f="48">48GB</button>
+              <button type="button" data-f="24">24GB</button>
+              <button type="button" data-f="exact">Exact Core</button>
+            </div>
+            <span class="market-note">Preview · illustrative listings</span>
+          </div>
+
+          <div class="listings" id="listings">
+            <article class="listing" data-f="80"><div class="l-top"><span class="l-class">80GB class</span><span class="l-av"><i></i>Available</span></div><h3>Data-center node</h3><p class="l-spec">80 GB VRAM · eu-central · ×8</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:96%"></i></span><b>0.96</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
+            <article class="listing" data-f="80"><div class="l-top"><span class="l-class">80GB class</span><span class="l-av"><i></i>Available</span></div><h3>Certified micro-cluster</h3><p class="l-spec">80 GB VRAM · us-east · ×2</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:92%"></i></span><b>0.92</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
+            <article class="listing" data-f="48"><div class="l-top"><span class="l-class">48GB class</span><span class="l-av"><i></i>Available</span></div><h3>Regional cluster</h3><p class="l-spec">48 GB VRAM · ap-south · ×4</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:89%"></i></span><b>0.89</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
+            <article class="listing" data-f="24"><div class="l-top"><span class="l-class">24GB class</span><span class="l-av"><i></i>Available</span></div><h3>Independent host</h3><p class="l-spec">24 GB consumer GPU · eu-west · ×1</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:84%"></i></span><b>0.84</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
+            <article class="listing exact" data-f="exact"><div class="l-top"><span class="l-class">Exact Core</span><span class="l-av soon"><i></i>Coming</span></div><h3>Exact Core card</h3><p class="l-spec">Kintex-7 PCIe · bit-exact · re-checkable</p><div class="l-rep"><span>Verification</span><span class="meter"><i style="width:100%"></i></span><b>exact</b></div><div class="l-foot"><span class="price" data-rent="USDC escrow on Solana" data-job="USDC escrow on Solana"></span><span class="l-cta">Learn →</span></div></article>
+            <article class="listing" data-f="24"><div class="l-top"><span class="l-class">24GB class</span><span class="l-av"><i></i>Available</span></div><h3>Two-laptop pair</h3><p class="l-spec">Coordinated · 27B-class decode · ×2</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:81%"></i></span><b>0.81</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
+          </div>
+        </div>
+
+        <div class="market-sides reveal spot-group">
+          <article>
+            <p class="mono">For buyers</p>
+            <h3>One account, two ways to buy.</h3>
+            <p>Rent a box for full control, or hand over a job and pay only when the result is accepted. Reputation comes from verified outcomes, not self-reports.</p>
+          </article>
+          <article>
+            <p class="mono">For hosts</p>
+            <h3>List once. Earn both ways.</h3>
+            <p>Publish hardware, availability, and price. Your GPU earns from rentals and from routed jobs — data center, micro-cluster, or the card under your desk.</p>
+            <a class="link" href="mailto:anil@decentralizedcompute.company?subject=List%20my%20GPU%20on%20TDCC" style="margin-top:16px">List your GPU →</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= NETWORK / HOW ================= -->
+    <section class="block" id="network" aria-labelledby="network-title">
+      <div class="wrap">
+        <div class="head reveal">
+          <div>
+            <p class="eyebrow">How it works</p>
+            <h2 id="network-title" class="h2">Describe the job. <em>Not the machine.</em></h2>
+          </div>
+          <p class="lede">GPUs are not interchangeable. TDCC matches every job with hardware that fits its model, memory, speed, price, and reliability needs — then proves the work was done.</p>
+        </div>
+
+        <div class="pipeline reveal spot-group">
+          <article class="step"><p class="mono">01 / Submit</p><div class="dot"></div><h3>Submit</h3><p>Send a training, fine-tuning, or inference job through the API, CLI, SDK, or console.</p></article>
+          <article class="step"><p class="mono">02 / Match</p><div class="dot"></div><h3>Match</h3><p>The router finds a data center or GPU that fits memory, speed, price, and reliability.</p></article>
+          <article class="step"><p class="mono">03 / Run</p><div class="dot"></div><h3>Run</h3><p>The job executes in an approved, isolated runtime with live telemetry and automatic requeue.</p></article>
+          <article class="step"><p class="mono">04 / Verify</p><div class="dot"></div><h3>Verify</h3><p>The result is checked before it is billed. Hosts are paid only for accepted work.</p></article>
+        </div>
+
+        <p class="quote-line reveal">AI teams bring the models. <em>TDCC brings the compute.</em></p>
+      </div>
+    </section>
+
+    <!-- ================= AUDIENCES ================= -->
+    <section class="block" id="sides" aria-labelledby="sides-title">
+      <div class="wrap">
+        <div class="head reveal">
+          <div>
+            <p class="eyebrow">A two-sided network</p>
+            <h2 id="sides-title" class="h2">Demand meets supply, <em>without the middle work.</em></h2>
+          </div>
+          <p class="lede">Companies get compute. Data centers get demand. GPU owners get paid for useful work. Agents get a machine-callable way to buy all of it.</p>
+        </div>
+        <div class="aud reveal spot-group">
+          <article><div class="letter">A</div><h3>For AI teams</h3><p>Run training, fine-tuning, inference, and evaluation without operating a fleet. One key, one project, one bill.</p></article>
+          <article><div class="letter">B</div><h3>For data centers &amp; GPU owners</h3><p>Turn idle capacity into recurring, screened demand. Publish hardware, availability, and price; earn on accepted work.</p></article>
+          <article><div class="letter">C</div><h3>For agents &amp; tools</h3><p>A machine-callable API so autonomous workflows can buy compute exactly the way a developer does.</p></article>
+        </div>
+        <div class="hw reveal" aria-label="Capacity the router spans">
+          <span class="chip">Data-center clusters</span><span class="chip">Certified micro-clusters</span><span class="chip">Independent GPU hosts</span><span class="chip">80GB-class accelerators</span><span class="chip">48GB-class accelerators</span><span class="chip">24GB consumer GPUs</span><span class="chip">CPU pre/post-processing</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= BENCHMARK ================= -->
+    <section class="block" id="research" aria-labelledby="research-title">
+      <div class="wrap">
+        <div class="bench reveal" id="bench">
+          <div class="bench-copy">
+            <p class="eyebrow" style="margin:0">Engineering note · September 2026</p>
+            <h3 id="research-title">Two compact laptops. One 27B model. 80 tokens per second.</h3>
+            <p>We paired two small machines for a Qwen 3.8 27B workload and moved a ~50 tok/s run to 80 tok/s — a 60% gain — without touching the weights or the intended output. The work was in the path around generation: coordinating handoffs, cutting idle time, keeping one stream moving.</p>
+            <p>That is the whole company in miniature: more useful work out of hardware that already exists.</p>
+            <a class="link" href="/two-laptops-80-tps.html">Read the engineering note →</a>
+          </div>
+          <div class="bench-viz">
+            <div class="fig"><span>FIG. 5 — Observed throughput</span><b>+60%</b></div>
+            <div class="bars">
+              <div class="row"><div class="lbl"><span>Unoptimized path</span><b>~50</b></div><div class="track"><div class="fill" style="--w:62.5%"></div></div></div>
+              <div class="row"><div class="lbl"><span>With TDCC coordination</span><b>80</b></div><div class="track"><div class="fill hot" style="--w:100%"></div></div></div>
+            </div>
+            <p class="bench-foot">Internal benchmark. Results vary with hardware, context length, sampling, and thermals.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DEVELOPERS ================= -->
+    <section class="block" id="developers" aria-labelledby="dev-title">
+      <div class="wrap dev">
+        <div class="reveal">
+          <p class="eyebrow">Developers</p>
+          <h2 id="dev-title" class="h2">Four ways in. <em>One job model.</em></h2>
+          <ul class="dev-list">
+            <li><b>REST API</b><span>Create, inspect, cancel, and stream jobs. Idempotency keys on creation.</span></li>
+            <li><b>CLI</b><span>Submit from YAML, tail logs, verify receipts.</span></li>
+            <li><b>SDKs</b><span>Python 3.10+ and TypeScript / Node 18+.</span></li>
+            <li><b>Events</b><span>Server-sent events per job and signed per-project webhooks.</span></li>
+            <li><b>Desktop</b><span>0.73.0-rc.1 beta for Windows x64. Linux next.</span></li>
+          </ul>
+          <div class="actions">
+            <a class="btn solid" href="/app.html#downloads">Download desktop beta <span class="arr">→</span></a>
+            <a class="btn" href="/app.html">Read the docs</a>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <div class="panel">
+            <div class="tabs" role="tablist" aria-label="Code examples">
+              <button role="tab" aria-selected="true" aria-controls="t-curl" id="tb-curl">cURL</button>
+              <button role="tab" aria-selected="false" aria-controls="t-py" id="tb-py" tabindex="-1">Python</button>
+              <button role="tab" aria-selected="false" aria-controls="t-ts" id="tb-ts" tabindex="-1">TypeScript</button>
+              <button role="tab" aria-selected="false" aria-controls="t-cli" id="tb-cli" tabindex="-1">CLI</button>
+            </div>
+<pre class="code tab-pane" id="t-curl" role="tabpanel" aria-labelledby="tb-curl"><span class="c"># submit a batch inference job</span>
+curl https://api.decentralizedcompute.company/v1/jobs \
+  -H <span class="s">"Authorization: Bearer $TDCC_API_KEY"</span> \
+  -d <span class="s">'{
+    "type": "inference.batch",
+    "model": "llama-3.1-8b-instruct",
+    "input_uri": "s3://acme-eval/prompts.jsonl",
+    "accept": { "min_verifications": 2 },
+    "budget": { "max_usd": 40 }
+  }'</span></pre>
+<pre class="code tab-pane" id="t-py" role="tabpanel" aria-labelledby="tb-py" hidden><span class="k">from</span> tdcc <span class="k">import</span> Client
+
+client = Client(api_key=os.environ[<span class="s">"TDCC_API_KEY"</span>])
+job = client.jobs.create(
+    type=<span class="s">"finetune.lora"</span>,
+    base_model=<span class="s">"qwen2.5-7b"</span>,
+    hardware={<span class="s">"min_vram_gb"</span>: 48},
+    budget={<span class="s">"max_usd"</span>: 120},
+)
+client.jobs.wait(job.id)
+print(job.receipt.status)</pre>
+<pre class="code tab-pane" id="t-ts" role="tabpanel" aria-labelledby="tb-ts" hidden><span class="k">import</span> { TDCC } <span class="k">from</span> <span class="s">"@tdcc/sdk"</span>;
+
+<span class="k">const</span> tdcc = <span class="k">new</span> TDCC({ apiKey: process.env.TDCC_API_KEY });
+<span class="k">const</span> job = <span class="k">await</span> tdcc.jobs.create({
+  type: <span class="s">"embeddings"</span>,
+  model: <span class="s">"bge-large-en-v1.5"</span>,
+  accept: { minVerifications: 2 },
+});
+<span class="k">for await</span> (<span class="k">const</span> ev <span class="k">of</span> tdcc.jobs.stream(job.id)) console.log(ev.stage);</pre>
+<pre class="code tab-pane" id="t-cli" role="tabpanel" aria-labelledby="tb-cli" hidden><span class="c"># authenticate once per machine</span>
+tdcc login
+
+<span class="c"># submit and follow</span>
+tdcc jobs submit ./job.yaml --watch
+tdcc jobs logs job_8fq2c1 --follow
+
+<span class="c"># inspect capacity and proof of work</span>
+tdcc hosts list --region eu-central --min-vram 48
+tdcc receipts show job_8fq1za --verify</pre>
+          </div>
+          <p class="layers-note" style="padding-top:14px">Preview interfaces from the early-access build. Request shapes may change before the API is declared stable.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= WORKLOADS ================= -->
+    <section class="block" id="workloads" aria-labelledby="workloads-title">
+      <div class="wrap">
+        <div class="head reveal">
+          <div>
+            <p class="eyebrow">Workload catalogue</p>
+            <h2 id="workloads-title" class="h2">Everything AI teams need <em>to run models.</em></h2>
+          </div>
+          <p class="lede">Each workload carries its own acceptance rules — verification means something different for a transcription batch than for a fine-tune. Start with one job or scale across data centers.</p>
+        </div>
+        <div class="table-wrap reveal">
+          <table>
+            <thead><tr><th>Workload</th><th>API type</th><th>Typical hardware</th><th>Acceptance basis</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Batch inference</td><td><code>inference.batch</code></td><td>24–80GB</td><td>Schema validity + redundant sampling</td><td><span class="tag live">Pilot</span></td></tr>
+              <tr><td>Open-model hosting</td><td><code>inference.endpoint</code></td><td>48–80GB</td><td>Health checks + latency SLO</td><td><span class="tag live">Pilot</span></td></tr>
+              <tr><td>Embeddings</td><td><code>embeddings</code></td><td>24GB+</td><td>Deterministic re-computation on a sample</td><td><span class="tag live">Pilot</span></td></tr>
+              <tr><td>Audio transcription</td><td><code>transcribe</code></td><td>24GB+</td><td>Sampled re-run + agreement threshold</td><td><span class="tag live">Pilot</span></td></tr>
+              <tr><td>Image generation</td><td><code>image.generate</code></td><td>24–48GB</td><td>Output integrity + policy checks</td><td><span class="tag live">Pilot</span></td></tr>
+              <tr><td>LoRA / QLoRA fine-tuning</td><td><code>finetune.lora</code></td><td>48–80GB</td><td>Eval delta on a held-out set</td><td><span class="tag live">Pilot</span></td></tr>
+              <tr><td>Evaluations</td><td><code>eval.suite</code></td><td>24GB+</td><td>Reproducible scoring run</td><td><span class="tag live">Pilot</span></td></tr>
+              <tr><td>Synthetic data</td><td><code>synth.generate</code></td><td>24GB+</td><td>Schema + duplication checks</td><td><span class="tag live">Pilot</span></td></tr>
+              <tr><td>Agent workloads</td><td><code>agent.run</code></td><td>Mixed</td><td>Step traces + budget ceilings</td><td><span class="tag">Planned</span></td></tr>
+              <tr><td>Full pre-training</td><td><code>train.full</code></td><td>Multi-node clusters</td><td>Checkpoint continuity + eval gates</td><td><span class="tag">Planned</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ONCHAIN RAILS ================= -->
+    <section class="block" id="rails" aria-labelledby="rails-title">
+      <div class="wrap">
+        <div class="head reveal">
+          <div>
+            <p class="eyebrow">Onchain where it matters</p>
+            <h2 id="rails-title" class="h2">Crypto rails underneath. <em>No wallet required.</em></h2>
+          </div>
+          <p class="lede">Workloads run in approved compute environments, not on a blockchain. You use TDCC with an API key, like any AI provider. Chains do what they are good at: neutral coordination, auditable settlement, and paying a global supply side.</p>
+        </div>
+
+        <div class="layer-map reveal" aria-label="Where each layer lives">
+          <div><b>Compute</b><span>GPUs in data centers, micro-clusters, and independent hosts. Off-chain, isolated runtimes.</span><i>Chain-agnostic</i></div>
+          <div><b>Verification</b><span>Acceptance criteria, redundant passes, reputation from verified outcomes.</span><i>TDCC protocol</i></div>
+          <div><b>Settlement</b><span>Off-chain payouts at launch; optional public settlement records for teams that want them.</span><i>Avalanche · Solana</i></div>
+          <div><b>Interface</b><span>REST, CLI, SDKs, desktop app, and an OpenAI/Anthropic-compatible gateway.</span><i>Web2-native</i></div>
+        </div>
+
+        <div class="rails reveal spot-group" style="margin-top:28px">
+          <article class="rail">
+            <p class="mono">Coordination layer</p>
+            <h3>Avalanche</h3>
+            <p>A natural home for verifiable coordination, policy-aware execution, and customizable infrastructure. Avalanche L1s can hold auditable workload state, provider coordination, and deployments that need explicit control over rules and participants.</p>
+          </article>
+          <article class="rail">
+            <p class="mono">Throughput layer</p>
+            <h3>Solana</h3>
+            <p>A natural home for high-throughput experiences around AI: fast agent actions, frequent job events, low-friction payments, and developer-facing applications that need responsive execution at scale.</p>
+          </article>
+        </div>
+        <p class="layers-note reveal">Complementary integration paths around the same verified compute service — not competing compute backends.</p>
+      </div>
+    </section>
+
+    <!-- ================= MANIFESTO (light) ================= -->
+    <section class="block light" id="mission" aria-labelledby="mission-title">
+      <div class="wrap">
+        <div class="manifesto">
+          <div class="reveal">
+            <p class="eyebrow">Mission</p>
+            <h2 id="mission-title" class="h2">AI needs more compute. We make <em>all of it</em> reachable.</h2>
+            <div class="manifesto-body">
+              <p>AI teams need more GPUs to train and run models. Data centers have the capacity, but finding the right hardware and managing it is hard — so capacity idles while demand queues.</p>
+              <p>TDCC connects both sides in one network. The cloud is the shape of our mark for a reason: a single surface on top, and a lattice of independent machines underneath, each one a node that earns for useful work.</p>
             </div>
           </div>
-
-          <div class="release-visual">
-            <div class="release-visual-bar"><span>TDCC / PRODUCT PATH</span><span>WORK → RESULT</span></div>
-            <svg class="product-graph" viewBox="0 0 460 248" role="img" aria-labelledby="product-graph-title product-graph-description">
-              <title id="product-graph-title">A workload-to-result TDCC product flow</title>
-              <desc id="product-graph-description">A workload enters TDCC, moves through coordinated compute, and ends as an accepted result.</desc>
-              <path class="graph-rail" d="M93 154 C145 154, 148 76, 230 76 S316 154, 370 154"></path>
-              <path class="graph-dash" d="M125 143 C154 116, 171 88, 210 80 S294 115, 338 143"></path>
-              <circle class="graph-dot" cx="93" cy="154" r="4"></circle>
-              <circle class="graph-dot" cx="230" cy="76" r="4"></circle>
-              <circle class="graph-dot" cx="370" cy="154" r="4"></circle>
-              <rect class="graph-node" x="22" y="116" width="142" height="76" rx="13"></rect>
-              <text class="graph-label" x="40" y="141">01 / REQUEST</text>
-              <text class="graph-title" x="40" y="165">AI workload</text>
-              <rect class="graph-node-core" x="159" y="38" width="142" height="76" rx="13"></rect>
-              <text class="graph-label" x="177" y="63">02 / TDCC</text>
-              <text class="graph-title" x="177" y="87">Coordinate work</text>
-              <rect class="graph-node" x="296" y="116" width="142" height="76" rx="13"></rect>
-              <text class="graph-label" x="314" y="141">03 / ACCEPT</text>
-              <text class="graph-title" x="314" y="165">Useful result</text>
-            </svg>
-            <p class="release-visual-note">The interface asks for the job. The network carries the machine-level coordination.</p>
+          <div class="logo-card reveal" aria-label="TDCC logo">
+            <span class="mono t"><span>TDCC</span><span>Mark 01</span></span>
+            <img src="/assets/tdcc-logo.png" alt="TDCC logo: a cloud with a lattice dome of connected compute nodes" width="358" height="358" loading="lazy" />
+            <span class="mono b"><span>One surface</span><span>Many machines</span></span>
           </div>
         </div>
-
-        <section class="release-points" aria-labelledby="comparison-title">
-          <h3 id="comparison-title" class="sr-only">Where TDCC fits</h3>
-          <article class="release-point">
-            <p class="section-label">01 / Research layer</p>
-            <h3>Exa makes web knowledge easier to ask for.</h3>
-            <p><a href="https://exa.ai/" target="_blank" rel="noreferrer">Exa</a> is a useful reference point: describe a question, then receive organized information from the web. It changes how a research request begins.</p>
-          </article>
-          <article class="release-point">
-            <p class="section-label">02 / Capacity layer</p>
-            <h3>Vast makes GPU capacity easier to access.</h3>
-            <p><a href="https://vast.ai/" target="_blank" rel="noreferrer">Vast</a> exposes a broad GPU marketplace where a user can find and rent an instance. It changes how a compute rental begins.</p>
-          </article>
-          <article class="release-point tdcc">
-            <p class="section-label">03 / Work layer</p>
-            <h3>TDCC is building for the accepted outcome.</h3>
-            <p>A job is matched to suitable capacity and evaluated against its acceptance criteria. In TDCC's intended model, settlement follows only after useful work is accepted.</p>
-          </article>
-        </section>
-        <div class="release-legend"><strong>Different layers, not a head-to-head benchmark.</strong><span>Exa focuses on web intelligence. Vast exposes GPU capacity. TDCC is being built as an execution and verification layer between workload intent and accepted AI work.</span><a class="release-blog-link" href="/two-laptops-80-tps.html">Engineering note: two laptops, one 27B workload, 80 tok/s</a></div>
-      </article>
-    </section>
-
-    <section id="mission" class="section reveal">
-      <p class="section-label">Mission</p>
-      <h2>AI needs more compute. We make it easier to access.</h2>
-      <p>AI teams need more GPUs to train and run models. Data centers have capacity, but finding the right hardware and managing it is hard.</p>
-      <p>TDCC connects both sides in one simple network. Companies get compute. Data centers get more demand. GPU owners get paid for useful work.</p>
-      <div class="principles">
-        <article class="principle"><h3>One simple API</h3><p>Send your AI job once. TDCC handles the infrastructure.</p></article>
-        <article class="principle"><h3>Use more GPUs</h3><p>Connect data centers and independent GPU operators to real demand.</p></article>
-        <article class="principle"><h3>Verify the result</h3><p>Every completed job is checked before it is accepted.</p></article>
-        <article class="principle"><h3>Built for AI</h3><p>Train, fine-tune, evaluate, and run models in one place.</p></article>
-      </div>
-    </section>
-
-    <section id="network" class="section reveal">
-      <p class="section-label">The network</p>
-      <h2>One API. The right hardware underneath.</h2>
-      <p>GPUs are different. TDCC matches every job with hardware that fits its model, memory, speed, price, and reliability needs.</p>
-      <div class="flow">
-          <article class="flow-step"><div class="flow-number">01</div><div><h3>Submit</h3><p>Send a training, fine-tuning, or inference job through the TDCC API.</p></div></article>
-          <article class="flow-step"><div class="flow-number">02</div><div><h3>Match</h3><p>TDCC finds a data center or GPU that fits the job.</p></div></article>
-          <article class="flow-step"><div class="flow-number">03</div><div><h3>Run</h3><p>The job runs in an approved environment.</p></div></article>
-          <article class="flow-step"><div class="flow-number">04</div><div><h3>Verify</h3><p>We check the result. Hosts are paid for accepted work.</p></div></article>
-      </div>
-      <div class="quote">AI teams bring the models. TDCC brings the compute.</div>
-    </section>
-
-    <section id="ecosystem" class="section reveal">
-      <p class="section-label">Ecosystem fit</p>
-      <h2>One compute layer. Different strengths, clearly separated.</h2>
-      <p>TDCC is chain-agnostic where it should be: workloads run in approved compute environments, not on a blockchain. The surrounding coordination and application layers can use the ecosystem that best fits the job.</p>
-      <div class="ecosystem-grid">
-        <article class="ecosystem-card">
-          <h3>Avalanche</h3>
-          <p>A natural home for verifiable coordination, policy-aware execution, and customizable infrastructure. TDCC can use Avalanche L1s for auditable workload state, provider coordination, and deployments that need explicit control over rules and participants.</p>
-        </article>
-        <article class="ecosystem-card">
-          <h3>Solana</h3>
-          <p>A natural home for high-throughput user experiences around AI. TDCC can support Solana builders with fast agent actions, frequent job events, low-friction payments, and developer-facing applications that need responsive execution at scale.</p>
-        </article>
-      </div>
-      <p class="ecosystem-note"><strong>Shared principle:</strong> Avalanche and Solana are complementary integration paths around the same verified compute service. TDCC does not force every workload into one chain; it makes useful AI compute accessible to both communities through a consistent API.</p>
-    </section>
-
-    <section id="workloads" class="section reveal">
-      <p class="section-label">Initial workloads</p>
-      <h2>Everything AI teams need to run models.</h2>
-      <p>Start small with one job or scale across multiple data centers. TDCC is designed for practical AI workloads.</p>
-      <div class="workloads" aria-label="Supported workloads">
-        <span class="chip">Batch inference</span><span class="chip">Image generation</span><span class="chip">Audio transcription</span><span class="chip">Embeddings</span><span class="chip">Evaluations</span><span class="chip">Synthetic data</span><span class="chip">Agent workloads</span><span class="chip">LoRA / QLoRA fine-tuning</span><span class="chip">Open-model hosting</span><span class="chip">Adapter serving</span>
-      </div>
-    </section>
-
-    <section id="research" class="section reveal">
-      <p class="section-label">Research and engineering</p>
-      <h2>Simple on the surface. Serious underneath.</h2>
-      <p>TDCC handles scheduling, secure runtimes, model compatibility, verification, reliability, and payments so teams can focus on building AI.</p>
-    </section>
-
-    <section id="team" class="section reveal">
-      <p class="section-label">Team</p>
-      <h2>A small team, hands on the actual work.</h2>
-      <p>TDCC is built by a small, hands-on team — and it is growing. Meet the founder, the operations lead, and the people joining next.</p>
-      <div class="actions">
-        <a class="button primary" href="/team.html">Meet the team</a>
-        <a class="button" href="mailto:anil@decentralizedcompute.company?subject=Joining%20the%20TDCC%20team">We're hiring — join us</a>
-      </div>
-    </section>
-
-    <section id="faq" class="section reveal">
-      <p class="section-label">FAQ</p>
-      <h2>Clear answers.</h2>
-      <div class="faq">
-        <details><summary>What is TDCC?</summary><p>TDCC is a network that connects AI teams with data centers and GPUs for training, fine-tuning, and inference.</p></details>
-        <details><summary>Do I need to manage a GPU?</summary><p>No. Send your job through the API. TDCC handles routing and execution.</p></details>
-        <details><summary>Can data centers join?</summary><p>Yes. Data centers and GPU operators can provide capacity and earn from accepted AI jobs.</p></details>
-        <details><summary>What makes TDCC different?</summary><p>We sell verified AI work, not raw GPU hours.</p></details>
-        <details><summary>How does TDCC fit Avalanche and Solana?</summary><p>TDCC stays chain-agnostic at the compute layer. Avalanche fits verifiable coordination and customizable infrastructure, while Solana fits high-throughput developer, agent, and micro-workflow experiences. They are complementary integration paths, not competing compute backends.</p></details>
-      </div>
-    </section>
-
-    <section id="join" class="section reveal">
-      <div class="join-panel">
-        <p class="section-label">Early access</p>
-        <h2>Be early to the compute network.</h2>
-        <p>Enter your early believer code to check access to the first TDCC cohort.</p>
-        <form id="early-access-form" class="early-access-form">
-          <label class="sr-only" for="early-access-code">Early access code</label>
-          <input id="early-access-code" name="code" type="text" autocomplete="off" autocapitalize="characters" placeholder="Enter your access code" required />
-          <button class="button primary" type="submit">Check access</button>
-        </form>
-        <button id="copy-invite-link" class="button early-access-share" type="button">Copy invite link</button>
-        <p id="early-access-message" class="early-access-message" role="status" aria-live="polite" hidden></p>
-        <p>We are also looking for AI companies, data centers, GPU operators, ecosystem partners, and <a href="/team.html">new teammates</a>.</p>
-        <div class="actions">
-          <a class="button" href="mailto:anil@decentralizedcompute.company?subject=TDCC%20Early%20Network">Contact the founder</a>
-          <a class="button" href="/litepaper.html">Read the litepaper</a>
+        <div class="principles reveal">
+          <article><p class="mono">01</p><h3>One simple API</h3><p>Send your AI job once. TDCC handles the infrastructure.</p></article>
+          <article><p class="mono">02</p><h3>Use every GPU</h3><p>Connect data centers and independent operators to real demand.</p></article>
+          <article><p class="mono">03</p><h3>Verify the result</h3><p>Every completed job is checked before it is accepted.</p></article>
+          <article><p class="mono">04</p><h3>Built for AI</h3><p>Train, fine-tune, evaluate, and run models in one place.</p></article>
         </div>
       </div>
     </section>
 
-    <footer>
-      <span>© 2026 The Decentralized Compute Company</span>
-      <div class="footer-links"><a href="#release">Release</a><a href="/app.html">App</a><a href="/team.html">Team</a><a href="/litepaper.html">Litepaper</a><a href="/facts.html">Facts</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
-    </footer>
+    <!-- ================= TEAM ================= -->
+    <section class="block" id="team" aria-labelledby="team-title" style="border-top:0">
+      <div class="wrap team">
+        <div class="reveal">
+          <p class="eyebrow">Team</p>
+          <h2 id="team-title" class="h2">A small team, hands on <em>the actual work.</em></h2>
+          <p class="lede">TDCC is built by a small, hands-on team — and it is growing. Meet the founder, the operations lead, advisors, and the people joining next.</p>
+        </div>
+        <div class="actions reveal" style="justify-content:flex-start">
+          <a class="btn solid" href="/team.html">Meet the team <span class="arr">→</span></a>
+          <a class="btn" href="mailto:anil@decentralizedcompute.company?subject=Joining%20the%20TDCC%20team">We're hiring</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FAQ ================= -->
+    <section class="block" id="faq" aria-labelledby="faq-title">
+      <div class="wrap faq-grid">
+        <div class="reveal">
+          <p class="eyebrow">FAQ</p>
+          <h2 id="faq-title" class="h2">Straight <em>answers.</em></h2>
+        </div>
+        <div class="reveal">
+          <details><summary>What is TDCC?</summary><p>An AI inference and compute network that connects AI teams with data centers and GPUs for training, fine-tuning, and inference — through one API, with every result verified.</p></details>
+          <details><summary>Do I need to manage a GPU?</summary><p>No. Send your job through the API. TDCC handles matching, execution, failover, and verification.</p></details>
+          <details><summary>Do I need a wallet or crypto?</summary><p>No. You use TDCC with an API key like any AI provider. Payouts are off-chain at launch; optional on-chain settlement records via Avalanche and Solana are planned for teams that want public, auditable records.</p></details>
+          <details><summary>Can data centers and GPU owners join?</summary><p>Yes. Data centers and GPU operators can provide capacity and earn from accepted AI jobs.</p></details>
+          <details><summary>What makes TDCC different?</summary><p>We sell verified AI work, not raw GPU hours. Failed work is never billed and never paid out.</p></details>
+          <details><summary>How does TDCC fit Avalanche and Solana?</summary><p>TDCC stays chain-agnostic at the compute layer. Avalanche fits verifiable coordination and customizable infrastructure, while Solana fits high-throughput developer, agent, and micro-workflow experiences. They are complementary integration paths, not competing compute backends.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= JOIN ================= -->
+    <section class="block" id="join" aria-labelledby="join-title" style="border-top:0;padding-top:0">
+      <div class="wrap">
+        <div class="join reveal">
+          <p class="eyebrow">Early access</p>
+          <h2 id="join-title" class="display">Be early to the <em>grid.</em></h2>
+          <p class="lede">Enter your early believer code to check access to the first TDCC cohort.</p>
+          <form id="early-access-form" class="early-access-form">
+            <label class="sr-only" for="early-access-code">Early access code</label>
+            <input id="early-access-code" name="code" type="text" autocomplete="off" autocapitalize="characters" placeholder="ENTER YOUR ACCESS CODE" required />
+            <button class="btn solid" type="submit">Check access <span class="arr">→</span></button>
+          </form>
+          <button id="copy-invite-link" class="btn ghost-btn" type="button">Copy invite link</button>
+          <p id="early-access-message" class="early-access-message" role="status" aria-live="polite" hidden></p>
+          <div class="join-foot">
+            <p>We are also looking for AI companies, data centers, GPU operators, ecosystem partners, and <a class="inline" href="/team.html">new teammates</a>.</p>
+            <a class="btn" href="mailto:anil@decentralizedcompute.company?subject=TDCC%20Early%20Network">Contact the founder</a>
+            <a class="btn" href="/litepaper.html">Read the litepaper</a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <script>
-    const revealItems = document.querySelectorAll('.reveal');
-    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.12 });
-      revealItems.forEach((item) => observer.observe(item));
-    } else {
-      revealItems.forEach((item) => item.classList.add('visible'));
-    }
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="/" aria-label="TDCC home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
+          <p class="about">The grid for AI compute. A GPU marketplace, a verified job network, and Exact Core — an AI chip whose every answer anyone can re-check.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul><li><a href="#exact-core">Exact Core chip</a></li><li><a href="#marketplace">GPU marketplace</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="#developers">Developers</a></li><li><a href="#workloads">Workloads</a></li></ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul><li><a href="/team.html">Team</a></li><li><a href="/litepaper.html">Litepaper</a></li><li><a href="/two-laptops-80-tps.html">Engineering</a></li><li><a href="/facts.html">Facts</a></li></ul>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <ul><li><a href="https://x.com/computecompany" target="_blank" rel="noreferrer">X / @computecompany</a></li><li><a href="https://www.linkedin.com/in/anilyagiz/" target="_blank" rel="noreferrer">LinkedIn</a></li><li><a href="mailto:anil@decentralizedcompute.company">Email</a></li><li><a href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">GitHub</a></li><li><a href="/feed.xml">RSS</a></li></ul>
+        </div>
+      </div>
+      <div class="wordmark" aria-hidden="true">decentralized compute</div>
+      <div class="legal"><span>© 2026 The Decentralized Compute Company</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></span></div>
+    </div>
+  </footer>
 
+  <script>
+    (() => {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* nav */
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 24);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      const menuBtn = document.getElementById('menu-btn');
+      const links = document.getElementById('nav-links');
+      menuBtn.addEventListener('click', () => {
+        const open = links.classList.toggle('open');
+        menuBtn.setAttribute('aria-expanded', String(open));
+      });
+      links.addEventListener('click', (e) => {
+        if (e.target.closest('a')) { links.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); }
+      });
+
+      /* reveal */
+      const items = document.querySelectorAll('.reveal');
+      if ('IntersectionObserver' in window && !reduce) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) { entry.target.classList.add('in'); io.unobserve(entry.target); }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        items.forEach((el) => io.observe(el));
+      } else {
+        items.forEach((el) => el.classList.add('in'));
+      }
+
+      /* typed terminal */
+      const typed = document.getElementById('typed');
+      const commands = ['tdcc jobs submit ./job.yaml --watch', 'tdcc hosts list --min-vram 48', 'tdcc receipts show job_8fq1za --verify'];
+      if (!reduce) {
+        let ci = 0, i = commands[0].length, dir = -1;
+        const tick = () => {
+          const cmd = commands[ci];
+          i += dir;
+          typed.textContent = cmd.slice(0, i);
+          let wait = dir > 0 ? 55 : 22;
+          if (dir > 0 && i >= cmd.length) { dir = -1; wait = 2600; }
+          else if (dir < 0 && i <= 0) { ci = (ci + 1) % commands.length; dir = 1; wait = 400; }
+          setTimeout(tick, wait);
+        };
+        setTimeout(tick, 2600);
+      }
+
+      /* code tabs */
+      const tabs = document.querySelectorAll('[role="tab"]');
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          tabs.forEach((t) => {
+            const on = t === tab;
+            t.setAttribute('aria-selected', String(on));
+            t.tabIndex = on ? 0 : -1;
+            document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+          });
+        });
+        tab.addEventListener('keydown', (e) => {
+          if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+          const list = [...tabs];
+          const next = list[(list.indexOf(tab) + (e.key === 'ArrowRight' ? 1 : list.length - 1)) % list.length];
+          next.focus(); next.click();
+        });
+      });
+
+      /* network feed (illustrative) */
+      const ticker = document.getElementById('ticker');
+      const kinds = ['inference.batch', 'finetune.lora', 'embeddings', 'eval.suite', 'transcribe', 'image.generate', 'synth.generate', 'inference.endpoint'];
+      const regions = ['eu-central', 'us-east', 'ap-south', 'eu-west', 'us-west', 'me-central'];
+      const hw = ['80GB', '48GB', '24GB'];
+      const states = [['verified', 'v'], ['verified', 'v'], ['matched', 'm'], ['running', 'm'], ['settled', 'v']];
+      const pick = (a) => a[Math.floor(Math.random() * a.length)];
+      let feed = '';
+      for (let i = 0; i < 16; i++) {
+        const st = pick(states);
+        feed += `<span><b>job_${Math.random().toString(36).slice(2, 8)}</b><i style="font-style:normal">${pick(kinds)}</i><i style="font-style:normal;color:var(--muted)">${pick(regions)} · ${pick(hw)}</i><i style="font-style:normal" class="${st[1]}">${st[0]}</i></span>`;
+      }
+      ticker.innerHTML = feed + feed;
+
+      /* statement: words light up with scroll */
+      const statement = document.getElementById('statement');
+      const accent = new Set(['verified', 'intelligence', 'right.']);
+      statement.innerHTML = statement.textContent.split(' ').map((w) => `<span class="w${accent.has(w) ? ' acc' : ''}">${w}</span>`).join(' ');
+      const words = [...statement.querySelectorAll('.w')];
+      const lightWords = () => {
+        const r = statement.getBoundingClientRect();
+        const p = Math.min(1, Math.max(0, (window.innerHeight * 0.85 - r.top) / (r.height + window.innerHeight * 0.3)));
+        const n = Math.round(p * words.length);
+        words.forEach((w, i) => w.classList.toggle('on', i < n));
+      };
+      if (reduce) words.forEach((w) => w.classList.add('on'));
+      else { lightWords(); window.addEventListener('scroll', lightWords, { passive: true }); }
+
+      /* count-up */
+      const counters = document.querySelectorAll('[data-count]');
+      if (!reduce && 'IntersectionObserver' in window) {
+        const co = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target, end = +el.dataset.count, t0 = performance.now();
+            const step = (t) => {
+              const k = Math.min(1, (t - t0) / 1400);
+              el.textContent = Math.round(end * (1 - Math.pow(1 - k, 3)));
+              if (k < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+            co.unobserve(el);
+          });
+        }, { threshold: 0.6 });
+        counters.forEach((c) => { c.textContent = '0'; co.observe(c); });
+      }
+
+      /* spotlight cards */
+      document.querySelectorAll('.spot-group > *').forEach((card) => {
+        card.addEventListener('pointermove', (e) => {
+          const r = card.getBoundingClientRect();
+          card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+          card.style.setProperty('--my', `${e.clientY - r.top}px`);
+        });
+      });
+
+      /* exact core: chip tilts toward the pointer */
+      const stage = document.getElementById('chip-stage');
+      const tiltEl = document.getElementById('chip-tilt');
+      if (stage && !reduce) {
+        stage.addEventListener('pointermove', (e) => {
+          const r = stage.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+          tiltEl.style.setProperty('--rx', `${52 - y * 22}deg`);
+          tiltEl.style.setProperty('--rz', `${-38 + x * 28}deg`);
+        });
+        stage.addEventListener('pointerleave', () => {
+          tiltEl.style.removeProperty('--rx');
+          tiltEl.style.removeProperty('--rz');
+        });
+      }
+
+      /* marketplace: mode + filter */
+      const market = document.querySelector('.market');
+      if (market) {
+        market.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => {
+          market.querySelectorAll('.seg button').forEach((o) => o.setAttribute('aria-selected', String(o === b)));
+          market.classList.toggle('job', b.dataset.mode === 'job');
+        }));
+        market.querySelectorAll('.filters button').forEach((b) => b.addEventListener('click', () => {
+          market.querySelectorAll('.filters button').forEach((o) => o.classList.toggle('on', o === b));
+          market.querySelectorAll('.listing').forEach((l) => { l.hidden = b.dataset.f !== 'all' && l.dataset.f !== b.dataset.f; });
+        }));
+        const exactCard = market.querySelector('.listing.exact');
+        exactCard.style.cursor = 'pointer';
+        exactCard.addEventListener('click', () => document.getElementById('exact-core').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }));
+      }
+
+      /* hero globe: the logo's lattice dome as a living compute network */
+      const canvas = document.getElementById('globe');
+      const ctx = canvas.getContext('2d');
+      let W = 0, H = 0, R = 0, cx = 0, cy = 0, dpr = 1;
+      const dots = [];
+      for (let lat = 0; lat <= 88; lat += 4) {
+        const ring = Math.max(6, Math.round(Math.cos(lat * Math.PI / 180) * 90));
+        for (let k = 0; k < ring; k++) {
+          const lon = (k / ring) * Math.PI * 2;
+          const grid = lat % 20 === 0 || k % Math.round(ring / 12) === 0;
+          dots.push({ lat: lat * Math.PI / 180, lon, grid });
+        }
+      }
+      const base = [];
+      for (let r = 1.05; r <= 1.75; r += 0.11) {
+        const n = Math.round(r * 70);
+        for (let k = 0; k < n; k++) base.push({ r, a: (k / n) * Math.PI * 2 });
+      }
+      const nodes = [];
+      for (let i = 0; i < 22; i++) {
+        nodes.push({ lat: (8 + Math.random() * 70) * Math.PI / 180, lon: Math.random() * Math.PI * 2, pulse: Math.random() });
+      }
+      const arcs = [];
+      const spawnArc = () => {
+        const a = Math.floor(Math.random() * nodes.length);
+        let b = Math.floor(Math.random() * nodes.length);
+        if (b === a) b = (a + 1) % nodes.length;
+        arcs.push({ a, b, t: 0, speed: 0.004 + Math.random() * 0.004 });
+      };
+      for (let i = 0; i < 7; i++) { spawnArc(); arcs[i].t = Math.random(); }
+
+      let tilt = 0.42, tiltTarget = 0.42, rotOff = 0, rotOffTarget = 0, grow = reduce ? 1 : 0, scan = 0;
+      const toVec = (lat, lon) => [Math.cos(lat) * Math.cos(lon), Math.sin(lat), Math.cos(lat) * Math.sin(lon)];
+      const project = (v, rot, scale = 1) => {
+        const x0 = v[0] * Math.cos(rot) - v[2] * Math.sin(rot);
+        const z0 = v[0] * Math.sin(rot) + v[2] * Math.cos(rot);
+        const y1 = v[1] * Math.cos(tilt) - z0 * Math.sin(tilt);
+        const z1 = v[1] * Math.sin(tilt) + z0 * Math.cos(tilt);
+        const k = R * scale * (0.6 + 0.4 * grow);
+        return { x: cx + x0 * k, y: cy - y1 * k, z: z1 };
+      };
+      const slerp = (p, q, t) => {
+        const d = Math.min(1, Math.max(-1, p[0] * q[0] + p[1] * q[1] + p[2] * q[2]));
+        const w = Math.acos(d);
+        if (w < 1e-4) return p;
+        const s = Math.sin(w);
+        const k1 = Math.sin((1 - t) * w) / s, k2 = Math.sin(t * w) / s;
+        return [p[0] * k1 + q[0] * k2, p[1] * k1 + q[1] * k2, p[2] * k1 + q[2] * k2];
+      };
+
+      const resize = () => {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        W = canvas.clientWidth; H = canvas.clientHeight;
+        canvas.width = W * dpr; canvas.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const mobile = W < 860;
+        R = Math.min(W * (mobile ? 0.46 : 0.32), H * (mobile ? 0.27 : 0.42));
+        cx = mobile ? W * 0.5 : W * 0.64;
+        cy = mobile ? H * 0.36 : H * 0.52;
+      };
+
+      let rot = 0.6, visible = true, raf = 0;
+      const sand = '216,191,148';
+      const draw = () => {
+        ctx.clearRect(0, 0, W, H);
+        ctx.globalAlpha = Math.min(1, grow * 1.4);
+        const halo = ctx.createRadialGradient(cx, cy - R * 0.45, R * 0.1, cx, cy - R * 0.3, R * 1.6);
+        halo.addColorStop(0, 'rgba(216,191,148,.13)');
+        halo.addColorStop(1, 'rgba(216,191,148,0)');
+        ctx.fillStyle = halo;
+        ctx.fillRect(0, 0, W, H);
+        // cloud base rings
+        for (const p of base) {
+          const v = [Math.cos(p.a) * p.r, -0.02, Math.sin(p.a) * p.r];
+          const s = project(v, rot * 0.5);
+          const fade = 1 - (p.r - 1.05) / 0.8;
+          ctx.fillStyle = `rgba(${sand},${(0.08 + 0.18 * fade) * (0.55 + 0.45 * (s.z + 1) / 2)})`;
+          ctx.fillRect(s.x, s.y, 1.2, 1.2);
+        }
+        // dome dots
+        for (const d of dots) {
+          const s = project(toVec(d.lat, d.lon), rot);
+          const front = (s.z + 1) / 2;
+          const band = Math.max(0, 1 - Math.abs(d.lat - scan) / 0.09);
+          const a = Math.min(1, (d.grid ? 0.14 + 0.72 * front : 0.05 + 0.26 * front) + band * 0.7 * front);
+          const size = (d.grid ? 1.6 : 1.1) + band * 0.9;
+          ctx.fillStyle = `rgba(${sand},${a})`;
+          ctx.fillRect(s.x - size / 2, s.y - size / 2, size, size);
+        }
+        // arcs
+        ctx.globalCompositeOperation = 'lighter';
+        for (let i = arcs.length - 1; i >= 0; i--) {
+          const arc = arcs[i];
+          const p = toVec(nodes[arc.a].lat, nodes[arc.a].lon), q = toVec(nodes[arc.b].lat, nodes[arc.b].lon);
+          const head = Math.min(arc.t, 1), tail = Math.max(0, arc.t - 0.35);
+          ctx.beginPath();
+          let pen = false;
+          for (let j = 0; j <= 24; j++) {
+            const t = tail + (head - tail) * (j / 24);
+            const lift = 1 + 0.22 * Math.sin(Math.PI * t);
+            const s = project(slerp(p, q, t), rot, lift);
+            if (s.z < -0.12) { pen = false; continue; }
+            pen ? ctx.lineTo(s.x, s.y) : ctx.moveTo(s.x, s.y);
+            pen = true;
+          }
+          const fadeOut = arc.t > 1 ? Math.max(0, 1 - (arc.t - 1) / 0.35) : 1;
+          ctx.strokeStyle = `rgba(245,238,228,${0.55 * fadeOut})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          const hs = project(slerp(p, q, head), rot, 1 + 0.22 * Math.sin(Math.PI * head));
+          if (arc.t <= 1 && hs.z >= -0.12) {
+            const s = hs;
+            ctx.fillStyle = 'rgba(245,238,228,.95)';
+            ctx.fillRect(s.x - 1.5, s.y - 1.5, 3, 3);
+          }
+          arc.t += arc.speed;
+          if (arc.t > 1.35) { nodes[arc.b].pulse = 1; arcs.splice(i, 1); spawnArc(); }
+        }
+        // nodes
+        for (const n of nodes) {
+          const s = project(toVec(n.lat, n.lon), rot);
+          if (s.z < -0.15) continue;
+          const front = (s.z + 1) / 2;
+          const size = 4.5;
+          ctx.fillStyle = `rgba(${sand},${0.35 + 0.65 * front})`;
+          ctx.fillRect(s.x - size / 2, s.y - size / 2, size, size);
+          const glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, 14);
+          glow.addColorStop(0, `rgba(${sand},${0.28 * front})`);
+          glow.addColorStop(1, `rgba(${sand},0)`);
+          ctx.fillStyle = glow;
+          ctx.fillRect(s.x - 14, s.y - 14, 28, 28);
+          if (n.pulse > 0.01) {
+            const r = (1 - n.pulse) * 22 + 4;
+            ctx.strokeStyle = `rgba(${sand},${n.pulse * 0.7})`;
+            ctx.strokeRect(s.x - r / 2, s.y - r / 2, r, r);
+            n.pulse *= 0.96;
+          }
+        }
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.globalAlpha = 1;
+      };
+      const loop = () => {
+        rot += 0.0018;
+        grow += (1 - grow) * 0.035;
+        tilt += (tiltTarget - tilt) * 0.05;
+        rotOff += (rotOffTarget - rotOff) * 0.05;
+        scan = (scan + 0.006) % 1.9;
+        const keep = rot;
+        rot += rotOff;
+        draw();
+        rot = keep;
+        hud.textContent = `LAT ${(Math.min(scan, 1.57) * 57.3).toFixed(2).padStart(5, '0')} · ROT ${String(Math.round(((rot * 57.3) % 360 + 360) % 360)).padStart(3, '0')}° · ${nodes.length} NODES`;
+        if (visible) raf = requestAnimationFrame(loop);
+      };
+      const hud = document.getElementById('hud-clock');
+      resize();
+      window.addEventListener('resize', () => { resize(); if (reduce) draw(); });
+      window.addEventListener('pointermove', (e) => {
+        if (e.pointerType !== 'mouse') return;
+        tiltTarget = 0.42 + ((e.clientY / window.innerHeight) - 0.5) * 0.28;
+        rotOffTarget = ((e.clientX / window.innerWidth) - 0.5) * 0.6;
+      }, { passive: true });
+      if (reduce) {
+        draw();
+      } else {
+        new IntersectionObserver(([e]) => {
+          visible = e.isIntersecting;
+          cancelAnimationFrame(raf);
+          if (visible) raf = requestAnimationFrame(loop);
+        }).observe(canvas);
+      }
+    })();
+
+    /* early access */
     const earlyAccessForm = document.querySelector('#early-access-form');
     const earlyAccessCode = document.querySelector('#early-access-code');
     const earlyAccessMessage = document.querySelector('#early-access-message');
@@ -529,6 +1797,7 @@
     if (codeFromLink) {
       earlyAccessCode.value = codeFromLink;
       earlyAccessForm.requestSubmit();
+      document.getElementById('join').scrollIntoView();
     }
   </script>
 </body>
