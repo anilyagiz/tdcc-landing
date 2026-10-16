@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f7f4ee" />
+  <meta name="color-scheme" content="light" />
+  <title>Introducing TDCC Exact Core | The Decentralized Compute Company</title>
+  <meta name="description" content="TDCC Exact Core is an open-source AI chip, built on openTPU, whose every answer anyone can re-check on a laptop. A Solana market pays honest providers and slashes cheaters." />
+  <link rel="canonical" href="https://decentralizedcompute.company/exact-core.html" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Introducing TDCC Exact Core" />
+  <meta property="og:description" content="An AI chip whose every answer anyone can re-check, and a Solana market to rent it." />
+  <meta property="og:url" content="https://decentralizedcompute.company/exact-core.html" />
+  <meta property="og:image" content="https://decentralizedcompute.company/assets/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@computecompany" />
+  <link rel="stylesheet" href="/styles/site.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Introducing TDCC Exact Core",
+    "description": "An open-source AI chip whose every answer anyone can re-check, and a Solana market to rent it.",
+    "url": "https://decentralizedcompute.company/exact-core.html",
+    "publisher": { "@type": "Organization", "name": "The Decentralized Compute Company", "url": "https://decentralizedcompute.company/" },
+    "isBasedOn": "https://github.com/FeSens/openTPU",
+    "codeRepository": "https://github.com/anilyagiz/tdcc-exact-core"
+  }
+  </script>
+  <style>
+    /* This page is a light, editorial launch post. Tokens are remapped so the shared nav/footer follow. */
+    :root {
+      --bg: #f7f4ee;
+      --bg-2: #efebe3;
+      --panel: #ffffff;
+      --line: rgba(23, 20, 15, .1);
+      --line-2: rgba(23, 20, 15, .18);
+      --text: #17140f;
+      --body: #4a443b;
+      --muted: #8a8174;
+      --sand: #8a6c3e;
+      --cream: #17140f;
+      --ink: #f7f4ee;
+      --ok: #3f7a35;
+      --warn: #a3652a;
+      --col: 700px;
+    }
+    body { font-size: 17px; }
+    .nav { background: rgba(247, 244, 238, .86); }
+    .nav-links .btn { color: var(--ink); }
+    .nav-links .btn:hover { background: #3a3228; border-color: #3a3228; }
+    @media (max-width: 1080px) { .nav-links { background: rgba(247, 244, 238, .98); } }
+
+    .col { width: 100%; max-width: calc(var(--col) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+    .wide { width: 100%; max-width: calc(1120px + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+
+    /* hero */
+    .launch { padding: clamp(64px, 9vw, 120px) 0 clamp(40px, 5vw, 64px); text-align: center; }
+    .kicker { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 14px; color: var(--muted); font-size: 14px; }
+    .kicker span + span::before { content: "·"; margin-right: 14px; }
+    .launch h1 { margin: 22px auto 0; max-width: 14ch; font-family: var(--serif); font-size: clamp(46px, 7.2vw, 96px); line-height: 1; letter-spacing: -.03em; }
+    .launch .sub { margin: 26px auto 0; max-width: 34em; color: var(--body); font-size: clamp(18px, 1.7vw, 21px); line-height: 1.55; }
+    .launch .actions { justify-content: center; margin-top: 34px; }
+    .btn { text-transform: none; letter-spacing: 0; font-family: var(--sans); font-size: 15px; border-radius: 999px; padding: 0 22px; }
+    .btn.solid:hover { background: #3a3228; border-color: #3a3228; color: var(--ink); }
+
+    /* hero media: the chip on a dark stage */
+    .media { position: relative; margin-top: clamp(40px, 5vw, 64px); border-radius: 22px; overflow: hidden; background:
+      radial-gradient(ellipse 60% 70% at 50% 45%, rgba(216,191,148,.18), transparent 70%), #0e0c09; }
+    .media .chip-stage { max-width: 640px; margin: 0 auto; }
+    .media-cap { position: absolute; left: 24px; right: 24px; bottom: 18px; display: flex; justify-content: space-between; color: rgba(239,232,220,.5); font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; }
+    .media-cap b { color: rgba(216,191,148,.85); font-weight: 400; }
+    .media .chip-caption { display: none; }
+
+    /* highlights row */
+    .highlights { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 28px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .highlights div { padding: 22px 20px 22px 0; }
+    .highlights div + div { padding-left: 20px; border-left: 1px solid var(--line); }
+    .highlights .n { font-family: var(--serif); font-size: clamp(30px, 3.2vw, 42px); line-height: 1; letter-spacing: -.02em; }
+    .highlights p { margin-top: 8px; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
+
+    /* prose */
+    .post { padding: clamp(56px, 7vw, 96px) 0 clamp(40px, 5vw, 72px); }
+    .post p { color: var(--body); line-height: 1.75; }
+    .post p + p { margin-top: 18px; }
+    .post .lead { color: var(--text); font-size: clamp(19px, 1.8vw, 22px); line-height: 1.6; }
+    .post h2 { margin: clamp(56px, 7vw, 88px) 0 18px; font-family: var(--serif); font-size: clamp(28px, 3vw, 38px); line-height: 1.12; letter-spacing: -.015em; }
+    .post h3 { margin: 34px 0 10px; font-size: 18px; font-weight: 600; }
+    .post a { color: var(--text); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 3px; }
+    .post a:hover { text-decoration-color: var(--text); }
+    .post code { font-family: var(--mono); font-size: .84em; background: var(--bg-2); padding: 1px 5px; border-radius: 4px; word-break: break-all; }
+    .post ul { margin: 16px 0 0; padding-left: 20px; color: var(--body); line-height: 1.75; }
+    .post li + li { margin-top: 6px; }
+    sup a { text-decoration: none !important; color: var(--sand) !important; font-size: .75em; padding-left: 1px; }
+
+    .figure { margin: 36px 0 0; }
+    .figure figcaption { margin-top: 12px; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
+    .card { border: 1px solid var(--line); border-radius: 16px; background: var(--panel); overflow: hidden; }
+
+    /* bar charts */
+    .chart { padding: 26px 26px 22px; }
+    .chart-title { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 20px; font-size: 14px; font-weight: 600; }
+    .chart-title span { color: var(--muted); font-weight: 400; }
+    .legend { display: flex; gap: 18px; margin-bottom: 18px; color: var(--muted); font-size: 13px; }
+    .legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: -1px; }
+    .k1 { background: #cdbf9f; }
+    .k2 { background: #17140f; }
+    .bars { display: grid; gap: 18px; }
+    .bar-group { display: grid; grid-template-columns: 120px 1fr; gap: 14px; align-items: center; }
+    .bar-group > span { font-size: 14px; color: var(--text); }
+    .bar-stack { display: grid; gap: 5px; }
+    .bar { position: relative; height: 22px; border-radius: 4px; background: var(--bg-2); }
+    .bar i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: 4px; transition: width 1.2s cubic-bezier(.2, .7, .1, 1); }
+    .bar b { position: absolute; top: 50%; transform: translateY(-50%); font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .in .bar i { width: var(--w); }
+    .in .bar b { left: calc(var(--w) + 8px); }
+    .bar b { left: 8px; transition: left 1.2s cubic-bezier(.2, .7, .1, 1); }
+
+    .duo { display: grid; grid-template-columns: 1fr 1fr; }
+    .duo > div { padding: 24px 26px; }
+    .duo > div + div { border-left: 1px solid var(--line); }
+    .duo .lbl { color: var(--muted); font-size: 13px; }
+    .duo .n { margin-top: 6px; font-family: var(--serif); font-size: 40px; line-height: 1; letter-spacing: -.02em; }
+    .duo p { margin-top: 10px; font-size: 14.5px; line-height: 1.55; }
+
+    /* steps */
+    .steps { list-style: none; margin: 30px 0 0; padding: 0; counter-reset: s; }
+    .steps li { counter-increment: s; display: grid; grid-template-columns: 40px 90px 1fr; gap: 10px; padding: 16px 0; border-top: 1px solid var(--line); color: var(--body); line-height: 1.6; }
+    .steps li:last-child { border-bottom: 1px solid var(--line); }
+    .steps li::before { content: counter(s); color: var(--muted); font-variant-numeric: tabular-nums; }
+    .steps b { color: var(--text); font-weight: 600; }
+
+    /* code */
+    .term { background: #0e0c09; color: #c4bbad; border-radius: 16px; overflow: hidden; }
+    .term .bar-top { display: flex; align-items: center; gap: 7px; padding: 12px 16px; border-bottom: 1px solid rgba(236,224,202,.1); }
+    .term .bar-top i { width: 10px; height: 10px; border-radius: 50%; background: rgba(236,224,202,.16); }
+    .term .bar-top span { margin-left: 10px; color: rgba(236,224,202,.45); font-family: var(--mono); font-size: 11px; }
+    .term pre { margin: 0; padding: 20px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; line-height: 1.75; white-space: pre; }
+    .term .c { color: #6f685d; } .term .k { color: #d8bf94; } .term .s { color: #b9d99a; }
+
+    /* tables */
+    .tbl { overflow-x: auto; }
+    table { width: 100%; min-width: 600px; border-collapse: collapse; }
+    th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--line); font-size: 14px; }
+    th { color: var(--muted); font-weight: 500; font-size: 12.5px; }
+    td { color: var(--body); font-variant-numeric: tabular-nums; }
+    td:first-child { color: var(--text); }
+    .num { text-align: right; }
+    th, td { white-space: nowrap; }
+    @media (min-width: 1000px) { .bleed { margin-left: -110px; margin-right: -110px; } }
+    tr:last-child td { border-bottom: 0; }
+    .pill-s { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 500; margin-right: 6px; }
+    .pill-s.ok { background: rgba(63,122,53,.1); color: var(--ok); }
+    .pill-s.no { background: rgba(163,101,42,.12); color: var(--warn); }
+    .pill-s.pl { background: var(--bg-2); color: var(--muted); }
+
+    .note { margin-top: 30px; padding: 20px 22px; border-radius: 14px; background: var(--bg-2); color: var(--body); font-size: 15.5px; line-height: 1.65; }
+    .note b { color: var(--text); }
+
+    .foot-notes { margin-top: clamp(56px, 7vw, 88px); padding-top: 22px; border-top: 1px solid var(--line); }
+    .foot-notes ol { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13.5px; line-height: 1.6; }
+    .foot-notes li + li { margin-top: 8px; }
+
+    .end { padding: clamp(56px, 7vw, 96px) 0; border-top: 1px solid var(--line); text-align: center; }
+    .end h2 { font-family: var(--serif); font-size: clamp(32px, 4vw, 52px); line-height: 1.05; letter-spacing: -.02em; }
+    .end p { margin: 16px auto 0; max-width: 36em; color: var(--body); }
+    .end .actions { justify-content: center; margin-top: 28px; }
+
+    footer .brand-name { color: var(--text); }
+
+    /* chip (same drawing as the landing page) */
+    .chip-stage { position: relative; aspect-ratio: 1; perspective: 1400px; display: grid; place-items: center; }
+    .chip-tilt { position: relative; width: 82%; aspect-ratio: 1; transform-style: preserve-3d; transform: rotateX(var(--rx, 52deg)) rotateZ(var(--rz, -38deg)); transition: transform .5s cubic-bezier(.2, .7, .1, 1); }
+    .chip-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .chip-shadow { position: absolute; inset: 6%; transform: translateZ(-60px); background: rgba(0,0,0,.75); filter: blur(30px); border-radius: 20px; }
+    .chip-lid { position: absolute; left: 27.5%; top: 27.5%; width: 45%; aspect-ratio: 1; transform: translateZ(var(--lift, 90px)); transition: transform .8s cubic-bezier(.2, .7, .1, 1); filter: drop-shadow(0 30px 30px rgba(0,0,0,.55)); }
+    .chip-lid svg { width: 100%; height: 100%; }
+    .chip-stage:hover .chip-lid { --lift: 140px; }
+    .lid-t { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; fill: #2a2117; font-weight: 600; }
+    .lid-s { font-family: var(--mono); font-size: 7px; letter-spacing: .16em; fill: #4a3b28; }
+    .chip-lbl { font-family: var(--mono); font-size: 7px; letter-spacing: .14em; fill: rgba(216,191,148,.75); }
+    .traces-live path { stroke-dasharray: 14 400; stroke-dashoffset: 14; animation: flow 3.6s linear infinite; animation-delay: var(--dl); filter: drop-shadow(0 0 3px #f3dfb8); }
+    @keyframes flow { to { stroke-dashoffset: -400; } }
+    .mm-glow { animation: mm 2.4s ease-in-out infinite; }
+    @keyframes mm { 0%, 100% { opacity: .15; } 50% { opacity: 1; } }
+    .log-rows rect { animation: log 2s steps(1) infinite; }
+    .log-rows rect:nth-child(2n) { animation-delay: .5s; }
+    .log-rows rect:nth-child(3n) { animation-delay: 1s; }
+    @keyframes log { 50% { opacity: .25; } }
+    .seq-run { animation: seq 1.8s steps(6) infinite; }
+    @keyframes seq { to { transform: translateX(96px); } }
+    .chip-caption { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+    @media (prefers-reduced-motion: reduce) { .traces-live path, .mm-glow, .log-rows rect, .seq-run { animation: none; } }
+
+    @media (max-width: 760px) {
+      .highlights { grid-template-columns: 1fr 1fr; }
+      .highlights div:nth-child(3) { padding-left: 0; border-left: 0; }
+      .highlights div:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .duo { grid-template-columns: 1fr; }
+      .duo > div + div { border-left: 0; border-top: 1px solid var(--line); }
+      .bar-group { grid-template-columns: 1fr; gap: 8px; }
+      .steps li { grid-template-columns: 28px 1fr; }
+      .steps li span { grid-column: 2; }
+      .media-cap { font-size: 9.5px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="0 0 120 80">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z" />
+        <g stroke-width="1.4" opacity=".85"><path d="M62 14 V70" /><path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" /><path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" /><path d="M38 26 Q62 31 86 26" /><path d="M31 39 Q62 45 93 39" /><path d="M29 54 Q62 60 95 54" /></g>
+      </g>
+      <g fill="currentColor"><rect x="59.5" y="26.5" width="5" height="5" /><rect x="45" y="39" width="5" height="5" /><rect x="74" y="39" width="5" height="5" /><rect x="59.5" y="42" width="5" height="5" /><rect x="33" y="52" width="4.5" height="4.5" /><rect x="86.5" y="52" width="4.5" height="4.5" /><rect x="59.5" y="57" width="5" height="5" /></g>
+    </symbol>
+  </svg>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="/" aria-label="The Decentralized Compute Company home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">tdcc</span></a>
+      <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
+        <a href="/exact-core.html" aria-current="page">Exact Core</a>
+        <a href="/marketplace.html">Marketplace</a>
+        <a href="/#platform">Platform</a>
+        <a href="/#developers">Developers</a>
+        <a href="/app.html">App</a>
+        <a href="/team.html">Team</a>
+        <a href="/cask-q.html">Research</a>
+        <a class="btn solid sm" href="/#join">Get early access</a>
+      </nav>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main id="content">
+    <header class="launch">
+      <div class="col">
+        <div class="kicker"><span>Announcement</span><span>Hardware</span><span>Open source</span></div>
+        <h1>Introducing TDCC Exact Core</h1>
+        <p class="sub">An AI chip whose every answer anyone can re-check, and a Solana market to rent it.</p>
+        <div class="actions">
+          <a class="btn solid" href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">View on GitHub</a>
+          <a class="btn" href="#try">Run the demo</a>
+        </div>
+      </div>
+      <div class="wide">
+        <div class="media" aria-label="Illustration of the TDCC Exact Core chip">
+          <div class="chip-stage" id="chip-stage" aria-label="Illustration of the TDCC Exact Core chip">
+            <div class="chip-tilt" id="chip-tilt">
+              <div class="chip-shadow"></div>
+              <svg class="chip-svg" viewBox="0 0 400 400" role="img" aria-labelledby="chip-svg-title">
+                <title id="chip-svg-title">TDCC Exact Core package with matrix unit, vector unit, trace log, and sequencer</title>
+                <defs>
+                  <linearGradient id="sub" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a241b"/><stop offset="1" stop-color="#15120d"/></linearGradient>
+                  <linearGradient id="die" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a3024"/><stop offset=".5" stop-color="#1d1913"/><stop offset="1" stop-color="#2c251b"/></linearGradient>
+                  <linearGradient id="lid" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3e3c4"/><stop offset=".45" stop-color="#cfb184"/><stop offset="1" stop-color="#8f7348"/></linearGradient>
+                  <pattern id="cells" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="none"/><rect x="1" y="1" width="6" height="6" fill="rgba(216,191,148,.16)"/></pattern>
+                  <pattern id="lines" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="1" fill="rgba(216,191,148,.22)"/></pattern>
+                </defs>
+                <!-- substrate -->
+                <rect x="20" y="20" width="360" height="360" rx="18" fill="url(#sub)" stroke="rgba(216,191,148,.35)"/>
+                <g fill="#c9ab7c" opacity=".85">
+                  <g id="pins-top"><rect x="44" y="24" width="6" height="10" rx="1"/><rect x="62" y="24" width="6" height="10" rx="1"/><rect x="80" y="24" width="6" height="10" rx="1"/><rect x="98" y="24" width="6" height="10" rx="1"/><rect x="116" y="24" width="6" height="10" rx="1"/><rect x="134" y="24" width="6" height="10" rx="1"/><rect x="152" y="24" width="6" height="10" rx="1"/><rect x="170" y="24" width="6" height="10" rx="1"/><rect x="188" y="24" width="6" height="10" rx="1"/><rect x="206" y="24" width="6" height="10" rx="1"/><rect x="224" y="24" width="6" height="10" rx="1"/><rect x="242" y="24" width="6" height="10" rx="1"/><rect x="260" y="24" width="6" height="10" rx="1"/><rect x="278" y="24" width="6" height="10" rx="1"/><rect x="296" y="24" width="6" height="10" rx="1"/><rect x="314" y="24" width="6" height="10" rx="1"/><rect x="332" y="24" width="6" height="10" rx="1"/><rect x="350" y="24" width="6" height="10" rx="1"/></g>
+                  <use href="#pins-top" transform="translate(0 342)"/>
+                  <use href="#pins-top" transform="rotate(90 200 200)"/>
+                  <use href="#pins-top" transform="rotate(-90 200 200)"/>
+                </g>
+                <!-- traces from die to pins -->
+                <g class="traces" fill="none" stroke="rgba(216,191,148,.28)" stroke-width="1">
+                  <path d="M120 120 L60 60 L60 34"/><path d="M280 120 L340 60 L340 34"/><path d="M120 280 L60 340 L60 366"/><path d="M280 280 L340 340 L340 366"/>
+                  <path d="M150 110 V34"/><path d="M200 110 V34"/><path d="M250 110 V34"/>
+                  <path d="M150 290 V366"/><path d="M200 290 V366"/><path d="M250 290 V366"/>
+                  <path d="M110 150 H34"/><path d="M110 200 H34"/><path d="M110 250 H34"/>
+                  <path d="M290 150 H366"/><path d="M290 200 H366"/><path d="M290 250 H366"/>
+                </g>
+                <g class="traces-live" fill="none" stroke="#f3dfb8" stroke-width="1.6" stroke-linecap="round">
+                  <path d="M200 110 V34" style="--dl:0s"/><path d="M110 200 H34" style="--dl:.7s"/><path d="M290 250 H366" style="--dl:1.3s"/><path d="M250 290 V366" style="--dl:1.9s"/><path d="M120 120 L60 60 L60 34" style="--dl:2.4s"/><path d="M280 280 L340 340 L340 366" style="--dl:3s"/>
+                </g>
+                <!-- die -->
+                <rect x="104" y="104" width="192" height="192" rx="6" fill="url(#die)" stroke="rgba(243,223,184,.55)"/>
+                <!-- matrix unit -->
+                <rect x="116" y="116" width="104" height="104" rx="3" fill="url(#cells)" stroke="rgba(216,191,148,.45)"/>
+                <rect class="mm-glow" x="116" y="116" width="104" height="104" rx="3" fill="rgba(243,223,184,.12)"/>
+                <text x="120" y="232" class="chip-lbl">MATRIX · INT8</text>
+                <!-- vector unit -->
+                <rect x="228" y="116" width="56" height="64" rx="3" fill="url(#lines)" stroke="rgba(216,191,148,.45)"/>
+                <text x="231" y="190" class="chip-lbl">VECTOR</text>
+                <!-- trace log -->
+                <rect x="228" y="196" width="56" height="88" rx="3" fill="rgba(185,217,154,.08)" stroke="rgba(185,217,154,.55)"/>
+                <g class="log-rows" fill="rgba(185,217,154,.7)"><rect x="234" y="204" width="44" height="2"/><rect x="234" y="211" width="36" height="2"/><rect x="234" y="218" width="40" height="2"/><rect x="234" y="225" width="30" height="2"/><rect x="234" y="232" width="44" height="2"/><rect x="234" y="239" width="26" height="2"/><rect x="234" y="246" width="38" height="2"/><rect x="234" y="253" width="42" height="2"/></g>
+                <text x="231" y="278" class="chip-lbl" fill="rgba(185,217,154,.9)">TRACE</text>
+                <!-- sequencer + dma -->
+                <rect x="116" y="240" width="104" height="44" rx="3" fill="none" stroke="rgba(216,191,148,.45)"/>
+                <g fill="rgba(216,191,148,.5)"><rect x="124" y="250" width="10" height="10"/><rect x="140" y="250" width="10" height="10"/><rect x="156" y="250" width="10" height="10"/><rect x="172" y="250" width="10" height="10"/><rect x="188" y="250" width="10" height="10"/><rect x="204" y="250" width="10" height="10"/></g>
+                <rect class="seq-run" x="124" y="250" width="10" height="10" fill="#f3dfb8"/>
+                <text x="120" y="278" class="chip-lbl">SEQ · DMA</text>
+              </svg>
+              <!-- lid / heat spreader, lifted -->
+              <div class="chip-lid">
+                <svg viewBox="0 0 180 180" aria-hidden="true">
+                  <rect x="1" y="1" width="178" height="178" rx="8" fill="url(#lid)" />
+                  <g transform="translate(46 38) scale(.74)" fill="none" stroke="#3a2e1f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity=".8">
+                    <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z"/>
+                    <path d="M62 14 V70 M62 14 C49 22 46 46 48 70 M62 14 C75 22 78 46 76 70 M38 26 Q62 31 86 26 M31 39 Q62 45 93 39 M29 54 Q62 60 95 54" stroke-width="1.4"/>
+                  </g>
+                  <text x="90" y="128" text-anchor="middle" class="lid-t">TDCC EXACT CORE</text>
+                  <text x="90" y="144" text-anchor="middle" class="lid-s">OPENTPU · BIT-EXACT</text>
+                  <text x="90" y="160" text-anchor="middle" class="lid-s">XC7K480T · EC-01</text>
+                </svg>
+              </div>
+            </div>
+            <div class="chip-caption"><span>Exact Core, exploded</span><span>Illustration</span></div>
+          </div>
+          <div class="media-cap"><span>TDCC Exact Core · <b>EC-01</b></span><span>Illustration</span></div>
+        </div>
+        <div class="highlights reveal">
+          <div><div class="n">Bit-exact</div><p>The card produces the same tokens as its simulator</p></div>
+          <div><div class="n">85.8 tok/s</div><p>LFM2.5-230M decode on the card, 4-bit weights</p></div>
+          <div><div class="n">5 rounds</div><p>To find the one bad step out of 66,862 in a dispute</p></div>
+          <div><div class="n">+14%</div><p>Cost of the trace log on the simulator</p></div>
+        </div>
+      </div>
+    </header>
+
+    <article class="post">
+      <div class="col">
+        <p class="lead">Today we're releasing Exact Core, the accelerator behind TDCC Exact. It is built on <a href="https://github.com/FeSens/openTPU" target="_blank" rel="noreferrer">openTPU</a>, an open-source AI accelerator whose card gives the same bits as its simulator, and it adds what an auditable chip needs: a trace log of every instruction, a fingerprint a provider posts with each answer, and a dispute that names the first instruction a dishonest run got wrong.</p>
+        <p>The result is compute you don't have to trust. Anyone with a laptop can re-run a job and get the provider's exact answer, down to the last bit of the logits. If the provider cut corners, the mismatch shows, and the dispute points to the step where it happened.</p>
+
+        <h2>Why exact matters</h2>
+        <p>When you buy compute from someone you don't know, you get an answer back and very little else. A provider can skip part of a model to save time and still return something plausible. Re-running the job elsewhere usually doesn't settle it: floating-point math drifts across hardware, so two honest runs rarely agree bit for bit.</p>
+        <p>Exact Core removes the drift. Matrix math runs in 8-bit integers in a fixed order, and softmax and norms use fixed rounding. Every honest run, on any machine, produces the same bits, so "did they actually run it?" becomes a question with a yes-or-no answer.</p>
+        <div class="note">In our demo, a cheating provider skips one layer and still returns <b>the same Yes/No answer</b> as the honest provider. Only the fingerprint differs. That is exactly the case a buyer cannot detect on a GPU marketplace today.</div>
+
+        <h2>What's inside</h2>
+        <p>Exact Core runs on a Kintex-7 FPGA PCIe card (Inspur YPCB-00338, xc7k480t, two DDR3 channels). The only change to the openTPU design is an observer hook that runs after every instruction.</p>
+        <figure class="figure">
+          <div class="card">
+            <div class="duo">
+              <div><p class="lbl">Matrix unit</p><p>The heavy LLM math in 8-bit numbers, in a fixed order.</p></div>
+              <div><p class="lbl">Vector unit</p><p>Softmax and norms with fixed rounding, so the bits never drift.</p></div>
+            </div>
+            <div class="duo" style="border-top:1px solid var(--line)">
+              <div><p class="lbl">Trace log</p><p>Records every step, so a dispute points to the one step that differs.</p></div>
+              <div><p class="lbl">Sequencer + DMA</p><p>One instruction per cycle; every data movement is an instruction.</p></div>
+            </div>
+          </div>
+          <figcaption>The four blocks of Exact Core.</figcaption>
+        </figure>
+        <h3>The trace log</h3>
+        <p>Each instruction extends a SHA-256 hash chain over the slice, the program counter, the instruction, and the registers after it. Every 4,096 steps the log checkpoints each slice's working state. The checkpoints form a Merkle tree whose root is the trace root. We chose SHA-256 because Solana's runtime offers it as a syscall.</p>
+        <h3>The fingerprint</h3>
+        <p>With each answer the provider posts <code>H(job ‖ model image ‖ answer ‖ last logits ‖ trace root)</code>. Two honest runs give the same fingerprint on any machine. The model image hash pins the exact weights and build, so a provider that quietly swaps 8-bit weights for 4-bit is rejected before anything is re-run.</p>
+
+        <h2>Performance</h2>
+        <p>The design runs ten modern models with their real weights on the card, and the card's tokens match the simulator's bit for bit.<sup><a href="#fn1" id="r1">1</a></sup></p>
+        <figure class="figure reveal">
+          <div class="card chart">
+            <div class="chart-title">Decode throughput on the card <span>tokens / second, higher is better</span></div>
+            <div class="legend"><span><i class="k1"></i>int8</span><span><i class="k2"></i>4-bit, int8 head</span></div>
+            <div class="bars">
+              <div class="bar-group"><span>LFM2.5-230M</span><div class="bar-stack"><div class="bar"><i class="k1" style="--w:68.8%"></i><b style="--w:68.8%">59.0</b></div><div class="bar"><i class="k2" style="--w:100%"></i><b style="--w:100%;left:auto;right:8px;color:#f7f4ee">85.8</b></div></div></div>
+              <div class="bar-group"><span>Qwen3-0.6B</span><div class="bar-stack"><div class="bar"><i class="k1" style="--w:25.2%"></i><b style="--w:25.2%">21.6</b></div><div class="bar"><i class="k2" style="--w:36.5%"></i><b style="--w:36.5%">31.3</b></div></div></div>
+              <div class="bar-group"><span>Qwen3.5-0.8B</span><div class="bar-stack"><div class="bar"><i class="k1" style="--w:20.5%"></i><b style="--w:20.5%">17.6</b></div><div class="bar"><i class="k2" style="--w:28.6%"></i><b style="--w:28.6%">24.5</b></div></div></div>
+            </div>
+          </div>
+          <figcaption>Device decode rate on the Kintex-7 card. While decoding, the card uses 82–85% of its peak DRAM bandwidth.</figcaption>
+        </figure>
+        <figure class="figure bleed">
+          <div class="card tbl">
+            <table>
+              <thead><tr><th>Model</th><th>Weights</th><th class="num">Decode, device</th><th class="num">Decode, wall</th><th class="num">Prefill, device</th><th class="num">DRAM while decoding</th></tr></thead>
+              <tbody>
+                <tr><td>LFM2.5-230M</td><td>int8</td><td class="num">59.0</td><td class="num">52.3</td><td class="num">295.6</td><td class="num">14.5 GB/s (85%)</td></tr>
+                <tr><td>LFM2.5-230M</td><td>4-bit, int8 head</td><td class="num">85.8</td><td class="num">82.1</td><td class="num">335.4</td><td class="num">14.1 GB/s (82%)</td></tr>
+                <tr><td>Qwen3-0.6B</td><td>int8</td><td class="num">21.6</td><td class="num">21.3</td><td class="num">92.1</td><td class="num">14.4 GB/s (84%)</td></tr>
+                <tr><td>Qwen3-0.6B</td><td>4-bit, int8 head</td><td class="num">31.3</td><td class="num">30.7</td><td class="num">103.4</td><td class="num">13.9 GB/s (82%)</td></tr>
+                <tr><td>Qwen3.5-0.8B</td><td>int8</td><td class="num">17.6</td><td class="num">16.3</td><td class="num">61.4</td><td class="num">14.5 GB/s (85%)</td></tr>
+                <tr><td>Qwen3.5-0.8B</td><td>4-bit, int8 head</td><td class="num">24.5</td><td class="num">23.3</td><td class="num">66.7</td><td class="num">14.1 GB/s (83%)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figcaption>Throughput in tokens per second.</figcaption>
+        </figure>
+        <p style="margin-top:28px">Verifiability is cheap. On the simulator, a 31-token prompt on LFM2.5-230M takes 37.0 seconds with the trace log on and 32.5 seconds with it off, and the logits are bit-identical either way.<sup><a href="#fn2" id="r2">2</a></sup></p>
+        <figure class="figure reveal">
+          <div class="card chart">
+            <div class="chart-title">Trace log overhead <span>seconds for a 31-token prompt, lower is better</span></div>
+            <div class="bars">
+              <div class="bar-group"><span>Log off</span><div class="bar"><i class="k1" style="--w:87.8%"></i><b style="--w:87.8%">32.5 s</b></div></div>
+              <div class="bar-group"><span>Log on</span><div class="bar"><i class="k2" style="--w:100%"></i><b style="--w:100%;left:auto;right:8px;color:#f7f4ee">37.0 s · +14%</b></div></div>
+            </div>
+          </div>
+        </figure>
+
+        <h2>How TDCC Exact works</h2>
+        <p>Compute runs off-chain. Money, proofs, and penalties live on Solana.</p>
+        <ol class="steps">
+          <li><b>Rent</b><span>A renter opens a job on Solana. The USDC waits in escrow.</span></li>
+          <li><b>Run</b><span>A provider runs it on Exact Core and posts the answer's fingerprint.</span></li>
+          <li><b>Check</b><span>Any verifier re-runs it on a laptop. A mismatch opens a challenge.</span></li>
+          <li><b>Settle</b><span>Honest providers get paid. A cheater loses its stake.</span></li>
+        </ol>
+        <figure class="figure">
+          <div class="card duo">
+            <div><p class="lbl">When the work is accepted</p><div class="n">80 / 20</div><p>80% of the price goes to the host and 20% to TDCC.</p></div>
+            <div><p class="lbl">When a provider is caught</p><div class="n">Slashed</div><p>The renter is refunded, the verifier gets half of the provider's stake, and TDCC keeps the rest.</p></div>
+          </div>
+        </figure>
+        <h3>Receipts you can stake money on</h3>
+        <p>Honest runs share a fingerprint, so a provider could try to copy someone else's receipt without doing the work. Receipts are therefore posted by commit-reveal: first a hash that binds the provider's key and a salt, then the fingerprint, after the commit window has closed.</p>
+        <h3>The dispute</h3>
+        <p>Once a run goes wrong, its hash chain differs at every later checkpoint. A binary search finds the first bad checkpoint in log₂ rounds, then both sides replay that window step by step and the first differing record is the fault. On LFM2.5-230M, with a provider skipping one layer, the dispute names the fault in 5 rounds over 21 checkpoints: step 7,166 of 66,862.</p>
+        <p>The Anchor program holds the escrow and stakes, takes receipts by commit-reveal, and executes the transfers. Program ID <code>HzpKeqHLg7Mmjh1JmGymef7Z7hf3JXhaagp6UgTSH24A</code>.</p>
+
+        <h2 id="try">Try it</h2>
+        <p>The demo runs on a laptop in about ten seconds using the built-in tiny model, with no card required. Provider A runs honestly; provider B skips layer 1 to save time.</p>
+        <figure class="figure">
+          <div class="term">
+            <div class="bar-top"><i></i><i></i><i></i><span>tdcc-exact demo</span></div>
+<pre><span class="c">$</span> pip install -e .
+<span class="c">$</span> tdcc-exact demo
+
+1. renter opens a yes/no oracle job on tiny, locks 2.00 USDC
+2. provider A runs it honestly; provider B skips layer 1
+   A: NO  <span class="k">3c85c23e…</span>
+   B: NO  <span class="k">5013c640…</span>  <span class="c">(168 matrix multiplies skipped: same answer, other fingerprint)</span>
+3. a verifier re-runs the job on this laptop
+   A: match    -> <span class="s">accept</span>
+   B: MISMATCH -> <span class="k">challenge</span>
+4. searching B's trace for the first instruction that went wrong
+   bisection: checkpoint 0 of 3 differs (2 rounds), steps 1..1302
+   first fault: <span class="k">step 659</span>, slice 0, pc 11 (state)
+5. settlement (the Solana program executes these transfers)</pre>
+          </div>
+          <figcaption>Run the same steps against a local validator or devnet with <code>tdcc-exact demo --localnet</code>; each step becomes a transaction with an Explorer link.</figcaption>
+        </figure>
+
+        <h2>Limitations</h2>
+        <p>We want to be precise about what is built today.</p>
+        <figure class="figure">
+          <div class="card tbl">
+            <table style="min-width:480px">
+              <thead><tr><th>Piece</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Trace log, fingerprint, dispute</td><td><span class="pill-s ok">Working</span>on the bit-exact simulator, tested</td></tr>
+                <tr><td>Commit-reveal receipts, model registry</td><td><span class="pill-s ok">Done</span>tested</td></tr>
+                <tr><td>Solana program</td><td><span class="pill-s ok">Working</span>on a local validator, arbiter-decided challenges</td></tr>
+                <tr><td>Trace log in hardware</td><td><span class="pill-s no">Not built</span>the card has a performance trace, not this hash chain</td></tr>
+                <tr><td>On-chain bisection, challenge bond</td><td><span class="pill-s pl">Planned</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </figure>
+        <div class="note"><b>The demo proves the work is verifiable, not that the model is right.</b> Exact Core agrees with the fp32 reference on every test question, so the chip computes the model faithfully. But the 230M model answers Yes to everything with this prompt. A production oracle needs a larger model or a calibrated threshold.</div>
+
+        <h2>Built on openTPU</h2>
+        <p>openTPU lives in one small repository you can read end to end: the hardware design in SystemVerilog, the instruction set, a bit-exact simulator, a kernel language and its compiler, and the host software that drives a real PCIe card. Exact Core keeps upstream's command and package names so that upstream improvements merge in cleanly. We're grateful to its authors.</p>
+
+        <div class="foot-notes">
+          <ol>
+            <li id="fn1">Measured on an Inspur YPCB-00338 card (Xilinx Kintex-7 xc7k480t, two DDR3 channels), as documented in the openTPU results. <a href="#r1" aria-label="Back to text">↩</a></li>
+            <li id="fn2">Simulator timing on a 4-core cloud VM, LFM2.5-230M int8. Logits with the log on and off were checked to be bit-identical. <a href="#r2" aria-label="Back to text">↩</a></li>
+          </ol>
+        </div>
+      </div>
+    </article>
+
+    <section class="end">
+      <div class="col">
+        <h2>Run it, read it, rent it.</h2>
+        <p>The code is open on GitHub. Exact Core cards will appear as listings in the TDCC marketplace, paid through USDC escrow on Solana.</p>
+        <div class="actions">
+          <a class="btn solid" href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">GitHub repository</a>
+          <a class="btn" href="/marketplace.html">Open the marketplace</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot">
+        <a class="brand" href="/"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
+        <div class="foot-links"><a href="/exact-core.html">Exact Core</a><a href="/marketplace.html">Marketplace</a><a href="/app.html">App</a><a href="/team.html">Team</a><a href="/litepaper.html">Litepaper</a><a href="/cask-q.html">Research</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
+      </div>
+      <p class="legal">© 2026 The Decentralized Compute Company</p>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const menuBtn = document.getElementById('menu-btn'), links = document.getElementById('nav-links');
+      menuBtn.addEventListener('click', () => menuBtn.setAttribute('aria-expanded', String(links.classList.toggle('open'))));
+
+      const items = document.querySelectorAll('.reveal');
+      if ('IntersectionObserver' in window && !reduce) {
+        const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.15 });
+        items.forEach((el) => io.observe(el));
+      } else items.forEach((el) => el.classList.add('in'));
+
+      const stage = document.getElementById('chip-stage'), tilt = document.getElementById('chip-tilt');
+      if (stage && !reduce) {
+        stage.addEventListener('pointermove', (e) => {
+          const r = stage.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+          tilt.style.setProperty('--rx', `${52 - y * 22}deg`);
+          tilt.style.setProperty('--rz', `${-38 + x * 28}deg`);
+        });
+        stage.addEventListener('pointerleave', () => { tilt.style.removeProperty('--rx'); tilt.style.removeProperty('--rz'); });
+      }
+    })();
+  </script>
+</body>
+</html>
