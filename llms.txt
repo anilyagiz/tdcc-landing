@@ -26,10 +26,14 @@ TDCC connects AI companies with data centers and GPUs for training, fine-tuning,
 ## Differentiation
 TDCC sells verified AI work, not raw GPU hours.
 
+## Token
+$COMPUTE is the token of The Decentralized Compute Company. The official contract address is published only by https://x.com/computecompany.
+
 ## Canonical pages
 - Home: https://decentralizedcompute.company/
 - App (console, CLI, SDKs, job API): https://decentralizedcompute.company/app.html
 - Team (founder, team, advisors, hiring): https://decentralizedcompute.company/team.html
 - Litepaper: https://decentralizedcompute.company/litepaper.html
+- Research paper (CASK-Q, joint Q/K quantization): https://decentralizedcompute.company/cask-q.html
 - Facts: https://decentralizedcompute.company/facts.html
 - Contact: anil@decentralizedcompute.company
