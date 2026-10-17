@@ -2,6 +2,28 @@
 
 All notable landing-site and public desktop-release changes are documented here.
 
+## [0.73.0] — 2026-10-17
+
+### Added
+
+- **GPU marketplace backend** (`src/api.js`, Cloudflare Worker + D1): accounts,
+  GPU listings, rental requests with host accept/decline, contact details
+  revealed only after acceptance, and `tdcc market link` node heartbeats.
+- `account.html` (rentals, requests, listings, settings), `confirm.html`
+  (email confirmation and password reset links), and `admin.html`
+  (moderation: reports, hide/restore listings, suspend accounts).
+- Email (via Resend, optional): confirmation on sign-up, password reset, and
+  notifications when a request is sent, accepted, declined, or cancelled.
+  Confirmed email is required to list or rent once email is configured.
+- Report a listing from the rental drawer.
+- `app.html` downloads: the stable tdcc 0.73.0 CLI for Linux x64 with its
+  install command; the Windows desktop beta now links to 0.73.0-rc.2.
+
+### Deploy order
+
+Deploy the site only after the `v0.73.0` GitHub release exists, because the
+App page links to its install script and checksum.
+
 ## [0.73.0-rc.1] — 2026-08-26
 
 ### Added

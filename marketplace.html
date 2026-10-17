@@ -330,6 +330,11 @@
       </div>
       <div class="d-foot">
         <button class="btn solid" type="button" id="request">Send rental request →</button>
+        <button class="link" type="button" id="report-open" style="background:none;border:0;padding:4px 0 0;cursor:pointer;justify-self:start">Report this listing</button>
+        <div id="report-box" hidden style="display:grid;gap:8px">
+          <textarea class="inp" id="report-reason" maxlength="1000" placeholder="What is wrong with this listing?"></textarea>
+          <button class="btn sm" type="button" id="report-send">Send report</button>
+        </div>
       </div>
     </aside>
   </div>
@@ -347,7 +352,14 @@
   <script src="/js/market.js"></script>
   <script>
     (() => {
-      const { api, esc, money, toast, requireUser } = window.TDCC;
+      const { api, esc, money, toast, requireUser, resendVerification } = window.TDCC;
+      const offerResend = (box) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'link'; b.textContent = 'Send the confirmation email again';
+        b.style.cssText = 'display:block;margin-top:8px;background:none;border:0;padding:0;cursor:pointer';
+        b.addEventListener('click', resendVerification);
+        box.appendChild(b);
+      };
       const $ = (id) => document.getElementById(id);
       const menuBtn = $('menu-btn'), links = $('nav-links');
       menuBtn.addEventListener('click', () => menuBtn.setAttribute('aria-expanded', String(links.classList.toggle('open'))));
@@ -441,6 +453,7 @@
         const desc = [cfg.l.description, gpus].filter(Boolean).join('\n');
         $('d-desc').textContent = desc; $('d-desc').hidden = !desc;
         rentErr('');
+        $('report-box').hidden = true; $('report-reason').value = '';
         update();
         lastFocus = document.activeElement;
         rent.classList.add('open'); rent.setAttribute('aria-hidden', 'false');
@@ -482,9 +495,23 @@
           setTimeout(() => { location.href = '/account.html#rentals'; }, 900);
         } catch (err) {
           rentErr(err.message);
+          if (err.field === 'email_unverified') offerResend($('rent-err'));
         } finally {
           btn.disabled = false;
         }
+      });
+
+      $('report-open').addEventListener('click', () => { $('report-box').hidden = !$('report-box').hidden; if (!$('report-box').hidden) $('report-reason').focus(); });
+      $('report-send').addEventListener('click', async () => {
+        const reason = $('report-reason').value.trim();
+        if (reason.length < 5) { toast('Tell us briefly what is wrong.', true); return; }
+        const user = await requireUser('Sign in to report a listing.');
+        if (!user) return;
+        try {
+          await api('POST', `/api/listings/${cfg.l.id}/report`, { reason });
+          $('report-box').hidden = true; $('report-reason').value = '';
+          toast('Thanks. Our team will review this listing.');
+        } catch (err) { toast(err.message, true); }
       });
 
       // ---------- host form ----------
@@ -516,6 +543,7 @@
           load();
         } catch (err) {
           hostErr(err.message, err.field);
+          if (err.field === 'email_unverified') offerResend($('host-err'));
         } finally {
           btn.disabled = false;
         }

@@ -17,3 +17,12 @@ binding = "DB"
 database_name = "tdcc-market"
 database_id = "00000000-0000-0000-0000-000000000000"
 migrations_dir = "migrations"
+
+# Optional settings. Without email, password reset says it is unavailable and
+# email verification is not required.
+#   npx wrangler secret put RESEND_API_KEY        # https://resend.com API key
+[vars]
+EMAIL_FROM = "TDCC Marketplace <marketplace@decentralizedcompute.company>"
+SITE_URL = "https://decentralizedcompute.company"
+# Comma-separated; these accounts see /admin.html once their email is confirmed.
+ADMIN_EMAILS = "anil@decentralizedcompute.company"

@@ -1,7 +1,7 @@
 // Minimal in-memory stand-in for Cloudflare D1, backed by node:sqlite, so the
 // marketplace API can be tested with `node --test` and no network.
 import { DatabaseSync } from "node:sqlite";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 
 class Stmt {
   constructor(db, sql, args = []) { this.db = db; this.sql = sql; this.args = args; }
@@ -20,7 +20,10 @@ class Stmt {
 export function createD1() {
   const db = new DatabaseSync(":memory:");
   db.exec("PRAGMA foreign_keys = ON");
-  db.exec(readFileSync(new URL("../migrations/0001_marketplace.sql", import.meta.url), "utf8"));
+  const dir = new URL("../migrations/", import.meta.url);
+  for (const file of readdirSync(dir).filter((f) => f.endsWith(".sql")).sort()) {
+    db.exec(readFileSync(new URL(file, dir), "utf8"));
+  }
   return {
     prepare: (sql) => new Stmt(db, sql),
     async batch(stmts) {

@@ -11,6 +11,12 @@
 // - Node heartbeats use a separate bearer token per listing, also stored hashed.
 // - Rate limits on sign-up, login, and writes. Bodies are capped at 16 KB.
 // - Contact details are only revealed to the other side once a host accepts.
+// - When email is configured: verified email is required to list or rent,
+//   password reset links are single-use and expire in an hour, and both sides
+//   are notified about requests. Admins (ADMIN_EMAILS) can hide listings and
+//   suspend accounts that users report.
+
+import { emailEnabled, sendEmail, siteUrl, templates } from "./email.js";
 
 const SESSION_COOKIE = "__Host-tdcc_sid";
 const SESSION_TTL = 30 * 24 * 3600;
@@ -18,6 +24,8 @@ const PBKDF2_ITER = 100_000; // Workers' WebCrypto upper bound for PBKDF2.
 const MAX_BODY = 16 * 1024;
 const NODE_ONLINE_WINDOW = 180;
 const NODE_TOKEN_PREFIX = "tdcc_node_";
+const VERIFY_TTL = 48 * 3600;
+const RESET_TTL = 3600;
 
 export const REGIONS = {
   "us-east": "US East",
@@ -219,8 +227,8 @@ async function currentUser(request, env) {
   const token = readCookie(request, SESSION_COOKIE);
   if (!token || token.length > 100) return null;
   return env.DB.prepare(
-    `SELECT u.id, u.email, u.name, u.created_at FROM sessions s JOIN users u ON u.id = s.user_id
-     WHERE s.token_hash = ? AND s.expires_at > ?`
+    `SELECT u.id, u.email, u.name, u.created_at, u.email_verified_at FROM sessions s JOIN users u ON u.id = s.user_id
+     WHERE s.token_hash = ? AND s.expires_at > ? AND u.suspended_at IS NULL`
   ).bind(await sha256(token), now()).first();
 }
 
@@ -230,7 +238,63 @@ async function requireUser(request, env) {
   return user;
 }
 
-const publicUser = (u) => ({ id: u.id, email: u.email, name: u.name, created_at: u.created_at });
+function isAdmin(env, u) {
+  const admins = (env.ADMIN_EMAILS || "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+  // Always require a confirmed address: otherwise whoever registers an admin
+  // email first would become an admin. Without email set up, confirm the
+  // admin account by hand (see README).
+  return !!u && admins.includes(u.email) && !!u.email_verified_at;
+}
+
+const publicUser = (u, env) => ({
+  id: u.id,
+  email: u.email,
+  name: u.name,
+  created_at: u.created_at,
+  email_verified: !!u.email_verified_at,
+  needs_verification: emailEnabled(env) && !u.email_verified_at,
+  is_admin: isAdmin(env, u),
+});
+
+// Listing or renting needs a confirmed email address once email is set up.
+function requireVerified(env, user) {
+  if (emailEnabled(env) && !user.email_verified_at) {
+    throw new HttpError(403, `Confirm your email address first. We sent a link to ${user.email}; you can resend it from your account page.`, { field: "email_unverified" });
+  }
+}
+
+async function issueEmailToken(env, userId, purpose, ttl) {
+  const token = randomToken(32);
+  const t = now();
+  await env.DB.batch([
+    env.DB.prepare("DELETE FROM email_tokens WHERE user_id = ? AND purpose = ?").bind(userId, purpose),
+    env.DB.prepare("INSERT INTO email_tokens (token_hash, user_id, purpose, created_at, expires_at) VALUES (?, ?, ?, ?, ?)")
+      .bind(await sha256(token), userId, purpose, t, t + ttl),
+  ]);
+  return token;
+}
+
+// Returns the user id the token belongs to and burns the token.
+async function consumeEmailToken(env, token, purpose) {
+  if (typeof token !== "string" || token.length < 20 || token.length > 100) return null;
+  const hash = await sha256(token);
+  const row = await env.DB.prepare("SELECT user_id, expires_at FROM email_tokens WHERE token_hash = ? AND purpose = ?").bind(hash, purpose).first();
+  if (!row) return null;
+  await env.DB.prepare("DELETE FROM email_tokens WHERE token_hash = ?").bind(hash).run();
+  return row.expires_at > now() ? row.user_id : null;
+}
+
+async function sendVerification(env, request, user) {
+  const token = await issueEmailToken(env, user.id, "verify", VERIFY_TTL);
+  const { subject, text: body } = templates.verify(user.name, `${siteUrl(env, request)}/confirm.html#verify=${token}`);
+  return sendEmail(env, { to: user.email, subject, text: body });
+}
+
+// Fire-and-forget where the runtime allows it, so a slow mail API never delays a reply.
+function later(ctx, promise) {
+  if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(promise);
+  else return promise;
+}
 
 // ---------- auth handlers ----------
 
@@ -238,7 +302,7 @@ const publicUser = (u) => ({ id: u.id, email: u.email, name: u.name, created_at:
 // time whether or not the account exists.
 const DUMMY_SALT = "tdcc-dummy-salt-000000";
 
-async function signup(request, env) {
+async function signup(request, env, ctx) {
   await limit(env, "signup:" + clientIp(request), 20, 3600);
   const body = await readJson(request);
   const e = email(body.email);
@@ -254,7 +318,9 @@ async function signup(request, env) {
   await env.DB.prepare("INSERT INTO users (id, email, name, pw_hash, pw_salt, pw_iter, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
     .bind(id, e, name, await pbkdf2(pw, salt, PBKDF2_ITER), salt, PBKDF2_ITER, now()).run();
   const cookie = await createSession(env, id);
-  return json(201, { user: { id, email: e, name } }, { "set-cookie": cookie });
+  const user = { id, email: e, name, created_at: now(), email_verified_at: null };
+  if (emailEnabled(env)) await later(ctx, sendVerification(env, request, user));
+  return json(201, { user: publicUser(user, env) }, { "set-cookie": cookie });
 }
 
 async function login(request, env) {
@@ -268,9 +334,10 @@ async function login(request, env) {
   const user = await env.DB.prepare("SELECT * FROM users WHERE email = ?").bind(e).first();
   const hash = await pbkdf2(pw, user ? user.pw_salt : DUMMY_SALT, user ? user.pw_iter : PBKDF2_ITER);
   if (!user || !safeEqual(hash, user.pw_hash)) throw new HttpError(401, "Email or password is incorrect.");
+  if (user.suspended_at) throw new HttpError(403, "This account is suspended. Contact anil@decentralizedcompute.company if you think this is a mistake.");
 
   const cookie = await createSession(env, user.id);
-  return json(200, { user: publicUser(user) }, { "set-cookie": cookie });
+  return json(200, { user: publicUser(user, env) }, { "set-cookie": cookie });
 }
 
 async function logout(request, env) {
@@ -281,7 +348,62 @@ async function logout(request, env) {
 
 async function me(request, env) {
   const user = await currentUser(request, env);
-  return json(200, { user: user ? publicUser(user) : null });
+  return json(200, { user: user ? publicUser(user, env) : null, email_enabled: emailEnabled(env) });
+}
+
+async function resendVerification(request, env, ctx) {
+  const user = await requireUser(request, env);
+  if (!emailEnabled(env)) throw new HttpError(503, "Email is not set up on this deployment yet.");
+  if (user.email_verified_at) return json(200, { ok: true, already: true });
+  await limit(env, "verify-mail:" + user.id, 3, 3600);
+  const sent = await sendVerification(env, request, user);
+  if (!sent) throw new HttpError(502, "We could not send the email right now. Please try again in a few minutes.");
+  return json(200, { ok: true });
+}
+
+async function verifyEmail(request, env) {
+  await limit(env, "verify:" + clientIp(request), 30, 3600);
+  const body = await readJson(request);
+  const userId = await consumeEmailToken(env, body.token, "verify");
+  if (!userId) throw new HttpError(400, "This confirmation link is invalid or has expired. Sign in and send a new one from your account page.");
+  await env.DB.prepare("UPDATE users SET email_verified_at = COALESCE(email_verified_at, ?) WHERE id = ?").bind(now(), userId).run();
+  return json(200, { ok: true });
+}
+
+async function forgotPassword(request, env, ctx) {
+  if (!emailEnabled(env)) throw new HttpError(503, "Password reset by email is not set up yet. Email anil@decentralizedcompute.company from your account address and we will help.");
+  await limit(env, "forgot:" + clientIp(request), 10, 3600);
+  const body = await readJson(request);
+  const e = email(body.email);
+  await limit(env, "forgot-email:" + e, 3, 3600);
+  const user = await env.DB.prepare("SELECT id, email, name FROM users WHERE email = ? AND suspended_at IS NULL").bind(e).first();
+  if (user) {
+    const token = await issueEmailToken(env, user.id, "reset", RESET_TTL);
+    const { subject, text: msg } = templates.reset(user.name, `${siteUrl(env, request)}/confirm.html#reset=${token}`);
+    await later(ctx, sendEmail(env, { to: user.email, subject, text: msg }));
+  }
+  // Same answer whether or not the account exists.
+  return json(200, { ok: true });
+}
+
+async function resetPassword(request, env) {
+  await limit(env, "reset:" + clientIp(request), 20, 3600);
+  const body = await readJson(request);
+  const next = password(body.password, "New password");
+  const userId = await consumeEmailToken(env, body.token, "reset");
+  if (!userId) throw new HttpError(400, "This reset link is invalid, already used, or expired. Ask for a new one from the sign-in window.");
+  const salt = randomToken(16);
+  const t = now();
+  await env.DB.batch([
+    // Clicking the emailed link also proves the address.
+    env.DB.prepare("UPDATE users SET pw_hash = ?, pw_salt = ?, pw_iter = ?, email_verified_at = COALESCE(email_verified_at, ?) WHERE id = ?")
+      .bind(await pbkdf2(next, salt, PBKDF2_ITER), salt, PBKDF2_ITER, t, userId),
+    env.DB.prepare("DELETE FROM sessions WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM email_tokens WHERE user_id = ? AND purpose = 'reset'").bind(userId),
+  ]);
+  const user = await env.DB.prepare("SELECT * FROM users WHERE id = ?").bind(userId).first();
+  const cookie = await createSession(env, userId);
+  return json(200, { user: publicUser(user, env) }, { "set-cookie": cookie });
 }
 
 async function changePassword(request, env) {
@@ -351,6 +473,7 @@ function listingOut(row, { owner = false } = {}) {
     created_at: row.created_at,
   };
   if (owner) {
+    out.moderation_note = row.moderation_note || "";
     out.node_linked = !!row.node_token_hash;
     out.node_version = row.node_version || null;
   }
@@ -400,6 +523,7 @@ async function myListings(request, env) {
 
 async function createListing(request, env) {
   const user = await requireUser(request, env);
+  requireVerified(env, user);
   await limit(env, "write:" + user.id, 30, 60);
   const body = await readJson(request);
   const v = listingInput(body);
@@ -423,8 +547,9 @@ async function ownedListing(request, env, id) {
 }
 
 async function updateListing(request, env, id) {
-  const { user } = await ownedListing(request, env, id);
+  const { user, row } = await ownedListing(request, env, id);
   await limit(env, "write:" + user.id, 30, 60);
+  if (row.status === "hidden") throw new HttpError(403, "Moderators hid this listing, so it cannot be changed. Contact anil@decentralizedcompute.company to appeal.");
   const v = listingInput(await readJson(request), true);
   const keys = Object.keys(v);
   if (!keys.length) throw new HttpError(400, "Nothing to update.");
@@ -525,8 +650,9 @@ const RENTAL_SELECT = `
     h.name AS host_name, h.email AS host_email, u.name AS renter_name, u.email AS renter_email
   FROM rentals r JOIN listings l ON l.id = r.listing_id JOIN users h ON h.id = l.owner_id JOIN users u ON u.id = r.renter_id`;
 
-async function createRental(request, env) {
+async function createRental(request, env, ctx) {
   const user = await requireUser(request, env);
+  requireVerified(env, user);
   await limit(env, "rent:" + user.id, 10, 3600);
   const body = await readJson(request);
   const listingId = text(body.listing_id, "Listing", { min: 1, max: 40 });
@@ -554,6 +680,10 @@ async function createRental(request, env) {
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)`
   ).bind(id, row.id, user.id, count, hours, environment, img, access, key, message, row.price_cents, row.price_cents * count * hours, t, t).run();
   const r = await env.DB.prepare(`${RENTAL_SELECT} WHERE r.id = ?`).bind(id).first();
+  if (emailEnabled(env)) {
+    const m = templates.newRequest(r.host_name, r, `${siteUrl(env, request)}/account.html#requests`);
+    await later(ctx, sendEmail(env, { to: r.host_email, ...m }));
+  }
   return json(201, { rental: rentalOut(r, "renter") });
 }
 
@@ -577,7 +707,7 @@ const TRANSITIONS = {
   complete: { by: "either", from: ["accepted"], to: "completed" },
 };
 
-async function transitionRental(request, env, id, action) {
+async function transitionRental(request, env, ctx, id, action) {
   const rule = TRANSITIONS[action];
   if (!rule) throw new HttpError(404, "Not found.");
   const user = await requireUser(request, env);
@@ -603,7 +733,108 @@ async function transitionRental(request, env, id, action) {
     throw new HttpError(409, "This request changed in the meantime. Refresh and try again.");
   }
   const updated = await env.DB.prepare(`${RENTAL_SELECT} WHERE r.id = ?`).bind(id).first();
+  if (emailEnabled(env)) {
+    const site = siteUrl(env, request);
+    let mail = null;
+    if (action === "accept") mail = { to: updated.renter_email, ...templates.accepted(updated.renter_name, updated, `${site}/account.html#rentals`) };
+    else if (action === "decline") mail = { to: updated.renter_email, ...templates.declined(updated.renter_name, updated, `${site}/marketplace.html`) };
+    else if (action === "cancel") {
+      mail = isHost
+        ? { to: updated.renter_email, ...templates.cancelled(updated.renter_name, updated, updated.host_name, `${site}/account.html#rentals`) }
+        : { to: updated.host_email, ...templates.cancelled(updated.host_name, updated, updated.renter_name, `${site}/account.html#requests`) };
+    }
+    if (mail) await later(ctx, sendEmail(env, mail));
+  }
   return json(200, { rental: rentalOut(updated, isHost ? "host" : "renter") });
+}
+
+// ---------- reports and moderation ----------
+
+async function reportListing(request, env, id) {
+  const user = await requireUser(request, env);
+  await limit(env, "report:" + user.id, 10, 86400);
+  const row = await getListing(env, id);
+  if (row.owner_id === user.id) throw new HttpError(409, "This is your own listing.");
+  const reason = text((await readJson(request)).reason, "Reason", { min: 5, max: 1000, multiline: true });
+  await env.DB.prepare(
+    `INSERT INTO reports (id, listing_id, reporter_id, reason, created_at) VALUES (?, ?, ?, ?, ?)
+     ON CONFLICT(listing_id, reporter_id) DO UPDATE SET reason = excluded.reason, created_at = excluded.created_at, resolved_at = NULL, resolution = ''`
+  ).bind(newId("rpt"), id, user.id, reason, now()).run();
+  if (emailEnabled(env) && env.ADMIN_EMAILS) {
+    const site = siteUrl(env, request);
+    for (const to of env.ADMIN_EMAILS.split(",").map((x) => x.trim()).filter(Boolean)) {
+      await sendEmail(env, { to, subject: `Listing reported: ${row.gpu_model}`, text: `${user.name} reported listing ${id} (${row.gpu_model}):\n\n${reason}\n\nReview it at ${site}/admin.html` });
+    }
+  }
+  return json(200, { ok: true });
+}
+
+async function requireAdmin(request, env) {
+  const user = await requireUser(request, env);
+  if (!isAdmin(env, user)) throw new HttpError(404, "Not found.");
+  return user;
+}
+
+async function adminOverview(request, env) {
+  await requireAdmin(request, env);
+  const reports = await env.DB.prepare(
+    `SELECT r.id, r.listing_id, r.reason, r.created_at, u.name AS reporter_name, u.email AS reporter_email,
+       l.gpu_model, l.status AS listing_status, l.owner_id, o.name AS owner_name, o.email AS owner_email, o.suspended_at AS owner_suspended_at
+     FROM reports r JOIN users u ON u.id = r.reporter_id JOIN listings l ON l.id = r.listing_id JOIN users o ON o.id = l.owner_id
+     WHERE r.resolved_at IS NULL ORDER BY r.created_at DESC LIMIT 200`
+  ).all();
+  const listings = await env.DB.prepare(
+    `SELECT l.id, l.gpu_model, l.vram_gb, l.gpu_count, l.region, l.price_cents, l.status, l.moderation_note, l.created_at, l.owner_id,
+       o.name AS owner_name, o.email AS owner_email, o.suspended_at AS owner_suspended_at,
+       (SELECT COUNT(*) FROM reports r WHERE r.listing_id = l.id AND r.resolved_at IS NULL) AS open_reports
+     FROM listings l JOIN users o ON o.id = l.owner_id WHERE l.status != 'removed' ORDER BY l.created_at DESC LIMIT 500`
+  ).all();
+  const stats = await env.DB.prepare(
+    `SELECT (SELECT COUNT(*) FROM users) AS users, (SELECT COUNT(*) FROM listings WHERE status = 'active') AS active_listings,
+       (SELECT COUNT(*) FROM rentals WHERE status = 'pending') AS pending_rentals, (SELECT COUNT(*) FROM rentals WHERE status = 'accepted') AS running_rentals`
+  ).first();
+  return json(200, { reports: reports.results, listings: listings.results, stats });
+}
+
+async function adminListing(request, env, id, action) {
+  const admin = await requireAdmin(request, env);
+  const note = text((await readJson(request)).note, "Note", { max: 500, multiline: true });
+  const row = await env.DB.prepare("SELECT id, status FROM listings WHERE id = ?").bind(id).first();
+  if (!row || row.status === "removed") throw new HttpError(404, "Listing not found.");
+  const t = now();
+  if (action === "hide") {
+    await env.DB.batch([
+      env.DB.prepare("UPDATE listings SET status = 'hidden', moderation_note = ?, node_token_hash = NULL, updated_at = ? WHERE id = ?").bind(note || "Hidden by moderators.", t, id),
+      env.DB.prepare("UPDATE rentals SET status = 'declined', host_note = 'This listing was removed by moderators.', updated_at = ? WHERE listing_id = ? AND status = 'pending'").bind(t, id),
+      env.DB.prepare("UPDATE reports SET resolved_at = ?, resolution = ? WHERE listing_id = ? AND resolved_at IS NULL").bind(t, `hidden by ${admin.email}`, id),
+    ]);
+  } else {
+    await env.DB.prepare("UPDATE listings SET status = 'paused', moderation_note = '', updated_at = ? WHERE id = ? AND status = 'hidden'").bind(t, id).run();
+  }
+  return json(200, { ok: true });
+}
+
+async function adminDismissReport(request, env, id) {
+  const admin = await requireAdmin(request, env);
+  await env.DB.prepare("UPDATE reports SET resolved_at = ?, resolution = ? WHERE id = ? AND resolved_at IS NULL").bind(now(), `dismissed by ${admin.email}`, id).run();
+  return json(200, { ok: true });
+}
+
+async function adminUser(request, env, id, action) {
+  const admin = await requireAdmin(request, env);
+  if (id === admin.id) throw new HttpError(409, "You cannot suspend your own account.");
+  const t = now();
+  if (action === "suspend") {
+    await env.DB.batch([
+      env.DB.prepare("UPDATE users SET suspended_at = ? WHERE id = ?").bind(t, id),
+      env.DB.prepare("DELETE FROM sessions WHERE user_id = ?").bind(id),
+      env.DB.prepare("UPDATE listings SET status = 'hidden', moderation_note = 'Account suspended.', node_token_hash = NULL, updated_at = ? WHERE owner_id = ? AND status IN ('active', 'paused')").bind(t, id),
+      env.DB.prepare("UPDATE rentals SET status = 'cancelled', updated_at = ? WHERE status = 'pending' AND (renter_id = ? OR listing_id IN (SELECT id FROM listings WHERE owner_id = ?))").bind(t, id, id),
+    ]);
+  } else {
+    await env.DB.prepare("UPDATE users SET suspended_at = NULL WHERE id = ?").bind(id).run();
+  }
+  return json(200, { ok: true });
 }
 
 // ---------- router ----------
@@ -617,7 +848,7 @@ function sameOrigin(request, env) {
   return extra.includes(origin);
 }
 
-export async function handleApi(request, env) {
+export async function handleApi(request, env, ctx) {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, "");
   const method = request.method;
@@ -633,15 +864,20 @@ export async function handleApi(request, env) {
     }
 
     const seg = path.split("/").slice(2); // ["listings", ":id", ...]
-    const route = `${method} /${seg.map((s, i) => (i === 1 && /^(gpu|rnt)_/.test(s) ? ":id" : s)).join("/")}`;
-    const id = seg[1];
+    const isId = (x) => /^(gpu|rnt|usr|rpt)_[A-Za-z0-9_-]{1,40}$/.test(x);
+    const route = `${method} /${seg.map((x) => (isId(x) ? ":id" : x)).join("/")}`;
+    const id = seg.find(isId);
 
     switch (route) {
       case "GET /health": return json(200, { ok: true });
       case "GET /me": return await me(request, env);
       case "DELETE /me": return await deleteAccount(request, env);
       case "POST /me/password": return await changePassword(request, env);
-      case "POST /auth/signup": return await signup(request, env);
+      case "POST /me/verify-email": return await resendVerification(request, env, ctx);
+      case "POST /auth/signup": return await signup(request, env, ctx);
+      case "POST /auth/verify": return await verifyEmail(request, env);
+      case "POST /auth/forgot": return await forgotPassword(request, env, ctx);
+      case "POST /auth/reset": return await resetPassword(request, env);
       case "POST /auth/login": return await login(request, env);
       case "POST /auth/logout": return await logout(request, env);
       case "GET /listings": return await listListings(request, env);
@@ -654,10 +890,17 @@ export async function handleApi(request, env) {
       case "GET /my/listings": return await myListings(request, env);
       case "GET /my/rentals": return await myRentals(request, env);
       case "GET /my/requests": return await myRequests(request, env);
-      case "POST /rentals": return await createRental(request, env);
+      case "POST /rentals": return await createRental(request, env, ctx);
+      case "POST /listings/:id/report": return await reportListing(request, env, id);
+      case "GET /admin": return await adminOverview(request, env);
+      case "POST /admin/reports/:id/dismiss": return await adminDismissReport(request, env, id);
     }
-    const m = route.match(/^POST \/rentals\/:id\/(accept|decline|cancel|complete)$/);
-    if (m) return await transitionRental(request, env, id, m[1]);
+    let m = route.match(/^POST \/rentals\/:id\/(accept|decline|cancel|complete)$/);
+    if (m) return await transitionRental(request, env, ctx, id, m[1]);
+    m = route.match(/^POST \/admin\/listings\/:id\/(hide|restore)$/);
+    if (m) return await adminListing(request, env, id, m[1]);
+    m = route.match(/^POST \/admin\/users\/:id\/(suspend|unsuspend)$/);
+    if (m) return await adminUser(request, env, id, m[1]);
     throw new HttpError(404, "Not found.");
   } catch (err) {
     if (err instanceof HttpError) {

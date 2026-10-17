@@ -395,9 +395,9 @@
         "applicationSubCategory": "AI compute console",
         "operatingSystem": "Web, macOS, Linux, Windows",
         "url": "https://decentralizedcompute.company/app.html",
-        "softwareVersion": "0.73.0-rc.1",
+        "softwareVersion": "0.73.0",
         "releaseNotes": "https://decentralizedcompute.company/app.html#changelog",
-        "downloadUrl": "https://github.com/anilyagiz/tdcc-mesh/releases/tag/v0.73.0-rc.1",
+        "downloadUrl": "https://github.com/anilyagiz/tdcc-mesh/releases/tag/v0.73.0",
         "description": "The TDCC App is the console, CLI, and API for submitting AI training, fine-tuning, inference, and evaluation jobs to a verified network of data centers and GPU hosts.",
         "publisher": { "@id": "https://decentralizedcompute.company/#organization" },
         "featureList": [
@@ -430,7 +430,7 @@
           {
             "@type": "Question",
             "name": "When is the TDCC App available?",
-            "acceptedAnswer": { "@type": "Answer", "text": "The web console is available in staged early access. The TDCC desktop beta is available for Windows x64 as version 0.73.0-rc.1; Linux packages are being enabled after the cross-platform smoke gate. Stable GA remains gated on signing and wider validation." }
+            "acceptedAnswer": { "@type": "Answer", "text": "The web console is available in staged early access. The tdcc CLI 0.73.0 is the first stable release, for Linux x64. The TDCC desktop beta is available for Windows x64 as version 0.73.0-rc.2. macOS and Windows CLI builds and Linux desktop packages follow." }
           }
         ]
       },
@@ -471,7 +471,7 @@
     <section class="hero">
       <div class="wrap hero-grid">
         <div>
-          <a class="release-pill" href="#downloads"><span class="tag live">0.73.0-rc.1 · Desktop beta</span><span>Windows x64 installer available · Linux packages next</span></a>
+          <a class="release-pill" href="#downloads"><span class="tag live">0.73.0 · First stable release</span><span>CLI for Linux x64 · Windows desktop beta</span></a>
           <h1>Verified compute,<span>in one app.</span></h1>
           <p class="lead">The TDCC App is the console, CLI, and API for the compute network. Submit a job, watch it run on matched hardware, verify the result, and pay only for work that is accepted.</p>
           <div class="actions">
@@ -978,7 +978,7 @@ env_key = <span class="s">"TDCC_API_KEY"</span></pre>
             <table class="spec-table">
               <tbody>
                 <tr><td>Product name</td><td>TDCC App — console, CLI, SDKs, and job API for The Decentralized Compute Company network</td></tr>
-                <tr><td>Version</td><td>0.73.0-rc.1 desktop beta; staged early access alongside the pilot network</td></tr>
+                <tr><td>Version</td><td>CLI 0.73.0 stable (Linux x64); desktop 0.73.0-rc.2 beta (Windows x64)</td></tr>
                 <tr><td>Console</td><td>Responsive web app; current Chromium, Firefox, and Safari; desktop-first layout with a mobile job view</td></tr>
                 <tr><td>CLI</td><td><code>tdcc</code> for macOS (Intel/Apple silicon), Linux x86-64 and arm64, and Windows via WSL2</td></tr>
                 <tr><td>SDKs</td><td>Python 3.10+ and TypeScript / Node 18+; both wrap the same REST surface</td></tr>
@@ -1021,7 +1021,7 @@ env_key = <span class="s">"TDCC_API_KEY"</span></pre>
             <div class="phase-when"><b>Cohort 1</b>Early access</div>
             <div>
               <h3>Pilot network</h3>
-              <p>Console, CLI, Python and TypeScript SDKs, and the job API become available to accepted early-access teams. The 0.73.0-rc.1 Windows desktop beta is now available; inference, embeddings, transcription, image generation, evaluations, and LoRA fine-tuning remain in scope with measured service levels.</p>
+              <p>Console, CLI, Python and TypeScript SDKs, and the job API become available to accepted early-access teams. The 0.73.0 CLI is out as the first stable release and the Windows desktop beta is available; inference, embeddings, transcription, image generation, evaluations, and LoRA fine-tuning remain in scope with measured service levels.</p>
             </div>
           </article>
           <article class="phase">
@@ -1045,33 +1045,45 @@ env_key = <span class="s">"TDCC_API_KEY"</span></pre>
     <!-- DOWNLOADS -->
     <section id="downloads" class="section reveal">
       <div class="wrap">
-        <p class="eyebrow">Desktop beta</p>
+        <p class="eyebrow">Downloads</p>
         <h2>Install TDCC on your machine.</h2>
         <p class="lead" style="max-width:640px">The Tauri desktop shell opens the TDCC console in a native window and supervises the local <code>tdcc</code> runtime. Download the installer for your platform, then verify its checksum before installing.</p>
         <div class="release-callout">
-          <strong>0.73.0-rc.1 · Release candidate</strong>
-          <span>Windows x64 artifacts are available for beta testing. Linux packages are being enabled after the cross-platform smoke gate.</span>
+          <strong>0.73.0 · First stable release</strong>
+          <span>The tdcc CLI is stable for Linux x64. The Windows x64 desktop app is a beta (0.73.0-rc.2). macOS and Windows CLI builds follow.</span>
         </div>
         <div class="download-grid">
           <article class="download-card">
-            <div class="download-head"><h3>Windows x64</h3><span class="tag live">Available</span></div>
+            <div class="download-head"><h3>Linux x64 · CLI</h3><span class="tag live">Stable 0.73.0</span></div>
+            <p>One command installs <code>tdcc</code>, checks the archive's SHA-256, and prepares the runtime. Then download a model and start serving, or link the machine to your marketplace listing.</p>
+            <pre style="margin:0;padding:12px;border:1px solid var(--line);border-radius:10px;background:#101a13;color:#dbe6d6;font-family:var(--mono);font-size:11px;line-height:1.7;overflow-x:auto">curl -fsSL https://raw.githubusercontent.com/anilyagiz/tdcc-mesh/v0.73.0/install.sh | bash
+tdcc setup --no-service
+tdcc market link &lt;token&gt;   # optional: rent out this GPU</pre>
+            <div class="download-actions">
+              <a class="button" href="https://github.com/anilyagiz/tdcc-mesh/releases/tag/v0.73.0">View release</a>
+              <a class="button" href="/marketplace.html#hosts">List this GPU</a>
+            </div>
+            <p class="download-meta"><a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0/tdcc-x86_64-unknown-linux-gnu.tar.gz.sha256">Archive SHA-256</a> · CPU backend</p>
+          </article>
+          <article class="download-card">
+            <div class="download-head"><h3>Windows x64 · Desktop</h3><span class="tag live">Beta 0.73.0-rc.2</span></div>
             <p>Choose MSI for managed deployment or the EXE for a per-user install without admin access. Both packages include the desktop shell and its supervised runtime.</p>
             <div class="download-actions">
-              <a class="button primary" href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.1/tdcc-desktop-0.73.0-rc.1-x86_64-pc-windows-msvc-setup.exe">Download EXE</a>
-              <a class="button" href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.1/tdcc-desktop-0.73.0-rc.1-x86_64-pc-windows-msvc.msi">Download MSI</a>
+              <a class="button primary" href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.2/tdcc-desktop-0.73.0-rc.2-x86_64-pc-windows-msvc-setup.exe">Download EXE</a>
+              <a class="button" href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.2/tdcc-desktop-0.73.0-rc.2-x86_64-pc-windows-msvc.msi">Download MSI</a>
             </div>
-            <p class="download-meta"><a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.1/tdcc-desktop-0.73.0-rc.1-x86_64-pc-windows-msvc-setup.exe.sha256">EXE SHA-256</a> · <a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.1/tdcc-desktop-0.73.0-rc.1-x86_64-pc-windows-msvc.msi.sha256">MSI SHA-256</a> · <a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.1/tdcc-desktop-0.73.0-rc.1-x86_64-pc-windows-msvc-licenses.zip">License notices</a></p>
+            <p class="download-meta"><a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.2/tdcc-desktop-0.73.0-rc.2-x86_64-pc-windows-msvc-setup.exe.sha256">EXE SHA-256</a> · <a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.2/tdcc-desktop-0.73.0-rc.2-x86_64-pc-windows-msvc.msi.sha256">MSI SHA-256</a> · <a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.1/tdcc-desktop-0.73.0-rc.1-x86_64-pc-windows-msvc-licenses.zip">License notices</a></p>
           </article>
           <article class="download-card pending">
-            <div class="download-head"><h3>Linux x64</h3><span class="tag planned">Next</span></div>
+            <div class="download-head"><h3>Linux x64 · Desktop</h3><span class="tag planned">Next</span></div>
             <p>AppImage and Debian packages are built in the Linux release lane and will be enabled once the cross-platform smoke gate is green.</p>
             <div class="download-actions">
-              <a class="button" href="https://github.com/anilyagiz/tdcc-mesh/releases/tag/v0.73.0-rc.1">View release page</a>
+              <a class="button" href="https://github.com/anilyagiz/tdcc-mesh/releases">All releases</a>
             </div>
             <p class="download-meta">AppImage · .deb · glibc floor declared per build host</p>
           </article>
         </div>
-        <p class="download-note">Release assets are hosted on GitHub rather than copied into this static site, keeping the landing page deployable on common static hosts. This release candidate is unsigned; Windows SmartScreen may warn until Authenticode signing is added. The Tauri updater is not enabled yet, so use the next versioned release for upgrades.</p>
+        <p class="download-note">Release assets are hosted on GitHub rather than copied into this static site, keeping the landing page deployable on common static hosts. Builds are not code-signed yet; Windows SmartScreen may warn until Authenticode signing is added. The Tauri updater is not enabled yet, so use the next versioned release for upgrades.</p>
       </div>
     </section>
 
@@ -1079,8 +1091,36 @@ env_key = <span class="s">"TDCC_API_KEY"</span></pre>
     <section id="changelog" class="section reveal">
       <div class="narrow">
         <p class="eyebrow">Changelog</p>
-        <h2>What changed in 0.73.0-rc.1.</h2>
-        <p class="lead">The first Tauri desktop beta packages the console and the <code>tdcc</code> runtime together for a guided install.</p>
+        <h2>What changed in 0.73.0.</h2>
+        <p class="lead">The first stable release of the <code>tdcc</code> CLI, and the GPU marketplace link.</p>
+        <article class="changelog-entry">
+          <div class="changelog-head"><span class="tag live">0.73.0</span><time datetime="2026-10-17">17 October 2026</time></div>
+          <h3>First stable release</h3>
+          <div class="changelog-grid">
+            <div>
+              <h4>Added</h4>
+              <ul>
+                <li><code>tdcc market link</code> keeps your marketplace listing online while <code>tdcc serve</code> runs</li>
+                <li>The stable installer channel: no <code>--pre-release</code> flag needed</li>
+                <li>Linux x64 CLI archive and native runtime with SHA-256 sidecars</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Fixed</h4>
+              <ul>
+                <li>Installer and packaging test suites match the public, token-free install path</li>
+                <li>Passive/client runtimes report ready, so the desktop app reaches Running</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Known</h4>
+              <ul class="known">
+                <li>macOS and Windows CLI archives are not published for this tag yet</li>
+                <li>Builds are not code-signed or attested</li>
+              </ul>
+            </div>
+          </div>
+        </article>
         <article class="changelog-entry">
           <div class="changelog-head"><span class="tag live">0.73.0-rc.1</span><time datetime="2026-08-26">26 August 2026</time></div>
           <h3>Desktop beta release</h3>
@@ -1119,7 +1159,7 @@ env_key = <span class="s">"TDCC_API_KEY"</span></pre>
       <div class="narrow">
         <p class="eyebrow">App FAQ</p>
         <h2>Straight answers.</h2>
-        <details><summary>Is the TDCC App available today?</summary><p>The web console is rolling out in staged early-access cohorts, and the 0.73.0-rc.1 desktop beta is available for Windows x64. Linux installers follow the cross-platform smoke gate. Request access below if you want to join the pilot network.</p></details>
+        <details><summary>Is the TDCC App available today?</summary><p>The web console is rolling out in staged early-access cohorts, the tdcc CLI 0.73.0 is available as a stable release for Linux x64, and the 0.73.0-rc.2 desktop beta is available for Windows x64. macOS and Windows CLI builds follow. Request access below if you want to join the pilot network.</p></details>
         <details><summary>Do I have to choose a GPU?</summary><p>No. You describe the workload, its constraints, and your budget. The router picks capacity that fits. If you do need specific hardware, you can constrain the class, memory, or region and the router will only match hosts that satisfy it.</p></details>
         <details><summary>What happens if a host fails mid-job?</summary><p>The job is requeued to another eligible host. You are not billed for the failed attempt, and the failed host is not paid for it.</p></details>
         <details><summary>How is verification different per workload?</summary><p>Deterministic workloads such as embeddings can be re-computed on a sample and compared exactly. Generative workloads rely on schema checks, redundant passes, and agreement thresholds. Fine-tunes are judged on evaluation deltas against a held-out set. The criteria travel with the job.</p></details>

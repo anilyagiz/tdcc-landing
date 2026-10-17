@@ -36,6 +36,25 @@ against CSRF, D1-backed rate limits on sign-up/login/writes, server-side
 validation of every field, output escaping in the pages, and single-statement
 capacity checks so a listing cannot be overbooked.
 
+### Email, password reset, and moderation
+
+With `RESEND_API_KEY` (a secret) and `EMAIL_FROM` set, new accounts get a
+confirmation link and must confirm before listing or renting, "Forgot your
+password?" emails a single-use reset link, and hosts and renters are emailed
+when a request is sent, accepted, declined, or cancelled. Without them, these
+features say they are unavailable and nobody is blocked.
+
+Anyone signed in can report a listing. Accounts listed in `ADMIN_EMAILS` (with
+a confirmed email) get `/admin.html`: open reports, every listing, hide or
+restore a listing, and suspend or unsuspend an account. Without email set up,
+confirm an admin account by hand after it signs up:
+
+```bash
+npx wrangler d1 execute tdcc-market --remote \
+  --command "UPDATE users SET email_verified_at = unixepoch() WHERE email = 'anil@decentralizedcompute.company'"
+``` Suspending signs the
+account out, hides its listings, and cancels its pending requests.
+
 ### Local development
 ```bash
 npm install
@@ -47,6 +66,7 @@ npm run dev     # wrangler dev with a local D1 database on http://localhost:8787
 ```bash
 npx wrangler login
 npx wrangler d1 create tdcc-market      # copy the database_id into wrangler.toml
+npx wrangler secret put RESEND_API_KEY  # optional: enables email features
 npm run deploy                          # tests, remote migrations, deploy
 ```
 Static files are served from the repository root; `.assetsignore` keeps the

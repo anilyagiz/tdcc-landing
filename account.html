@@ -92,8 +92,9 @@
             <h1 id="hello">Your marketplace</h1>
             <p id="who"></p>
           </div>
-          <div class="actions" id="head-actions" hidden><a class="btn" href="/marketplace.html">Browse GPUs</a><button class="btn" type="button" id="logout">Sign out</button></div>
+          <div class="actions" id="head-actions" hidden><a class="btn" href="/admin.html" id="admin-link" hidden>Moderation</a><a class="btn" href="/marketplace.html">Browse GPUs</a><button class="btn" type="button" id="logout">Sign out</button></div>
         </div>
+        <div class="form-err" id="verify-banner" role="status" style="margin-top:24px"></div>
         <nav class="a-tabs" id="tabs" aria-label="Account sections" hidden>
           <a href="#rentals" data-tab="rentals">My rentals</a>
           <a href="#requests" data-tab="requests">Requests on my GPUs<span class="badge" id="req-badge" hidden></span></a>
@@ -121,7 +122,7 @@
   <script src="/js/market.js"></script>
   <script>
     (() => {
-      const { api, esc, money, ago, toast, onUser, openAuth, logout, setUser } = window.TDCC;
+      const { api, esc, money, ago, toast, onUser, openAuth, logout, setUser, resendVerification } = window.TDCC;
       const $ = (id) => document.getElementById(id);
       const pane = $('pane');
       const menuBtn = $('menu-btn'), links = $('nav-links');
@@ -129,7 +130,7 @@
 
       const ENV = { pytorch: 'PyTorch', vllm: 'vLLM', ubuntu: 'Ubuntu base', custom: 'Own image' };
       const ACCESS = { ssh: 'SSH', jupyter: 'Jupyter', api: 'API only' };
-      const STATUS = { pending: 'Waiting for host', accepted: 'Accepted', declined: 'Declined', cancelled: 'Cancelled', completed: 'Completed', active: 'Listed', paused: 'Paused' };
+      const STATUS = { pending: 'Waiting for host', accepted: 'Accepted', declined: 'Declined', cancelled: 'Cancelled', completed: 'Completed', active: 'Listed', paused: 'Paused', hidden: 'Hidden by moderators' };
       let user = null, current = null;
 
       const tabOf = () => (['rentals', 'requests', 'listings', 'settings'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'rentals');
@@ -193,13 +194,14 @@
               ${l.node_linked ? `<span>${l.node_seen_at ? 'Machine last seen ' + ago(l.node_seen_at) : 'Machine linked, waiting for first check-in'}${l.node_version ? ' · tdcc ' + esc(l.node_version) : ''}</span>` : ''}</div>
             ${l.node_gpus.length ? `<div class="meta">Machine reports: ${l.node_gpus.map((g) => esc(g.name) + (g.vram_gb ? ` (${g.vram_gb} GB)` : '')).join(', ')}</div>` : ''}
             ${l.description ? `<div class="quote">${esc(l.description)}</div>` : ''}
-            <div class="card-actions">
+            ${l.status === 'hidden' ? `<div class="form-err show">${esc(l.moderation_note || 'Moderators hid this listing.')} To appeal, email anil@decentralizedcompute.company.</div>
+            <div class="card-actions"><button class="btn sm" data-do="remove" data-id="${esc(l.id)}">Remove</button></div>` : `<div class="card-actions">
               <button class="btn sm" data-edit="${esc(l.id)}">Edit</button>
               <button class="btn sm" data-do="${l.status === 'active' ? 'pause' : 'resume'}" data-id="${esc(l.id)}">${l.status === 'active' ? 'Pause' : 'Resume'}</button>
               <button class="btn sm" data-do="link" data-id="${esc(l.id)}">${l.node_linked ? 'New link token' : 'Link machine'}</button>
               ${l.node_linked ? `<button class="btn sm" data-do="unlink" data-id="${esc(l.id)}">Unlink machine</button>` : ''}
               <button class="btn sm" data-do="remove" data-id="${esc(l.id)}">Remove</button>
-            </div>
+            </div>`}
             <div data-slot></div>
           </article>`).join('')}</div>`;
       }
@@ -252,7 +254,7 @@
 
       function signedOut() {
         user = null;
-        $('tabs').hidden = true; $('head-actions').hidden = true;
+        $('tabs').hidden = true; $('head-actions').hidden = true; $('verify-banner').classList.remove('show');
         $('hello').textContent = 'Your marketplace'; $('who').textContent = '';
         pane.innerHTML = `<div class="signin"><h2>Sign in to rent or list GPUs.</h2><p>One free account for both: rent GPUs from hosts, or list your own and answer requests.</p>
           <div class="actions"><button class="btn solid" type="button" data-auth="signup">Create account</button><button class="btn" type="button" data-auth="login">Sign in</button></div></div>`;
@@ -263,6 +265,11 @@
         $('tabs').hidden = false; $('head-actions').hidden = false;
         $('hello').textContent = `Hi, ${u.name.split(' ')[0]}`;
         $('who').textContent = u.email;
+        $('admin-link').hidden = !u.is_admin;
+        const vb = $('verify-banner');
+        vb.classList.toggle('show', !!u.needs_verification);
+        vb.innerHTML = u.needs_verification ? `Confirm your email to list GPUs and send rental requests. We sent a link to <b>${esc(u.email)}</b>. <button class="link" type="button" id="resend" style="background:none;border:0;padding:0;cursor:pointer">Send it again</button>` : '';
+        if (u.needs_verification) $('resend').addEventListener('click', resendVerification);
         show(tabOf());
       }
 

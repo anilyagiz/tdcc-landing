@@ -85,10 +85,12 @@
           <div class="form-err" id="auth-err" role="alert"></div>
           <label class="fl" data-only="signup" hidden>Your name<input class="inp" name="name" autocomplete="name" maxlength="80" /></label>
           <label class="fl">Email<input class="inp" name="email" type="email" autocomplete="email" maxlength="254" required /></label>
-          <label class="fl">Password<input class="inp" name="password" type="password" autocomplete="current-password" minlength="10" maxlength="200" required />
+          <label class="fl" data-hide="forgot">Password<input class="inp" name="password" type="password" autocomplete="current-password" minlength="10" maxlength="200" />
             <small data-only="signup" hidden>At least 10 characters. A short sentence works well.</small></label>
           <label class="check" data-only="signup" hidden><input type="checkbox" name="accept_terms" /> <span>I agree to the <a href="/terms.html" target="_blank" rel="noopener">terms</a> and <a href="/privacy.html" target="_blank" rel="noopener">privacy policy</a>.</span></label>
           <button class="btn solid" type="submit" id="auth-submit">Sign in →</button>
+          <button class="link" type="button" data-only="login" id="auth-forgot" style="background:none;border:0;padding:0;cursor:pointer;justify-self:start">Forgot your password?</button>
+          <button class="link" type="button" data-only="forgot" hidden id="auth-back" style="background:none;border:0;padding:0;cursor:pointer;justify-self:start">← Back to sign in</button>
         </form>
       </div>`;
     document.body.appendChild(dlg);
@@ -97,9 +99,12 @@
     const setMode = (m) => {
       mode = m;
       dlg.querySelectorAll("[data-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === m)));
-      dlg.querySelectorAll("[data-only=signup]").forEach((el) => { el.hidden = m !== "signup"; });
-      dlg.querySelector("#auth-title").textContent = m === "signup" ? "Create your account" : "Sign in";
-      dlg.querySelector("#auth-submit").textContent = m === "signup" ? "Create account →" : "Sign in →";
+      dlg.querySelectorAll("[data-only]").forEach((el) => { el.hidden = el.dataset.only !== m; });
+      dlg.querySelectorAll("[data-hide]").forEach((el) => { el.hidden = el.dataset.hide === m; });
+      dlg.querySelector(".tabs").hidden = m === "forgot";
+      dlg.querySelector("#auth-title").textContent = { signup: "Create your account", login: "Sign in", forgot: "Reset your password" }[m];
+      dlg.querySelector("#auth-submit").textContent = { signup: "Create account →", login: "Sign in →", forgot: "Email me a reset link →" }[m];
+      if (m === "forgot") dlg.querySelector("#auth-reason").textContent = "Enter your account email and we will send you a link to choose a new password.";
       form.password.autocomplete = m === "signup" ? "new-password" : "current-password";
       showErr("");
     };
@@ -111,12 +116,29 @@
     };
     dlg.setMode = setMode;
     dlg.querySelectorAll("[data-tab]").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.tab)));
+    dlg.querySelector("#auth-forgot").addEventListener("click", () => setMode("forgot"));
+    dlg.querySelector("#auth-back").addEventListener("click", () => setMode("login"));
     dlg.querySelectorAll("[data-auth-close]").forEach((b) => b.addEventListener("click", () => closeAuth(null)));
     dlg.addEventListener("click", (e) => { if (e.target === dlg) closeAuth(null); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && dlg.classList.contains("open")) closeAuth(null); });
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const btn = dlg.querySelector("#auth-submit");
+      if (mode === "forgot") {
+        const addr = form.email.value.trim();
+        if (!addr) return showErr("Enter your email address.", "email");
+        btn.disabled = true;
+        try {
+          await api("POST", "/api/auth/forgot", { email: addr });
+          showErr("");
+          dlg.querySelector("#auth-reason").textContent = `If ${addr} has an account, a reset link is on its way. Check your inbox (and spam folder) in a minute.`;
+        } catch (err) {
+          showErr(err.message, err.field);
+        } finally {
+          btn.disabled = false;
+        }
+        return;
+      }
       const body = { email: form.email.value.trim(), password: form.password.value };
       if (!body.email || !body.password) return showErr("Enter your email and password.", !body.email ? "email" : "password");
       if (mode === "signup") {
@@ -131,7 +153,9 @@
         const d = await api("POST", mode === "signup" ? "/api/auth/signup" : "/api/auth/login", body);
         form.reset();
         setUser(d.user);
-        toast(mode === "signup" ? `Welcome, ${d.user.name.split(" ")[0]}` : "Signed in");
+        toast(mode === "signup"
+          ? (d.user.needs_verification ? `Welcome, ${d.user.name.split(" ")[0]}. Check your inbox to confirm your email.` : `Welcome, ${d.user.name.split(" ")[0]}`)
+          : "Signed in");
         closeAuth(d.user);
       } catch (err) {
         showErr(err.message, err.field);
@@ -179,6 +203,15 @@
     });
   }
 
-  window.TDCC = { api, esc, money, ago, toast, me, onUser, setUser, logout, openAuth, requireUser };
+  async function resendVerification() {
+    try {
+      await api("POST", "/api/me/verify-email", {});
+      toast("Confirmation email sent. Check your inbox.");
+    } catch (err) {
+      toast(err.message, true);
+    }
+  }
+
+  window.TDCC = { api, esc, money, ago, toast, me, onUser, setUser, logout, openAuth, requireUser, resendVerification };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", navLink); else navLink();
 })();
