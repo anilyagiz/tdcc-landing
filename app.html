@@ -430,7 +430,7 @@
           {
             "@type": "Question",
             "name": "When is the TDCC App available?",
-            "acceptedAnswer": { "@type": "Answer", "text": "The web console is available in staged early access. The tdcc CLI 0.73.0 is the first stable release, for Linux x64. The TDCC desktop beta is available for Windows x64 as version 0.73.0-rc.2. macOS and Windows CLI builds and Linux desktop packages follow." }
+            "acceptedAnswer": { "@type": "Answer", "text": "The web console is available in staged early access. The tdcc CLI 0.73.0 is the first stable release, for Linux x64 and ARM64. The TDCC desktop beta is available for Windows x64 as version 0.73.0-rc.2. macOS and Windows CLI builds and Linux desktop packages follow." }
           }
         ]
       },
@@ -471,7 +471,7 @@
     <section class="hero">
       <div class="wrap hero-grid">
         <div>
-          <a class="release-pill" href="#downloads"><span class="tag live">0.73.0 · First stable release</span><span>CLI for Linux x64 · Windows desktop beta</span></a>
+          <a class="release-pill" href="#downloads"><span class="tag live">0.73.0 · First stable release</span><span>CLI for Linux x64 &amp; ARM64 · Windows desktop beta</span></a>
           <h1>Verified compute,<span>in one app.</span></h1>
           <p class="lead">The TDCC App is the console, CLI, and API for the compute network. Submit a job, watch it run on matched hardware, verify the result, and pay only for work that is accepted.</p>
           <div class="actions">
@@ -978,7 +978,7 @@ env_key = <span class="s">"TDCC_API_KEY"</span></pre>
             <table class="spec-table">
               <tbody>
                 <tr><td>Product name</td><td>TDCC App — console, CLI, SDKs, and job API for The Decentralized Compute Company network</td></tr>
-                <tr><td>Version</td><td>CLI 0.73.0 stable (Linux x64); desktop 0.73.0-rc.2 beta (Windows x64)</td></tr>
+                <tr><td>Version</td><td>CLI 0.73.0 stable (Linux x64, ARM64); desktop 0.73.0-rc.2 beta (Windows x64)</td></tr>
                 <tr><td>Console</td><td>Responsive web app; current Chromium, Firefox, and Safari; desktop-first layout with a mobile job view</td></tr>
                 <tr><td>CLI</td><td><code>tdcc</code> for macOS (Intel/Apple silicon), Linux x86-64 and arm64, and Windows via WSL2</td></tr>
                 <tr><td>SDKs</td><td>Python 3.10+ and TypeScript / Node 18+; both wrap the same REST surface</td></tr>
@@ -1050,11 +1050,11 @@ env_key = <span class="s">"TDCC_API_KEY"</span></pre>
         <p class="lead" style="max-width:640px">The Tauri desktop shell opens the TDCC console in a native window and supervises the local <code>tdcc</code> runtime. Download the installer for your platform, then verify its checksum before installing.</p>
         <div class="release-callout">
           <strong>0.73.0 · First stable release</strong>
-          <span>The tdcc CLI is stable for Linux x64. The Windows x64 desktop app is a beta (0.73.0-rc.2). macOS and Windows CLI builds follow.</span>
+          <span>The tdcc CLI is stable for Linux x64 and ARM64. The Windows x64 desktop app is a beta (0.73.0-rc.2). macOS and Windows CLI builds follow.</span>
         </div>
         <div class="download-grid">
           <article class="download-card">
-            <div class="download-head"><h3>Linux x64 · CLI</h3><span class="tag live">Stable 0.73.0</span></div>
+            <div class="download-head"><h3>Linux x64 &amp; ARM64 · CLI</h3><span class="tag live">Stable 0.73.0</span></div>
             <p>One command installs <code>tdcc</code>, checks the archive's SHA-256, and prepares the runtime. Then download a model and start serving, or link the machine to your marketplace listing.</p>
             <pre style="margin:0;padding:12px;border:1px solid var(--line);border-radius:10px;background:#101a13;color:#dbe6d6;font-family:var(--mono);font-size:11px;line-height:1.7;overflow-x:auto">curl -fsSL https://raw.githubusercontent.com/anilyagiz/tdcc-mesh/v0.73.0/install.sh | bash
 tdcc setup --no-service
@@ -1102,7 +1102,7 @@ tdcc market link &lt;token&gt;   # optional: rent out this GPU</pre>
               <ul>
                 <li><code>tdcc market link</code> keeps your marketplace listing online while <code>tdcc serve</code> runs</li>
                 <li>The stable installer channel: no <code>--pre-release</code> flag needed</li>
-                <li>Linux x64 CLI archive and native runtime with SHA-256 sidecars</li>
+                <li>Linux x64 and ARM64 CLI archives and native runtimes with SHA-256 sidecars</li>
               </ul>
             </div>
             <div>
@@ -1159,7 +1159,7 @@ tdcc market link &lt;token&gt;   # optional: rent out this GPU</pre>
       <div class="narrow">
         <p class="eyebrow">App FAQ</p>
         <h2>Straight answers.</h2>
-        <details><summary>Is the TDCC App available today?</summary><p>The web console is rolling out in staged early-access cohorts, the tdcc CLI 0.73.0 is available as a stable release for Linux x64, and the 0.73.0-rc.2 desktop beta is available for Windows x64. macOS and Windows CLI builds follow. Request access below if you want to join the pilot network.</p></details>
+        <details><summary>Is the TDCC App available today?</summary><p>The web console is rolling out in staged early-access cohorts, the tdcc CLI 0.73.0 is available as a stable release for Linux x64 and ARM64, and the 0.73.0-rc.2 desktop beta is available for Windows x64. macOS and Windows CLI builds follow. Request access below if you want to join the pilot network.</p></details>
         <details><summary>Do I have to choose a GPU?</summary><p>No. You describe the workload, its constraints, and your budget. The router picks capacity that fits. If you do need specific hardware, you can constrain the class, memory, or region and the router will only match hosts that satisfy it.</p></details>
         <details><summary>What happens if a host fails mid-job?</summary><p>The job is requeued to another eligible host. You are not billed for the failed attempt, and the failed host is not paid for it.</p></details>
         <details><summary>How is verification different per workload?</summary><p>Deterministic workloads such as embeddings can be re-computed on a sample and compared exactly. Generative workloads rely on schema checks, redundant passes, and agreement thresholds. Fine-tunes are judged on evaluation deltas against a held-out set. The criteria travel with the job.</p></details>
