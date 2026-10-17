@@ -750,7 +750,7 @@ async function transitionRental(request, env, ctx, id, action) {
 
 // ---------- reports and moderation ----------
 
-async function reportListing(request, env, id) {
+async function reportListing(request, env, ctx, id) {
   const user = await requireUser(request, env);
   await limit(env, "report:" + user.id, 10, 86400);
   const row = await getListing(env, id);
@@ -762,9 +762,12 @@ async function reportListing(request, env, id) {
   ).bind(newId("rpt"), id, user.id, reason, now()).run();
   if (emailEnabled(env) && env.ADMIN_EMAILS) {
     const site = siteUrl(env, request);
-    for (const to of env.ADMIN_EMAILS.split(",").map((x) => x.trim()).filter(Boolean)) {
-      await sendEmail(env, { to, subject: `Listing reported: ${row.gpu_model}`, text: `${user.name} reported listing ${id} (${row.gpu_model}):\n\n${reason}\n\nReview it at ${site}/admin.html` });
-    }
+    const admins = env.ADMIN_EMAILS.split(",").map((x) => x.trim()).filter(Boolean);
+    await later(ctx, Promise.all(admins.map((to) => sendEmail(env, {
+      to,
+      subject: `Listing reported: ${row.gpu_model}`,
+      text: `${user.name} reported listing ${id} (${row.gpu_model}):\n\n${reason}\n\nReview it at ${site}/admin.html`,
+    }))));
   }
   return json(200, { ok: true });
 }
@@ -891,7 +894,7 @@ export async function handleApi(request, env, ctx) {
       case "GET /my/rentals": return await myRentals(request, env);
       case "GET /my/requests": return await myRequests(request, env);
       case "POST /rentals": return await createRental(request, env, ctx);
-      case "POST /listings/:id/report": return await reportListing(request, env, id);
+      case "POST /listings/:id/report": return await reportListing(request, env, ctx, id);
       case "GET /admin": return await adminOverview(request, env);
       case "POST /admin/reports/:id/dismiss": return await adminDismissReport(request, env, id);
     }

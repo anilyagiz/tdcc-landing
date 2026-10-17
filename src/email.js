@@ -24,6 +24,8 @@ export async function sendEmail(env, { to, subject, text }) {
       method: "POST",
       headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, "content-type": "application/json" },
       body: JSON.stringify({ from: env.EMAIL_FROM, to: [to], subject, text }),
+      // A slow mail API must never hold up a marketplace request.
+      signal: AbortSignal.timeout(10_000),
     });
     if (!res.ok) {
       console.error("email send failed", res.status, await res.text().catch(() => ""));

@@ -62,6 +62,16 @@ npm test        # API tests against an in-memory SQLite stand-in for D1
 npm run dev     # wrangler dev with a local D1 database on http://localhost:8787
 ```
 
+Browser test of every marketplace flow (sign-up, email confirmation, listing,
+filters, edit/pause, machine link, request/decline/cancel/accept/finish,
+report and moderation, password reset, settings, mobile layout):
+
+```bash
+npx playwright install chromium   # once
+npm run dev:e2e                   # terminal 1: fresh local DB, email features on
+npm run test:e2e                  # terminal 2
+```
+
 ### First deploy (Cloudflare Workers)
 ```bash
 npx wrangler login
