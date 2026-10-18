@@ -31,7 +31,8 @@ All notable landing-site and public desktop-release changes are documented here.
 - **Instant machines:** listings whose node runs machine rentals are marked
   "instant machine"; accepted SSH/Jupyter rentals get a signed container grant,
   and the renter sees the SSH command or Jupyter link once the node reports the
-  container running.
+  container running. Jupyter links from tdcc 0.74+ use HTTPS and come with the
+  certificate's SHA-256 fingerprint for the renter to check.
 - **API usage:** tdcc 0.74+ nodes report each renter's tunneled connections,
   fair-use refusals, and active time; both sides see it on the rental.
 - **Operations:** cron trigger for expiry, cleanup, and payouts; optional

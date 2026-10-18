@@ -59,8 +59,15 @@ test("Jupyter tokens are shown to the renter only", async () => {
   const { rental } = (await renter.call("POST", "/api/rentals", { listing_id: listing.id, gpu_count: 1, hours: 2, environment: "ubuntu", access: "jupyter" })).body;
   await host.call("POST", `/api/rentals/${rental.id}/accept`, {});
   await hb({ machines: OFFER, machine_status: [{ rental_id: rental.id, state: "running", port: 22002, jupyter_token: "tok_abcdefghijkl" }] });
-  const m = (await renter.call("GET", "/api/my/rentals")).body.rentals[0].machine;
-  assert.equal(m.jupyter_url, "http://gpu.example.com:22002/lab?token=tok_abcdefghijkl");
+  let m = (await renter.call("GET", "/api/my/rentals")).body.rentals[0].machine;
+  assert.equal(m.jupyter_url, "http://gpu.example.com:22002/lab?token=tok_abcdefghijkl", "older nodes without TLS");
+  const fp = Array.from({ length: 32 }, (_, i) => (i * 7 % 256).toString(16).toUpperCase().padStart(2, "0")).join(":");
+  await hb({ machines: OFFER, machine_status: [{ rental_id: rental.id, state: "running", port: 22002, jupyter_token: "tok_abcdefghijkl", tls_fingerprint: fp }] });
+  m = (await renter.call("GET", "/api/my/rentals")).body.rentals[0].machine;
+  assert.equal(m.jupyter_url, "https://gpu.example.com:22002/lab?token=tok_abcdefghijkl");
+  assert.equal(m.tls_fingerprint, fp);
+  await hb({ machines: OFFER, machine_status: [{ rental_id: rental.id, state: "running", port: 22002, jupyter_token: "tok_abcdefghijkl", tls_fingerprint: "<script>" }] });
+  assert.equal((await renter.call("GET", "/api/my/rentals")).body.rentals[0].machine.tls_fingerprint, null, "junk fingerprints are dropped");
   const h = (await host.call("GET", "/api/my/requests")).body.requests[0].machine;
   assert.equal(h.jupyter_url, undefined);
   assert.ok(!JSON.stringify(h).includes("tok_abcdefghijkl"));

@@ -158,6 +158,7 @@
           <div class="cmd"><code>${esc(m.ssh)}</code><button class="btn sm" data-copy="${esc(m.ssh)}">Copy</button></div>
           <span>You are root in your own container with the rented GPUs. Everything in it is deleted when the rental ends, so copy your results off before then. Access ${esc(until(r.access_expires_at))}.</span></div>`;
         if (m.jupyter_url) return `<div class="reveal-box"><b>Your notebook is ready</b><span><a href="${esc(m.jupyter_url)}" target="_blank" rel="noopener noreferrer">Open Jupyter →</a> (the link contains your private token; do not share it)</span>
+          ${m.tls_fingerprint ? `<span>The connection is encrypted with a certificate made just for your machine, so your browser will say it is not trusted. Before you continue, check that the certificate's SHA-256 fingerprint is:</span><code style="font-size:11px;overflow-wrap:anywhere">${esc(m.tls_fingerprint)}</code>` : ''}
           <span>Everything is deleted when the rental ends, so download your results before then. Access ${esc(until(r.access_expires_at))}.</span></div>`;
         return '';
       };

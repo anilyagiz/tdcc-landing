@@ -1064,9 +1064,9 @@ async function nodeHeartbeat(request, env) {
     env.DB.prepare("UPDATE listings SET machines_seen_at = ?, machines_offer = ? WHERE id = ?")
       .bind(machines ? t : null, machines ? JSON.stringify(machines) : null, listing.id),
     ...machineStatus.map((m) => env.DB.prepare(
-      `UPDATE rentals SET machine_state = ?, machine_host = ?, machine_port = ?, machine_token = ?, machine_error = ?
+      `UPDATE rentals SET machine_state = ?, machine_host = ?, machine_port = ?, machine_token = ?, machine_error = ?, machine_tls_fingerprint = ?
        WHERE id = ? AND listing_id = ? AND access IN ('ssh', 'jupyter') AND status = 'accepted'`
-    ).bind(m.state, machines.ssh_host, m.port, m.jupyter_token, m.error, m.rental_id, listing.id)),
+    ).bind(m.state, machines.ssh_host, m.port, m.jupyter_token, m.error, m.tls_fingerprint, m.rental_id, listing.id)),
     env.DB.prepare("UPDATE listings SET node_seen_at = ?, node_first_seen_at = COALESCE(node_first_seen_at, ?), node_version = ?, node_gpus = ?, api_join_token = ?, api_seen_at = ? WHERE id = ?")
       .bind(t, t, version, JSON.stringify(gpus), api ? api.join_token : null, api ? t : null, listing.id),
     env.DB.prepare(`INSERT INTO node_uptime (listing_id, hour, beats) VALUES (?, ?, 1)
@@ -1109,6 +1109,7 @@ function machineStatusInput(v) {
     port: Number.isInteger(m.port) && m.port > 0 && m.port < 65536 ? m.port : null,
     jupyter_token: typeof m.jupyter_token === "string" && /^[A-Za-z0-9_-]{8,100}$/.test(m.jupyter_token) ? m.jupyter_token : null,
     error: typeof m.error === "string" ? m.error.replace(/[\u0000-\u001F\u007F]/g, " ").slice(0, 300) : null,
+    tls_fingerprint: typeof m.tls_fingerprint === "string" && /^([0-9A-F]{2}:){31}[0-9A-F]{2}$/.test(m.tls_fingerprint) ? m.tls_fingerprint : null,
   }));
 }
 
@@ -1235,7 +1236,12 @@ function machineOut(r, renter) {
     const host = r.machine_host.includes(":") && !r.machine_host.startsWith("[") ? `[${r.machine_host}]` : r.machine_host;
     out.port = r.machine_port;
     if (r.access === "ssh") out.ssh = `ssh -p ${r.machine_port} root@${r.machine_host}`;
-    if (r.access === "jupyter" && renter && r.machine_token) out.jupyter_url = `http://${host}:${r.machine_port}/lab?token=${r.machine_token}`;
+    if (r.access === "jupyter" && renter && r.machine_token) {
+      // tdcc 0.74+ serves Jupyter over HTTPS and reports the certificate's fingerprint.
+      const scheme = r.machine_tls_fingerprint ? "https" : "http";
+      out.jupyter_url = `${scheme}://${host}:${r.machine_port}/lab?token=${r.machine_token}`;
+      out.tls_fingerprint = r.machine_tls_fingerprint || null;
+    }
   }
   return out;
 }
