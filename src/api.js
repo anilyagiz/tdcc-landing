@@ -42,8 +42,11 @@ export const REGIONS = {
   "oceania": "Oceania",
 };
 export const HOST_KINDS = { datacenter: "Data center", cluster: "Micro-cluster", independent: "Independent" };
-const ENVIRONMENTS = ["pytorch", "vllm", "ubuntu", "custom"];
-const ACCESS = ["ssh", "jupyter", "api"];
+// "model" means the renter uses the models the host serves (tdcc access).
+const ENVIRONMENTS = ["pytorch", "vllm", "ubuntu", "custom", "model"];
+// "tdcc": an OpenAI-compatible API over the tdcc mesh. The host's node admits
+// the renter's tdcc owner id for exactly the rented hours (see tdcc market).
+const ACCESS = ["ssh", "jupyter", "api", "tdcc"];
 
 class HttpError extends Error {
   constructor(status, message, extra) {
@@ -169,6 +172,30 @@ function sshKey(v) {
     throw new HttpError(400, "That does not look like an SSH public key. Paste the single line from your .pub file.", { field: "ssh_key" });
   }
   return k;
+}
+
+function ownerId(v) {
+  const id = text(v, "tdcc owner ID", { max: 64 }).toLowerCase();
+  if (!/^[0-9a-f]{64}$/.test(id)) {
+    throw new HttpError(400, "That is not a tdcc owner ID. Run `tdcc auth init` once, then copy the 64-character Owner ID from `tdcc auth status`.", { field: "owner_id" });
+  }
+  return id;
+}
+
+function joinToken(v) {
+  if (typeof v !== "string" || !v || v.length > 8192 || !/^[A-Za-z0-9_\-+/=.]+$/.test(v)) {
+    throw new HttpError(400, "The node sent an invalid join token.");
+  }
+  return v;
+}
+
+// tdcc rentals end on their own: once the rented hours have passed, the
+// rental is completed (frees the GPUs) and the node drops the renter's access
+// on its next check-in, or sooner from its own copy of the expiry.
+async function expireApiRentals(env) {
+  await env.DB.prepare(
+    "UPDATE rentals SET status = 'completed', updated_at = ?1 WHERE status = 'accepted' AND access = 'tdcc' AND access_expires_at <= ?1"
+  ).bind(now()).run();
 }
 
 function image(v) {
@@ -467,6 +494,8 @@ function listingOut(row, { owner = false } = {}) {
     host_name: row.host_name ? row.host_name.split(/\s+/)[0] : "Host",
     host_completed: row.host_completed || 0,
     online: !!row.node_seen_at && t - row.node_seen_at < NODE_ONLINE_WINDOW,
+    // The node is online, the host consented, and it runs the allowlist policy.
+    api_rentals: !!row.api_seen_at && t - row.api_seen_at < NODE_ONLINE_WINDOW && row.status === "active",
     node_seen_at: row.node_seen_at || null,
     node_gpus: gpus,
     status: row.status,
@@ -496,6 +525,7 @@ function listingInput(body, partial = false) {
 }
 
 async function listListings(request, env) {
+  await expireApiRentals(env);
   const rows = await env.DB.prepare(`${LISTING_SELECT} WHERE l.status = 'active' ORDER BY l.price_cents ASC LIMIT 500`).all();
   return json(200, { listings: rows.results.map((r) => listingOut(r)), regions: REGIONS, host_kinds: HOST_KINDS }, { "cache-control": "no-store" });
 }
@@ -602,10 +632,23 @@ async function nodeHeartbeat(request, env) {
     name: text(g && g.name, "GPU name", { max: 80 }),
     vram_gb: Number.isFinite(g && g.vram_gb) ? Math.max(0, Math.min(4096, Math.round(g.vram_gb))) : 0,
   })) : [];
-  await env.DB.prepare("UPDATE listings SET node_seen_at = ?, node_version = ?, node_gpus = ? WHERE id = ?")
-    .bind(now(), version, JSON.stringify(gpus), listing.id).run();
+  // Present only when the host ran `tdcc market api-rentals on` and serves
+  // with --trust-policy allowlist.
+  const api = body.api && typeof body.api === "object" && body.api.trust_policy === "allowlist" ? { join_token: joinToken(body.api.join_token) } : null;
+  const t = now();
+  await env.DB.prepare("UPDATE listings SET node_seen_at = ?, node_version = ?, node_gpus = ?, api_join_token = ?, api_seen_at = ? WHERE id = ?")
+    .bind(t, version, JSON.stringify(gpus), api ? api.join_token : null, api ? t : null, listing.id).run();
   const pending = await env.DB.prepare("SELECT COUNT(*) AS n FROM rentals WHERE listing_id = ? AND status = 'pending'").bind(listing.id).first();
-  return json(200, { ok: true, listing_id: listing.id, listing_status: listing.status, pending_requests: pending.n, next_heartbeat_secs: 60 });
+  const reply = { ok: true, listing_id: listing.id, listing_status: listing.status, pending_requests: pending.n, next_heartbeat_secs: 60 };
+  if (api) {
+    await expireApiRentals(env);
+    const rows = await env.DB.prepare(
+      `SELECT id, renter_owner_id, access_expires_at FROM rentals
+       WHERE listing_id = ? AND status = 'accepted' AND access = 'tdcc' AND access_expires_at > ?`
+    ).bind(listing.id, t).all();
+    reply.grants = rows.results.map((r) => ({ rental_id: r.id, owner_id: r.renter_owner_id, expires_at: r.access_expires_at }));
+  }
+  return json(200, reply);
 }
 
 // ---------- rentals ----------
@@ -634,10 +677,14 @@ function rentalOut(r, side) {
     created_at: r.created_at,
     updated_at: r.updated_at,
   };
+  out.access_expires_at = r.access_expires_at || null;
   if (side === "renter") {
     out.host_name = r.host_name;
     out.host_email = revealed ? r.host_email : null;
+    // How to connect: only while access is live.
+    out.join_token = r.access === "tdcc" && r.status === "accepted" ? r.api_join_token || null : null;
   } else {
+    out.renter_owner_id = r.access === "tdcc" ? r.renter_owner_id : null;
     out.renter_name = r.renter_name;
     out.renter_email = revealed ? r.renter_email : null;
     out.ssh_key = revealed ? r.ssh_key : null;
@@ -646,7 +693,7 @@ function rentalOut(r, side) {
 }
 
 const RENTAL_SELECT = `
-  SELECT r.*, l.gpu_model, l.vram_gb, l.region, l.owner_id,
+  SELECT r.*, l.gpu_model, l.vram_gb, l.region, l.owner_id, l.api_join_token,
     h.name AS host_name, h.email AS host_email, u.name AS renter_name, u.email AS renter_email
   FROM rentals r JOIN listings l ON l.id = r.listing_id JOIN users h ON h.id = l.owner_id JOIN users u ON u.id = r.renter_id`;
 
@@ -663,11 +710,17 @@ async function createRental(request, env, ctx) {
   const count = int(body.gpu_count, "Number of GPUs", 1, 512);
   if (count > row.available) throw new HttpError(409, row.available ? `Only ${row.available} GPU${row.available === 1 ? " is" : "s are"} free on this listing right now.` : "All GPUs on this listing are rented out right now.", { field: "gpu_count" });
   const hours = int(body.hours, "Hours", row.min_hours, 2160);
-  const environment = oneOf(body.environment, "Environment", ENVIRONMENTS);
-  const img = environment === "custom" ? image(body.image) : "";
   const access = oneOf(body.access, "Access", ACCESS);
-  const key = sshKey(body.ssh_key);
+  // tdcc access uses the models the host already serves; nothing to set up.
+  const environment = access === "tdcc" ? "model" : oneOf(body.environment, "Environment", ENVIRONMENTS.filter((e) => e !== "model"));
+  const img = environment === "custom" ? image(body.image) : "";
+  const key = access === "ssh" ? sshKey(body.ssh_key) : "";
   if (access === "ssh" && !key) throw new HttpError(400, "Paste your SSH public key so the host can give you access.", { field: "ssh_key" });
+  let renterOwnerId = "";
+  if (access === "tdcc") {
+    if (!listingOut(row).api_rentals) throw new HttpError(409, "This host does not offer access through tdcc right now. Choose SSH, Jupyter, or API access instead.", { field: "access" });
+    renterOwnerId = ownerId(body.owner_id);
+  }
   const message = text(body.message, "Message", { max: 1000, multiline: true });
 
   const pending = await env.DB.prepare("SELECT COUNT(*) AS n FROM rentals WHERE renter_id = ? AND status = 'pending'").bind(user.id).first();
@@ -676,9 +729,9 @@ async function createRental(request, env, ctx) {
   const id = newId("rnt");
   const t = now();
   await env.DB.prepare(
-    `INSERT INTO rentals (id, listing_id, renter_id, gpu_count, hours, environment, image, access, ssh_key, message, price_cents, total_cents, status, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)`
-  ).bind(id, row.id, user.id, count, hours, environment, img, access, key, message, row.price_cents, row.price_cents * count * hours, t, t).run();
+    `INSERT INTO rentals (id, listing_id, renter_id, gpu_count, hours, environment, image, access, ssh_key, renter_owner_id, message, price_cents, total_cents, status, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)`
+  ).bind(id, row.id, user.id, count, hours, environment, img, access, key, renterOwnerId, message, row.price_cents, row.price_cents * count * hours, t, t).run();
   const r = await env.DB.prepare(`${RENTAL_SELECT} WHERE r.id = ?`).bind(id).first();
   if (emailEnabled(env)) {
     const m = templates.newRequest(r.host_name, r, `${siteUrl(env, request)}/account.html#requests`);
@@ -689,12 +742,14 @@ async function createRental(request, env, ctx) {
 
 async function myRentals(request, env) {
   const user = await requireUser(request, env);
+  await expireApiRentals(env);
   const rows = await env.DB.prepare(`${RENTAL_SELECT} WHERE r.renter_id = ? ORDER BY r.created_at DESC LIMIT 200`).bind(user.id).all();
   return json(200, { rentals: rows.results.map((r) => rentalOut(r, "renter")) });
 }
 
 async function myRequests(request, env) {
   const user = await requireUser(request, env);
+  await expireApiRentals(env);
   const rows = await env.DB.prepare(`${RENTAL_SELECT} WHERE l.owner_id = ? ORDER BY CASE r.status WHEN 'pending' THEN 0 WHEN 'accepted' THEN 1 ELSE 2 END, r.created_at DESC LIMIT 200`).bind(user.id).all();
   return json(200, { requests: rows.results.map((r) => rentalOut(r, "host")) });
 }
@@ -721,13 +776,16 @@ async function transitionRental(request, env, ctx, id, action) {
   if (!rule.from.includes(r.status)) throw new HttpError(409, `This request is already ${r.status}.`);
   const note = isHost ? text(body.note, "Note", { max: 1000, multiline: true }) : r.host_note;
 
-  let sql = `UPDATE rentals SET status = ?, host_note = ?, updated_at = ? WHERE id = ? AND status IN (${rule.from.map(() => "?").join(", ")})`;
+  // Accepting starts the clock: access lasts exactly the rented hours.
+  const t = now();
+  const expires = action === "accept" ? t + r.hours * 3600 : r.access_expires_at ?? null;
+  let sql = `UPDATE rentals SET status = ?, host_note = ?, updated_at = ?, access_expires_at = ? WHERE id = ? AND status IN (${rule.from.map(() => "?").join(", ")})`;
   if (action === "accept") {
     // Re-check capacity in the same statement so two accepts cannot overbook.
     sql += ` AND gpu_count <= (SELECT l.gpu_count - COALESCE((SELECT SUM(x.gpu_count) FROM rentals x WHERE x.listing_id = l.id AND x.status = 'accepted'), 0)
               FROM listings l WHERE l.id = rentals.listing_id)`;
   }
-  const res = await env.DB.prepare(sql).bind(rule.to, note, now(), id, ...rule.from).run();
+  const res = await env.DB.prepare(sql).bind(rule.to, note, t, expires, id, ...rule.from).run();
   if (!res.meta.changes) {
     if (action === "accept") throw new HttpError(409, "Not enough free GPUs left on this listing to accept this request.");
     throw new HttpError(409, "This request changed in the meantime. Refresh and try again.");

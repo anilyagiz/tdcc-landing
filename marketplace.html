@@ -244,6 +244,7 @@
             <li><div><b>Fill in the form</b><span>GPU, how many, region, and your hourly price. You will be asked to create a free account.</span></div></li>
             <li><div><b>Your listing goes live</b><span>Renters see it right away. Pause it or change the price any time from your account.</span></div></li>
             <li><div><b>Optional: link your machine</b><span>Run <code>tdcc market link</code> with the token from your account. Your listing then shows as online with the GPUs the machine actually reports.</span></div></li>
+            <li><div><b>Optional: instant API rentals</b><span>Run <code>tdcc market api-rentals on</code> and serve with <code>--trust-policy allowlist</code>. Renters you accept then use your models through tdcc for exactly the hours they paid for, with no access to anything else on your machine.</span></div></li>
             <li><div><b>Accept the requests you want</b><span>You see each request first. Contact details are shared only after you accept.</span></div></li>
           </ol>
         </div>
@@ -281,6 +282,7 @@
         <div>
           <details><summary>How does renting work?</summary><p>Choose a GPU, set how many and for how long, and send the request. The host sees it in their account and accepts or declines. Once accepted, you both see each other's email and the host sends you access details (SSH, Jupyter, or an API endpoint).</p></details>
           <details><summary>How do I pay?</summary><p>During early access nothing is charged on this site. The price you see is the host's hourly rate, and the total in your request is what you both agreed to. You settle payment with the host directly after they accept. Built-in payments with escrow are on the way.</p></details>
+          <details><summary>What is “tdcc API” access?</summary><p>On listings marked <b>tdcc API</b>, you can skip the back-and-forth: install tdcc, run <code>tdcc auth init</code> once, and paste the Owner ID from <code>tdcc auth status</code> into your request. When the host accepts, your account page shows one command, <code>tdcc client --join …</code>, and the host's models answer at <code>http://localhost:9337/v1</code> on your computer like any OpenAI-compatible API. Access closes on its own when your hours are up. You use the models the host serves; you do not get a shell on their machine.</p></details>
           <details><summary>What does “online” mean?</summary><p>The host linked a running TDCC node to the listing with <code>tdcc market link</code>. The node reports in every minute with the GPUs it actually sees, so you know the machine is real and switched on right now.</p></details>
           <details><summary>Is my data safe?</summary><p>Passwords are stored only as salted hashes, sessions use secure HttpOnly cookies, and your email is never shown publicly. A host or renter sees your email only after a request is accepted. You can delete your account at any time from your account page.</p></details>
           <details><summary>What is an Exact Core listing?</summary><p>Exact Core is TDCC's own accelerator card. Its output can be replayed bit for bit on a laptop, so a renter can check that the work was actually done. Jobs on it will be paid through USDC escrow on Solana.</p></details>
@@ -307,15 +309,19 @@
           <div class="opts" id="dur"><button type="button" data-h="1" aria-pressed="false">1 hour</button><button type="button" data-h="8" aria-pressed="true">8 hours</button><button type="button" data-h="24" aria-pressed="false">1 day</button><button type="button" data-h="168" aria-pressed="false">1 week</button></div>
           <div class="hrs"><input class="inp" id="hours" type="number" min="1" max="2160" value="8" aria-label="Hours" /><span id="hrs-note">hours</span></div>
         </div>
-        <div class="d-sec">
+        <div class="d-sec" id="sec-env">
           <span class="lbl">Environment</span>
           <div class="opts" id="env"><button type="button" aria-pressed="true" data-v="pytorch">PyTorch</button><button type="button" aria-pressed="false" data-v="vllm">vLLM</button><button type="button" aria-pressed="false" data-v="ubuntu">Ubuntu base</button><button type="button" aria-pressed="false" data-v="custom">My own image</button></div>
           <input class="inp" id="image" type="text" maxlength="255" placeholder="registry/image:tag" style="margin-top:10px" hidden aria-label="Container image" />
         </div>
         <div class="d-sec">
           <span class="lbl">Access</span>
-          <div class="opts" id="access"><button type="button" aria-pressed="true" data-v="ssh">SSH</button><button type="button" aria-pressed="false" data-v="jupyter">Jupyter</button><button type="button" aria-pressed="false" data-v="api">API only</button></div>
+          <div class="opts" id="access"><button type="button" aria-pressed="true" data-v="ssh">SSH</button><button type="button" aria-pressed="false" data-v="jupyter">Jupyter</button><button type="button" aria-pressed="false" data-v="api">API only</button><button type="button" aria-pressed="false" data-v="tdcc" id="acc-tdcc" hidden>tdcc API (instant)</button></div>
           <label class="fl" id="ssh-wrap" style="margin-top:12px">Your SSH public key<textarea class="inp" id="ssh" rows="3" maxlength="4000" placeholder="ssh-ed25519 AAAA… you@laptop" spellcheck="false"></textarea><small>The single line from <code>~/.ssh/id_ed25519.pub</code>. Shared with the host only after they accept.</small></label>
+          <div id="tdcc-wrap" hidden style="margin-top:12px;display:grid;gap:10px">
+            <p class="d-desc" style="margin:0">Use the models this host serves as an OpenAI-compatible API on your own computer. Access opens when the host accepts and closes by itself when your hours run out. No setup on the host's side.</p>
+            <label class="fl">Your tdcc owner ID<input class="inp" id="owner" maxlength="64" placeholder="64 characters from tdcc auth status" spellcheck="false" autocomplete="off" /><small>Install <a class="link" href="/app.html#downloads" style="font-size:inherit;letter-spacing:0;text-transform:none">tdcc</a>, run <code>tdcc auth init</code> once, then copy the Owner ID from <code>tdcc auth status</code>.</small></label>
+          </div>
         </div>
         <div class="d-sec">
           <label class="lbl" for="msg">Message to the host <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
@@ -407,7 +413,7 @@
         rowsEl.innerHTML = list.length ? list.map((l) => {
           const av = l.available ? `<span class="avail${l.available < 2 ? ' low' : ''}"><i></i>${l.available} of ${l.gpu_count} free</span>` : '<span class="avail soon"><i></i>All rented</span>';
           return `<div class="row" role="row">
-            <span class="gpu" role="cell"><b>${esc(l.gpu_model)} · ${l.vram_gb}GB</b><span>${l.online ? '<span class="online">online</span>' : esc(l.host_kind_label)}</span></span>
+            <span class="gpu" role="cell"><b>${esc(l.gpu_model)} · ${l.vram_gb}GB</b><span>${l.online ? '<span class="online">online</span>' : esc(l.host_kind_label)}${l.api_rentals ? ' · tdcc API' : ''}</span></span>
             <span class="c-region" role="cell">${esc(l.region_label)}</span>
             <span class="c-host" role="cell">${esc(l.host_name)} · ${esc(l.host_kind_label)}</span>
             <span class="c-avail" role="cell">${av}</span>
@@ -452,6 +458,8 @@
         const gpus = cfg.l.node_gpus.length ? `Machine reports: ${cfg.l.node_gpus.map((g) => g.name + (g.vram_gb ? ` (${g.vram_gb} GB)` : '')).join(', ')}` : '';
         const desc = [cfg.l.description, gpus].filter(Boolean).join('\n');
         $('d-desc').textContent = desc; $('d-desc').hidden = !desc;
+        $('acc-tdcc').hidden = !cfg.l.api_rentals;
+        if (!cfg.l.api_rentals && cfg.access === 'tdcc') setAccess($('access').querySelector('[data-v="ssh"]'));
         rentErr('');
         $('report-box').hidden = true; $('report-reason').value = '';
         update();
@@ -473,21 +481,29 @@
       $('dur').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; press($('dur'), b); cfg.hours = Math.max(+b.dataset.h, cfg.l.min_hours); $('hours').value = cfg.hours; update(); });
       $('hours').addEventListener('input', (e) => { cfg.hours = Math.max(1, Math.min(2160, Math.round(+e.target.value) || 1)); press($('dur'), null); update(); });
       $('env').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; press($('env'), b); cfg.env = b.dataset.v; $('image').hidden = cfg.env !== 'custom'; });
-      $('access').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; press($('access'), b); cfg.access = b.dataset.v; $('ssh-wrap').hidden = cfg.access !== 'ssh'; });
+      function setAccess(b) {
+        press($('access'), b); cfg.access = b.dataset.v;
+        $('ssh-wrap').hidden = cfg.access !== 'ssh';
+        $('tdcc-wrap').hidden = cfg.access !== 'tdcc';
+        $('sec-env').hidden = cfg.access === 'tdcc';
+      }
+      $('access').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setAccess(b); });
 
       $('request').addEventListener('click', async () => {
         rentErr('');
         if (cfg.hours < cfg.l.min_hours) return rentErr(`This host rents for at least ${cfg.l.min_hours} hours.`);
         const ssh = $('ssh').value.trim();
+        const owner = $('owner').value.trim().toLowerCase();
+        if (cfg.access === 'tdcc' && !/^[0-9a-f]{64}$/.test(owner)) { rentErr('Paste your 64-character tdcc owner ID from `tdcc auth status`.'); $('owner').focus(); return; }
         if (cfg.access === 'ssh' && !ssh) { rentErr('Paste your SSH public key so the host can give you access, or choose Jupyter or API access.'); $('ssh').focus(); return; }
-        if (cfg.env === 'custom' && !$('image').value.trim()) { rentErr('Enter the container image you want to run.'); $('image').focus(); return; }
+        if (cfg.access !== 'tdcc' && cfg.env === 'custom' && !$('image').value.trim()) { rentErr('Enter the container image you want to run.'); $('image').focus(); return; }
         const user = await requireUser('Create a free account or sign in to send your request. It takes a few seconds.');
         if (!user) return;
         const btn = $('request'); btn.disabled = true;
         try {
           await api('POST', '/api/rentals', {
             listing_id: cfg.l.id, gpu_count: cfg.count, hours: cfg.hours, environment: cfg.env,
-            image: $('image').value.trim(), access: cfg.access, ssh_key: cfg.access === 'ssh' ? ssh : '', message: $('msg').value.trim(),
+            image: $('image').value.trim(), access: cfg.access, ssh_key: cfg.access === 'ssh' ? ssh : '', owner_id: cfg.access === 'tdcc' ? owner : undefined, message: $('msg').value.trim(),
           });
           close();
           $('msg').value = '';

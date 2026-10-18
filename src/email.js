@@ -55,7 +55,9 @@ export const templates = {
   }),
   accepted: (renter, r, link) => ({
     subject: `Accepted: ${r.gpu_count} × ${r.gpu_model}`,
-    text: `Hi ${renter},\n\n${r.host_name} accepted your request for ${r.gpu_count} × ${r.gpu_model} for ${r.hours} hours.${r.host_note ? `\n\nTheir note: ${r.host_note}` : ""}\n\nYou can now see their email address and agree on payment and start time:\n${link}${SIGNATURE}`,
+    text: r.access === "tdcc"
+      ? `Hi ${renter},\n\n${r.host_name} accepted your request for ${r.gpu_count} × ${r.gpu_model}. Your ${r.hours} hours of tdcc access start now.${r.host_note ? `\n\nTheir note: ${r.host_note}` : ""}\n\nOpen your account page for the one command that connects you:\n${link}${SIGNATURE}`
+      : `Hi ${renter},\n\n${r.host_name} accepted your request for ${r.gpu_count} × ${r.gpu_model} for ${r.hours} hours.${r.host_note ? `\n\nTheir note: ${r.host_note}` : ""}\n\nYou can now see their email address and agree on payment and start time:\n${link}${SIGNATURE}`,
   }),
   declined: (renter, r, link) => ({
     subject: `Declined: ${r.gpu_count} × ${r.gpu_model}`,

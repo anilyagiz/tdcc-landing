@@ -59,6 +59,7 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     expect(!(await p.evaluate(() => location.hash)), "token left in the address bar");
   };
 
+  let nodeToken = null;
   const host = await mk();
   const renter = await mk(390);
   const admin = await mk();
@@ -149,6 +150,7 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     const cmd = (await host.textContent(".cmd code")).trim();
     expect(/^tdcc market link tdcc_node_/.test(cmd), "bad command " + cmd);
     const token = cmd.split(" ").pop();
+    nodeToken = token;
     const hb = await fetch(BASE + "/api/node/heartbeat", { method: "POST", headers: { authorization: "Bearer " + token, "content-type": "application/json" }, body: JSON.stringify({ version: "0.73.0", gpus: [{ name: "NVIDIA GeForce RTX 4090", vram_gb: 24 }] }) });
     expect(hb.status === 200, "heartbeat " + hb.status);
     await host.reload();
@@ -225,6 +227,36 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     const pub2 = await (await fetch(BASE + "/api/listings")).json();
     const l = pub2.listings.find((x) => x.gpu_model === "RTX 4090");
     expect(l.available === 2 && l.host_completed === 1, "after finish: " + JSON.stringify(l));
+  });
+
+  await step("tdcc API rental: offered by the node, requested with an owner id, connect command after acceptance", async () => {
+    const joinToken = "eyJpZCI6ImUyZS10ZXN0In0";
+    const hb = await fetch(BASE + "/api/node/heartbeat", { method: "POST", headers: { authorization: "Bearer " + nodeToken, "content-type": "application/json" }, body: JSON.stringify({ version: "0.74.0", gpus: [], api: { join_token: joinToken, trust_policy: "allowlist" } }) });
+    expect(hb.status === 200 && Array.isArray((await hb.json()).grants), "heartbeat with API offer");
+    await renter.goto(BASE + "/marketplace.html");
+    await renter.waitForSelector("#rows .row");
+    const row = renter.locator("#rows .row", { hasText: "RTX 4090" });
+    expect((await row.textContent()).includes("tdcc API"), "listing not marked tdcc API");
+    await row.locator("[data-rent]").click();
+    await renter.click("#acc-tdcc");
+    expect(await renter.isHidden("#sec-env"), "environment should hide for tdcc access");
+    await renter.click("#request");
+    await renter.waitForSelector("#rent-err.show");
+    await renter.fill("#owner", "a".repeat(64));
+    await renter.click("#request");
+    await renter.waitForURL(/account/);
+    await renter.waitForSelector("article.card:has-text('tdcc API') .st.pending");
+    await host.goto(BASE + "/account.html#requests");
+    await host.locator("article.card", { hasText: "tdcc owner ID" }).locator("[data-do=accept]").click();
+    await host.waitForSelector("text=Your node admits this renter automatically");
+    await renter.reload();
+    await renter.waitForSelector(".cmd code");
+    expect((await renter.textContent(".cmd code")).trim() === `tdcc client --join ${joinToken}`, "connect command");
+    await renter.screenshot({ path: SHOTS + "/tdcc-connect.png", fullPage: true });
+    const grants = await (await fetch(BASE + "/api/node/heartbeat", { method: "POST", headers: { authorization: "Bearer " + nodeToken, "content-type": "application/json" }, body: JSON.stringify({ version: "0.74.0", gpus: [], api: { join_token: joinToken, trust_policy: "allowlist" } }) })).json();
+    expect(grants.grants.length === 1 && grants.grants[0].owner_id === "a".repeat(64), "grant not reported to the node");
+    await renter.locator("article.card", { hasText: "tdcc API" }).locator('[data-do="complete"]').click();
+    await renter.waitForSelector("article.card:has-text('tdcc API') .st.completed");
   });
 
   await step("Report, moderate (hide), owner sees the note and cannot unhide", async () => {

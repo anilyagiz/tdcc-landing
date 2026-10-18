@@ -128,8 +128,25 @@
       const menuBtn = $('menu-btn'), links = $('nav-links');
       menuBtn.addEventListener('click', () => menuBtn.setAttribute('aria-expanded', String(links.classList.toggle('open'))));
 
-      const ENV = { pytorch: 'PyTorch', vllm: 'vLLM', ubuntu: 'Ubuntu base', custom: 'Own image' };
-      const ACCESS = { ssh: 'SSH', jupyter: 'Jupyter', api: 'API only' };
+      const ENV = { pytorch: 'PyTorch', vllm: 'vLLM', ubuntu: 'Ubuntu base', custom: 'Own image', model: 'Served models' };
+      const ACCESS = { ssh: 'SSH', jupyter: 'Jupyter', api: 'API only', tdcc: 'tdcc API' };
+      const until = (ts) => {
+        const left = ts - Math.floor(Date.now() / 1000);
+        const when = new Date(ts * 1000).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+        if (left <= 0) return `ended ${when}`;
+        const h = Math.floor(left / 3600), m = Math.floor((left % 3600) / 60);
+        return `ends ${when} (${h ? `${h} h ` : ''}${m} min left)`;
+      };
+      const tdccBox = (r) => {
+        if (r.access !== 'tdcc' || r.status !== 'accepted') return '';
+        if (!r.join_token) return `<div class="reveal-box"><b>tdcc access</b><span>Accepted. The host's machine is not checking in right now, so the connect command is not available yet. It appears here as soon as the machine is back online. Access ${esc(until(r.access_expires_at))}.</span></div>`;
+        const cmd = `tdcc client --join ${r.join_token}`;
+        return `<div class="reveal-box"><b>Connect through tdcc</b>
+          <span>1. On the computer where you ran <code>tdcc auth init</code>, run:</span>
+          <div class="cmd"><code>${esc(cmd)}</code><button class="btn sm" data-copy="${esc(cmd)}">Copy</button></div>
+          <span>2. Point any OpenAI-compatible client at <code>http://localhost:9337/v1</code>. To see the host's models, open <code>http://localhost:9337/v1/models</code>.</span>
+          <span>Access ${esc(until(r.access_expires_at))}. It closes by itself; nothing to clean up.</span></div>`;
+      };
       const STATUS = { pending: 'Waiting for host', accepted: 'Accepted', declined: 'Declined', cancelled: 'Cancelled', completed: 'Completed', active: 'Listed', paused: 'Paused', hidden: 'Hidden by moderators' };
       let user = null, current = null;
 
@@ -159,6 +176,7 @@
             <div class="meta">${status(r.status)}<span>${r.hours} h</span><span>${esc(r.region_label)}</span><span>${esc(ENV[r.environment])}${r.image ? ' · ' + esc(r.image) : ''}</span><span>${esc(ACCESS[r.access])}</span><span>Host: ${esc(r.host_name)}</span><span>Sent ${ago(r.created_at)}</span></div>
             ${r.status === 'pending' ? '<p class="meta">The host has your request. You will see their reply here.</p>' : ''}
             ${r.host_email ? `<div class="reveal-box"><b>Host contact</b><span><a href="mailto:${esc(r.host_email)}">${esc(r.host_email)}</a> — reply here to agree on payment and start time.</span>${r.host_note ? `<span>${esc(r.host_note)}</span>` : ''}</div>` : (r.host_note ? `<div class="quote">${esc(r.host_note)}</div>` : '')}
+            ${tdccBox(r)}
             ${['pending', 'accepted'].includes(r.status) ? `<div class="card-actions">
               ${r.status === 'accepted' ? `<button class="btn sm" data-do="complete" data-id="${esc(r.id)}">Mark finished</button>` : ''}
               <button class="btn sm" data-do="cancel" data-id="${esc(r.id)}">Cancel request</button></div>` : ''}
@@ -175,6 +193,7 @@
             <div class="card-top"><b>${esc(r.renter_name)} wants ${r.gpu_count} × ${esc(r.gpu_model)} for ${r.hours} h</b><span class="price">${money(r.total_cents)}</span></div>
             <div class="meta">${status(r.status)}<span>${esc(ENV[r.environment])}${r.image ? ' · ' + esc(r.image) : ''}</span><span>${esc(ACCESS[r.access])}</span><span>${money(r.price_cents)} / GPU·h</span><span>Received ${ago(r.created_at)}</span></div>
             ${r.message ? `<div class="quote">${esc(r.message)}</div>` : ''}
+            ${r.access === 'tdcc' ? `<div class="meta"><span>tdcc owner ID ${esc(r.renter_owner_id.slice(0, 12))}…</span><span>${r.status === 'accepted' ? `Your node admits this renter automatically; access ${esc(until(r.access_expires_at))}` : r.status === 'pending' ? 'Accepting opens access right away for the rented hours' : 'No access'}</span></div>` : ''}
             ${r.renter_email ? `<div class="reveal-box"><b>Renter contact</b><span><a href="mailto:${esc(r.renter_email)}">${esc(r.renter_email)}</a> — send them access details and agree on payment.</span>${r.ssh_key ? `<span>SSH key:</span><code>${esc(r.ssh_key)}</code><span><button class="btn sm" data-copy="${esc(r.ssh_key)}">Copy SSH key</button></span>` : ''}</div>` : ''}
             ${r.status === 'pending' ? `<div class="card-actions"><input class="inp" id="note-${esc(r.id)}" maxlength="1000" placeholder="Optional note to the renter, e.g. start time" />
               <button class="btn sm solid" data-do="accept" data-id="${esc(r.id)}">Accept</button><button class="btn sm" data-do="decline" data-id="${esc(r.id)}">Decline</button></div>` : ''}
@@ -192,6 +211,7 @@
             <div class="card-top"><b>${l.gpu_count} × ${esc(l.gpu_model)} · ${l.vram_gb}GB</b><span class="price">${money(l.price_cents)} <span class="meta" style="display:inline">/ GPU·h</span></span></div>
             <div class="meta">${status(l.status)}${l.online ? '<span class="st online">Machine online</span>' : ''}<span>${esc(l.region_label)}</span><span>${esc(l.host_kind_label)}</span><span>${l.available} of ${l.gpu_count} free</span><span>${l.host_completed} completed</span>
               ${l.node_linked ? `<span>${l.node_seen_at ? 'Machine last seen ' + ago(l.node_seen_at) : 'Machine linked, waiting for first check-in'}${l.node_version ? ' · tdcc ' + esc(l.node_version) : ''}</span>` : ''}</div>
+            ${l.api_rentals ? '<div class="meta"><span class="st online">tdcc API rentals on</span></div>' : (l.online ? '<div class="meta">tdcc API rentals are off. To offer them: <code>tdcc market api-rentals on</code>, then serve with <code>--trust-policy allowlist</code>.</div>' : '')}
             ${l.node_gpus.length ? `<div class="meta">Machine reports: ${l.node_gpus.map((g) => esc(g.name) + (g.vram_gb ? ` (${g.vram_gb} GB)` : '')).join(', ')}</div>` : ''}
             ${l.description ? `<div class="quote">${esc(l.description)}</div>` : ''}
             ${l.status === 'hidden' ? `<div class="form-err show">${esc(l.moderation_note || 'Moderators hid this listing.')} To appeal, email anil@decentralizedcompute.company.</div>
