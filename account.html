@@ -148,6 +148,11 @@
         const h = Math.floor(left / 3600), m = Math.floor((left % 3600) / 60);
         return `ends ${when} (${h ? `${h} h ` : ''}${m} min left)`;
       };
+      const usageLine = (r) => {
+        if (!r.usage || !(r.usage.connections || r.usage.refused)) return '';
+        const mins = Math.round(r.usage.active_secs / 60);
+        return `<div class="meta"><span>Usage: ${r.usage.connections} connection${r.usage.connections === 1 ? '' : 's'}</span><span>${mins} min with a request open</span>${r.usage.refused ? `<span>${r.usage.refused} turned away by the fair-use limit</span>` : ''}</div>`;
+      };
       const tdccBox = (r) => {
         if (r.access !== 'tdcc' || r.status !== 'accepted') return '';
         if (!r.join_token) return `<div class="reveal-box"><b>tdcc access</b><span>Accepted. The host's machine is not checking in right now, so the connect command is not available yet. It appears here as soon as the machine is back online. Access ${esc(until(r.access_expires_at))}.</span></div>`;
@@ -209,7 +214,7 @@
             ${r.status === 'pending' ? '<p class="meta">The host has your request. You will see their reply here, and you can message them below.</p>' : ''}
             ${r.status === 'awaiting_payment' ? '<p class="meta">The card payment was not finished, so the host has not seen this request. Cancel it and send a new one to try again.</p>' : ''}
             ${r.host_email ? `<div class="reveal-box"><b>Host contact</b><span><a href="mailto:${esc(r.host_email)}">${esc(r.host_email)}</a>${r.payment_status === 'captured' ? '' : ' — agree on payment with the host.'}</span>${r.host_note ? `<span>${esc(r.host_note)}</span>` : ''}</div>` : (r.host_note ? `<div class="quote">${esc(r.host_note)}</div>` : '')}
-            ${tdccBox(r)}
+            ${tdccBox(r)}${usageLine(r)}
             ${['pending', 'accepted', 'awaiting_payment'].includes(r.status) ? `<div class="card-actions">
               ${r.status === 'accepted' ? `<button class="btn sm" data-do="complete" data-id="${esc(r.id)}">Mark finished</button>` : ''}
               <button class="btn sm" data-do="cancel" data-id="${esc(r.id)}">${r.status === 'accepted' ? 'Cancel rental' : 'Cancel request'}</button></div>` : ''}
@@ -227,7 +232,7 @@
             <div class="card-top"><b>${esc(r.renter_name)} wants ${r.gpu_count} × ${esc(r.gpu_model)} for ${r.hours} h</b><span class="price">${money(r.total_cents)}</span></div>
             <div class="meta">${status(r.status)}${startLine(r)}<span>${esc(ENV[r.environment])}${r.image ? ' · ' + esc(r.image) : ''}</span><span>${esc(ACCESS[r.access])}</span><span>${money(r.price_cents)} / GPU·h</span><span>Received ${ago(r.created_at)}</span>${r.renter_reviews ? `<span>Renter ${esc(TDCC.stars(r.renter_rating, r.renter_reviews))}</span>` : '<span>New renter</span>'}${payLine(r, true)}</div>
             ${r.message ? `<div class="quote">${esc(r.message)}</div>` : ''}
-            ${r.access === 'tdcc' ? `<div class="meta"><span>tdcc owner ID ${esc(r.renter_owner_id.slice(0, 12))}…</span><span>${r.status === 'accepted' ? `Your node admits this renter automatically; access ${esc(until(r.access_expires_at))}` : r.status === 'pending' ? 'Accepting opens access right away for the rented hours' : 'No access'}</span></div>` : ''}
+            ${usageLine(r)}${r.access === 'tdcc' ? `<div class="meta"><span>tdcc owner ID ${esc(r.renter_owner_id.slice(0, 12))}…</span><span>${r.status === 'accepted' ? `Your node admits this renter automatically; access ${esc(until(r.access_expires_at))}` : r.status === 'pending' ? 'Accepting opens access right away for the rented hours' : 'No access'}</span></div>` : ''}
             ${r.renter_email ? `<div class="reveal-box"><b>Renter contact</b><span><a href="mailto:${esc(r.renter_email)}">${esc(r.renter_email)}</a> — send them access details${r.payment_status === 'captured' ? '' : ' and agree on payment'}.</span>${r.ssh_key ? `<span>SSH key:</span><code>${esc(r.ssh_key)}</code><span><button class="btn sm" data-copy="${esc(r.ssh_key)}">Copy SSH key</button></span>` : ''}</div>` : ''}
             ${r.status === 'pending' ? `<div class="card-actions"><input class="inp" id="note-${esc(r.id)}" maxlength="1000" placeholder="Optional note to the renter, e.g. start time" />
               <button class="btn sm solid" data-do="accept" data-id="${esc(r.id)}">Accept</button><button class="btn sm" data-do="decline" data-id="${esc(r.id)}">Decline</button></div>` : ''}

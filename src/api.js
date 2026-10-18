@@ -1015,6 +1015,15 @@ async function unlinkNode(request, env, id) {
   return json(200, { ok: true });
 }
 
+// Renter usage deltas reported by the node since its last check-in.
+function usageReport(v) {
+  if (!Array.isArray(v)) return [];
+  const n = (x) => (Number.isInteger(x) && x >= 0 && x <= 1e9 ? x : 0);
+  return v.slice(0, 64)
+    .filter((u) => u && typeof u.owner_id === "string" && /^[0-9a-f]{64}$/.test(u.owner_id))
+    .map((u) => ({ owner_id: u.owner_id, streams: n(u.streams), refused: n(u.refused), active_secs: n(u.active_secs) }));
+}
+
 // Called by `tdcc` on the host machine (see `tdcc market` in tdcc-mesh).
 async function nodeHeartbeat(request, env) {
   const auth = request.headers.get("authorization") || "";
@@ -1033,8 +1042,15 @@ async function nodeHeartbeat(request, env) {
   // Present only when the host ran `tdcc market api-rentals on` and serves
   // with --trust-policy allowlist.
   const api = body.api && typeof body.api === "object" && body.api.trust_policy === "allowlist" ? { join_token: joinToken(body.api.join_token) } : null;
+  const usage = api ? usageReport(body.usage) : [];
   const t = now();
   await env.DB.batch([
+    // Usage goes to the renter's latest rental on this listing that has started.
+    ...usage.map((u) => env.DB.prepare(
+      `UPDATE rentals SET usage_streams = usage_streams + ?, usage_refused = usage_refused + ?, usage_active_secs = usage_active_secs + ?
+       WHERE id = (SELECT id FROM rentals WHERE listing_id = ? AND access = 'tdcc' AND renter_owner_id = ? AND status IN ('accepted', 'completed')
+         AND COALESCE(access_starts_at, 0) <= ? ORDER BY access_starts_at DESC LIMIT 1)`
+    ).bind(u.streams, u.refused, u.active_secs, listing.id, u.owner_id, t)),
     env.DB.prepare("UPDATE listings SET node_seen_at = ?, node_first_seen_at = COALESCE(node_first_seen_at, ?), node_version = ?, node_gpus = ?, api_join_token = ?, api_seen_at = ? WHERE id = ?")
       .bind(t, t, version, JSON.stringify(gpus), api ? api.join_token : null, api ? t : null, listing.id),
     env.DB.prepare(`INSERT INTO node_uptime (listing_id, hour, beats) VALUES (?, ?, 1)
@@ -1123,6 +1139,7 @@ function rentalOut(r, side) {
     payment_status: r.payment_status || "none",
     refunded_cents: r.refunded_cents || 0,
     message_count: r.message_count || 0,
+    usage: r.access === "tdcc" ? { connections: r.usage_streams || 0, refused: r.usage_refused || 0, active_secs: r.usage_active_secs || 0 } : null,
     dispute_open: !!r.dispute_open,
   };
   if (side === "renter") {

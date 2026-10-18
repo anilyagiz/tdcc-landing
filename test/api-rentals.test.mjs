@@ -33,11 +33,11 @@ async function setup() {
   const renter = await account(env, "renter");
   const { listing } = (await host.call("POST", "/api/listings", { gpu_model: "RTX 4090", vram_gb: 24, gpu_count: 1, region: "eu-central", host_kind: "independent", price: 0.5 })).body;
   const { token } = (await host.call("POST", `/api/listings/${listing.id}/node-token`, {})).body;
-  const beat = async (api) => {
+  const beat = async (api, extra = {}) => {
     const res = await handleApi(new Request(ORIGIN + "/api/node/heartbeat", {
       method: "POST",
       headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
-      body: JSON.stringify({ version: "0.74.0", gpus: [], ...(api ? { api } : {}) }),
+      body: JSON.stringify({ version: "0.74.0", gpus: [], ...(api ? { api } : {}), ...extra }),
     }), env);
     return { status: res.status, body: await res.json() };
   };
@@ -110,4 +110,20 @@ test("rentals expire on their own and free the GPU", async () => {
 test("a malformed join token is refused", async () => {
   const { beat } = await setup();
   assert.equal((await beat({ join_token: "bad token <script>", trust_policy: "allowlist" })).status, 400);
+});
+
+test("the node reports renters' usage, added to their rental", async () => {
+  const { host, renter, listing, beat } = await setup();
+  await beat(API);
+  const { rental } = (await renter.call("POST", "/api/rentals", { ...RENT, listing_id: listing.id })).body;
+  await host.call("POST", `/api/rentals/${rental.id}/accept`, {});
+  // Two check-ins with deltas, plus junk that must be ignored.
+  await beat(API, { usage: [{ owner_id: RENTER_ID, streams: 3, refused: 1, active_secs: 40 }, { owner_id: "nope", streams: 99 }] });
+  await beat(API, { usage: [{ owner_id: RENTER_ID, streams: 2, refused: -5, active_secs: 20 }] });
+  // Without the API offer (rentals off), usage is not taken.
+  await beat(null, { usage: [{ owner_id: RENTER_ID, streams: 100 }] });
+  const r = (await renter.call("GET", "/api/my/rentals")).body.rentals[0];
+  assert.deepEqual(r.usage, { connections: 5, refused: 1, active_secs: 60 });
+  const h = (await host.call("GET", "/api/my/requests")).body.requests[0];
+  assert.equal(h.usage.connections, 5);
 });
