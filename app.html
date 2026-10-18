@@ -395,9 +395,9 @@
         "applicationSubCategory": "AI compute console",
         "operatingSystem": "Web, macOS, Linux, Windows",
         "url": "https://decentralizedcompute.company/app.html",
-        "softwareVersion": "0.73.0",
+        "softwareVersion": "0.74.0",
         "releaseNotes": "https://decentralizedcompute.company/app.html#changelog",
-        "downloadUrl": "https://github.com/anilyagiz/tdcc-mesh/releases/tag/v0.73.0",
+        "downloadUrl": "https://github.com/anilyagiz/tdcc-mesh/releases/tag/v0.74.0",
         "description": "The TDCC App is the console, CLI, and API for submitting AI training, fine-tuning, inference, and evaluation jobs to a verified network of data centers and GPU hosts.",
         "publisher": { "@id": "https://decentralizedcompute.company/#organization" },
         "featureList": [
@@ -471,7 +471,7 @@
     <section class="hero">
       <div class="wrap hero-grid">
         <div>
-          <a class="release-pill" href="#downloads"><span class="tag live">0.73.0 · First stable release</span><span>CLI for Linux x64 &amp; ARM64 · Windows desktop beta</span></a>
+          <a class="release-pill" href="#downloads"><span class="tag live">0.74.0 · Marketplace release</span><span>Rent out your GPUs · CLI for Linux x64 &amp; ARM64</span></a>
           <h1>Verified compute,<span>in one app.</span></h1>
           <p class="lead">The TDCC App is the console, CLI, and API for the compute network. Submit a job, watch it run on matched hardware, verify the result, and pay only for work that is accepted.</p>
           <div class="actions">
@@ -1021,7 +1021,7 @@ env_key = <span class="s">"TDCC_API_KEY"</span></pre>
             <div class="phase-when"><b>Cohort 1</b>Early access</div>
             <div>
               <h3>Pilot network</h3>
-              <p>Console, CLI, Python and TypeScript SDKs, and the job API become available to accepted early-access teams. The 0.73.0 CLI is out as the first stable release and the Windows desktop beta is available; inference, embeddings, transcription, image generation, evaluations, and LoRA fine-tuning remain in scope with measured service levels.</p>
+              <p>Console, CLI, Python and TypeScript SDKs, and the job API become available to accepted early-access teams. The 0.74.0 CLI is out with GPU marketplace rentals and the Windows desktop beta is available; inference, embeddings, transcription, image generation, evaluations, and LoRA fine-tuning remain in scope with measured service levels.</p>
             </div>
           </article>
           <article class="phase">
@@ -1049,21 +1049,21 @@ env_key = <span class="s">"TDCC_API_KEY"</span></pre>
         <h2>Install TDCC on your machine.</h2>
         <p class="lead" style="max-width:640px">The Tauri desktop shell opens the TDCC console in a native window and supervises the local <code>tdcc</code> runtime. Download the installer for your platform, then verify its checksum before installing.</p>
         <div class="release-callout">
-          <strong>0.73.0 · First stable release</strong>
+          <strong>0.74.0 · Marketplace release</strong>
           <span>The tdcc CLI is stable for Linux x64 and ARM64. The Windows x64 desktop app is a beta (0.73.0-rc.2). macOS and Windows CLI builds follow.</span>
         </div>
         <div class="download-grid">
           <article class="download-card">
-            <div class="download-head"><h3>Linux x64 &amp; ARM64 · CLI</h3><span class="tag live">Stable 0.73.0</span></div>
+            <div class="download-head"><h3>Linux x64 &amp; ARM64 · CLI</h3><span class="tag live">Stable 0.74.0</span></div>
             <p>One command installs <code>tdcc</code>, checks the archive's SHA-256, and prepares the runtime. Then download a model and start serving, or link the machine to your marketplace listing.</p>
-            <pre style="margin:0;padding:12px;border:1px solid var(--line);border-radius:10px;background:#101a13;color:#dbe6d6;font-family:var(--mono);font-size:11px;line-height:1.7;overflow-x:auto">curl -fsSL https://raw.githubusercontent.com/anilyagiz/tdcc-mesh/v0.73.0/install.sh | bash
+            <pre style="margin:0;padding:12px;border:1px solid var(--line);border-radius:10px;background:#101a13;color:#dbe6d6;font-family:var(--mono);font-size:11px;line-height:1.7;overflow-x:auto">curl -fsSL https://raw.githubusercontent.com/anilyagiz/tdcc-mesh/v0.74.0/install.sh | bash
 tdcc setup --no-service
 tdcc market link &lt;token&gt;   # optional: rent out this GPU</pre>
             <div class="download-actions">
-              <a class="button" href="https://github.com/anilyagiz/tdcc-mesh/releases/tag/v0.73.0">View release</a>
+              <a class="button" href="https://github.com/anilyagiz/tdcc-mesh/releases/tag/v0.74.0">View release</a>
               <a class="button" href="/marketplace.html#hosts">List this GPU</a>
             </div>
-            <p class="download-meta"><a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0/tdcc-x86_64-unknown-linux-gnu.tar.gz.sha256">Archive SHA-256</a> · CPU backend</p>
+            <p class="download-meta"><a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.74.0/tdcc-x86_64-unknown-linux-gnu.tar.gz.sha256">Archive SHA-256</a> · CPU backend</p>
           </article>
           <article class="download-card">
             <div class="download-head"><h3>Windows x64 · Desktop</h3><span class="tag live">Beta 0.73.0-rc.2</span></div>
@@ -1091,8 +1091,30 @@ tdcc market link &lt;token&gt;   # optional: rent out this GPU</pre>
     <section id="changelog" class="section reveal">
       <div class="narrow">
         <p class="eyebrow">Changelog</p>
-        <h2>What changed in 0.73.0.</h2>
-        <p class="lead">The first stable release of the <code>tdcc</code> CLI, and the GPU marketplace link.</p>
+        <h2>What changed in 0.74.0.</h2>
+        <p class="lead">Rent out your machine on the GPU marketplace: its models over the mesh, or the machine itself as isolated containers.</p>
+        <article class="changelog-entry">
+          <div class="changelog-head"><span class="tag live">0.74.0</span><time datetime="2026-10-18">18 October 2026</time></div>
+          <h3>Marketplace release</h3>
+          <div class="changelog-grid">
+            <div>
+              <h4>Added</h4>
+              <ul>
+                <li><code>tdcc market machines on</code>: each accepted SSH or Jupyter rental gets its own isolated container with the rented GPUs, removed when the rental ends</li>
+                <li><code>tdcc market api-rentals on</code>: accepted renters use your models over the mesh for exactly the rented hours</li>
+                <li>Signed rental grants, per-renter fair-use limits, and usage reports</li>
+                <li>Memory, CPU, and disk limits per rental; Jupyter over HTTPS</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Security</h4>
+              <ul>
+                <li>Nodes under an owner-only trust policy no longer tell refused peers about the mesh</li>
+                <li>Renters see only the machine they rented</li>
+              </ul>
+            </div>
+          </div>
+        </article>
         <article class="changelog-entry">
           <div class="changelog-head"><span class="tag live">0.73.0</span><time datetime="2026-10-17">17 October 2026</time></div>
           <h3>First stable release</h3>

@@ -4,6 +4,15 @@ All notable landing-site and public desktop-release changes are documented here.
 
 ## [Unreleased]
 
+## [0.74.0] — 2026-10-18
+
+### Deploy order
+
+Publish the `v0.74.0` GitHub release before deploying: the App page links to
+its install script and checksums. Set `MARKET_SIGNING_KEY` before the first
+host links a machine (hosts pin the key at link time), and apply migrations
+0004–0008.
+
 ### Added
 
 - **tdcc API rentals:** listings whose node offers it (`tdcc market
