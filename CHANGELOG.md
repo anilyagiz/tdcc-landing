@@ -2,6 +2,41 @@
 
 All notable landing-site and public desktop-release changes are documented here.
 
+## [Unreleased]
+
+### Added
+
+- **tdcc API rentals:** listings whose node offers it (`tdcc market
+  api-rentals on`, tdcc 0.74.0+) can be rented with a tdcc owner ID; the
+  renter gets a `tdcc client --join …` command and access closes by itself
+  when the rented hours end. Grants are Ed25519-signed when
+  `MARKET_SIGNING_KEY` is set (`npm run keygen`; public key at
+  `/api/market/key`).
+- **Card payments with escrow (Stripe Connect, optional):** host payout
+  onboarding, card authorized on request, captured on accept, released on
+  decline/expiry, refunds on cancellation, payouts 24 h after the end, and
+  chargebacks or disputes holding the payout.
+- **Messages** between host and renter on each request, **reviews** after a
+  rental (host rating on listings, renter rating for hosts), **problem
+  reports** settled by admins (`admin.html` disputes table).
+- **Scheduled starts** with overlap-aware capacity; requests expire after six
+  days without an answer; accepted rentals complete when their hours end.
+- **Listing signals:** 7-day node uptime and "hardware checked" when tdcc's
+  reported GPUs match the listing.
+- **Server-side search and paging** for listings (`q`, `region`,
+  `min_vram`, `max_vram`, `online`, `api`, `sort`, `limit`, `offset`).
+- **Account security:** two-factor sign-in (TOTP + recovery codes), device
+  list and sign-out, email change via confirmation link, activity log, data
+  export, optional Cloudflare Turnstile on sign-up and reset.
+- **Operations:** cron trigger for expiry, cleanup, and payouts; optional
+  Sentry error reports; `npm run db:backup`.
+
+### Changed
+
+- Privacy policy and terms describe payments, messages, reviews, security
+  logs, and the robot check.
+- Content-Security-Policy allows the Turnstile script and frame.
+
 ## [0.73.0] — 2026-10-17
 
 ### Added

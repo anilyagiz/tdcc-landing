@@ -44,12 +44,16 @@
       const params = new URLSearchParams(location.hash.slice(1));
       // Drop the token from the address bar and history right away.
       history.replaceState(null, '', location.pathname);
-      const verify = params.get('verify'), reset = params.get('reset');
+      const verify = params.get('verify'), reset = params.get('reset'), changeEmail = params.get('email');
 
       if (verify) {
         api('POST', '/api/auth/verify', { token: verify })
           .then(() => { box.innerHTML = '<h1>Email confirmed.</h1><p>You can now list GPUs and send rental requests.</p><div class="actions"><a class="btn solid" href="/account.html">Go to my account →</a><a class="btn" href="/marketplace.html">Browse GPUs</a></div>'; })
           .catch((err) => { box.innerHTML = `<h1>That link did not work.</h1><p>${esc(err.message)}</p><div class="actions"><a class="btn solid" href="/account.html">Go to my account →</a></div>`; });
+      } else if (changeEmail) {
+        api('POST', '/api/auth/email-change', { token: changeEmail })
+          .then(() => { box.innerHTML = '<h1>Email changed.</h1><p>Use your new address from now on to sign in.</p><div class="actions"><a class="btn solid" href="/account.html">Go to my account →</a></div>'; })
+          .catch((err) => { box.innerHTML = `<h1>That link did not work.</h1><p>${esc(err.message)}</p><div class="actions"><a class="btn solid" href="/account.html#settings">Go to my settings →</a></div>`; });
       } else if (reset) {
         box.innerHTML = `<form id="f" novalidate style="display:grid;gap:16px">
           <h1>Choose a new password.</h1>
@@ -66,6 +70,11 @@
           const btn = f.querySelector('button'); btn.disabled = true;
           try {
             const d = await api('POST', '/api/auth/reset', { token: reset, password: f.password.value });
+            if (d.sign_in) {
+              // Two-factor accounts still need their code to sign in.
+              box.innerHTML = '<h1>Password changed.</h1><p>Sign in with your new password and your two-factor code.</p><div class="actions"><a class="btn solid" href="/account.html">Sign in →</a></div>';
+              return;
+            }
             setUser(d.user);
             toast('Password changed');
             location.href = '/account.html';

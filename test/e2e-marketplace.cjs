@@ -19,6 +19,18 @@ const plantToken = (email, purpose) => {
   sql(`INSERT INTO email_tokens (token_hash, user_id, purpose, created_at, expires_at) SELECT '${hash}', id, '${purpose}', unixepoch(), unixepoch() + 3600 FROM users WHERE email = '${email}'`);
   return token;
 };
+// Authenticator-app code (RFC 6238) for a base32 secret, `drift` steps ahead.
+const totp = (secret, drift = 0) => {
+  const A = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  let bits = "";
+  for (const c of secret) bits += A.indexOf(c).toString(2).padStart(5, "0");
+  const key = Buffer.from(bits.match(/.{8}/g).map((b) => parseInt(b, 2)));
+  const msg = Buffer.alloc(8);
+  msg.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30000) + drift));
+  const mac = crypto.createHmac("sha1", key).update(msg).digest();
+  const o = mac[19] & 15;
+  return String((mac.readUInt32BE(o) & 0x7fffffff) % 1000000).padStart(6, "0");
+};
 const results = [];
 let pagesForShots = [];
 const step = async (name, fn) => {
@@ -113,17 +125,23 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     await renter.goto(BASE + "/marketplace.html");
     await renter.waitForSelector("#rows .row");
     const count = async () => (await renter.$$("#rows .row")).length;
-    expect((await count()) === 2, "expected 2 listings");
-    await renter.click('.chips [data-vram="80"]'); expect((await count()) === 1, "80GB+ chip");
-    await renter.click('.chips [data-vram="24"]'); expect((await count()) === 1, "24GB chip");
-    await renter.click('.chips [data-vram="all"]');
-    await renter.selectOption("#f-region", "us-east"); expect((await count()) === 1, "region filter");
-    await renter.selectOption("#f-region", "all");
-    await renter.fill("#f-q", "a100"); expect((await count()) === 1, "search");
-    await renter.fill("#f-q", "");
+    // Filters run on the server, so wait for the list to settle.
+    const rows = async (n, msg) => {
+      await renter.waitForFunction((k) => document.querySelectorAll("#rows .row").length === k, n, { timeout: 5000 }).catch(() => {});
+      expect((await count()) === n, msg);
+    };
+    await rows(2, "expected 2 listings");
+    await renter.click('.chips [data-vram="80"]'); await rows(1, "80GB+ chip");
+    await renter.click('.chips [data-vram="24"]'); await rows(1, "24GB chip");
+    await renter.click('.chips [data-vram="all"]'); await rows(2, "all chip");
+    await renter.selectOption("#f-region", "us-east"); await rows(1, "region filter");
+    await renter.selectOption("#f-region", "all"); await rows(2, "any region");
+    await renter.fill("#f-q", "a100"); await rows(1, "search");
+    await renter.fill("#f-q", ""); await rows(2, "search cleared");
     await renter.selectOption("#f-sort", "vram");
+    await renter.waitForFunction(() => (document.querySelector("#rows .row") || {}).textContent?.includes("A100"), null, { timeout: 5000 }).catch(() => {});
     expect((await renter.textContent("#rows .row")).includes("A100"), "sort by memory");
-    await renter.check("#f-online"); expect((await count()) === 0, "online-only should hide unlinked");
+    await renter.check("#f-online"); await rows(0, "online-only should hide unlinked");
     await renter.uncheck("#f-online");
   });
 
@@ -259,6 +277,48 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     await renter.waitForSelector("article.card:has-text('tdcc API') .st.completed");
   });
 
+  await step("Messages, review, and problem report on a finished rental", async () => {
+    await renter.goto(BASE + "/account.html#rentals");
+    const card = renter.locator("article.card", { hasText: "ghcr.io/me/train:1" });
+    await card.locator("[data-msgs]").click();
+    await card.locator("[data-thread] textarea").fill("Thanks, the run finished fine.");
+    await card.locator("[data-thread] [type=submit]").click();
+    await card.locator(".msg.mine", { hasText: "the run finished fine" }).waitFor();
+    await host.goto(BASE + "/account.html#requests");
+    const hcard = host.locator("article.card", { hasText: "ghcr.io/me/train:1" });
+    await hcard.locator("[data-msgs]").click();
+    await hcard.locator(".msg:not(.mine)", { hasText: "the run finished fine" }).waitFor();
+    await card.locator("[data-review]").click();
+    await card.locator('[data-star="4"]').click();
+    await card.locator("[data-review-form] textarea").fill("Quick setup, stable box");
+    await card.locator("[data-review-form] [type=submit]").click();
+    await renter.waitForSelector("text=Thanks for your review");
+    await renter.locator("article.card", { hasText: "ghcr.io/me/train:1" }).locator("[data-dispute]").click();
+    await renter.locator("[data-dispute-form] textarea").fill("Two of the three hours the GPU was missing.");
+    await renter.locator("[data-dispute-form] [type=submit]").click();
+    await renter.locator("article.card", { hasText: "ghcr.io/me/train:1" }).locator("text=Dispute open").waitFor();
+    await renter.goto(BASE + "/marketplace.html");
+    await renter.waitForSelector("#rows .row");
+    const row = renter.locator("#rows .row", { hasText: "RTX 4090" });
+    expect((await row.textContent()).includes("★ 4.0"), "rating not on the listing");
+    await row.locator("[data-rent]").click();
+    await renter.waitForSelector("#d-reviews:not([hidden])");
+    expect((await renter.textContent("#d-reviews")).includes("Quick setup"), "review text missing in drawer");
+    await renter.click("#rent [data-close] >> nth=1");
+  });
+
+  await step("Request with a later start time", async () => {
+    await renter.locator("#rows .row", { hasText: "RTX 4090" }).locator("[data-rent]").click();
+    await renter.click('#when [data-v="later"]');
+    const d = new Date(Date.now() + 2 * 86400000);
+    const pad = (n) => String(n).padStart(2, "0");
+    await renter.fill("#start", `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T10:00`);
+    await renter.click('#access [data-v="api"]');
+    await renter.click("#request");
+    await renter.waitForURL(/account/);
+    await renter.waitForSelector("text=Wants to start");
+  });
+
   await step("Report, moderate (hide), owner sees the note and cannot unhide", async () => {
     await renter.goto(BASE + "/marketplace.html");
     await renter.waitForSelector("#rows .row");
@@ -275,8 +335,11 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     await admin.goto(BASE + "/admin.html");
     await admin.waitForSelector("[data-dismiss]");
     await admin.screenshot({ path: SHOTS + "/admin.png", fullPage: true });
-    await admin.click("[data-hide] >> nth=0");
+    expect((await admin.textContent("body")).includes("GPU was missing"), "dispute not shown to admins");
+    await admin.locator("tr", { hasText: "Price looks wrong" }).locator("[data-hide]").click();
     await admin.waitForSelector("text=No open reports.");
+    await admin.click("[data-settle] >> nth=0");
+    await admin.waitForSelector("text=No open disputes.");
     await host.goto(BASE + "/account.html#listings");
     await host.waitForSelector("text=Test moderation note");
     const r = await host.evaluate(async () => {
@@ -333,6 +396,51 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     await renter.waitForSelector(".signin");
     const back = await fetch(BASE + "/api/auth/login", { method: "POST", headers: { origin: BASE, "content-type": "application/json" }, body: JSON.stringify({ email: "rob@example.com", password: "renter password 2" }) });
     expect(back.status === 401, "deleted account can still sign in");
+  });
+
+  await step("Two-factor sign-in: turn on, sign in with a code, sign out other devices", async () => {
+    const a = await mk();
+    await signup(a, "Tess Two", "tess@example.com", "tess password 123");
+    await a.goto(BASE + "/account.html#settings");
+    await a.click("[data-tfa-start]");
+    const secret = await a.getAttribute("#tfa-form [name=secret]", "value");
+    await a.fill("#tfa-form [name=code]", totp(secret));
+    await a.click("#tfa-form [type=submit]");
+    await a.waitForSelector(".codes span");
+    expect((await a.$$(".codes span")).length === 8, "recovery codes");
+    const b = await mk();
+    await b.goto(BASE + "/account.html");
+    await b.click('[data-auth="login"]');
+    await b.fill("#auth [name=email]", "tess@example.com");
+    await b.fill("#auth [name=password]", "tess password 123");
+    await b.click("#auth-submit");
+    await b.waitForSelector("#auth [name=code]:visible");
+    await b.fill("#auth [name=code]", "000000");
+    await b.click("#auth-submit");
+    await b.waitForSelector("#auth-err.show");
+    await b.fill("#auth [name=code]", totp(secret, 1));
+    await b.click("#auth-submit");
+    await b.waitForSelector("#tabs:not([hidden])");
+    await b.goto(BASE + "/account.html#settings");
+    await b.waitForSelector('[data-revoke="others"]');
+    await b.click('[data-revoke="others"]');
+    await b.waitForSelector("text=Signed out");
+    await a.goto(BASE + "/account.html");
+    await a.waitForSelector(".signin");
+    expect((await b.textContent("#act-form")).includes("Two-factor sign-in turned on"), "activity log");
+    const [download] = await Promise.all([b.waitForEvent("download"), b.click("[data-export]")]);
+    const data = JSON.parse(require("fs").readFileSync(await download.path(), "utf8"));
+    expect(data.profile.email === "tess@example.com" && data.profile.two_factor === true, "export content");
+    await b.fill("#email-form [name=email]", "tess.new@example.com");
+    await b.fill("#email-form [name=password]", "tess password 123");
+    await b.click("#email-form [type=submit]");
+    await b.waitForSelector("text=Check the new inbox");
+    const t = plantToken("tess@example.com", "email-change");
+    await b.goto(`${BASE}/confirm.html#email=${t}`);
+    await b.waitForSelector("text=Email changed.");
+    await b.goto(BASE + "/account.html");
+    await b.waitForSelector("text=tess.new@example.com");
+    await a.context().close(); await b.context().close();
   });
 
   await step("Sign out", async () => {

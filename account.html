@@ -55,6 +55,17 @@
     .signin h2 { font-family: var(--serif); font-size: 34px; line-height: 1.1; }
     .signin p { margin: 12px 0 24px; color: var(--body); }
     .loading { color: var(--muted); font-family: var(--mono); font-size: 12px; }
+    .thread { display: grid; gap: 8px; max-height: 360px; overflow-y: auto; padding: 4px 0; }
+    .msg { max-width: 80%; padding: 8px 12px; border: 1px solid var(--line-2); font-size: 14px; color: var(--body); white-space: pre-line; overflow-wrap: anywhere; }
+    .msg.mine { justify-self: end; border-color: rgba(216,191,148,.4); }
+    .msg small { display: block; margin-top: 4px; color: var(--muted); font-family: var(--mono); font-size: 10.5px; }
+    .stars { display: inline-flex; gap: 4px; }
+    .stars button { padding: 2px 6px; border: 1px solid var(--line-2); background: none; color: var(--muted); cursor: pointer; font-size: 16px; }
+    .stars button[aria-pressed="true"] { color: var(--sand); border-color: var(--sand); }
+    .sessions { display: grid; gap: 8px; }
+    .sessions div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--body); }
+    .codes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; font-family: var(--mono); font-size: 13px; }
+    .payout { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; padding: 16px 20px; border: 1px solid var(--line); background: var(--panel); font-size: 14px; color: var(--body); }
   </style>
 </head>
 <body>
@@ -147,7 +158,28 @@
           <span>2. Point any OpenAI-compatible client at <code>http://localhost:9337/v1</code>. To see the host's models, open <code>http://localhost:9337/v1/models</code>.</span>
           <span>Access ${esc(until(r.access_expires_at))}. It closes by itself; nothing to clean up.</span></div>`;
       };
-      const STATUS = { pending: 'Waiting for host', accepted: 'Accepted', declined: 'Declined', cancelled: 'Cancelled', completed: 'Completed', active: 'Listed', paused: 'Paused', hidden: 'Hidden by moderators' };
+      const STATUS = { pending: 'Waiting for host', awaiting_payment: 'Waiting for payment', accepted: 'Accepted', declined: 'Declined', cancelled: 'Cancelled', completed: 'Completed', expired: 'No answer', active: 'Listed', paused: 'Paused', hidden: 'Hidden by moderators' };
+      const PAY = { authorized: 'Card authorized, not charged yet', captured: 'Paid by card', released: 'Card hold released', refunded: 'Refunded', partially_refunded: 'Partly refunded', failed: 'Payment failed' };
+      const when = (ts) => new Date(ts * 1000).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+      const payLine = (r, host) => {
+        if (!r.payment_status || r.payment_status === 'none' || r.payment_status === 'awaiting') return '';
+        let t = PAY[r.payment_status] || r.payment_status;
+        if (r.refunded_cents) t += ` · ${money(r.refunded_cents)} back to the renter`;
+        if (host && r.payout_status === 'held') t += ` · you receive ${money(Math.max(0, r.total_cents - r.refunded_cents - r.fee_cents))} about a day after the rental ends`;
+        if (host && r.payout_status === 'paid') t += ' · paid out to you';
+        return `<span>${esc(t)}</span>`;
+      };
+      const startLine = (r) => r.access_starts_at ? `<span>${r.access_starts_at > Date.now() / 1000 ? 'Starts' : 'Started'} ${esc(when(r.access_starts_at))}</span>`
+        : r.start_at ? `<span>Wants to start ${esc(when(r.start_at))}</span>` : '';
+      // Messages, reviews, and disputes, shared by both sides.
+      const extras = (r) => {
+        if (r.status === 'awaiting_payment') return '';
+        const b = [`<button class="btn sm" data-msgs="${esc(r.id)}">Messages${r.message_count ? ` (${r.message_count})` : ''}</button>`];
+        if (r.can_review) b.push(`<button class="btn sm" data-review="${esc(r.id)}">Leave a review</button>`);
+        if (r.dispute_open) b.push('<span class="st pending">Dispute open</span>');
+        else if (['accepted', 'completed'].includes(r.status) || (r.status === 'cancelled' && r.access_starts_at)) b.push(`<button class="btn sm" data-dispute="${esc(r.id)}">Report a problem</button>`);
+        return `<div class="card-actions">${b.join('')}</div><div data-slot></div>`;
+      };
       let user = null, current = null;
 
       const tabOf = () => (['rentals', 'requests', 'listings', 'settings'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'rentals');
@@ -173,13 +205,15 @@
         return `<div class="cards">${rentals.map((r) => `
           <article class="card">
             <div class="card-top"><b>${r.gpu_count} × ${esc(r.gpu_model)} · ${r.vram_gb}GB</b><span class="price">${money(r.total_cents)}</span></div>
-            <div class="meta">${status(r.status)}<span>${r.hours} h</span><span>${esc(r.region_label)}</span><span>${esc(ENV[r.environment])}${r.image ? ' · ' + esc(r.image) : ''}</span><span>${esc(ACCESS[r.access])}</span><span>Host: ${esc(r.host_name)}</span><span>Sent ${ago(r.created_at)}</span></div>
-            ${r.status === 'pending' ? '<p class="meta">The host has your request. You will see their reply here.</p>' : ''}
-            ${r.host_email ? `<div class="reveal-box"><b>Host contact</b><span><a href="mailto:${esc(r.host_email)}">${esc(r.host_email)}</a> — reply here to agree on payment and start time.</span>${r.host_note ? `<span>${esc(r.host_note)}</span>` : ''}</div>` : (r.host_note ? `<div class="quote">${esc(r.host_note)}</div>` : '')}
+            <div class="meta">${status(r.status)}<span>${r.hours} h</span>${startLine(r)}<span>${esc(r.region_label)}</span><span>${esc(ENV[r.environment])}${r.image ? ' · ' + esc(r.image) : ''}</span><span>${esc(ACCESS[r.access])}</span><span>Host: ${esc(r.host_name)}</span><span>Sent ${ago(r.created_at)}</span>${payLine(r, false)}</div>
+            ${r.status === 'pending' ? '<p class="meta">The host has your request. You will see their reply here, and you can message them below.</p>' : ''}
+            ${r.status === 'awaiting_payment' ? '<p class="meta">The card payment was not finished, so the host has not seen this request. Cancel it and send a new one to try again.</p>' : ''}
+            ${r.host_email ? `<div class="reveal-box"><b>Host contact</b><span><a href="mailto:${esc(r.host_email)}">${esc(r.host_email)}</a>${r.payment_status === 'captured' ? '' : ' — agree on payment with the host.'}</span>${r.host_note ? `<span>${esc(r.host_note)}</span>` : ''}</div>` : (r.host_note ? `<div class="quote">${esc(r.host_note)}</div>` : '')}
             ${tdccBox(r)}
-            ${['pending', 'accepted'].includes(r.status) ? `<div class="card-actions">
+            ${['pending', 'accepted', 'awaiting_payment'].includes(r.status) ? `<div class="card-actions">
               ${r.status === 'accepted' ? `<button class="btn sm" data-do="complete" data-id="${esc(r.id)}">Mark finished</button>` : ''}
-              <button class="btn sm" data-do="cancel" data-id="${esc(r.id)}">Cancel request</button></div>` : ''}
+              <button class="btn sm" data-do="cancel" data-id="${esc(r.id)}">${r.status === 'accepted' ? 'Cancel rental' : 'Cancel request'}</button></div>` : ''}
+            ${extras(r)}
           </article>`).join('')}</div>`;
       }
 
@@ -191,25 +225,32 @@
         return `<div class="cards">${list.map((r) => `
           <article class="card">
             <div class="card-top"><b>${esc(r.renter_name)} wants ${r.gpu_count} × ${esc(r.gpu_model)} for ${r.hours} h</b><span class="price">${money(r.total_cents)}</span></div>
-            <div class="meta">${status(r.status)}<span>${esc(ENV[r.environment])}${r.image ? ' · ' + esc(r.image) : ''}</span><span>${esc(ACCESS[r.access])}</span><span>${money(r.price_cents)} / GPU·h</span><span>Received ${ago(r.created_at)}</span></div>
+            <div class="meta">${status(r.status)}${startLine(r)}<span>${esc(ENV[r.environment])}${r.image ? ' · ' + esc(r.image) : ''}</span><span>${esc(ACCESS[r.access])}</span><span>${money(r.price_cents)} / GPU·h</span><span>Received ${ago(r.created_at)}</span>${r.renter_reviews ? `<span>Renter ${esc(TDCC.stars(r.renter_rating, r.renter_reviews))}</span>` : '<span>New renter</span>'}${payLine(r, true)}</div>
             ${r.message ? `<div class="quote">${esc(r.message)}</div>` : ''}
             ${r.access === 'tdcc' ? `<div class="meta"><span>tdcc owner ID ${esc(r.renter_owner_id.slice(0, 12))}…</span><span>${r.status === 'accepted' ? `Your node admits this renter automatically; access ${esc(until(r.access_expires_at))}` : r.status === 'pending' ? 'Accepting opens access right away for the rented hours' : 'No access'}</span></div>` : ''}
-            ${r.renter_email ? `<div class="reveal-box"><b>Renter contact</b><span><a href="mailto:${esc(r.renter_email)}">${esc(r.renter_email)}</a> — send them access details and agree on payment.</span>${r.ssh_key ? `<span>SSH key:</span><code>${esc(r.ssh_key)}</code><span><button class="btn sm" data-copy="${esc(r.ssh_key)}">Copy SSH key</button></span>` : ''}</div>` : ''}
+            ${r.renter_email ? `<div class="reveal-box"><b>Renter contact</b><span><a href="mailto:${esc(r.renter_email)}">${esc(r.renter_email)}</a> — send them access details${r.payment_status === 'captured' ? '' : ' and agree on payment'}.</span>${r.ssh_key ? `<span>SSH key:</span><code>${esc(r.ssh_key)}</code><span><button class="btn sm" data-copy="${esc(r.ssh_key)}">Copy SSH key</button></span>` : ''}</div>` : ''}
             ${r.status === 'pending' ? `<div class="card-actions"><input class="inp" id="note-${esc(r.id)}" maxlength="1000" placeholder="Optional note to the renter, e.g. start time" />
               <button class="btn sm solid" data-do="accept" data-id="${esc(r.id)}">Accept</button><button class="btn sm" data-do="decline" data-id="${esc(r.id)}">Decline</button></div>` : ''}
             ${r.status === 'accepted' ? `<div class="card-actions"><button class="btn sm" data-do="complete" data-id="${esc(r.id)}">Mark finished</button><button class="btn sm" data-do="cancel" data-id="${esc(r.id)}">Cancel rental</button></div>` : ''}
+            ${extras(r)}
           </article>`).join('')}</div>`;
       }
 
       // ---------- listings ----------
       async function listings() {
         const { listings } = await api('GET', '/api/my/listings');
-        const head = `<div class="pane-head"><h2>My GPUs</h2><a class="btn solid sm" href="/marketplace.html#hosts">List another GPU</a></div>`;
+        let head = `<div class="pane-head"><h2>My GPUs</h2><a class="btn solid sm" href="/marketplace.html#hosts">List another GPU</a></div>`;
+        const pay = await api('GET', '/api/me/payouts').catch(() => ({ enabled: false }));
+        if (pay.enabled) {
+          head += pay.ready
+            ? `<div class="payout"><span>Payouts are set up. Earned: <b>${money(pay.paid_cents)}</b> paid out, <b>${money(pay.pending_cents)}</b> on the way. The marketplace fee is ${(pay.fee_bps / 100).toFixed(1).replace(/\.0$/, '')}%.</span><button class="btn sm" data-payouts>Open Stripe dashboard</button></div>`
+            : `<div class="payout"><span><b>Set up payouts to go live.</b> Renters pay by card and we send your earnings to your bank through Stripe. Until you finish, your GPUs are not shown to renters.</span><button class="btn sm solid" data-payouts>${pay.account ? 'Finish payout setup' : 'Set up payouts'}</button></div>`;
+        }
         if (!listings.length) return head + `<div class="empty">You have not listed a GPU yet. <a href="/marketplace.html#hosts">List one in two minutes →</a></div>`;
         return head + `<div class="cards">${listings.map((l) => `
           <article class="card" id="l-${esc(l.id)}">
             <div class="card-top"><b>${l.gpu_count} × ${esc(l.gpu_model)} · ${l.vram_gb}GB</b><span class="price">${money(l.price_cents)} <span class="meta" style="display:inline">/ GPU·h</span></span></div>
-            <div class="meta">${status(l.status)}${l.online ? '<span class="st online">Machine online</span>' : ''}<span>${esc(l.region_label)}</span><span>${esc(l.host_kind_label)}</span><span>${l.available} of ${l.gpu_count} free</span><span>${l.host_completed} completed</span>
+            <div class="meta">${status(l.status)}${l.online ? '<span class="st online">Machine online</span>' : ''}<span>${esc(l.region_label)}</span><span>${esc(l.host_kind_label)}</span><span>${l.available} of ${l.gpu_count} free</span><span>${l.host_completed} completed</span>${l.host_rating ? `<span>${esc(TDCC.stars(l.host_rating, l.host_reviews))}</span>` : ''}${l.uptime_7d !== null ? `<span>${l.uptime_7d}% uptime (7 days)</span>` : ''}${l.hardware_verified ? '<span class="st online">Hardware checked</span>' : ''}
               ${l.node_linked ? `<span>${l.node_seen_at ? 'Machine last seen ' + ago(l.node_seen_at) : 'Machine linked, waiting for first check-in'}${l.node_version ? ' · tdcc ' + esc(l.node_version) : ''}</span>` : ''}</div>
             ${l.api_rentals ? '<div class="meta"><span class="st online">tdcc API rentals on</span></div>' : (l.online ? '<div class="meta">tdcc API rentals are off. To offer them: <code>tdcc market api-rentals on</code>, then serve with <code>--trust-policy allowlist</code>.</div>' : '')}
             ${l.node_gpus.length ? `<div class="meta">Machine reports: ${l.node_gpus.map((g) => esc(g.name) + (g.vram_gb ? ` (${g.vram_gb} GB)` : '')).join(', ')}</div>` : ''}
@@ -237,14 +278,49 @@
       }
 
       // ---------- settings ----------
-      function settings() {
+      async function settings() {
+        const [sess, act] = await Promise.all([api('GET', '/api/me/sessions'), api('GET', '/api/me/activity')]);
+        const EVENTS = { login: 'Signed in', login_failed: 'Wrong password', '2fa_failed': 'Wrong two-factor code', '2fa_enabled': 'Two-factor sign-in turned on', '2fa_disabled': 'Two-factor sign-in turned off', password_changed: 'Password changed', password_reset: 'Password reset by email', email_change_requested: 'Email change requested', email_changed: 'Email changed', sessions_revoked: 'Signed out devices', signup: 'Account created', payout_setup_started: 'Payout setup started' };
         return `<div class="settings">
+          <form id="tfa-form" novalidate>
+            <h3>Two-factor sign-in</h3>
+            ${user.two_factor ? `<p>On. Signing in needs your password and a code from your authenticator app.</p>
+              <div class="form-err" role="alert"></div>
+              <label class="fl">Password<input class="inp" name="password" type="password" autocomplete="current-password" required /></label>
+              <label class="fl">Code or recovery code<input class="inp" name="code" autocomplete="one-time-code" required /></label>
+              <button class="btn" type="submit">Turn off</button>`
+            : `<p>Protect your account with a code from an authenticator app (Google Authenticator, 1Password, Authy…) in addition to your password.</p>
+              <div class="form-err" role="alert"></div><div data-tfa></div>
+              <button class="btn solid" type="button" data-tfa-start>Turn on</button>`}
+          </form>
           <form id="pw-form" novalidate>
             <h3>Change password</h3>
             <div class="form-err" role="alert"></div>
             <label class="fl">Current password<input class="inp" name="current_password" type="password" autocomplete="current-password" required /></label>
             <label class="fl">New password<input class="inp" name="new_password" type="password" autocomplete="new-password" minlength="10" required /><small>At least 10 characters. You will be signed out on other devices.</small></label>
             <button class="btn solid" type="submit">Update password</button>
+          </form>
+          <form id="email-form" novalidate>
+            <h3>Change email</h3>
+            ${user.pending_email ? `<p>We sent a confirmation link to <b>${esc(user.pending_email)}</b>. Your sign-in email changes once you open it.</p>` : '<p>We send a confirmation link to the new address; the change happens once you open it.</p>'}
+            <div class="form-err" role="alert"></div>
+            <label class="fl">New email<input class="inp" name="email" type="email" autocomplete="email" required /></label>
+            <label class="fl">Password<input class="inp" name="password" type="password" autocomplete="current-password" required /></label>
+            <button class="btn" type="submit">Change email</button>
+          </form>
+          <form id="sess-form" novalidate>
+            <h3>Signed-in devices</h3>
+            <div class="sessions">${sess.sessions.map((x) => `<div><span>${esc(x.user_agent ? x.user_agent.replace(/^Mozilla\/5.0 /, '').slice(0, 70) : 'Unknown device')}${x.current ? ' <b>(this device)</b>' : ''}</span><span class="meta">active ${ago(x.last_seen_at)}${x.current ? '' : ` <button class="btn sm" type="button" data-revoke="${esc(x.id)}">Sign out</button>`}</span></div>`).join('')}</div>
+            ${sess.sessions.length > 1 ? '<button class="btn" type="button" data-revoke="others">Sign out all other devices</button>' : ''}
+          </form>
+          <form id="act-form" novalidate>
+            <h3>Recent account activity</h3>
+            <div class="sessions">${act.events.slice(0, 12).map((e) => `<div><span>${esc(EVENTS[e.event] || e.event)}${e.detail ? ' · ' + esc(e.detail) : ''}</span><span class="meta">${ago(e.created_at)}${e.ip && e.ip !== 'local' ? ' · ' + esc(e.ip) : ''}</span></div>`).join('') || '<p>Nothing yet.</p>'}</div>
+          </form>
+          <form id="export-form" novalidate>
+            <h3>Your data</h3>
+            <p>Download everything we store about you (profile, listings, rentals, messages, reviews, activity) as a JSON file.</p>
+            <button class="btn" type="button" data-export>Download my data</button>
           </form>
           <form id="del-form" novalidate>
             <h3>Delete account</h3>
@@ -256,7 +332,7 @@
         </div>`;
       }
 
-      const VIEWS = { rentals, requests, listings, settings: async () => settings() };
+      const VIEWS = { rentals, requests, listings, settings };
       let listingCache = [];
       async function show(tab, quiet = false) {
         current = tab;
@@ -313,6 +389,71 @@
           return;
         }
         if (e.target.closest('[data-cancel-edit]')) { e.target.closest('[data-slot]').innerHTML = ''; return; }
+        const slotOf = (el) => el.closest('.card').querySelector('[data-slot]:last-of-type');
+        const msgs = e.target.closest('[data-msgs]');
+        if (msgs) {
+          const slot = slotOf(msgs);
+          if (slot.dataset.open === 'msgs') { slot.innerHTML = ''; slot.dataset.open = ''; return; }
+          slot.dataset.open = 'msgs';
+          return loadThread(slot, msgs.dataset.msgs);
+        }
+        const rev = e.target.closest('[data-review]');
+        if (rev) {
+          const slot = slotOf(rev); slot.dataset.open = 'review';
+          slot.innerHTML = `<form class="edit" data-review-form="${esc(rev.dataset.review)}"><div class="full"><span class="meta">How did it go?</span><div class="stars" role="group" aria-label="Rating">${[1, 2, 3, 4, 5].map((n) => `<button type="button" data-star="${n}" aria-pressed="false">★</button>`).join('')}</div></div>
+            <label class="fl full">Comment (optional, shown publicly)<textarea class="inp" name="comment" maxlength="1000"></textarea></label>
+            <div class="card-actions full"><button class="btn sm solid" type="submit">Post review</button></div></form>`;
+          return;
+        }
+        const star = e.target.closest('[data-star]');
+        if (star) {
+          const n = +star.dataset.star;
+          star.parentElement.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(+x.dataset.star <= n)));
+          star.closest('form').dataset.rating = n;
+          return;
+        }
+        const dis = e.target.closest('[data-dispute]');
+        if (dis) {
+          const slot = slotOf(dis); slot.dataset.open = 'dispute';
+          slot.innerHTML = `<form class="edit" data-dispute-form="${esc(dis.dataset.dispute)}"><label class="fl full">What went wrong? Our team reads every report and replies by email.<textarea class="inp" name="reason" minlength="10" maxlength="2000" required></textarea></label>
+            <div class="card-actions full"><button class="btn sm solid" type="submit">Send to TDCC</button><span class="meta">If you paid by card, the host's payout waits until this is settled.</span></div></form>`;
+          return;
+        }
+        if (e.target.closest('[data-payouts]')) {
+          const b = e.target.closest('[data-payouts]'); b.disabled = true;
+          try { location.href = (await api('POST', '/api/me/payouts', {})).url; } catch (err) { toast(err.message, true); b.disabled = false; }
+          return;
+        }
+        const rv = e.target.closest('[data-revoke]');
+        if (rv) {
+          try { await api('POST', '/api/me/sessions/revoke', { id: rv.dataset.revoke }); toast('Signed out'); show('settings', true); } catch (err) { toast(err.message, true); }
+          return;
+        }
+        if (e.target.closest('[data-export]')) {
+          try {
+            const data = await api('GET', '/api/me/export');
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+            a.download = 'tdcc-marketplace-data.json';
+            document.body.appendChild(a); a.click(); a.remove();
+          } catch (err) { toast(err.message, true); }
+          return;
+        }
+        if (e.target.closest('[data-tfa-start]')) {
+          const b = e.target.closest('[data-tfa-start]');
+          try {
+            const { secret, uri } = await api('GET', '/api/me/2fa');
+            b.hidden = true;
+            const box = b.closest('form').querySelector('[data-tfa]');
+            box.innerHTML = `<p>1. In your authenticator app, add an account with this key (or open the link on your phone):</p>
+              <div class="cmd"><code>${esc(secret.match(/.{1,4}/g).join(' '))}</code><button class="btn sm" type="button" data-copy="${esc(secret)}">Copy</button></div>
+              <p><a class="link" href="${esc(uri)}">Open in authenticator app</a></p>
+              <input type="hidden" name="secret" value="${esc(secret)}" />
+              <label class="fl">2. Enter the 6-digit code it shows<input class="inp" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required /></label>
+              <button class="btn solid" type="submit">Confirm and turn on</button>`;
+          } catch (err) { toast(err.message, true); }
+          return;
+        }
         const b = e.target.closest('[data-do]');
         if (!b) return;
         const id = b.dataset.id, what = b.dataset.do;
@@ -346,6 +487,15 @@
         }
       });
 
+      async function loadThread(slot, id) {
+        try {
+          const { messages } = await api('GET', `/api/rentals/${id}/messages`);
+          slot.innerHTML = `<div class="thread">${messages.map((m) => `<div class="msg${m.mine ? ' mine' : ''}">${esc(m.body)}<small>${m.mine ? 'You' : esc(m.author)} · ${ago(m.created_at)}</small></div>`).join('') || '<p class="meta">No messages yet.</p>'}</div>
+            <form class="card-actions" data-thread="${esc(id)}"><textarea class="inp" name="body" maxlength="2000" rows="2" placeholder="Write a message…" required></textarea><button class="btn sm solid" type="submit">Send</button></form>`;
+          const t = slot.querySelector('.thread'); t.scrollTop = t.scrollHeight;
+        } catch (err) { toast(err.message, true); }
+      }
+
       pane.addEventListener('submit', async (e) => {
         e.preventDefault();
         const f = e.target;
@@ -360,6 +510,32 @@
           } else if (f.id === 'pw-form') {
             await api('POST', '/api/me/password', { current_password: f.current_password.value, new_password: f.new_password.value });
             f.reset(); err.classList.remove('show'); toast('Password updated');
+          } else if (f.dataset.thread) {
+            await api('POST', `/api/rentals/${f.dataset.thread}/messages`, { body: f.body.value });
+            f.body.value = '';
+            await loadThread(f.closest('[data-slot]'), f.dataset.thread);
+          } else if (f.dataset.reviewForm) {
+            if (!f.dataset.rating) return fail('Choose 1 to 5 stars.');
+            await api('POST', `/api/rentals/${f.dataset.reviewForm}/review`, { rating: +f.dataset.rating, comment: f.comment.value.trim() });
+            toast('Thanks for your review'); show(current, true);
+          } else if (f.dataset.disputeForm) {
+            await api('POST', `/api/rentals/${f.dataset.disputeForm}/dispute`, { reason: f.reason.value.trim() });
+            toast('Sent. We will reply by email.'); show(current, true);
+          } else if (f.id === 'email-form') {
+            const d = await api('POST', '/api/me/email', { email: f.email.value.trim(), password: f.password.value });
+            setUser(await TDCC.me(true));
+            toast(d.changed ? 'Email changed. Confirm it from your account page.' : 'Check the new inbox for the confirmation link.');
+          } else if (f.id === 'tfa-form') {
+            if (user.two_factor) {
+              await api('DELETE', '/api/me/2fa', { password: f.password.value, code: f.code.value.trim() });
+              user = await TDCC.me(true); toast('Two-factor sign-in is off'); show('settings', true);
+            } else {
+              const d = await api('POST', '/api/me/2fa', { secret: f.secret.value, code: f.code.value.trim() });
+              user = await TDCC.me(true);
+              f.innerHTML = `<h3>Two-factor sign-in is on</h3><p>Save these recovery codes somewhere safe. Each one signs you in once if you lose your phone. They are shown only now.</p>
+                <div class="codes">${d.recovery_codes.map((c) => `<span>${esc(c)}</span>`).join('')}</div>
+                <button class="btn" type="button" data-copy="${esc(d.recovery_codes.join('\n'))}">Copy codes</button>`;
+            }
           } else if (f.id === 'del-form') {
             if (!confirm('Delete your account permanently?')) return;
             await api('DELETE', '/api/me', { password: f.password.value });

@@ -215,7 +215,7 @@
           <label class="field">Search <input id="f-q" type="search" placeholder="H100, 4090…" autocomplete="off" /></label>
           <label class="field"><input id="f-online" type="checkbox" style="width:auto;height:auto;accent-color:var(--sand)" /> Online only</label>
           <span class="spacer"></span>
-          <label class="field">Sort <select id="f-sort"><option value="price">Price, low first</option><option value="vram">Memory, high first</option><option value="rep">Completed rentals</option><option value="new">Newest</option></select></label>
+          <label class="field">Sort <select id="f-sort"><option value="price">Price, low first</option><option value="vram">Memory, high first</option><option value="rating">Best rated hosts</option><option value="rep">Completed rentals</option><option value="new">Newest</option></select></label>
         </div>
 
         <div class="table" role="table" aria-label="Available GPUs">
@@ -281,7 +281,8 @@
         </div>
         <div>
           <details><summary>How does renting work?</summary><p>Choose a GPU, set how many and for how long, and send the request. The host sees it in their account and accepts or declines. Once accepted, you both see each other's email and the host sends you access details (SSH, Jupyter, or an API endpoint).</p></details>
-          <details><summary>How do I pay?</summary><p>During early access nothing is charged on this site. The price you see is the host's hourly rate, and the total in your request is what you both agreed to. You settle payment with the host directly after they accept. Built-in payments with escrow are on the way.</p></details>
+          <details><summary>How do I pay?</summary><p>By card, through Stripe. When you send a request your card is only authorized. It is charged when the host accepts and released if they decline or do not answer within six days. We hold the money until a day after your rental ends and then pay the host, minus the marketplace fee. If something goes wrong, open a dispute from your account page within 14 days and we will sort it out, including refunds. If you cancel after access started, you get back the hours that had not begun; if the host cancels, you get everything back. Where card payments are not switched on yet, you settle payment with the host directly after they accept.</p></details>
+          <details><summary>How do I know a host is real?</summary><p>Listings show the host's star rating from earlier renters, their uptime over the last week, and <b>hardware checked</b> when tdcc on the machine itself reports the GPUs the listing claims. You can message the host from your account page before and during a rental.</p></details>
           <details><summary>What is “tdcc API” access?</summary><p>On listings marked <b>tdcc API</b>, you can skip the back-and-forth: install tdcc, run <code>tdcc auth init</code> once, and paste the Owner ID from <code>tdcc auth status</code> into your request. When the host accepts, your account page shows one command, <code>tdcc client --join …</code>, and the host's models answer at <code>http://localhost:9337/v1</code> on your computer like any OpenAI-compatible API. Access closes on its own when your hours are up. You use the models the host serves; you do not get a shell on their machine.</p></details>
           <details><summary>What does “online” mean?</summary><p>The host linked a running TDCC node to the listing with <code>tdcc market link</code>. The node reports in every minute with the GPUs it actually sees, so you know the machine is real and switched on right now.</p></details>
           <details><summary>Is my data safe?</summary><p>Passwords are stored only as salted hashes, sessions use secure HttpOnly cookies, and your email is never shown publicly. A host or renter sees your email only after a request is accepted. You can delete your account at any time from your account page.</p></details>
@@ -300,6 +301,7 @@
       </div>
       <div class="d-body">
         <p class="d-desc" id="d-desc" hidden></p>
+        <div class="d-desc" id="d-reviews" hidden></div>
         <div class="d-sec">
           <span class="lbl">GPUs</span>
           <div style="display:flex;align-items:center"><div class="stepper"><button type="button" id="c-dec" aria-label="Fewer GPUs">−</button><output id="c-val">1</output><button type="button" id="c-inc" aria-label="More GPUs">+</button></div><span id="c-max"></span></div>
@@ -308,6 +310,11 @@
           <span class="lbl">Duration</span>
           <div class="opts" id="dur"><button type="button" data-h="1" aria-pressed="false">1 hour</button><button type="button" data-h="8" aria-pressed="true">8 hours</button><button type="button" data-h="24" aria-pressed="false">1 day</button><button type="button" data-h="168" aria-pressed="false">1 week</button></div>
           <div class="hrs"><input class="inp" id="hours" type="number" min="1" max="2160" value="8" aria-label="Hours" /><span id="hrs-note">hours</span></div>
+        </div>
+        <div class="d-sec">
+          <label class="lbl" for="start">Start</label>
+          <div class="opts" id="when"><button type="button" data-v="now" aria-pressed="true">When the host accepts</button><button type="button" data-v="later" aria-pressed="false">Pick a time</button></div>
+          <input class="inp" id="start" type="datetime-local" style="margin-top:10px" hidden aria-label="Start time" />
         </div>
         <div class="d-sec" id="sec-env">
           <span class="lbl">Environment</span>
@@ -331,7 +338,7 @@
         <div class="est">
           <div class="est-row"><span id="e-line">1 × GPU × 8 h</span><span id="e-rate"></span></div>
           <div class="est-row total"><span>Total</span><b id="e-total">$0</b></div>
-          <p>Nothing is charged now. The host confirms before anything starts.</p>
+          <p id="e-note">Nothing is charged now. The host confirms before anything starts.</p>
         </div>
       </div>
       <div class="d-foot">
@@ -371,66 +378,86 @@
       menuBtn.addEventListener('click', () => menuBtn.setAttribute('aria-expanded', String(links.classList.toggle('open'))));
       links.addEventListener('click', (e) => { if (e.target.closest('a')) { links.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); } });
 
-      let L = [], REGIONS = {};
+      let L = [], REGIONS = {}, next = null, seq = 0;
       const st = { vram: 'all', region: 'all', q: '', sort: 'price', online: false };
       const rowsEl = $('rows');
+      const VRAM = { all: {}, '80': { min_vram: 80 }, '40': { min_vram: 40, max_vram: 79 }, '24': { min_vram: 24, max_vram: 39 }, small: { max_vram: 23 } };
 
-      const load = async () => {
+      const query = (offset) => {
+        const p = new URLSearchParams({ sort: st.sort, limit: '50', offset: String(offset), ...VRAM[st.vram] });
+        if (st.region !== 'all') p.set('region', st.region);
+        if (st.q) p.set('q', st.q);
+        if (st.online) p.set('online', '1');
+        return '/api/listings?' + p;
+      };
+
+      // Filters run on the server; "Show more" loads the next page.
+      const load = async (append = false) => {
+        const mine = ++seq;
+        let d;
         try {
-          const d = await api('GET', '/api/listings');
-          L = d.listings; REGIONS = d.regions;
+          d = await api('GET', query(append ? L.length : 0));
         } catch (err) {
           rowsEl.innerHTML = `<div class="empty">${esc(err.message)}</div>`;
           return;
         }
-        $('s-gpus').textContent = L.reduce((a, l) => a + l.available, 0);
-        $('s-hosts').textContent = L.length;
-        const regions = [...new Set(L.map((l) => l.region))].sort();
-        $('s-regions').textContent = regions.length;
+        if (mine !== seq) return; // a newer search replaced this one
+        L = append ? L.concat(d.listings) : d.listings;
+        REGIONS = d.regions; next = d.next_offset;
+        const filtered = st.vram !== 'all' || st.region !== 'all' || st.q || st.online;
+        if (!filtered) {
+          $('s-gpus').textContent = d.free_gpus;
+          $('s-hosts').textContent = d.total;
+          $('s-regions').textContent = d.active_regions.length;
+        }
         const sel = $('f-region');
-        sel.innerHTML = '<option value="all">Any</option>' + regions.map((r) => `<option value="${esc(r)}">${esc(REGIONS[r] || r)}</option>`).join('');
-        sel.value = regions.includes(st.region) ? st.region : 'all';
+        sel.innerHTML = '<option value="all">Any</option>' + d.active_regions.map((r) => `<option value="${esc(r)}">${esc(REGIONS[r] || r)}</option>`).join('');
+        sel.value = d.active_regions.includes(st.region) ? st.region : 'all';
         const hostRegion = $('host-region');
         if (hostRegion && hostRegion.options.length < 2) hostRegion.innerHTML = '<option value="">Choose…</option>' + Object.entries(REGIONS).map(([k, v]) => `<option value="${esc(k)}">${esc(v)}</option>`).join('');
-        render();
+        render(d.total, filtered);
         const want = new URLSearchParams(location.search).get('gpu');
-        if (want && L.some((l) => l.id === want)) open(want);
+        if (want && !append && !rent.classList.contains('open')) {
+          if (!L.some((l) => l.id === want)) {
+            try { L.push((await api('GET', `/api/listings/${encodeURIComponent(want)}`)).listing); } catch { return; }
+          }
+          open(want);
+        }
       };
 
-      const render = () => {
-        const list = L.filter((l) => {
-          if (st.vram === '80' && l.vram_gb < 80) return false;
-          if (st.vram === '40' && (l.vram_gb < 40 || l.vram_gb >= 80)) return false;
-          if (st.vram === '24' && (l.vram_gb < 24 || l.vram_gb >= 40)) return false;
-          if (st.vram === 'small' && l.vram_gb >= 24) return false;
-          if (st.region !== 'all' && l.region !== st.region) return false;
-          if (st.online && !l.online) return false;
-          if (st.q && !(l.gpu_model + ' ' + l.host_kind_label + ' ' + l.description).toLowerCase().includes(st.q)) return false;
-          return true;
-        });
-        list.sort((a, b) => st.sort === 'vram' ? b.vram_gb - a.vram_gb : st.sort === 'rep' ? b.host_completed - a.host_completed : st.sort === 'new' ? b.created_at - a.created_at : a.price_cents - b.price_cents);
+      const badges = (l) => [
+        l.online ? '<span class="online">online</span>' : esc(l.host_kind_label),
+        l.api_rentals ? 'tdcc API' : '',
+        l.hardware_verified ? '<span title="tdcc on the host machine reports these GPUs">✓ hardware checked</span>' : '',
+        l.uptime_7d !== null ? `${l.uptime_7d}% uptime` : '',
+      ].filter(Boolean).join(' · ');
+
+      const render = (total, filtered) => {
         const max = Math.max(1, ...L.map((l) => l.host_completed));
-        rowsEl.innerHTML = list.length ? list.map((l) => {
-          const av = l.available ? `<span class="avail${l.available < 2 ? ' low' : ''}"><i></i>${l.available} of ${l.gpu_count} free</span>` : '<span class="avail soon"><i></i>All rented</span>';
+        rowsEl.innerHTML = L.length ? L.map((l) => {
+          const av = l.available ? `<span class="avail${l.available < 2 ? ' low' : ''}"><i></i>${l.available} of ${l.gpu_count} free</span>` : '<span class="avail soon"><i></i>Booked now</span>';
           return `<div class="row" role="row">
-            <span class="gpu" role="cell"><b>${esc(l.gpu_model)} · ${l.vram_gb}GB</b><span>${l.online ? '<span class="online">online</span>' : esc(l.host_kind_label)}${l.api_rentals ? ' · tdcc API' : ''}</span></span>
+            <span class="gpu" role="cell"><b>${esc(l.gpu_model)} · ${l.vram_gb}GB</b><span>${badges(l)}</span></span>
             <span class="c-region" role="cell">${esc(l.region_label)}</span>
             <span class="c-host" role="cell">${esc(l.host_name)} · ${esc(l.host_kind_label)}</span>
             <span class="c-avail" role="cell">${av}</span>
-            <span class="c-rep rep" role="cell"><span class="meter"><i style="width:${Math.round((l.host_completed / max) * 100)}%"></i></span>${l.host_completed} done</span>
+            <span class="c-rep rep" role="cell"><span class="meter"><i style="width:${Math.round((l.host_completed / max) * 100)}%"></i></span>${l.host_rating ? esc(TDCC.stars(l.host_rating)) : `${l.host_completed} done`}</span>
             <span class="price" role="cell"><b>${money(l.price_cents)}</b><span>/ GPU·h</span></span>
-            <span class="act" role="cell"><button class="btn sm solid" type="button" data-rent="${esc(l.id)}"${l.available ? '' : ' disabled'}>Rent</button></span>
+            <span class="act" role="cell"><button class="btn sm solid" type="button" data-rent="${esc(l.id)}">Rent</button></span>
           </div>`;
-        }).join('') : `<div class="empty">${L.length ? 'Nothing matches these filters.' : 'No GPUs are listed yet. <a class="link" href="#hosts">Be the first to list one →</a>'}</div>`;
-        $('count').textContent = `${list.length} listing${list.length === 1 ? '' : 's'} · prices set by hosts, per GPU-hour`;
+        }).join('') + (next !== null ? `<div class="row" role="row" style="grid-template-columns:1fr"><button class="btn" type="button" id="more">Show more (${total - L.length} left)</button></div>` : '')
+          : `<div class="empty">${filtered ? 'Nothing matches these filters.' : 'No GPUs are listed yet. <a class="link" href="#hosts">Be the first to list one →</a>'}</div>`;
+        $('count').textContent = `${total} listing${total === 1 ? '' : 's'} · prices set by hosts, per GPU-hour`;
       };
+      rowsEl.addEventListener('click', (e) => { if (e.target.closest('#more')) { e.target.disabled = true; load(true); } });
 
       const press = (group, btn) => group.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
-      document.querySelectorAll('.chips button').forEach((b) => b.addEventListener('click', () => { press(b.parentElement, b); st.vram = b.dataset.vram; render(); }));
-      $('f-region').addEventListener('change', (e) => { st.region = e.target.value; render(); });
-      $('f-q').addEventListener('input', (e) => { st.q = e.target.value.trim().toLowerCase(); render(); });
-      $('f-sort').addEventListener('change', (e) => { st.sort = e.target.value; render(); });
-      $('f-online').addEventListener('change', (e) => { st.online = e.target.checked; render(); });
+      let typing;
+      document.querySelectorAll('.chips button').forEach((b) => b.addEventListener('click', () => { press(b.parentElement, b); st.vram = b.dataset.vram; load(); }));
+      $('f-region').addEventListener('change', (e) => { st.region = e.target.value; load(); });
+      $('f-q').addEventListener('input', (e) => { st.q = e.target.value.trim().toLowerCase(); clearTimeout(typing); typing = setTimeout(load, 250); });
+      $('f-sort').addEventListener('change', (e) => { st.sort = e.target.value; load(); });
+      $('f-online').addEventListener('change', (e) => { st.online = e.target.checked; load(); });
 
       // ---------- rent drawer ----------
       const rent = $('rent'), drawer = rent.querySelector('.drawer');
@@ -441,7 +468,7 @@
       const update = () => {
         const l = cfg.l;
         $('c-val').textContent = cfg.count;
-        $('c-max').textContent = `of ${l.available} free`;
+        $('c-max').textContent = `of ${l.gpu_count}${l.available < l.gpu_count ? ` (${l.available} free now)` : ''}`;
         $('hrs-note').textContent = l.min_hours > 1 ? `hours · minimum ${l.min_hours}` : 'hours';
         $('e-line').textContent = `${cfg.count} × ${l.gpu_model} × ${cfg.hours} h`;
         $('e-rate').textContent = `${money(l.price_cents)} / GPU·h`;
@@ -454,7 +481,18 @@
         cfg.hours = Math.max(cfg.hours, cfg.l.min_hours);
         $('hours').value = cfg.hours;
         $('d-title').textContent = `${cfg.l.gpu_model} · ${cfg.l.vram_gb}GB`;
-        $('d-sub').textContent = `${cfg.l.region_label} · ${cfg.l.host_name} · ${cfg.l.host_kind_label}${cfg.l.online ? ' · online' : ''}`;
+        $('d-sub').textContent = [cfg.l.region_label, cfg.l.host_name, cfg.l.host_kind_label, cfg.l.online ? 'online' : '',
+          cfg.l.host_rating ? TDCC.stars(cfg.l.host_rating, cfg.l.host_reviews) : '', cfg.l.hardware_verified ? 'hardware checked' : '',
+          cfg.l.uptime_7d !== null ? `${cfg.l.uptime_7d}% uptime (7 days)` : ''].filter(Boolean).join(' · ');
+        $('d-reviews').hidden = true;
+        if (cfg.l.host_reviews) {
+          const forId = cfg.l.id;
+          api('GET', `/api/listings/${forId}/reviews`).then(({ reviews }) => {
+            if (!cfg.l || cfg.l.id !== forId || !reviews.length) return;
+            $('d-reviews').innerHTML = '<b>What renters say</b>' + reviews.slice(0, 5).map((v) => `<p style="margin:6px 0 0">${'★'.repeat(v.rating)}${'☆'.repeat(5 - v.rating)} ${esc(v.author)}${v.comment ? ' — ' + esc(v.comment) : ''}</p>`).join('');
+            $('d-reviews').hidden = false;
+          }).catch(() => {});
+        }
         const gpus = cfg.l.node_gpus.length ? `Machine reports: ${cfg.l.node_gpus.map((g) => g.name + (g.vram_gb ? ` (${g.vram_gb} GB)` : '')).join(', ')}` : '';
         const desc = [cfg.l.description, gpus].filter(Boolean).join('\n');
         $('d-desc').textContent = desc; $('d-desc').hidden = !desc;
@@ -477,7 +515,21 @@
       rent.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', close));
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && rent.classList.contains('open') && !document.querySelector('.modal.open')) close(); });
       $('c-dec').addEventListener('click', () => { cfg.count = Math.max(1, cfg.count - 1); update(); });
-      $('c-inc').addEventListener('click', () => { cfg.count = Math.min(cfg.l.available, cfg.count + 1); update(); });
+      $('c-inc').addEventListener('click', () => { cfg.count = Math.min(cfg.l.gpu_count, cfg.count + 1); update(); });
+      $('when').addEventListener('click', (e) => {
+        const b = e.target.closest('button'); if (!b) return;
+        press($('when'), b);
+        $('start').hidden = b.dataset.v !== 'later';
+        if (!$('start').hidden) {
+          const d = new Date(Date.now() + 3600_000); d.setMinutes(0, 0, 0);
+          const pad = (n) => String(n).padStart(2, '0');
+          const local = (x) => `${x.getFullYear()}-${pad(x.getMonth() + 1)}-${pad(x.getDate())}T${pad(x.getHours())}:${pad(x.getMinutes())}`;
+          $('start').min = local(new Date());
+          $('start').max = local(new Date(Date.now() + 59 * 86400_000));
+          if (!$('start').value) $('start').value = local(d);
+          $('start').focus();
+        }
+      });
       $('dur').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; press($('dur'), b); cfg.hours = Math.max(+b.dataset.h, cfg.l.min_hours); $('hours').value = cfg.hours; update(); });
       $('hours').addEventListener('input', (e) => { cfg.hours = Math.max(1, Math.min(2160, Math.round(+e.target.value) || 1)); press($('dur'), null); update(); });
       $('env').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; press($('env'), b); cfg.env = b.dataset.v; $('image').hidden = cfg.env !== 'custom'; });
@@ -497,16 +549,27 @@
         if (cfg.access === 'tdcc' && !/^[0-9a-f]{64}$/.test(owner)) { rentErr('Paste your 64-character tdcc owner ID from `tdcc auth status`.'); $('owner').focus(); return; }
         if (cfg.access === 'ssh' && !ssh) { rentErr('Paste your SSH public key so the host can give you access, or choose Jupyter or API access.'); $('ssh').focus(); return; }
         if (cfg.access !== 'tdcc' && cfg.env === 'custom' && !$('image').value.trim()) { rentErr('Enter the container image you want to run.'); $('image').focus(); return; }
+        let start_at;
+        if (!$('start').hidden) {
+          const when = new Date($('start').value).getTime();
+          if (!when || when < Date.now() - 60_000) { rentErr('Pick a start time in the future.'); $('start').focus(); return; }
+          start_at = Math.floor(when / 1000);
+        }
         const user = await requireUser('Create a free account or sign in to send your request. It takes a few seconds.');
         if (!user) return;
         const btn = $('request'); btn.disabled = true;
         try {
-          await api('POST', '/api/rentals', {
-            listing_id: cfg.l.id, gpu_count: cfg.count, hours: cfg.hours, environment: cfg.env,
+          const d = await api('POST', '/api/rentals', {
+            listing_id: cfg.l.id, gpu_count: cfg.count, hours: cfg.hours, environment: cfg.env, start_at,
             image: $('image').value.trim(), access: cfg.access, ssh_key: cfg.access === 'ssh' ? ssh : '', owner_id: cfg.access === 'tdcc' ? owner : undefined, message: $('msg').value.trim(),
           });
-          close();
           $('msg').value = '';
+          if (d.checkout_url) {
+            toast('Taking you to secure card payment…');
+            location.href = d.checkout_url;
+            return;
+          }
+          close();
           toast('Request sent. Track it in My account.');
           setTimeout(() => { location.href = '/account.html#rentals'; }, 900);
         } catch (err) {
@@ -565,6 +628,12 @@
         }
       });
 
+      TDCC.config().then((c) => {
+        if (c.payments) {
+          $('e-note').textContent = 'Your card is only authorized now. It is charged when the host accepts, and released if they decline. Hosts are paid a day after your rental ends, so you can raise a problem first.';
+          $('request').textContent = 'Continue to payment →';
+        }
+      });
       load();
     })();
   </script>

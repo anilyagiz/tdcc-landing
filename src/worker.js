@@ -1,4 +1,4 @@
-import { handleApi } from "./api.js";
+import { handleApi, scheduled, reportError } from "./api.js";
 
 export default {
   async fetch(request, env, ctx) {
@@ -23,5 +23,14 @@ export default {
     }
 
     return env.ASSETS.fetch(request);
+  },
+
+  // Expires rentals, cleans up old rows, and pays hosts (wrangler.toml [triggers]).
+  async scheduled(_event, env, ctx) {
+    if (!env.DB) return;
+    ctx.waitUntil(scheduled(env).catch((err) => {
+      console.error("scheduled job failed", err && err.stack ? err.stack : err);
+      return reportError(env, err);
+    }));
   },
 };

@@ -63,6 +63,14 @@
         const st = d.stats;
         body.innerHTML = `
           <div class="stats"><div><b>${st.users}</b><span>Accounts</span></div><div><b>${st.active_listings}</b><span>Active listings</span></div><div><b>${st.pending_rentals}</b><span>Requests waiting</span></div><div><b>${st.running_rentals}</b><span>Running rentals</span></div></div>
+          <section><h2>Open disputes (${d.disputes.length})</h2>${d.disputes.length ? `<div class="scroll"><table class="tbl"><thead><tr><th>Rental</th><th>Problem</th><th>Host / renter</th><th>Money</th><th></th></tr></thead><tbody>
+            ${d.disputes.map((x) => `<tr><td><b>${x.gpu_count} × ${esc(x.gpu_model)} · ${x.hours} h</b><div class="muted">${esc(x.rental_id)} · ${esc(x.rental_status)}</div></td>
+              <td>${esc(x.reason)}<div class="muted">by ${esc(x.opened_by_name)} (${esc(x.opened_by_email)}) · ${ago(x.created_at)}</div></td>
+              <td>${esc(x.host_name)}<div class="muted">${esc(x.host_email)}</div>${esc(x.renter_name)}<div class="muted">${esc(x.renter_email)}</div></td>
+              <td>${money(x.total_cents)}<div class="muted">${esc(x.payment_status)}${x.refunded_cents ? ` · ${money(x.refunded_cents)} refunded` : ''} · payout ${esc(x.payout_status)}</div></td>
+              <td><div class="acts">${x.payment_status === 'captured' || x.payment_status === 'partially_refunded' ? `<button class="btn sm solid" data-refund="${esc(x.id)}" data-max="${x.total_cents - x.refunded_cents}">Refund renter</button><button class="btn sm" data-payhost="${esc(x.id)}">Pay host</button>` : ''}
+              <button class="btn sm" data-settle="${esc(x.id)}">Close</button></div></td></tr>`).join('')}
+          </tbody></table></div>` : '<div class="empty">No open disputes.</div>'}</section>
           <section><h2>Open reports (${d.reports.length})</h2>${d.reports.length ? `<div class="scroll"><table class="tbl"><thead><tr><th>Listing</th><th>Reason</th><th>Reported by</th><th>Owner</th><th></th></tr></thead><tbody>
             ${d.reports.map((r) => `<tr><td><b>${esc(r.gpu_model)}</b><div class="muted">${esc(r.listing_id)} · ${esc(r.listing_status)}</div></td>
               <td>${esc(r.reason)}<div class="muted">${ago(r.created_at)}</div></td>
@@ -90,6 +98,22 @@
           if (note === null) return;
           call = api('POST', `/api/admin/listings/${b.dataset.hide}/hide`, { note });
         } else if (b.dataset.restore) call = api('POST', `/api/admin/listings/${b.dataset.restore}/restore`, {});
+        else if (b.dataset.refund) {
+          const max = +b.dataset.max;
+          const amt = prompt(`Refund how much to the renter, in USD? (up to ${money(max)})`, (max / 100).toFixed(2));
+          if (amt === null) return;
+          const cents = Math.round(parseFloat(amt) * 100);
+          if (!(cents > 0 && cents <= max)) { toast('Enter an amount up to ' + money(max), true); return; }
+          const note = prompt('Note for the record (optional):', '') || '';
+          call = api('POST', `/api/admin/disputes/${b.dataset.refund}`, { action: 'refund', amount_cents: cents, note });
+        } else if (b.dataset.payhost) {
+          if (!confirm('Close the dispute and pay the host now?')) return;
+          call = api('POST', `/api/admin/disputes/${b.dataset.payhost}`, { action: 'pay_host' });
+        } else if (b.dataset.settle) {
+          const note = prompt('How was it settled? (kept on record)', '');
+          if (note === null) return;
+          call = api('POST', `/api/admin/disputes/${b.dataset.settle}`, { action: 'dismiss', note });
+        }
         else if (b.dataset.dismiss) call = api('POST', `/api/admin/reports/${b.dataset.dismiss}/dismiss`, {});
         else if (b.dataset.suspend) {
           if (!confirm('Suspend this account? It is signed out, its listings are hidden, and its pending requests are cancelled.')) return;

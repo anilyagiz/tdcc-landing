@@ -49,10 +49,34 @@
 
   // ---------- current user ----------
   let mePromise = null;
+  let cfg = { email_enabled: false, turnstile_site_key: null, payments: false };
   const listeners = new Set();
   function me(refresh = false) {
-    if (!mePromise || refresh) mePromise = api("GET", "/api/me").then((d) => d.user).catch(() => null);
+    if (!mePromise || refresh) mePromise = api("GET", "/api/me").then((d) => { cfg = d; return d.user; }).catch(() => null);
     return mePromise;
+  }
+  // Site settings from /api/me: whether email, card payments, and the robot check are on.
+  const config = () => me().then(() => cfg);
+
+  // Cloudflare Turnstile, loaded only when the deployment turns it on.
+  let turnstileLoad = null;
+  function turnstile(container) {
+    return config().then((c) => {
+      if (!c.turnstile_site_key) return null;
+      if (!turnstileLoad) {
+        turnstileLoad = new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+          s.async = true; s.onload = resolve; s.onerror = reject;
+          document.head.appendChild(s);
+        });
+      }
+      return turnstileLoad.then(() => {
+        container.innerHTML = "";
+        const id = window.turnstile.render(container, { sitekey: c.turnstile_site_key, theme: "dark" });
+        return { token: () => window.turnstile.getResponse(id) || "", reset: () => window.turnstile.reset(id) };
+      });
+    }).catch(() => null);
   }
   function setUser(user) {
     mePromise = Promise.resolve(user);
@@ -87,6 +111,9 @@
           <label class="fl">Email<input class="inp" name="email" type="email" autocomplete="email" maxlength="254" required /></label>
           <label class="fl" data-hide="forgot">Password<input class="inp" name="password" type="password" autocomplete="current-password" minlength="10" maxlength="200" />
             <small data-only="signup" hidden>At least 10 characters. A short sentence works well.</small></label>
+          <label class="fl" data-only="2fa" hidden>Code from your authenticator app<input class="inp" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="12" placeholder="123456" />
+            <small>Lost your phone? Enter one of your recovery codes instead.</small></label>
+          <div id="auth-human" data-only-human></div>
           <label class="check" data-only="signup" hidden><input type="checkbox" name="accept_terms" /> <span>I agree to the <a href="/terms.html" target="_blank" rel="noopener">terms</a> and <a href="/privacy.html" target="_blank" rel="noopener">privacy policy</a>.</span></label>
           <button class="btn solid" type="submit" id="auth-submit">Sign in →</button>
           <button class="link" type="button" data-only="login" id="auth-forgot" style="background:none;border:0;padding:0;cursor:pointer;justify-self:start">Forgot your password?</button>
@@ -95,16 +122,22 @@
       </div>`;
     document.body.appendChild(dlg);
     const form = dlg.querySelector("#auth-form");
-    let mode = "login";
+    let mode = "login", human = null, challenge = null;
     const setMode = (m) => {
       mode = m;
       dlg.querySelectorAll("[data-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === m)));
       dlg.querySelectorAll("[data-only]").forEach((el) => { el.hidden = el.dataset.only !== m; });
-      dlg.querySelectorAll("[data-hide]").forEach((el) => { el.hidden = el.dataset.hide === m; });
-      dlg.querySelector(".tabs").hidden = m === "forgot";
-      dlg.querySelector("#auth-title").textContent = { signup: "Create your account", login: "Sign in", forgot: "Reset your password" }[m];
-      dlg.querySelector("#auth-submit").textContent = { signup: "Create account →", login: "Sign in →", forgot: "Email me a reset link →" }[m];
+      dlg.querySelectorAll("[data-hide]").forEach((el) => { el.hidden = el.dataset.hide === m || m === "2fa"; });
+      dlg.querySelector("input[name=email]").closest("label").hidden = m === "2fa";
+      dlg.querySelector(".tabs").hidden = m === "forgot" || m === "2fa";
+      dlg.querySelector("#auth-title").textContent = { signup: "Create your account", login: "Sign in", forgot: "Reset your password", "2fa": "Two-factor sign-in" }[m];
+      dlg.querySelector("#auth-submit").textContent = { signup: "Create account →", login: "Sign in →", forgot: "Email me a reset link →", "2fa": "Verify →" }[m];
       if (m === "forgot") dlg.querySelector("#auth-reason").textContent = "Enter your account email and we will send you a link to choose a new password.";
+      if (m === "2fa") dlg.querySelector("#auth-reason").textContent = "Enter the 6-digit code from your authenticator app.";
+      const humanBox = dlg.querySelector("#auth-human");
+      human = null;
+      humanBox.innerHTML = "";
+      if (m === "signup" || m === "forgot") turnstile(humanBox).then((h) => { human = h; });
       form.password.autocomplete = m === "signup" ? "new-password" : "current-password";
       showErr("");
     };
@@ -129,10 +162,29 @@
         if (!addr) return showErr("Enter your email address.", "email");
         btn.disabled = true;
         try {
-          await api("POST", "/api/auth/forgot", { email: addr });
+          await api("POST", "/api/auth/forgot", { email: addr, turnstile: human ? human.token() : undefined });
           showErr("");
           dlg.querySelector("#auth-reason").textContent = `If ${addr} has an account, a reset link is on its way. Check your inbox (and spam folder) in a minute.`;
         } catch (err) {
+          showErr(err.message, err.field);
+          if (human) human.reset();
+        } finally {
+          btn.disabled = false;
+        }
+        return;
+      }
+      if (mode === "2fa") {
+        const code = form.code.value.trim();
+        if (!code) return showErr("Enter the code.", "code");
+        btn.disabled = true;
+        try {
+          const d = await api("POST", "/api/auth/login/2fa", { challenge, code });
+          form.reset();
+          setUser(d.user);
+          toast("Signed in");
+          closeAuth(d.user);
+        } catch (err) {
+          if (err.status === 401 && err.field !== "code") setMode("login");
           showErr(err.message, err.field);
         } finally {
           btn.disabled = false;
@@ -147,10 +199,17 @@
         if (!body.name) return showErr("Tell us your name.", "name");
         if (body.password.length < 10) return showErr("Use at least 10 characters for your password.", "password");
         if (!body.accept_terms) return showErr("Please accept the terms to continue.");
+        if (human) body.turnstile = human.token();
       }
       btn.disabled = true;
       try {
         const d = await api("POST", mode === "signup" ? "/api/auth/signup" : "/api/auth/login", body);
+        if (d.two_factor_required) {
+          challenge = d.challenge;
+          setMode("2fa");
+          setTimeout(() => form.code.focus(), 30);
+          return;
+        }
         form.reset();
         setUser(d.user);
         toast(mode === "signup"
@@ -159,6 +218,7 @@
         closeAuth(d.user);
       } catch (err) {
         showErr(err.message, err.field);
+        if (human) human.reset();
       } finally {
         btn.disabled = false;
       }
@@ -212,6 +272,8 @@
     }
   }
 
-  window.TDCC = { api, esc, money, ago, toast, me, onUser, setUser, logout, openAuth, requireUser, resendVerification };
+    const stars = (rating, count) => (rating ? `★ ${Number(rating).toFixed(1)}${count !== undefined ? ` (${count})` : ""}` : "");
+
+  window.TDCC = { api, esc, money, ago, toast, me, config, onUser, setUser, logout, openAuth, requireUser, resendVerification, turnstile, stars };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", navLink); else navLink();
 })();
