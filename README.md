@@ -37,6 +37,12 @@ Cloudflare Worker (`src/api.js`) with a D1 (SQLite) database:
   admits exactly that owner for the rented hours. With `MARKET_SIGNING_KEY`
   set, every grant is Ed25519-signed and tdcc ignores unsigned or forged
   grants once it has pinned the key.
+- **Instant machines:** when the host's node runs `tdcc market machines on`
+  (tdcc 0.74+, Docker), accepted SSH and Jupyter rentals are sent to the node
+  as Ed25519-signed grants (`MARKET_SIGNING_KEY` is required); the node starts
+  an isolated container per rental and reports its port, and the renter's
+  account page shows `ssh -p <port> root@<host>` or a private Jupyter link
+  until the rental ends.
 - **Trust:** host and renter can message each other on every request (email
   notice at most every 15 minutes); after a rental both sides can leave a
   1–5 star review; listings show the host rating, 7-day node uptime, and

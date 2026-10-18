@@ -69,7 +69,7 @@ export const templates = {
     subject: `Accepted: ${r.gpu_count} × ${r.gpu_model}`,
     text: r.access === "tdcc"
       ? `Hi ${renter},\n\n${r.host_name} accepted your request for ${r.gpu_count} × ${r.gpu_model}. Your ${r.hours} hours of tdcc access start now.${r.host_note ? `\n\nTheir note: ${r.host_note}` : ""}\n\nOpen your account page for the one command that connects you:\n${link}${SIGNATURE}`
-      : `Hi ${renter},\n\n${r.host_name} accepted your request for ${r.gpu_count} × ${r.gpu_model} for ${r.hours} hours, starting ${new Date((r.access_starts_at || Date.now() / 1000) * 1000).toUTCString()}.${r.payment_status === "captured" ? ` Your card was charged $${(r.total_cents / 100).toFixed(2)}.` : ""}${r.host_note ? `\n\nTheir note: ${r.host_note}` : ""}\n\n${r.payment_status === "captured" ? "You can now message the host and see their email address" : "You can now see their email address and agree on payment"}:\n${link}${SIGNATURE}`,
+      : `Hi ${renter},\n\n${r.host_name} accepted your request for ${r.gpu_count} × ${r.gpu_model} for ${r.hours} hours, starting ${new Date((r.access_starts_at || Date.now() / 1000) * 1000).toUTCString()}.${r.payment_status === "captured" ? ` Your card was charged $${(r.total_cents / 100).toFixed(2)}.` : ""}${r.host_note ? `\n\nTheir note: ${r.host_note}` : ""}\n\n${r.machine_offered ? "Your machine is being prepared; your account page shows how to connect as soon as it is ready" : r.payment_status === "captured" ? "You can now message the host and see their email address" : "You can now see their email address and agree on payment"}:\n${link}${SIGNATURE}`,
   }),
   declined: (renter, r, link) => ({
     subject: `Declined: ${r.gpu_count} × ${r.gpu_model}`,

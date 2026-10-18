@@ -62,7 +62,9 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     await p.fill("#auth [name=password]", pw);
     await p.check("#auth [name=accept_terms]");
     await p.click("#auth-submit");
-    await p.waitForSelector("#tabs:not([hidden])");
+    await p.waitForSelector("#tabs:not([hidden])", { timeout: 10000 }).catch(async () => {
+      throw new Error("sign-up did not finish; dialog says: " + (await p.textContent("#auth-err")));
+    });
   };
   const verify = async (p, email) => {
     const t = plantToken(email, "verify");
@@ -319,6 +321,33 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     await renter.waitForSelector("text=Wants to start");
   });
 
+  await step("Instant machine: the node's container status shows the renter an ssh command", async () => {
+    const offer = { runtime: "docker", gpus: 0, custom_images: false, ssh_host: "gpu.example.com" };
+    const hb = (extra) => fetch(BASE + "/api/node/heartbeat", { method: "POST", headers: { authorization: "Bearer " + nodeToken, "content-type": "application/json" }, body: JSON.stringify({ version: "0.74.0", gpus: [], machines: offer, ...extra }) });
+    await hb({});
+    await renter.goto(BASE + "/marketplace.html");
+    await renter.waitForSelector("#rows .row");
+    expect((await renter.locator("#rows .row", { hasText: "RTX 4090" }).textContent()).includes("instant machine"), "listing not marked instant machine");
+    const id = await renter.evaluate(async () => {
+      const { listings } = await (await fetch("/api/listings")).json();
+      const l = listings.find((x) => x.gpu_model === "RTX 4090");
+      const r = await fetch("/api/rentals", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ listing_id: l.id, gpu_count: 1, hours: 2, environment: "ubuntu", access: "ssh", ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGq rob@laptop" }) });
+      return (await r.json()).rental.id;
+    });
+    await host.goto(BASE + "/account.html#requests");
+    await host.locator("article.card", { hasText: "Ubuntu base" }).locator("[data-do=accept]").first().click();
+    await host.waitForSelector("text=rob@example.com");
+    await hb({ machine_status: [{ rental_id: id, state: "starting" }] });
+    await renter.goto(BASE + "/account.html#rentals");
+    await renter.waitForSelector("text=Machine starting");
+    await hb({ machine_status: [{ rental_id: id, state: "running", port: 22007 }] });
+    await renter.reload();
+    await renter.waitForSelector("text=Your machine is ready");
+    expect((await renter.textContent("#pane")).includes("ssh -p 22007 root@gpu.example.com"), "ssh command missing");
+    await renter.locator("article.card", { hasText: "ssh -p 22007" }).locator('[data-do="complete"]').click();
+    await renter.waitForSelector("article.card:has-text('Ubuntu base') .st.completed");
+  });
+
   await step("Report, moderate (hide), owner sees the note and cannot unhide", async () => {
     await renter.goto(BASE + "/marketplace.html");
     await renter.waitForSelector("#rows .row");
@@ -414,7 +443,9 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     await b.fill("#auth [name=email]", "tess@example.com");
     await b.fill("#auth [name=password]", "tess password 123");
     await b.click("#auth-submit");
-    await b.waitForSelector("#auth [name=code]:visible");
+    await b.waitForSelector("#auth [name=code]:visible", { timeout: 10000 }).catch(async () => {
+      throw new Error("no code prompt; dialog says: " + (await b.textContent("#auth-err")));
+    });
     await b.fill("#auth [name=code]", "000000");
     await b.click("#auth-submit");
     await b.waitForSelector("#auth-err.show");

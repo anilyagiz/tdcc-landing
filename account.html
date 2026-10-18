@@ -148,6 +148,19 @@
         const h = Math.floor(left / 3600), m = Math.floor((left % 3600) / 60);
         return `ends ${when} (${h ? `${h} h ` : ''}${m} min left)`;
       };
+      const machineBox = (r, host) => {
+        const m = r.machine;
+        if (!m) return '';
+        if (m.state === 'failed') return `<div class="form-err show">The machine could not be started: ${esc(m.error || 'unknown error')}. ${host ? 'Check Docker on your machine; tdcc retries on the next check-in after you fix it, or cancel the rental.' : 'The host has been told. You can message them or cancel for a refund.'}</div>`;
+        if (m.state !== 'running') return `<div class="reveal-box"><b>Machine starting</b><span>${host ? 'Your machine is preparing the container.' : 'The host\'s machine is preparing your container. The first start downloads the environment and can take a few minutes; this page shows how to connect as soon as it is ready.'}</span></div>`;
+        if (host) return `<div class="meta"><span class="st online">Container running</span><span>port ${m.port}</span></div>`;
+        if (m.ssh) return `<div class="reveal-box"><b>Your machine is ready</b><span>Connect with the SSH key you gave:</span>
+          <div class="cmd"><code>${esc(m.ssh)}</code><button class="btn sm" data-copy="${esc(m.ssh)}">Copy</button></div>
+          <span>You are root in your own container with the rented GPUs. Everything in it is deleted when the rental ends, so copy your results off before then. Access ${esc(until(r.access_expires_at))}.</span></div>`;
+        if (m.jupyter_url) return `<div class="reveal-box"><b>Your notebook is ready</b><span><a href="${esc(m.jupyter_url)}" target="_blank" rel="noopener noreferrer">Open Jupyter →</a> (the link contains your private token; do not share it)</span>
+          <span>Everything is deleted when the rental ends, so download your results before then. Access ${esc(until(r.access_expires_at))}.</span></div>`;
+        return '';
+      };
       const usageLine = (r) => {
         if (!r.usage || !(r.usage.connections || r.usage.refused)) return '';
         const mins = Math.round(r.usage.active_secs / 60);
@@ -214,7 +227,7 @@
             ${r.status === 'pending' ? '<p class="meta">The host has your request. You will see their reply here, and you can message them below.</p>' : ''}
             ${r.status === 'awaiting_payment' ? '<p class="meta">The card payment was not finished, so the host has not seen this request. Cancel it and send a new one to try again.</p>' : ''}
             ${r.host_email ? `<div class="reveal-box"><b>Host contact</b><span><a href="mailto:${esc(r.host_email)}">${esc(r.host_email)}</a>${r.payment_status === 'captured' ? '' : ' — agree on payment with the host.'}</span>${r.host_note ? `<span>${esc(r.host_note)}</span>` : ''}</div>` : (r.host_note ? `<div class="quote">${esc(r.host_note)}</div>` : '')}
-            ${tdccBox(r)}${usageLine(r)}
+            ${tdccBox(r)}${machineBox(r, false)}${usageLine(r)}
             ${['pending', 'accepted', 'awaiting_payment'].includes(r.status) ? `<div class="card-actions">
               ${r.status === 'accepted' ? `<button class="btn sm" data-do="complete" data-id="${esc(r.id)}">Mark finished</button>` : ''}
               <button class="btn sm" data-do="cancel" data-id="${esc(r.id)}">${r.status === 'accepted' ? 'Cancel rental' : 'Cancel request'}</button></div>` : ''}
@@ -232,7 +245,7 @@
             <div class="card-top"><b>${esc(r.renter_name)} wants ${r.gpu_count} × ${esc(r.gpu_model)} for ${r.hours} h</b><span class="price">${money(r.total_cents)}</span></div>
             <div class="meta">${status(r.status)}${startLine(r)}<span>${esc(ENV[r.environment])}${r.image ? ' · ' + esc(r.image) : ''}</span><span>${esc(ACCESS[r.access])}</span><span>${money(r.price_cents)} / GPU·h</span><span>Received ${ago(r.created_at)}</span>${r.renter_reviews ? `<span>Renter ${esc(TDCC.stars(r.renter_rating, r.renter_reviews))}</span>` : '<span>New renter</span>'}${payLine(r, true)}</div>
             ${r.message ? `<div class="quote">${esc(r.message)}</div>` : ''}
-            ${usageLine(r)}${r.access === 'tdcc' ? `<div class="meta"><span>tdcc owner ID ${esc(r.renter_owner_id.slice(0, 12))}…</span><span>${r.status === 'accepted' ? `Your node admits this renter automatically; access ${esc(until(r.access_expires_at))}` : r.status === 'pending' ? 'Accepting opens access right away for the rented hours' : 'No access'}</span></div>` : ''}
+            ${machineBox(r, true)}${usageLine(r)}${r.access === 'tdcc' ? `<div class="meta"><span>tdcc owner ID ${esc(r.renter_owner_id.slice(0, 12))}…</span><span>${r.status === 'accepted' ? `Your node admits this renter automatically; access ${esc(until(r.access_expires_at))}` : r.status === 'pending' ? 'Accepting opens access right away for the rented hours' : 'No access'}</span></div>` : ''}
             ${r.renter_email ? `<div class="reveal-box"><b>Renter contact</b><span><a href="mailto:${esc(r.renter_email)}">${esc(r.renter_email)}</a> — send them access details${r.payment_status === 'captured' ? '' : ' and agree on payment'}.</span>${r.ssh_key ? `<span>SSH key:</span><code>${esc(r.ssh_key)}</code><span><button class="btn sm" data-copy="${esc(r.ssh_key)}">Copy SSH key</button></span>` : ''}</div>` : ''}
             ${r.status === 'pending' ? `<div class="card-actions"><input class="inp" id="note-${esc(r.id)}" maxlength="1000" placeholder="Optional note to the renter, e.g. start time" />
               <button class="btn sm solid" data-do="accept" data-id="${esc(r.id)}">Accept</button><button class="btn sm" data-do="decline" data-id="${esc(r.id)}">Decline</button></div>` : ''}
@@ -257,6 +270,7 @@
             <div class="card-top"><b>${l.gpu_count} × ${esc(l.gpu_model)} · ${l.vram_gb}GB</b><span class="price">${money(l.price_cents)} <span class="meta" style="display:inline">/ GPU·h</span></span></div>
             <div class="meta">${status(l.status)}${l.online ? '<span class="st online">Machine online</span>' : ''}<span>${esc(l.region_label)}</span><span>${esc(l.host_kind_label)}</span><span>${l.available} of ${l.gpu_count} free</span><span>${l.host_completed} completed</span>${l.host_rating ? `<span>${esc(TDCC.stars(l.host_rating, l.host_reviews))}</span>` : ''}${l.uptime_7d !== null ? `<span>${l.uptime_7d}% uptime (7 days)</span>` : ''}${l.hardware_verified ? '<span class="st online">Hardware checked</span>' : ''}
               ${l.node_linked ? `<span>${l.node_seen_at ? 'Machine last seen ' + ago(l.node_seen_at) : 'Machine linked, waiting for first check-in'}${l.node_version ? ' · tdcc ' + esc(l.node_version) : ''}</span>` : ''}</div>
+            ${l.machine_rentals ? '<div class="meta"><span class="st online">Instant machines on</span><span>Accepted SSH and Jupyter rentals start in their own container automatically.</span></div>' : (l.online ? '<div class="meta">To start renters\' machines automatically in isolated containers: <code>tdcc market machines on --public-host &lt;your address&gt;</code></div>' : '')}
             ${l.api_rentals ? '<div class="meta"><span class="st online">tdcc API rentals on</span></div>' : (l.online ? '<div class="meta">tdcc API rentals are off. To offer them: <code>tdcc market api-rentals on</code>, then serve with <code>--trust-policy allowlist</code>.</div>' : '')}
             ${l.node_gpus.length ? `<div class="meta">Machine reports: ${l.node_gpus.map((g) => esc(g.name) + (g.vram_gb ? ` (${g.vram_gb} GB)` : '')).join(', ')}</div>` : ''}
             ${l.description ? `<div class="quote">${esc(l.description)}</div>` : ''}

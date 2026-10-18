@@ -28,10 +28,20 @@ All notable landing-site and public desktop-release changes are documented here.
 - **Account security:** two-factor sign-in (TOTP + recovery codes), device
   list and sign-out, email change via confirmation link, activity log, data
   export, optional Cloudflare Turnstile on sign-up and reset.
+- **Instant machines:** listings whose node runs machine rentals are marked
+  "instant machine"; accepted SSH/Jupyter rentals get a signed container grant,
+  and the renter sees the SSH command or Jupyter link once the node reports the
+  container running.
 - **API usage:** tdcc 0.74+ nodes report each renter's tunneled connections,
   fair-use refusals, and active time; both sides see it on the rental.
 - **Operations:** cron trigger for expiry, cleanup, and payouts; optional
   Sentry error reports; `npm run db:backup`.
+
+### Fixed
+
+- The sign-in dialog no longer moves the cursor to the email field 30 ms after
+  opening when the person has already started typing elsewhere (fast typing
+  could land the password in the email box).
 
 ### Changed
 

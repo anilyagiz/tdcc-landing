@@ -850,6 +850,9 @@ function listingOut(row, { owner = false } = {}) {
     online: !!row.node_seen_at && t - row.node_seen_at < NODE_ONLINE_WINDOW,
     // The node is online, the host consented, and it runs the allowlist policy.
     api_rentals: !!row.api_seen_at && t - row.api_seen_at < NODE_ONLINE_WINDOW && row.status === "active",
+    // The node starts an isolated container for each SSH/Jupyter rental.
+    machine_rentals: machineOffer(row, t) !== null,
+    custom_images: machineOffer(row, t)?.custom_images ?? true,
     node_seen_at: row.node_seen_at || null,
     node_gpus: gpus,
     payouts_ready: !!row.host_payouts_enabled,
@@ -862,6 +865,11 @@ function listingOut(row, { owner = false } = {}) {
     out.node_version = row.node_version || null;
   }
   return out;
+}
+
+function machineOffer(row, t) {
+  if (!row.machines_seen_at || t - row.machines_seen_at >= NODE_ONLINE_WINDOW || row.status !== "active") return null;
+  try { return JSON.parse(row.machines_offer); } catch { return null; }
 }
 
 function listingInput(body, partial = false) {
@@ -1043,6 +1051,8 @@ async function nodeHeartbeat(request, env) {
   // with --trust-policy allowlist.
   const api = body.api && typeof body.api === "object" && body.api.trust_policy === "allowlist" ? { join_token: joinToken(body.api.join_token) } : null;
   const usage = api ? usageReport(body.usage) : [];
+  const machines = machinesOfferInput(body.machines);
+  const machineStatus = machines ? machineStatusInput(body.machine_status) : [];
   const t = now();
   await env.DB.batch([
     // Usage goes to the renter's latest rental on this listing that has started.
@@ -1051,6 +1061,12 @@ async function nodeHeartbeat(request, env) {
        WHERE id = (SELECT id FROM rentals WHERE listing_id = ? AND access = 'tdcc' AND renter_owner_id = ? AND status IN ('accepted', 'completed')
          AND COALESCE(access_starts_at, 0) <= ? ORDER BY access_starts_at DESC LIMIT 1)`
     ).bind(u.streams, u.refused, u.active_secs, listing.id, u.owner_id, t)),
+    env.DB.prepare("UPDATE listings SET machines_seen_at = ?, machines_offer = ? WHERE id = ?")
+      .bind(machines ? t : null, machines ? JSON.stringify(machines) : null, listing.id),
+    ...machineStatus.map((m) => env.DB.prepare(
+      `UPDATE rentals SET machine_state = ?, machine_host = ?, machine_port = ?, machine_token = ?, machine_error = ?
+       WHERE id = ? AND listing_id = ? AND access IN ('ssh', 'jupyter') AND status = 'accepted'`
+    ).bind(m.state, machines.ssh_host, m.port, m.jupyter_token, m.error, m.rental_id, listing.id)),
     env.DB.prepare("UPDATE listings SET node_seen_at = ?, node_first_seen_at = COALESCE(node_first_seen_at, ?), node_version = ?, node_gpus = ?, api_join_token = ?, api_seen_at = ? WHERE id = ?")
       .bind(t, t, version, JSON.stringify(gpus), api ? api.join_token : null, api ? t : null, listing.id),
     env.DB.prepare(`INSERT INTO node_uptime (listing_id, hour, beats) VALUES (?, ?, 1)
@@ -1069,7 +1085,45 @@ async function nodeHeartbeat(request, env) {
     ).bind(listing.id, t, t).all();
     reply.grants = await Promise.all(rows.results.map((r) => signGrant(env, { listing_id: listing.id, rental_id: r.id, owner_id: r.renter_owner_id, expires_at: r.access_expires_at })));
   }
+  if (machines) reply.machines = await machineGrants(env, listing.id, t);
   return json(200, reply);
+}
+
+function machinesOfferInput(v) {
+  if (!v || typeof v !== "object" || v.runtime !== "docker") return null;
+  const host = typeof v.ssh_host === "string" ? v.ssh_host.trim() : "";
+  if (!/^[A-Za-z0-9.:\[\]-]{1,253}$/.test(host)) return null;
+  return {
+    gpus: Number.isInteger(v.gpus) && v.gpus >= 0 && v.gpus <= 64 ? v.gpus : 0,
+    custom_images: v.custom_images === true,
+    ssh_host: host,
+  };
+}
+
+const MACHINE_STATES = ["starting", "running", "failed"];
+function machineStatusInput(v) {
+  if (!Array.isArray(v)) return [];
+  return v.slice(0, 64).filter((m) => m && typeof m.rental_id === "string" && /^rnt_[A-Za-z0-9_-]{1,40}$/.test(m.rental_id) && MACHINE_STATES.includes(m.state)).map((m) => ({
+    rental_id: m.rental_id,
+    state: m.state,
+    port: Number.isInteger(m.port) && m.port > 0 && m.port < 65536 ? m.port : null,
+    jupyter_token: typeof m.jupyter_token === "string" && /^[A-Za-z0-9_-]{8,100}$/.test(m.jupyter_token) ? m.jupyter_token : null,
+    error: typeof m.error === "string" ? m.error.replace(/[\u0000-\u001F\u007F]/g, " ").slice(0, 300) : null,
+  }));
+}
+
+// Accepted SSH/Jupyter rentals whose start time has come. The node refuses
+// unsigned machine grants, so none are sent without a signing key.
+async function machineGrants(env, listingId, t) {
+  if (!(await marketKey(env))) return [];
+  const rows = await env.DB.prepare(
+    `SELECT id, access, environment, image, gpu_count, ssh_key, access_expires_at FROM rentals
+     WHERE listing_id = ? AND status = 'accepted' AND access IN ('ssh', 'jupyter') AND access_expires_at > ? AND COALESCE(access_starts_at, 0) <= ?`
+  ).bind(listingId, t, t).all();
+  return Promise.all(rows.results.map((r) => signMachineGrant(env, listingId, {
+    rental_id: r.id, access: r.access, environment: r.environment, image: r.image || "",
+    gpu_count: r.gpu_count, ssh_key: r.ssh_key || "", expires_at: r.access_expires_at,
+  })));
 }
 
 // ---------- signed access grants ----------
@@ -1099,6 +1153,14 @@ async function signGrant(env, g) {
   const k = await marketKey(env);
   if (k) out.sig = b64url(new Uint8Array(await crypto.subtle.sign({ name: "Ed25519" }, k.key, enc.encode(grantMessage(g)))));
   return out;
+}
+
+export const machineGrantMessage = (listingId, g) =>
+  `tdcc-market-machine-v1\n${listingId}\n${g.rental_id}\n${g.access}\n${g.environment}\n${g.image}\n${g.gpu_count}\n${g.expires_at}\n${g.ssh_key}`;
+
+async function signMachineGrant(env, listingId, g) {
+  const k = await marketKey(env);
+  return { ...g, sig: b64url(new Uint8Array(await crypto.subtle.sign({ name: "Ed25519" }, k.key, enc.encode(machineGrantMessage(listingId, g))))) };
 }
 
 async function publicMarketKey(env) {
@@ -1148,7 +1210,9 @@ function rentalOut(r, side) {
     // How to connect: only while access is live.
     out.join_token = r.access === "tdcc" && r.status === "accepted" && (r.access_starts_at || 0) <= t ? r.api_join_token || null : null;
     out.reviewed = !!r.renter_reviewed;
+    out.machine = machineOut(r, true);
   } else {
+    out.machine = machineOut(r, false);
     out.renter_owner_id = r.access === "tdcc" ? r.renter_owner_id : null;
     out.renter_name = r.renter_name;
     out.renter_email = revealed ? r.renter_email : null;
@@ -1160,6 +1224,19 @@ function rentalOut(r, side) {
     out.fee_cents = r.fee_cents || 0;
   }
   out.can_review = r.status === "completed" && !out.reviewed;
+  return out;
+}
+
+// How to reach the rental's container, while the rental runs.
+function machineOut(r, renter) {
+  if (!r.machine_state || r.status !== "accepted" || !["ssh", "jupyter"].includes(r.access)) return null;
+  const out = { state: r.machine_state, error: r.machine_error || null };
+  if (r.machine_state === "running" && r.machine_port && r.machine_host) {
+    const host = r.machine_host.includes(":") && !r.machine_host.startsWith("[") ? `[${r.machine_host}]` : r.machine_host;
+    out.port = r.machine_port;
+    if (r.access === "ssh") out.ssh = `ssh -p ${r.machine_port} root@${r.machine_host}`;
+    if (r.access === "jupyter" && renter && r.machine_token) out.jupyter_url = `http://${host}:${r.machine_port}/lab?token=${r.machine_token}`;
+  }
   return out;
 }
 
@@ -1221,6 +1298,9 @@ async function createRental(request, env, ctx) {
   // tdcc access uses the models the host already serves; nothing to set up.
   const environment = access === "tdcc" ? "model" : oneOf(body.environment, "Environment", ENVIRONMENTS.filter((e) => e !== "model"));
   const img = environment === "custom" ? image(body.image) : "";
+  if (img && listingOut(row).machine_rentals && !listingOut(row).custom_images) {
+    throw new HttpError(400, "This host starts machines only from the standard environments (PyTorch, vLLM, Ubuntu). Pick one of those.", { field: "environment" });
+  }
   const key = access === "ssh" ? sshKey(body.ssh_key) : "";
   if (access === "ssh" && !key) throw new HttpError(400, "Paste your SSH public key so the host can give you access.", { field: "ssh_key" });
   let renterOwnerId = "";
@@ -1330,7 +1410,11 @@ async function transitionRental(request, env, ctx, id, action) {
   if (emailEnabled(env)) {
     const site = siteUrl(env, request);
     let mail = null;
-    if (action === "accept") mail = { to: updated.renter_email, ...templates.accepted(updated.renter_name, updated, `${site}/account.html#rentals`) };
+    if (action === "accept") {
+      const listing = await env.DB.prepare("SELECT machines_seen_at, machines_offer, status FROM listings WHERE id = ?").bind(updated.listing_id).first();
+      const machine_offered = ["ssh", "jupyter"].includes(updated.access) && machineOffer(listing, now()) !== null;
+      mail = { to: updated.renter_email, ...templates.accepted(updated.renter_name, { ...updated, machine_offered }, `${site}/account.html#rentals`) };
+    }
     else if (action === "decline") mail = { to: updated.renter_email, ...templates.declined(updated.renter_name, updated, `${site}/marketplace.html`) };
     else if (action === "cancel" && r.status !== "awaiting_payment") {
       mail = isHost

@@ -207,7 +207,7 @@
         if (d.two_factor_required) {
           challenge = d.challenge;
           setMode("2fa");
-          setTimeout(() => form.code.focus(), 30);
+          form.code.focus();
           return;
         }
         form.reset();
@@ -237,7 +237,12 @@
     lastFocus = document.activeElement;
     dlg.classList.add("open");
     document.body.style.overflow = "hidden";
-    setTimeout(() => dlg.querySelector("input[name=email]").focus(), 30);
+    // Focus the email field once the dialog shows, unless the person already
+    // moved into another field (typing there must not land in the email box).
+    setTimeout(() => {
+      const active = document.activeElement;
+      if (!(active && dlg.contains(active) && active.matches("input, textarea"))) dlg.querySelector("input[name=email]").focus();
+    }, 30);
     return new Promise((r) => { resolveAuth = r; });
   }
   async function requireUser(reason) {
