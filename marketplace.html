@@ -517,6 +517,17 @@
         try {
           d = await api('GET', query(append ? L.length : 0));
         } catch (err) {
+          // A static-only deployment has no API yet: show the opening state
+          // instead of an error.
+          if (err.status === 404) {
+            const sum = document.querySelector('.summary');
+            sum.classList.add('launch');
+            sum.querySelector('.launch-note .eyebrow').textContent = 'Opening October 31';
+            sum.querySelector('.launch-note h2').textContent = 'The marketplace opens to everyone on October 31.';
+            sum.querySelector('.launch-note p:not(.eyebrow)').textContent = 'Rent a GPU by the hour or list your own and set your price. Get your machine ready now so it is live on day one.';
+            rowsEl.innerHTML = '<div class="empty">Listings open to everyone on October 31. <a class="link" href="/launch.html">See the launch plan →</a></div>';
+            return;
+          }
           rowsEl.innerHTML = `<div class="empty">${esc(err.message)}</div>`;
           return;
         }
