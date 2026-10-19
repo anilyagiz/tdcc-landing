@@ -107,7 +107,7 @@
     .nav.scrolled { background: rgba(12, 11, 9, .82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom-color: var(--line); }
     .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 24px; }
     .brand { display: inline-flex; align-items: center; gap: 12px; color: var(--cream); }
-    .brand svg { width: 42px; height: 28px; color: var(--sand); }
+    .brand svg { flex: none; width: 42px; height: 28px; color: var(--sand); }
     .brand-name { font-family: var(--serif); font-size: 21px; letter-spacing: -.01em; }
     .brand-name small { display: none; }
     .nav-links { display: flex; align-items: center; gap: 4px; }
@@ -446,7 +446,12 @@
     .filters button { border: 1px solid var(--line); padding: 7px 11px; }
     .filters button.on { color: var(--sand); border-color: var(--sand); }
     .filters button:hover, .seg button:hover { color: var(--text); }
-    .market-note { margin-left: auto; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+    .market-src { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; color: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+    .market-src.live { color: var(--ok); }
+    .market-src.live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px rgba(185,217,154,.7); }
+    .market-src + .market-note { margin-left: 0; }
+    a.listing { color: inherit; }
+    .market-note { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
     .listings { display: grid; grid-template-columns: repeat(3, 1fr); }
     .listing { display: flex; flex-direction: column; gap: 10px; padding: 22px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); transition: background .25s ease, opacity .3s ease; }
     .listing:nth-child(3n) { border-right: 0; }
@@ -1065,6 +1070,7 @@ base_url = <span class="s">"https://decentralizedcompute.company/api/v1"</span><
               <button type="button" data-f="24">24GB</button>
               <button type="button" data-f="exact">Exact Core</button>
             </div>
+            <span class="market-src" id="market-src">Example listings</span>
             <a class="link market-note" href="/marketplace.html" style="color:var(--sand)">Open the full marketplace →</a>
           </div>
 
@@ -1506,6 +1512,30 @@ tdcc receipts show job_8fq1za --verify</pre>
           market.querySelectorAll('.filters button').forEach((o) => o.classList.toggle('on', o === b));
           market.querySelectorAll('.listing').forEach((l) => { l.hidden = b.dataset.f !== 'all' && l.dataset.f !== b.dataset.f; });
         }));
+        // Show real listings when the marketplace has any; the cards in the
+        // markup stay as labelled examples otherwise.
+        const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+        fetch('/api/listings?limit=12&sort=rep').then((r) => (r.ok ? r.json() : null)).then((d) => {
+          const live = (d && d.listings || []).sort((a, b) => b.online - a.online).slice(0, 5);
+          if (!live.length) return;
+          const grid = document.getElementById('listings');
+          const exact = grid.querySelector('.listing.exact');
+          grid.querySelectorAll('.listing:not(.exact)').forEach((el) => el.remove());
+          const cls = (v) => (v >= 80 ? '80' : v >= 40 ? '48' : '24');
+          grid.insertAdjacentHTML('afterbegin', live.map((l) => {
+            const rep = l.uptime_7d !== null ? [l.uptime_7d, `${l.uptime_7d}%`, 'Uptime'] : l.host_rating ? [l.host_rating * 20, l.host_rating.toFixed(1), 'Rating'] : null;
+            return `<a class="listing" data-f="${cls(l.vram_gb)}" href="/marketplace.html"><div class="l-top"><span class="l-class">${esc(l.vram_gb)}GB class</span><span class="l-av${l.online ? '' : ' soon'}"><i></i>${l.online ? 'Online' : 'Listed'}</span></div>`
+              + `<h3>${esc(l.gpu_model)}${l.gpu_count > 1 ? ` ×${esc(l.gpu_count)}` : ''}</h3><p class="l-spec">${esc(l.region_label)} · ${esc(l.host_kind_label)} · ${esc(l.available)} free</p>`
+              + (rep ? `<div class="l-rep"><span>${rep[2]}</span><span class="meter"><i style="width:${Math.max(4, Math.min(100, rep[0]))}%"></i></span><b>${esc(rep[1])}</b></div>` : `<div class="l-rep"><span>New host</span><span class="meter"></span><b>—</b></div>`)
+              + `<div class="l-foot"><span class="price" data-rent="$${(l.price_cents / 100).toFixed(2)} / GPU-hour" data-job="Pay per accepted job"></span><span class="l-cta">Rent →</span></div></a>`;
+          }).join(''));
+          if (exact) grid.appendChild(exact);
+          const src = document.getElementById('market-src');
+          src.textContent = `${d.total} live listing${d.total === 1 ? '' : 's'}`;
+          src.classList.add('live');
+          const on = market.querySelector('.filters button.on');
+          if (on) on.click();
+        }).catch(() => {});
         const exactCard = market.querySelector('.listing.exact');
         exactCard.style.cursor = 'pointer';
         exactCard.addEventListener('click', () => document.getElementById('exact-core').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }));

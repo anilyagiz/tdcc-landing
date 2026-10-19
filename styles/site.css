@@ -60,7 +60,7 @@ h1, h2, h3 { margin: 0; font-weight: 400; }
 .nav.scrolled { background: rgba(12, 11, 9, .9); border-bottom-color: var(--line); }
 .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 24px; }
 .brand { display: inline-flex; align-items: center; gap: 12px; color: var(--cream); }
-.brand svg { width: 42px; height: 28px; color: var(--sand); }
+.brand svg { flex: none; width: 42px; height: 28px; color: var(--sand); }
 .brand-name { font-family: var(--serif); font-size: 21px; }
 .nav-links { display: flex; align-items: center; gap: 2px; }
 .nav-links a { white-space: nowrap; padding: 8px 9px; color: var(--body); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }

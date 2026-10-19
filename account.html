@@ -13,7 +13,7 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <link rel="stylesheet" href="/styles/site.css" />
   <style>
-    .a-head { padding: clamp(48px, 7vw, 88px) 0 28px; border-bottom: 1px solid var(--line); }
+    .a-head { padding: clamp(48px, 7vw, 88px) 0 0; background: radial-gradient(ellipse 55% 80% at 88% 0%, rgba(216,191,148,.08), transparent 70%); }
     .a-head-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px; }
     .a-head h1 { font-family: var(--serif); font-size: clamp(36px, 5vw, 64px); line-height: 1.05; letter-spacing: -.02em; }
     .a-head p { margin-top: 10px; color: var(--muted); font-size: 14px; }
@@ -50,8 +50,23 @@
     .settings { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
     .settings form { display: grid; gap: 14px; align-content: start; padding: 24px; border: 1px solid var(--line); background: var(--panel); }
     .settings h3 { font-family: var(--serif); font-size: 24px; }
+    .settings form.danger { grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; column-gap: 32px; border-color: rgba(227,179,122,.28); background: rgba(227,179,122,.03); }
+    .settings form.danger h3 { color: var(--warn); }
+    .settings form.danger h3, .settings form.danger p, .settings form.danger .form-err { grid-column: 1 / -1; }
+    .danger-btn { border-color: rgba(227,179,122,.45); color: var(--warn); }
+    .danger-btn:hover { background: var(--warn); border-color: var(--warn); color: var(--ink); }
+    @media (max-width: 700px) { .settings form.danger { grid-template-columns: 1fr; } }
     .settings p { color: var(--body); font-size: 14px; }
     .signin { max-width: 560px; padding: 36px; border: 1px solid var(--line); background: var(--panel); }
+    .signin-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); align-items: start; }
+    .signin-grid .signin { max-width: none; background: radial-gradient(ellipse 70% 90% at 100% 0%, rgba(216,191,148,.1), transparent 70%), var(--panel); }
+    .perks { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+    .perks li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 16px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+    .perks span { color: var(--sand); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; padding-top: 4px; }
+    .perks b { color: var(--text); font-family: var(--serif); font-size: 22px; font-weight: 400; }
+    .perks p { margin-top: 6px; color: var(--body); font-size: 14.5px; }
+    .perks code { font-family: var(--mono); font-size: 12.5px; color: var(--cream); }
+    @media (max-width: 860px) { .signin-grid { grid-template-columns: 1fr; } .signin { padding: 26px; } }
     .signin h2 { font-family: var(--serif); font-size: 34px; line-height: 1.1; }
     .signin p { margin: 12px 0 24px; color: var(--body); }
     .loading { color: var(--muted); font-family: var(--mono); font-size: 12px; }
@@ -377,12 +392,12 @@
             <p>Download everything we store about you (profile, listings, rentals, messages, reviews, activity) as a JSON file.</p>
             <button class="btn" type="button" data-export>Download my data</button>
           </form>
-          <form id="del-form" novalidate>
+          <form id="del-form" class="danger" novalidate>
             <h3>Delete account</h3>
             <p>This removes your account, your listings, and your request history. Running rentals must be finished or cancelled first. This cannot be undone.</p>
             <div class="form-err" role="alert"></div>
             <label class="fl">Password<input class="inp" name="password" type="password" autocomplete="current-password" required /></label>
-            <button class="btn" type="submit">Delete my account</button>
+            <button class="btn danger-btn" type="submit">Delete my account</button>
           </form>
         </div>`;
       }
@@ -407,8 +422,14 @@
         user = null;
         $('tabs').hidden = true; $('head-actions').hidden = true; $('verify-banner').classList.remove('show');
         $('hello').textContent = 'Your marketplace'; $('who').textContent = '';
-        pane.innerHTML = `<div class="signin"><h2>Sign in to rent or list GPUs.</h2><p>One free account for both: rent GPUs from hosts, or list your own and answer requests.</p>
-          <div class="actions"><button class="btn solid" type="button" data-auth="signup">Create account</button><button class="btn" type="button" data-auth="login">Sign in</button></div></div>`;
+        pane.innerHTML = `<div class="signin-grid">
+          <div class="signin"><p class="eyebrow">One account, both sides</p><h2>Sign in to rent or list GPUs.</h2><p>One free account for both: rent GPUs from hosts, or list your own and answer requests.</p>
+          <div class="actions"><button class="btn solid" type="button" data-auth="signup">Create account</button><button class="btn" type="button" data-auth="login">Sign in</button></div></div>
+          <ol class="perks">
+            <li><span>01</span><div><b>Rent</b><p>Send a request to any listed GPU. You get SSH, Jupyter, or API access once the host accepts.</p></div></li>
+            <li><span>02</span><div><b>Host</b><p>List your machine, link it with <code>tdcc market link</code>, and accept the requests you want.</p></div></li>
+            <li><span>03</span><div><b>Track</b><p>Requests, messages, usage, reviews, and payouts in one place.</p></div></li>
+          </ol></div>`;
       }
 
       function signedIn(u) {

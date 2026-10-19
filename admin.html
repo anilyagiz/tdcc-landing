@@ -10,12 +10,12 @@
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/styles/site.css" />
   <style>
-    .ad { padding-top: 48px; padding-bottom: 96px; display: grid; gap: 40px; }
-    .ad h1 { font-family: var(--serif); font-size: clamp(34px, 4vw, 52px); }
+    .ad { padding-top: clamp(48px, 7vw, 88px); padding-bottom: 96px; display: grid; gap: 48px; }
+    .ad h1 { font-family: var(--serif); font-size: clamp(38px, 5vw, 64px); line-height: 1.05; letter-spacing: -.02em; }
     .ad h2 { font-family: var(--serif); font-size: 28px; margin-bottom: 14px; }
     .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); border: 1px solid var(--line); }
-    .stats div { padding: 16px 18px; border-right: 1px solid var(--line); }
-    .stats b { display: block; font-family: var(--serif); font-size: 30px; font-weight: 400; }
+    .stats div { padding: 20px 22px; border-right: 1px solid var(--line); background: var(--panel); }
+    .stats b { display: block; font-family: var(--serif); font-size: 36px; font-weight: 400; line-height: 1.1; font-variant-numeric: tabular-nums; }
     .stats span { color: var(--muted); font-size: 13px; }
     .tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
     .tbl th { text-align: left; color: var(--muted); font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; font-weight: 400; padding: 10px; border-bottom: 1px solid var(--line); }
@@ -28,6 +28,7 @@
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#content">Skip to content</a>
   <!-- chrome:mark -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <symbol id="mark" viewBox="0 0 120 80">

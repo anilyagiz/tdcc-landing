@@ -1,34 +1,275 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="TDCC Litepaper: a verified execution layer connecting AI companies, data centers, and independent GPU capacity.">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0c0b09" />
+  <meta name="color-scheme" content="dark" />
   <title>Litepaper | The Decentralized Compute Company</title>
+  <meta name="description" content="TDCC Litepaper: a verified execution layer connecting AI companies, data centers, and independent GPU capacity." />
+  <link rel="canonical" href="https://decentralizedcompute.company/litepaper.html" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/styles/site.css" />
   <style>
-    :root{--bg:#fbfbf9;--text:#141414;--muted:#716d69;--line:#e6e4df;--soft:#f3f2ee;--accent:#b9ff78;--green:#143a19}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:17px/1.6 Georgia,"Times New Roman",serif;-webkit-font-smoothing:antialiased}a{color:inherit;text-underline-offset:4px}.page{width:min(calc(100% - 40px),820px);margin:auto;padding:32px 0 100px}.top{display:flex;justify-content:space-between;align-items:center;padding-bottom:28px;border-bottom:1px solid var(--line);font:13px Arial,sans-serif}.back{text-decoration:none;color:var(--muted)}.eyebrow{color:var(--muted);font:12px Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}.hero{padding:88px 0 72px}.hero h1{max-width:720px;margin:14px 0 22px;font:400 clamp(42px,7vw,76px)/1.02 Arial,sans-serif;letter-spacing:-.055em}.hero p{max-width:680px;font-size:21px;line-height:1.45}.section{padding:54px 0;border-top:1px solid var(--line)}h2{margin:0 0 18px;font:400 clamp(28px,4vw,44px)/1.12 Arial,sans-serif;letter-spacing:-.035em}h3{margin:0 0 8px;font:600 17px Arial,sans-serif}.grid{display:grid;grid-template-columns:1fr 1fr;gap:28px 42px;margin-top:30px}.card{padding-top:16px;border-top:1px solid var(--line)}.card p{margin:0;color:#3b3936;font-size:16px}.flow{display:grid;gap:0;margin-top:28px}.step{display:grid;grid-template-columns:44px 1fr;gap:16px;padding:18px 0;border-top:1px solid var(--line)}.step:last-child{border-bottom:1px solid var(--line)}.num{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--soft);font:12px Arial,sans-serif}.callout{margin-top:28px;padding:26px;border-radius:18px;background:#fff;border:1px solid var(--line)}.callout strong{font-family:Arial,sans-serif}.notice{margin-top:28px;padding:20px 22px;background:var(--soft);border-left:3px solid var(--accent-dark, #143a19);font-size:15px;color:#3b3936}.roadmap{display:grid;gap:14px;margin-top:28px}.phase{padding:20px 22px;border:1px solid var(--line);border-radius:14px;background:#fff}.phase strong{display:block;margin-bottom:5px;font:600 15px Arial,sans-serif}.cta{margin-top:30px;padding:30px;border-radius:20px;background:var(--accent);color:var(--green)}.cta h2{margin-bottom:12px}.cta p{max-width:640px}.button{display:inline-flex;align-items:center;min-height:44px;padding:0 17px;border-radius:999px;background:#fff;text-decoration:none;font:14px Arial,sans-serif;border:1px solid rgba(20,58,25,.14)}footer{padding-top:34px;color:var(--muted);font:12px Arial,sans-serif}@media(max-width:650px){.page{width:min(calc(100% - 28px),820px)}.hero{padding:60px 0 48px}.grid{grid-template-columns:1fr}.top{gap:18px;align-items:flex-start}}
+    /* Litepaper: numbered chapters inside the shared .doc/.prose layout */
+    .lp-sec { scroll-margin-top: 96px; }
+    .prose > .lp-sec + .lp-sec { margin-top: clamp(56px, 7vw, 88px); padding-top: clamp(40px, 5vw, 56px); border-top: 1px solid var(--line); }
+    .lp-sec > * + * { margin-top: 1.1em; }
+    .lp-sec > .lp-k { display: flex; align-items: baseline; gap: 12px; margin: 0; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+    .lp-k b { color: var(--sand); font-weight: 400; }
+    .lp-sec > h2 { margin-top: 14px; max-width: 22ch; font-size: clamp(28px, 3vw, 38px); }
+    .lp-sec > .lp-body { margin-top: 20px; }
+    .lp-sec > .grid, .lp-sec > .lp-flow, .lp-sec > .lp-road, .lp-sec > .lp-stats, .lp-sec > .lp-split { margin-top: 32px; }
+    .lp-sec > .callout { margin-top: 28px; }
+
+    /* cards inside prose */
+    .prose .card h3 { margin-top: 0; font-size: 22px; }
+    .prose .card p { margin-top: 10px; font-size: 15px; line-height: 1.6; }
+    .prose .card .k { margin-bottom: 14px; }
+
+    /* how it works: numbered steps */
+    .prose .lp-flow { list-style: none; padding: 0; border-top: 1px solid var(--line); }
+    .prose .lp-flow li { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 16px; margin: 0; padding: 22px 0; border-bottom: 1px solid var(--line); }
+    .lp-flow .n { color: var(--sand); font-family: var(--mono); font-size: 12px; letter-spacing: .14em; padding-top: 4px; font-variant-numeric: tabular-nums; }
+    .prose .lp-flow h3 { margin: 0; font-family: var(--serif); font-size: 22px; font-weight: 400; line-height: 1.2; }
+    .lp-flow p { margin-top: 6px; font-size: 16px; }
+
+    /* roadmap */
+    .prose .lp-road { list-style: none; padding: 0; display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+    .prose .lp-road li { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 20px; margin: 0; padding: 24px; background: var(--bg); }
+    .lp-road .ph { color: var(--sand); font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; padding-top: 5px; }
+    .prose .lp-road h3 { margin: 0; font-family: var(--serif); font-size: 22px; font-weight: 400; line-height: 1.2; }
+    .lp-road p { margin-top: 8px; font-size: 15.5px; line-height: 1.65; }
+
+    /* capital stats */
+    .lp-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+    .lp-stats > div { padding: 24px 22px; background: var(--bg); }
+    .lp-stats .stat-n { font-size: clamp(34px, 3.6vw, 48px); font-variant-numeric: tabular-nums; }
+    .lp-stats .stat-l { margin-top: 10px; font-size: 13.5px; line-height: 1.5; }
+
+    /* risks and principles */
+    .lp-split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+    .lp-split > div { padding: 24px; background: var(--bg); }
+    .lp-split h3 { margin: 0 0 12px !important; color: var(--muted) !important; font-family: var(--mono) !important; font-size: 10.5px !important; font-weight: 400 !important; letter-spacing: .14em; text-transform: uppercase; }
+    .lp-split ul { margin: 0; padding-left: 1.1em; font-size: 15.5px; line-height: 1.6; }
+    .lp-split li + li { margin-top: .4em; }
+
+    .lp-end { padding-bottom: clamp(72px, 9vw, 120px); }
+    .doc { padding-bottom: clamp(48px, 6vw, 80px); }
+
+    @media (max-width: 600px) {
+      .lp-stats, .lp-split { grid-template-columns: 1fr; }
+      .prose .lp-road li { grid-template-columns: 1fr; gap: 8px; padding: 20px; }
+      .prose .lp-flow li { grid-template-columns: 40px minmax(0, 1fr); gap: 12px; }
+    }
   </style>
 </head>
 <body>
-  <main class="page">
-    <header class="top"><span>TDCC / LITEPAPER</span><a class="back" href="/">Back to home</a></header>
-    <section class="hero"><p class="eyebrow">Version 1.0 · July 2026</p><h1>The compute layer for AI.</h1><p>TDCC connects AI companies with data centers and GPUs so they can train, fine-tune, and run models without managing every machine themselves.</p></section>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <!-- chrome:mark -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="0 0 120 80">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z" />
+        <g stroke-width="1.4" opacity=".85">
+          <path d="M62 14 V70" />
+          <path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" />
+          <path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" />
+          <path d="M38 26 Q62 31 86 26" /><path d="M31 39 Q62 45 93 39" /><path d="M29 54 Q62 60 95 54" />
+        </g>
+      </g>
+      <g fill="currentColor">
+        <rect x="59.5" y="26.5" width="5" height="5" /><rect x="45" y="39" width="5" height="5" /><rect x="74" y="39" width="5" height="5" />
+        <rect x="59.5" y="42" width="5" height="5" /><rect x="33" y="52" width="4.5" height="4.5" /><rect x="86.5" y="52" width="4.5" height="4.5" />
+        <rect x="59.5" y="57" width="5" height="5" /><rect x="47" y="27" width="4" height="4" /><rect x="73" y="27" width="4" height="4" />
+      </g>
+    </symbol>
+  </svg>
+  <!-- /chrome:mark -->
+  <!-- chrome:nav -->
+  <header class="nav" id="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="/" aria-label="The Decentralized Compute Company — home">
+        <svg aria-hidden="true"><use href="#mark" /></svg>
+        <span class="brand-name">tdcc</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
+        <a href="/exact-core.html">Exact Core</a>
+        <a href="/marketplace.html">Marketplace</a>
+        <a href="/#platform">Platform</a>
+        <a href="/#developers">Developers</a>
+        <a href="/app.html">App</a>
+        <a href="/team.html">Team</a>
+        <a href="/litepaper.html" aria-current="page">Litepaper</a>
+        <a href="/cask-q.html">Research</a>
+        <a class="btn solid sm nav-cta" href="/#join">Get early access</a>
+      </nav>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </header>
+  <!-- /chrome:nav -->
 
-    <section class="section"><p class="eyebrow">01 / The problem</p><h2>AI needs more GPUs than most teams can access.</h2><p>AI companies need compute for training, fine-tuning, and inference. Data centers and GPU operators have capacity, but connecting the right job to the right machine is still difficult.</p><p>TDCC makes that connection simple: submit a job, get it run, and pay for an accepted result.</p></section>
+  <main id="content">
+    <header class="page-head">
+      <div class="wrap">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>Litepaper</span></nav>
+        <h1 class="display">The compute layer for AI.</h1>
+        <p class="lede">TDCC connects AI companies with data centers and GPUs so they can train, fine-tune, and run models without managing every machine themselves.</p>
+        <div class="page-meta"><span>Version 1.0</span><span>July 2026</span><span>Seven sections</span></div>
+      </div>
+    </header>
 
-    <section class="section"><p class="eyebrow">02 / Mission</p><h2>Make the full AI model lifecycle easier.</h2><div class="grid"><article class="card"><h3>AI companies</h3><p>Get compute for training, fine-tuning, inference, and evaluation.</p></article><article class="card"><h3>Data centers</h3><p>Turn available GPU capacity into useful, recurring work.</p></article><article class="card"><h3>GPU operators</h3><p>Earn by running approved AI jobs on compatible hardware.</p></article><article class="card"><h3>Developers</h3><p>Use one API instead of building your own compute network.</p></article></div></section>
+    <div class="wrap">
+      <div class="doc">
+        <nav class="toc" aria-label="On this page">
+          <b>Contents</b>
+          <a href="#problem">01 The problem</a>
+          <a href="#mission">02 Mission</a>
+          <a href="#how-it-works">03 How it works</a>
+          <a href="#product">04 Product</a>
+          <a href="#roadmap">05 Roadmap</a>
+          <a href="#capital">06 Capital and momentum</a>
+          <a href="#risks">07 Risks and principles</a>
+        </nav>
 
-    <section class="section"><p class="eyebrow">03 / How it works</p><h2>One API. The right hardware underneath.</h2><div class="flow"><div class="step"><div class="num">01</div><div><h3>Connect capacity</h3><p>Data centers and GPU operators share hardware, availability, and pricing.</p></div></div><div class="step"><div class="num">02</div><div><h3>Submit a job</h3><p>An AI team sends a training, fine-tuning, inference, or evaluation job.</p></div></div><div class="step"><div class="num">03</div><div><h3>Run it</h3><p>TDCC matches the job with hardware that fits.</p></div></div><div class="step"><div class="num">04</div><div><h3>Verify it</h3><p>We check the result and pay hosts for accepted work.</p></div></div></div><div class="callout"><strong>Simple promise:</strong> AI teams bring the models. TDCC brings the compute.</div></section>
+        <article class="prose">
+          <section class="lp-sec" id="problem" aria-labelledby="problem-h">
+            <p class="lp-k"><b>01</b> The problem</p>
+            <h2 id="problem-h">AI needs more GPUs than most teams can access.</h2>
+            <p class="lp-body">AI companies need compute for training, fine-tuning, and inference. Data centers and GPU operators have capacity, but connecting the right job to the right machine is still difficult.</p>
+            <p class="lead">TDCC makes that connection simple: submit a job, get it run, and pay for an accepted result.</p>
+          </section>
 
-    <section class="section"><p class="eyebrow">04 / Product</p><h2>Everything AI teams need to run models.</h2><div class="grid"><article class="card"><h3>Training</h3><p>Train models on suitable distributed capacity.</p></article><article class="card"><h3>Fine-tuning</h3><p>Customize open models with LoRA and QLoRA.</p></article><article class="card"><h3>Inference</h3><p>Run batch jobs, APIs, image generation, and embeddings.</p></article><article class="card"><h3>Evaluation</h3><p>Test models, generate data, and compare results.</p></article></div></section>
+          <section class="lp-sec" id="mission" aria-labelledby="mission-h">
+            <p class="lp-k"><b>02</b> Mission</p>
+            <h2 id="mission-h">Make the full AI model lifecycle easier.</h2>
+            <div class="grid c2">
+              <article class="card"><span class="k">For</span><h3>AI companies</h3><p>Get compute for training, fine-tuning, inference, and evaluation.</p></article>
+              <article class="card"><span class="k">For</span><h3>Data centers</h3><p>Turn available GPU capacity into useful, recurring work.</p></article>
+              <article class="card"><span class="k">For</span><h3>GPU operators</h3><p>Earn by running approved AI jobs on compatible hardware.</p></article>
+              <article class="card"><span class="k">For</span><h3>Developers</h3><p>Use one API instead of building your own compute network.</p></article>
+            </div>
+          </section>
 
-    <section class="section"><p class="eyebrow">05 / Roadmap</p><h2>A practical path from coordination to network scale.</h2><div class="roadmap"><div class="phase"><strong>Phase I · Foundation</strong>Define workload schemas, host requirements, secure runtimes, scheduling primitives, and verification policies.</div><div class="phase"><strong>Phase II · Pilot network</strong>Connect selected AI companies and data centers. Validate training, fine-tuning, inference, and evaluation workflows with measurable service levels.</div><div class="phase"><strong>Phase III · Capacity expansion</strong>Onboard additional data centers and qualified GPU operators, improve routing, introduce reputation signals, and expand geographic resilience.</div><div class="phase"><strong>Phase IV · Production platform</strong>Offer a stable developer API, observability, billing, automated settlement, and enterprise-grade controls for sustained AI workloads.</div></div></section>
+          <section class="lp-sec" id="how-it-works" aria-labelledby="how-h">
+            <p class="lp-k"><b>03</b> How it works</p>
+            <h2 id="how-h">One API. The right hardware underneath.</h2>
+            <ol class="lp-flow">
+              <li><span class="n">01</span><div><h3>Connect capacity</h3><p>Data centers and GPU operators share hardware, availability, and pricing.</p></div></li>
+              <li><span class="n">02</span><div><h3>Submit a job</h3><p>An AI team sends a training, fine-tuning, inference, or evaluation job.</p></div></li>
+              <li><span class="n">03</span><div><h3>Run it</h3><p>TDCC matches the job with hardware that fits.</p></div></li>
+              <li><span class="n">04</span><div><h3>Verify it</h3><p>We check the result and pay hosts for accepted work.</p></div></li>
+            </ol>
+            <div class="callout"><b>Simple promise</b>AI teams bring the models. TDCC brings the compute.</div>
+          </section>
 
-    <section class="section"><p class="eyebrow">06 / Capital and momentum</p><h2>Build the network with focused, accountable capital.</h2><p>TDCC raised $50,000 through star.fun in approximately 10 minutes, reaching an $8 million valuation during the campaign. The capital supports engineering, secure execution infrastructure, pilot onboarding, verification research, and developer adoption for its decentralized GPU and CPU network.</p><div class="notice"><strong>Funding milestone:</strong> star.fun publicly announced that TDCC had raised $50,000 for a decentralized GPU/CPU network for AI inference and training on July 22, 2026. The 10-minute campaign duration and $8 million valuation are reported from TDCC's campaign records. <a href="https://x.com/stardotfun/status/2080051528732193280" target="_blank" rel="noreferrer">View the announcement on X</a>.</div></section>
+          <section class="lp-sec" id="product" aria-labelledby="product-h">
+            <p class="lp-k"><b>04</b> Product</p>
+            <h2 id="product-h">Everything AI teams need to run models.</h2>
+            <div class="grid c2">
+              <article class="card"><span class="k">Workload</span><h3>Training</h3><p>Train models on suitable distributed capacity.</p></article>
+              <article class="card"><span class="k">Workload</span><h3>Fine-tuning</h3><p>Customize open models with LoRA and QLoRA.</p></article>
+              <article class="card"><span class="k">Workload</span><h3>Inference</h3><p>Run batch jobs, APIs, image generation, and embeddings.</p></article>
+              <article class="card"><span class="k">Workload</span><h3>Evaluation</h3><p>Test models, generate data, and compare results.</p></article>
+            </div>
+          </section>
 
-    <section class="section"><p class="eyebrow">07 / Risks and principles</p><h2>Trust is earned through measurable execution.</h2><p>The network must address unreliable hosts, malicious behavior, model and runtime incompatibility, privacy requirements, energy economics, latency, and disputes over completed work. TDCC will prioritize workload isolation, clear acceptance criteria, auditability, reputation, failover, and transparent limits over unsupported promises.</p><div class="cta"><h2>Build with TDCC.</h2><p>We are looking for AI companies, data centers, GPU operators, researchers, and infrastructure partners who want to help make distributed compute usable.</p><a class="button" href="mailto:anil@decentralizedcompute.company?subject=TDCC%20Partnership">Contact the team</a></div></section>
-    <footer>© 2026 The Decentralized Compute Company · <a href="/">Home</a> · <a href="/terms.html">Terms</a></footer>
+          <section class="lp-sec" id="roadmap" aria-labelledby="roadmap-h">
+            <p class="lp-k"><b>05</b> Roadmap</p>
+            <h2 id="roadmap-h">A practical path from coordination to network scale.</h2>
+            <ol class="lp-road">
+              <li><span class="ph">Phase I</span><div><h3>Foundation</h3><p>Define workload schemas, host requirements, secure runtimes, scheduling primitives, and verification policies.</p></div></li>
+              <li><span class="ph">Phase II</span><div><h3>Pilot network</h3><p>Connect selected AI companies and data centers. Validate training, fine-tuning, inference, and evaluation workflows with measurable service levels.</p></div></li>
+              <li><span class="ph">Phase III</span><div><h3>Capacity expansion</h3><p>Onboard additional data centers and qualified GPU operators, improve routing, introduce reputation signals, and expand geographic resilience.</p></div></li>
+              <li><span class="ph">Phase IV</span><div><h3>Production platform</h3><p>Offer a stable developer API, observability, billing, automated settlement, and enterprise-grade controls for sustained AI workloads.</p></div></li>
+            </ol>
+          </section>
+
+          <section class="lp-sec" id="capital" aria-labelledby="capital-h">
+            <p class="lp-k"><b>06</b> Capital and momentum</p>
+            <h2 id="capital-h">Build the network with focused, accountable capital.</h2>
+            <div class="lp-stats">
+              <div><div class="stat-n">$50,000</div><p class="stat-l">Raised through star.fun</p></div>
+              <div><div class="stat-n">~10 min</div><p class="stat-l">Approximate campaign duration</p></div>
+              <div><div class="stat-n">$8M</div><p class="stat-l">Valuation reached during the campaign</p></div>
+            </div>
+            <p>TDCC raised $50,000 through star.fun in approximately 10 minutes, reaching an $8 million valuation during the campaign. The capital supports engineering, secure execution infrastructure, pilot onboarding, verification research, and developer adoption for its decentralized GPU and CPU network.</p>
+            <div class="callout"><b>Funding milestone</b>star.fun publicly announced that TDCC had raised $50,000 for a decentralized GPU/CPU network for AI inference and training on July 22, 2026. The 10-minute campaign duration and $8 million valuation are reported from TDCC's campaign records. <a href="https://x.com/stardotfun/status/2080051528732193280" target="_blank" rel="noreferrer">View the announcement on X</a>.</div>
+          </section>
+
+          <section class="lp-sec" id="risks" aria-labelledby="risks-h">
+            <p class="lp-k"><b>07</b> Risks and principles</p>
+            <h2 id="risks-h">Trust is earned through measurable execution.</h2>
+            <div class="lp-split">
+              <div>
+                <h3>The network must address</h3>
+                <ul>
+                  <li>unreliable hosts</li>
+                  <li>malicious behavior</li>
+                  <li>model and runtime incompatibility</li>
+                  <li>privacy requirements</li>
+                  <li>energy economics</li>
+                  <li>latency</li>
+                  <li>disputes over completed work</li>
+                </ul>
+              </div>
+              <div>
+                <h3>TDCC will prioritize</h3>
+                <ul>
+                  <li>workload isolation</li>
+                  <li>clear acceptance criteria</li>
+                  <li>auditability</li>
+                  <li>reputation</li>
+                  <li>failover</li>
+                  <li>transparent limits over unsupported promises</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+        </article>
+      </div>
+    </div>
+
+    <div class="wrap lp-end">
+      <section class="cta-band reveal" aria-labelledby="cta-h">
+        <p class="eyebrow">Partnerships</p>
+        <h2 class="h2" id="cta-h">Build with TDCC.</h2>
+        <p>We are looking for AI companies, data centers, GPU operators, researchers, and infrastructure partners who want to help make distributed compute usable.</p>
+        <div class="actions">
+          <a class="btn solid" href="mailto:anil@decentralizedcompute.company?subject=TDCC%20Partnership">Contact the team</a>
+          <a class="btn" href="/">Back to home</a>
+        </div>
+      </section>
+    </div>
   </main>
+
+  <!-- chrome:footer -->
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="/" aria-label="TDCC home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
+          <p class="about">A GPU marketplace, a job network that checks its own work, and Exact Core, an AI chip whose answers anyone can re-check.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul><li><a href="/team.html">Team</a></li><li><a href="/litepaper.html">Litepaper</a></li><li><a href="/cask-q.html">Research</a></li><li><a href="/two-laptops-80-tps.html">Engineering</a></li><li><a href="/facts.html">Facts</a></li></ul>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <ul><li><a href="https://x.com/computecompany" target="_blank" rel="noreferrer">X / @computecompany</a></li><li><a href="https://www.linkedin.com/in/anilyagiz/" target="_blank" rel="noreferrer">LinkedIn</a></li><li><a href="mailto:anil@decentralizedcompute.company">Email</a></li><li><a href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">GitHub</a></li><li><a href="/feed.xml">RSS</a></li></ul>
+        </div>
+      </div>
+      <div class="wordmark" aria-hidden="true">decentralized compute</div>
+      <div class="legal"><span>© 2026 The Decentralized Compute Company</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/facts.html">Facts</a></span></div>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script src="/js/market.js"></script>
+  <script src="/js/site.js"></script>
 </body>
 </html>
