@@ -1,5 +1,144 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Terms | TDCC</title><link rel="canonical" href="https://decentralizedcompute.company/terms.html"><style>body{max-width:760px;margin:64px auto;padding:0 22px;background:#fbfbf9;color:#141414;font:17px/1.6 Georgia,serif}h1,h2{font-family:Arial,sans-serif;font-weight:400}a{color:inherit}</style></head>
-<body><p><a href="/">← Home</a></p><h1>Terms</h1><p>This website describes a project in development. Information may change as the product is developed. Nothing on this site constitutes an investment offer, financial advice, a guarantee of availability, or a guarantee of earnings.</p><h2>GPU marketplace</h2><p>The marketplace connects people who want to rent GPUs with hosts who list them. Hosts set their own prices and decide which requests to accept. Where card payments are on, renters pay through the marketplace (processed by Stripe): the card is authorized with the request, charged when the host accepts, and released if the host declines or does not answer within six days. TDCC holds the payment until 24 hours after the rental ends and then pays the host, minus the marketplace fee shown in the host&#39;s account. If the host cancels an accepted rental, the renter is refunded in full; if the renter cancels, they are refunded for the hours that had not begun. Either side can report a problem within 14 days of the end of a rental; while a report is open the payout waits, and TDCC decides on refunds after hearing both sides. Where card payments are not on, renters and hosts agree on payment directly and TDCC is not a party to that agreement. Hosts are responsible for their own taxes on what they earn. On instant machines, renters get root inside their own container on the host&#39;s machine for the rented hours; the container and its data are deleted when the rental ends, so renters must copy their results off in time, and hosts must not inspect renters&#39; containers. Reviews must be honest and about the rental itself. Hosts must only list hardware they own or are authorized to rent out, and must describe it accurately. Renters must not use rented hardware for anything unlawful, for attacks on other systems, or in breach of the host's reasonable rules. We may remove listings or accounts that are misleading or abusive.</p><h2>Acceptable use</h2><p>Do not misuse the website, attempt unauthorized access, or interfere with its operation.</p><h2>Contact</h2><p>Questions may be sent to <a href="mailto:anil@decentralizedcompute.company">anil@decentralizedcompute.company</a>.</p><p>Last updated: October 2026.</p></body>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0c0b09" />
+  <meta name="color-scheme" content="dark" />
+  <title>Terms | TDCC</title>
+  <meta name="description" content="The terms for using the TDCC website and renting or hosting GPUs on the TDCC marketplace." />
+  <link rel="canonical" href="https://decentralizedcompute.company/terms.html" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/styles/site.css" />
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <!-- chrome:mark -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="0 0 120 80">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z" />
+        <g stroke-width="1.4" opacity=".85">
+          <path d="M62 14 V70" />
+          <path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" />
+          <path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" />
+          <path d="M38 26 Q62 31 86 26" /><path d="M31 39 Q62 45 93 39" /><path d="M29 54 Q62 60 95 54" />
+        </g>
+      </g>
+      <g fill="currentColor">
+        <rect x="59.5" y="26.5" width="5" height="5" /><rect x="45" y="39" width="5" height="5" /><rect x="74" y="39" width="5" height="5" />
+        <rect x="59.5" y="42" width="5" height="5" /><rect x="33" y="52" width="4.5" height="4.5" /><rect x="86.5" y="52" width="4.5" height="4.5" />
+        <rect x="59.5" y="57" width="5" height="5" /><rect x="47" y="27" width="4" height="4" /><rect x="73" y="27" width="4" height="4" />
+      </g>
+    </symbol>
+  </svg>
+  <!-- /chrome:mark -->
+  <!-- chrome:nav -->
+  <header class="nav" id="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="/" aria-label="The Decentralized Compute Company — home">
+        <svg aria-hidden="true"><use href="#mark" /></svg>
+        <span class="brand-name">tdcc</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
+        <a href="/exact-core.html">Exact Core</a>
+        <a href="/marketplace.html">Marketplace</a>
+        <a href="/#platform">Platform</a>
+        <a href="/#developers">Developers</a>
+        <a href="/app.html">App</a>
+        <a href="/team.html">Team</a>
+        <a href="/litepaper.html">Litepaper</a>
+        <a href="/cask-q.html">Research</a>
+        <a class="btn solid sm nav-cta" href="/#join">Get early access</a>
+      </nav>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </header>
+  <!-- /chrome:nav -->
+
+  <main id="content">
+    <header class="page-head">
+      <div class="wrap">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>Terms</span></nav>
+        <h1 class="display">Terms</h1>
+        <p class="lede">This website describes a project in development, and information may change as the product is developed. Nothing on this site is an investment offer, financial advice, a guarantee of availability, or a guarantee of earnings.</p>
+        <div class="page-meta"><span>Last updated October 2026</span></div>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="doc">
+        <nav class="toc" aria-label="On this page">
+          <b>On this page</b>
+          <a href="#marketplace">GPU marketplace</a>
+          <a href="#payments">Payments and refunds</a>
+          <a href="#machines">Instant machines</a>
+          <a href="#hosts">Hosts</a>
+          <a href="#renters">Renters</a>
+          <a href="#use">Acceptable use</a>
+          <a href="#contact">Contact</a>
+        </nav>
+
+        <article class="prose">
+          <h2 id="marketplace">GPU marketplace</h2>
+          <p>The marketplace connects people who want to rent GPUs with hosts who list them. Hosts set their own prices and decide which requests to accept. Reviews must be honest and about the rental itself. We may remove listings or accounts that are misleading or abusive.</p>
+
+          <h2 id="payments">Payments and refunds</h2>
+          <p>Where card payments are on, renters pay through the marketplace (processed by Stripe):</p>
+          <ol>
+            <li>The card is authorized with the request, charged when the host accepts, and released if the host declines or does not answer within six days.</li>
+            <li>TDCC holds the payment until 24 hours after the rental ends and then pays the host, minus the marketplace fee shown in the host's account.</li>
+            <li>If the host cancels an accepted rental, the renter is refunded in full. If the renter cancels, they are refunded for the hours that had not begun.</li>
+            <li>Either side can report a problem within 14 days of the end of a rental. While a report is open the payout waits, and TDCC decides on refunds after hearing both sides.</li>
+          </ol>
+          <p>Where card payments are not on, renters and hosts agree on payment directly and TDCC is not a party to that agreement. Hosts are responsible for their own taxes on what they earn.</p>
+
+          <h2 id="machines">Instant machines</h2>
+          <p>On instant machines, renters get root inside their own container on the host's machine for the rented hours. The container and its data are deleted when the rental ends, so renters must copy their results off in time, and hosts must not inspect renters' containers.</p>
+
+          <h2 id="hosts">Hosts</h2>
+          <p>Hosts must only list hardware they own or are authorized to rent out, and must describe it accurately.</p>
+
+          <h2 id="renters">Renters</h2>
+          <p>Renters must not use rented hardware for anything unlawful, for attacks on other systems, or in breach of the host's reasonable rules.</p>
+
+          <h2 id="use">Acceptable use</h2>
+          <p>Do not misuse the website, attempt unauthorized access, or interfere with its operation.</p>
+
+          <h2 id="contact">Contact</h2>
+          <p>Questions may be sent to <a href="mailto:anil@decentralizedcompute.company">anil@decentralizedcompute.company</a>. How we handle your data is described in the <a href="/privacy.html">privacy notice</a>.</p>
+        </article>
+      </div>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="/" aria-label="TDCC home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
+          <p class="about">A GPU marketplace, a job network that checks its own work, and Exact Core, an AI chip whose answers anyone can re-check.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul><li><a href="/team.html">Team</a></li><li><a href="/litepaper.html">Litepaper</a></li><li><a href="/cask-q.html">Research</a></li><li><a href="/two-laptops-80-tps.html">Engineering</a></li><li><a href="/facts.html">Facts</a></li></ul>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <ul><li><a href="https://x.com/computecompany" target="_blank" rel="noreferrer">X / @computecompany</a></li><li><a href="https://www.linkedin.com/in/anilyagiz/" target="_blank" rel="noreferrer">LinkedIn</a></li><li><a href="mailto:anil@decentralizedcompute.company">Email</a></li><li><a href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">GitHub</a></li><li><a href="/feed.xml">RSS</a></li></ul>
+        </div>
+      </div>
+      <div class="wordmark" aria-hidden="true">decentralized compute</div>
+      <div class="legal"><span>© 2026 The Decentralized Compute Company</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/facts.html">Facts</a></span></div>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script src="/js/market.js"></script>
+  <script src="/js/site.js"></script>
+</body>
 </html>

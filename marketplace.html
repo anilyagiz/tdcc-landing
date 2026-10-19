@@ -161,18 +161,33 @@
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
+  <!-- chrome:mark -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <symbol id="mark" viewBox="0 0 120 80">
       <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z" />
-        <g stroke-width="1.4" opacity=".85"><path d="M62 14 V70" /><path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" /><path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" /><path d="M38 26 Q62 31 86 26" /><path d="M31 39 Q62 45 93 39" /><path d="M29 54 Q62 60 95 54" /></g>
+        <g stroke-width="1.4" opacity=".85">
+          <path d="M62 14 V70" />
+          <path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" />
+          <path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" />
+          <path d="M38 26 Q62 31 86 26" /><path d="M31 39 Q62 45 93 39" /><path d="M29 54 Q62 60 95 54" />
+        </g>
       </g>
-      <g fill="currentColor"><rect x="59.5" y="26.5" width="5" height="5" /><rect x="45" y="39" width="5" height="5" /><rect x="74" y="39" width="5" height="5" /><rect x="59.5" y="42" width="5" height="5" /><rect x="33" y="52" width="4.5" height="4.5" /><rect x="86.5" y="52" width="4.5" height="4.5" /><rect x="59.5" y="57" width="5" height="5" /></g>
+      <g fill="currentColor">
+        <rect x="59.5" y="26.5" width="5" height="5" /><rect x="45" y="39" width="5" height="5" /><rect x="74" y="39" width="5" height="5" />
+        <rect x="59.5" y="42" width="5" height="5" /><rect x="33" y="52" width="4.5" height="4.5" /><rect x="86.5" y="52" width="4.5" height="4.5" />
+        <rect x="59.5" y="57" width="5" height="5" /><rect x="47" y="27" width="4" height="4" /><rect x="73" y="27" width="4" height="4" />
+      </g>
     </symbol>
   </svg>
-  <header class="nav">
+  <!-- /chrome:mark -->
+  <!-- chrome:nav -->
+  <header class="nav" id="nav">
     <div class="wrap nav-inner">
-      <a class="brand" href="/" aria-label="The Decentralized Compute Company home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">tdcc</span></a>
+      <a class="brand" href="/" aria-label="The Decentralized Compute Company — home">
+        <svg aria-hidden="true"><use href="#mark" /></svg>
+        <span class="brand-name">tdcc</span>
+      </a>
       <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
         <a href="/exact-core.html">Exact Core</a>
         <a href="/marketplace.html" aria-current="page">Marketplace</a>
@@ -180,12 +195,14 @@
         <a href="/#developers">Developers</a>
         <a href="/app.html">App</a>
         <a href="/team.html">Team</a>
+        <a href="/litepaper.html">Litepaper</a>
         <a href="/cask-q.html">Research</a>
-        <a class="btn solid sm" href="#hosts">List your GPU</a>
+        <a class="btn solid sm nav-cta" href="#hosts">List your GPU</a>
       </nav>
       <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
     </div>
   </header>
+  <!-- /chrome:nav -->
 
   <main id="content">
     <section class="m-head">
@@ -428,17 +445,35 @@
     </aside>
   </div>
 
+  <!-- chrome:footer -->
   <footer>
     <div class="wrap">
-      <div class="foot">
-        <a class="brand" href="/"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
-        <div class="foot-links"><a href="/exact-core.html">Exact Core</a><a href="/marketplace.html">Marketplace</a><a href="/account.html">My account</a><a href="/app.html">App</a><a href="/team.html">Team</a><a href="/litepaper.html">Litepaper</a><a href="/cask-q.html">Research</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="/" aria-label="TDCC home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
+          <p class="about">A GPU marketplace, a job network that checks its own work, and Exact Core, an AI chip whose answers anyone can re-check.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul><li><a href="/team.html">Team</a></li><li><a href="/litepaper.html">Litepaper</a></li><li><a href="/cask-q.html">Research</a></li><li><a href="/two-laptops-80-tps.html">Engineering</a></li><li><a href="/facts.html">Facts</a></li></ul>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <ul><li><a href="https://x.com/computecompany" target="_blank" rel="noreferrer">X / @computecompany</a></li><li><a href="https://www.linkedin.com/in/anilyagiz/" target="_blank" rel="noreferrer">LinkedIn</a></li><li><a href="mailto:anil@decentralizedcompute.company">Email</a></li><li><a href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">GitHub</a></li><li><a href="/feed.xml">RSS</a></li></ul>
+        </div>
       </div>
-      <p class="legal">© 2026 The Decentralized Compute Company</p>
+      <div class="wordmark" aria-hidden="true">decentralized compute</div>
+      <div class="legal"><span>© 2026 The Decentralized Compute Company</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/facts.html">Facts</a></span></div>
     </div>
   </footer>
+  <!-- /chrome:footer -->
 
   <script src="/js/market.js"></script>
+  <script src="/js/site.js"></script>
   <script src="/js/motion.js"></script>
   <script>
     (() => {
@@ -451,9 +486,6 @@
         box.appendChild(b);
       };
       const $ = (id) => document.getElementById(id);
-      const menuBtn = $('menu-btn'), links = $('nav-links');
-      menuBtn.addEventListener('click', () => menuBtn.setAttribute('aria-expanded', String(links.classList.toggle('open'))));
-      links.addEventListener('click', (e) => { if (e.target.closest('a')) { links.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); } });
 
       let L = [], REGIONS = {}, next = null, seq = 0;
       const st = { vram: 'all', region: 'all', q: '', sort: 'price', online: false };

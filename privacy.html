@@ -1,5 +1,167 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Privacy | TDCC</title><link rel="canonical" href="https://decentralizedcompute.company/privacy.html"><style>body{max-width:760px;margin:64px auto;padding:0 22px;background:#fbfbf9;color:#141414;font:17px/1.6 Georgia,serif}h1,h2{font-family:Arial,sans-serif;font-weight:400}a{color:inherit}</style></head>
-<body><p><a href="/">← Home</a></p><h1>Privacy</h1><p>This website describes TDCC and runs the TDCC GPU marketplace. It collects only what the marketplace needs to work, and it has no analytics, advertising, or tracking cookies.</p><h2>Marketplace accounts</h2><p>When you create an account we store your name, your email address, and a salted hash of your password (never the password itself). A single session cookie keeps you signed in; it is HttpOnly, sent only over HTTPS, and expires after 30 days or when you sign out. For each signed-in device we keep the browser name (user agent) and when it was last active, so you can see and sign out your devices. If you turn on two-factor sign-in we store the authenticator secret and hashes of your recovery codes. We keep a log of security events on your account (sign-ins, failed attempts, password and email changes) with the IP address, for up to a year, and show it to you in your settings.</p><h2>Listings and requests</h2><p>Listings you publish (GPU model, memory, count, region, setting, price, description) and the first word of your name are public. Rental requests store what you enter: GPU count, hours, environment, access type, an optional SSH public key, and an optional message. Your email address and SSH key are shown to the other party only after a host accepts a request. Messages you write about a rental are stored and shown to the host and renter of that rental. Reviews you leave (stars, comment, and the first word of your name) are public on the host&#39;s listings; reviews a host leaves about you are shown to hosts you send requests to. If you report a problem with a rental, the report is visible to our moderators together with the rental details and both parties&#39; names and emails. If you link a TDCC node to a listing, the node reports its software version and the GPU names and memory it detects about once a minute; this is shown on the listing, together with the share of time the node was online over the last week. Check-in counts are kept for 30 days. If the host turns on tdcc API rentals, the node also sends its mesh invite token (its network address); it is shown only to renters whose request was accepted, while their rental lasts. For instant machines, your SSH public key, chosen environment or image, GPU count, and end time are sent, signed, to the host&#39;s machine so it can start your container; the machine reports the container&#39;s state and port (and for Jupyter its access token, shown only to you). Your container and everything in it are deleted when the rental ends. For tdcc API rentals the host&#39;s node also reports how many connections the renter made, how many were turned away by the host&#39;s fair-use limit, and how long requests were open (never prompts or responses); both sides see these numbers on the rental. A renter who chooses tdcc API access gives their tdcc owner ID, a public-key fingerprint that the host&#39;s machine uses to admit them for the rented hours.</p><h2>Payments</h2><p>Where card payments are on, payments are processed by Stripe. We never see or store your card number; we store the Stripe identifiers of the payment and payout and the amounts charged, refunded, and paid out. Hosts set up payouts with Stripe Connect, which collects the identity and bank details required by law directly. Stripe&#39;s own privacy policy applies to the data it processes.</p><h2>Emails we send</h2><p>We email you only about your account: a link to confirm your address, a password reset link when you ask for one, and notices when a rental request is sent, accepted, declined, or cancelled, when someone messages you about a rental (at most one email per conversation every 15 minutes), and a warning to your old address if someone asks to change your account email. Links in these emails are single-use and expire (48 hours for confirmation, one hour for password reset). Emails are delivered through Resend, which processes your address and the message for that purpose only. If you report a listing, the report and your name and email are visible to our moderators.</p><h2>Retention and deletion</h2><p>You can download all data we hold about you as a JSON file, and delete your account, at any time from your account settings. Deleting removes your profile, listings, request history, messages, and reviews. Records of card payments and payouts are kept by Stripe as the law requires. Short-lived rate-limit counters keyed by IP address are kept for at most a day to stop abuse.</p><h2>Server logs</h2><p>The hosting provider may process standard technical logs such as IP address, browser type, timestamps, and requested pages for security and reliability. If the robot check on sign-up is on, Cloudflare Turnstile processes your browser signals to tell people from bots. Unexpected server errors may be sent to our error tracker (Sentry) with the page and error message only, without your account details or what you typed.</p><h2>Contact</h2><p>For privacy requests, email <a href="mailto:anil@decentralizedcompute.company">anil@decentralizedcompute.company</a>.</p><p>Last updated: October 2026.</p></body>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0c0b09" />
+  <meta name="color-scheme" content="dark" />
+  <title>Privacy | TDCC</title>
+  <meta name="description" content="What the TDCC website and GPU marketplace collect, why, who sees it, and how to download or delete it." />
+  <link rel="canonical" href="https://decentralizedcompute.company/privacy.html" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/styles/site.css" />
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <!-- chrome:mark -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="0 0 120 80">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z" />
+        <g stroke-width="1.4" opacity=".85">
+          <path d="M62 14 V70" />
+          <path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" />
+          <path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" />
+          <path d="M38 26 Q62 31 86 26" /><path d="M31 39 Q62 45 93 39" /><path d="M29 54 Q62 60 95 54" />
+        </g>
+      </g>
+      <g fill="currentColor">
+        <rect x="59.5" y="26.5" width="5" height="5" /><rect x="45" y="39" width="5" height="5" /><rect x="74" y="39" width="5" height="5" />
+        <rect x="59.5" y="42" width="5" height="5" /><rect x="33" y="52" width="4.5" height="4.5" /><rect x="86.5" y="52" width="4.5" height="4.5" />
+        <rect x="59.5" y="57" width="5" height="5" /><rect x="47" y="27" width="4" height="4" /><rect x="73" y="27" width="4" height="4" />
+      </g>
+    </symbol>
+  </svg>
+  <!-- /chrome:mark -->
+  <!-- chrome:nav -->
+  <header class="nav" id="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="/" aria-label="The Decentralized Compute Company — home">
+        <svg aria-hidden="true"><use href="#mark" /></svg>
+        <span class="brand-name">tdcc</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
+        <a href="/exact-core.html">Exact Core</a>
+        <a href="/marketplace.html">Marketplace</a>
+        <a href="/#platform">Platform</a>
+        <a href="/#developers">Developers</a>
+        <a href="/app.html">App</a>
+        <a href="/team.html">Team</a>
+        <a href="/litepaper.html">Litepaper</a>
+        <a href="/cask-q.html">Research</a>
+        <a class="btn solid sm nav-cta" href="/#join">Get early access</a>
+      </nav>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </header>
+  <!-- /chrome:nav -->
+
+  <main id="content">
+    <header class="page-head">
+      <div class="wrap">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>Privacy</span></nav>
+        <h1 class="display">Privacy</h1>
+        <p class="lede">The website describes TDCC and runs the TDCC GPU marketplace. It collects only what the marketplace needs to work. There is no analytics, no advertising, and no tracking cookie.</p>
+        <div class="page-meta"><span>Last updated October 2026</span><span>Applies to decentralizedcompute.company</span></div>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="doc">
+        <nav class="toc" aria-label="On this page">
+          <b>On this page</b>
+          <a href="#accounts">Marketplace accounts</a>
+          <a href="#listings">Listings and requests</a>
+          <a href="#nodes">Linked machines</a>
+          <a href="#payments">Payments</a>
+          <a href="#emails">Emails we send</a>
+          <a href="#retention">Retention and deletion</a>
+          <a href="#logs">Server logs</a>
+          <a href="#contact">Contact</a>
+        </nav>
+
+        <article class="prose">
+          <div class="callout"><b>In short</b>Your email and SSH key are shown to the other side of a rental only after the host accepts. Prompts and responses sent to a rented model never pass through us. You can download or delete everything from your account settings.</div>
+
+          <h2 id="accounts">Marketplace accounts</h2>
+          <p>When you create an account we store your name, your email address, and a salted hash of your password (never the password itself).</p>
+          <ul>
+            <li>A single session cookie keeps you signed in. It is HttpOnly, sent only over HTTPS, and expires after 30 days or when you sign out.</li>
+            <li>For each signed-in device we keep the browser name (user agent) and when it was last active, so you can see and sign out your devices.</li>
+            <li>If you turn on two-factor sign-in we store the authenticator secret and hashes of your recovery codes.</li>
+            <li>We keep a log of security events on your account (sign-ins, failed attempts, password and email changes) with the IP address, for up to a year, and show it to you in your settings.</li>
+          </ul>
+
+          <h2 id="listings">Listings and requests</h2>
+          <p>Listings you publish (GPU model, memory, count, region, setting, price, description) and the first word of your name are public.</p>
+          <p>Rental requests store what you enter: GPU count, hours, environment, access type, an optional SSH public key, and an optional message. Your email address and SSH key are shown to the other party only after a host accepts a request.</p>
+          <ul>
+            <li>Messages you write about a rental are stored and shown to the host and renter of that rental.</li>
+            <li>Reviews you leave (stars, comment, and the first word of your name) are public on the host's listings. Reviews a host leaves about you are shown to hosts you send requests to.</li>
+            <li>If you report a problem with a rental, the report is visible to our moderators together with the rental details and both parties' names and emails.</li>
+          </ul>
+
+          <h2 id="nodes">Linked machines</h2>
+          <p>If you link a TDCC node to a listing, the node reports its software version and the GPU names and memory it detects about once a minute. This is shown on the listing, together with the share of time the node was online over the last week. Check-in counts are kept for 30 days.</p>
+          <h3>tdcc API rentals</h3>
+          <p>If the host turns on tdcc API rentals, the node also sends its mesh invite token (its network address). It is shown only to renters whose request was accepted, while their rental lasts.</p>
+          <p>A renter who chooses tdcc API access gives their tdcc owner ID, a public-key fingerprint that the host's machine uses to admit them for the rented hours. The host's node reports how many connections the renter made, how many were turned away by the host's fair-use limit, and how long requests were open, <strong>never prompts or responses</strong>. Both sides see these numbers on the rental.</p>
+          <h3>Instant machines</h3>
+          <p>For instant machines, your SSH public key, chosen environment or image, GPU count, and end time are sent, signed, to the host's machine so it can start your container. The machine reports the container's state and port (and for Jupyter its access token, shown only to you). Your container and everything in it are deleted when the rental ends.</p>
+
+          <h2 id="payments">Payments</h2>
+          <p>Where card payments are on, payments are processed by Stripe. We never see or store your card number; we store the Stripe identifiers of the payment and payout and the amounts charged, refunded, and paid out. Hosts set up payouts with Stripe Connect, which collects the identity and bank details required by law directly. Stripe's own privacy policy applies to the data it processes.</p>
+
+          <h2 id="emails">Emails we send</h2>
+          <p>We email you only about your account:</p>
+          <ul>
+            <li>a link to confirm your address, and a password reset link when you ask for one;</li>
+            <li>notices when a rental request is sent, accepted, declined, or cancelled;</li>
+            <li>when someone messages you about a rental (at most one email per conversation every 15 minutes);</li>
+            <li>a warning to your old address if someone asks to change your account email.</li>
+          </ul>
+          <p>Links in these emails are single-use and expire (48 hours for confirmation, one hour for password reset). Emails are delivered through Resend, which processes your address and the message for that purpose only. If you report a listing, the report and your name and email are visible to our moderators.</p>
+
+          <h2 id="retention">Retention and deletion</h2>
+          <p>You can download all data we hold about you as a JSON file, and delete your account, at any time from your account settings. Deleting removes your profile, listings, request history, messages, and reviews. Records of card payments and payouts are kept by Stripe as the law requires. Short-lived rate-limit counters keyed by IP address are kept for at most a day to stop abuse.</p>
+
+          <h2 id="logs">Server logs</h2>
+          <p>The hosting provider may process standard technical logs such as IP address, browser type, timestamps, and requested pages for security and reliability. If the robot check on sign-up is on, Cloudflare Turnstile processes your browser signals to tell people from bots. Unexpected server errors may be sent to our error tracker (Sentry) with the page and error message only, without your account details or what you typed.</p>
+
+          <h2 id="contact">Contact</h2>
+          <p>For privacy requests, email <a href="mailto:anil@decentralizedcompute.company">anil@decentralizedcompute.company</a>.</p>
+        </article>
+      </div>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="/" aria-label="TDCC home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
+          <p class="about">A GPU marketplace, a job network that checks its own work, and Exact Core, an AI chip whose answers anyone can re-check.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul><li><a href="/team.html">Team</a></li><li><a href="/litepaper.html">Litepaper</a></li><li><a href="/cask-q.html">Research</a></li><li><a href="/two-laptops-80-tps.html">Engineering</a></li><li><a href="/facts.html">Facts</a></li></ul>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <ul><li><a href="https://x.com/computecompany" target="_blank" rel="noreferrer">X / @computecompany</a></li><li><a href="https://www.linkedin.com/in/anilyagiz/" target="_blank" rel="noreferrer">LinkedIn</a></li><li><a href="mailto:anil@decentralizedcompute.company">Email</a></li><li><a href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">GitHub</a></li><li><a href="/feed.xml">RSS</a></li></ul>
+        </div>
+      </div>
+      <div class="wordmark" aria-hidden="true">decentralized compute</div>
+      <div class="legal"><span>© 2026 The Decentralized Compute Company</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/facts.html">Facts</a></span></div>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script src="/js/market.js"></script>
+  <script src="/js/site.js"></script>
+</body>
 </html>
