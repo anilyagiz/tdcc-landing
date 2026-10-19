@@ -105,18 +105,17 @@
     /* ---------- nav ---------- */
     .nav { position: fixed; inset: 0 0 auto 0; z-index: 100; transition: background .3s ease, border-color .3s ease; border-bottom: 1px solid transparent; }
     .nav.scrolled { background: rgba(12, 11, 9, .82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom-color: var(--line); }
-    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 24px; }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 24px; }
     .brand { display: inline-flex; align-items: center; gap: 12px; color: var(--cream); }
-    .brand svg { width: 42px; height: 28px; color: var(--sand); }
+    .brand svg { flex: none; width: 42px; height: 28px; color: var(--sand); }
     .brand-name { font-family: var(--serif); font-size: 21px; letter-spacing: -.01em; }
     .brand-name small { display: none; }
-    .nav-links { display: flex; align-items: center; gap: 4px; }
+    .nav-links { display: flex; align-items: center; gap: 2px; }
     .nav-links a { white-space: nowrap; padding: 8px 9px; color: var(--body); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; transition: color .2s ease; }
-    .nav-links a::before { content: "[ "; color: var(--muted); opacity: 0; transition: opacity .2s ease; }
-    .nav-links a::after { content: " ]"; color: var(--muted); opacity: 0; transition: opacity .2s ease; }
-    .nav-links a:hover { color: var(--text); }
-    .nav-links a:hover::before, .nav-links a:hover::after { opacity: 1; }
-    .nav-cta { min-height: 38px; padding: 0 14px; font-size: 11px; }
+    .nav-links a:hover, .nav-links a[aria-current="page"] { color: var(--text); }
+    .nav-links a.acct { color: var(--sand); }
+    .nav-links .btn { margin-left: 8px; color: var(--ink); }
+    .nav-cta { min-height: 36px; padding: 0 12px; font-size: 11px; }
     .menu-btn { display: none; width: 42px; height: 42px; border: 1px solid var(--line-2); background: transparent; color: var(--text); cursor: pointer; }
     .menu-btn span { display: block; width: 16px; height: 1px; margin: 4px auto; background: currentColor; }
 
@@ -446,7 +445,12 @@
     .filters button { border: 1px solid var(--line); padding: 7px 11px; }
     .filters button.on { color: var(--sand); border-color: var(--sand); }
     .filters button:hover, .seg button:hover { color: var(--text); }
-    .market-note { margin-left: auto; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+    .market-src { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; color: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+    .market-src.live { color: var(--ok); }
+    .market-src.live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px rgba(185,217,154,.7); }
+    .market-src + .market-note { margin-left: 0; }
+    a.listing { color: inherit; }
+    .market-note { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
     .listings { display: grid; grid-template-columns: repeat(3, 1fr); }
     .listing { display: flex; flex-direction: column; gap: 10px; padding: 22px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); transition: background .25s ease, opacity .3s ease; }
     .listing:nth-child(3n) { border-right: 0; }
@@ -508,10 +512,9 @@
     }
 
     @media (max-width: 1080px) {
-      .nav-links { display: none; position: absolute; top: 68px; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 8px var(--gutter) 20px; background: rgba(12, 11, 9, .97); border-bottom: 1px solid var(--line); }
+      .nav-links { display: none; position: absolute; top: 64px; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 8px var(--gutter) 20px; background: rgba(12, 11, 9, .97); border-bottom: 1px solid var(--line); }
       .nav-links.open { display: flex; }
       .nav-links a { padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
-      .nav-links a::before, .nav-links a::after { display: none; }
       .nav-links .nav-cta { margin-top: 14px; justify-content: center; border-bottom: 1px solid var(--cream); }
       .menu-btn { display: block; }
       .stack-row { grid-template-columns: minmax(0, 1fr); gap: 20px; }
@@ -635,10 +638,12 @@
     ]
   }
   </script>
+  <link rel="stylesheet" href="/styles/motion.css" />
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
 
+  <!-- chrome:mark -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <symbol id="mark" viewBox="0 0 120 80">
       <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
@@ -657,7 +662,9 @@
       </g>
     </symbol>
   </svg>
+  <!-- /chrome:mark -->
 
+  <!-- chrome:nav -->
   <header class="nav" id="nav">
     <div class="wrap nav-inner">
       <a class="brand" href="/" aria-label="The Decentralized Compute Company — home">
@@ -667,17 +674,18 @@
       <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
         <a href="/exact-core.html">Exact Core</a>
         <a href="/marketplace.html">Marketplace</a>
-        <a href="#platform">Platform</a>
-        <a href="#developers">Developers</a>
-                <a href="/app.html">App</a>
+        <a href="/#platform">Platform</a>
+        <a href="/#developers">Developers</a>
+        <a href="/app.html">App</a>
         <a href="/team.html">Team</a>
         <a href="/litepaper.html">Litepaper</a>
         <a href="/cask-q.html">Research</a>
-        <a class="btn solid nav-cta" href="#join">Get early access</a>
+        <a class="btn solid sm nav-cta" href="/#join">Get early access</a>
       </nav>
       <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
     </div>
   </header>
+  <!-- /chrome:nav -->
 
   <main id="content">
     <!-- ================= HERO ================= -->
@@ -688,7 +696,7 @@
 
       <div class="wrap">
         <div class="hero-top fade-in" style="--d:.2s">
-          <a class="pill" href="/app.html#downloads"><b>NEW</b>TDCC Desktop 0.73.0-rc.1 beta</a>
+          <a class="pill" href="/launch.html"><b>NEW</b>Rebrand live · Desktop GA Oct 20 · Marketplace Oct 31</a>
           <a class="pill" href="/exact-core.html"><b>CHIP</b>Announcing TDCC Exact Core</a>
         </div>
       </div>
@@ -727,7 +735,7 @@
     <div class="wrap">
       <ul class="latest" aria-label="Latest from TDCC">
         <li><a href="/exact-core.html"><span>Chip</span>Exact Core: an AI chip whose answers anyone can re-check</a></li>
-        <li><a href="/app.html#downloads"><span>Release</span>Desktop 0.73.0-rc.1 for Windows x64</a></li>
+        <li><a href="/app.html#downloads"><span>Release</span>tdcc 0.74.0 for Linux x64 &amp; ARM64</a></li>
         <li><a href="/cask-q.html"><span>Paper</span>CASK-Q: 25% lower attention error at 2-bit, same size</a></li>
         <li><a href="https://x.com/stardotfun/status/2080051528732193280" target="_blank" rel="noreferrer"><span>Funding</span>$50K raised on star.fun in about 10 minutes</a></li>
       </ul>
@@ -736,10 +744,10 @@
     <!-- ================= STATS ================= -->
     <section class="wrap" aria-label="TDCC at a glance" style="padding-top:clamp(64px,8vw,112px)">
       <div class="stats reveal">
-        <div class="stat"><div class="n">80<sup>TOK/S</sup></div><p>Qwen 3.8 27B on two compact laptops, up from about 50 tok/s with the same weights.</p></div>
-        <div class="stat"><div class="n">85.8<sup>TOK/S</sup></div><p>LFM2.5-230M decoding on the Exact Core FPGA card, bit for bit with the simulator.</p></div>
-        <div class="stat"><div class="n">10<sup>MODELS</sup></div><p>Modern open models running with real weights on the Exact Core card.</p></div>
-        <div class="stat"><div class="n">$50K<sup>RAISED</sup></div><p>On star.fun in about ten minutes, at an $8M campaign valuation, July 2026.</p></div>
+        <div class="stat"><div class="n"><span data-count="80">80</span><sup>TOK/S</sup></div><p>Qwen 3.8 27B on two compact laptops, up from about 50 tok/s with the same weights.</p></div>
+        <div class="stat"><div class="n"><span data-count="85.8" data-decimals="1">85.8</span><sup>TOK/S</sup></div><p>LFM2.5-230M decoding on the Exact Core FPGA card, bit for bit with the simulator.</p></div>
+        <div class="stat"><div class="n"><span data-count="10">10</span><sup>MODELS</sup></div><p>Modern open models running with real weights on the Exact Core card.</p></div>
+        <div class="stat"><div class="n">$<span data-count="50">50</span>K<sup>RAISED</sup></div><p>On star.fun in about ten minutes, at an $8M campaign valuation, July 2026.</p></div>
       </div>
     </section>
 
@@ -940,7 +948,7 @@
           <p class="lede">Underneath are schedulers, isolated runtimes, compatibility checks, verification, reputation, and payouts. What your team sees is a job, its state, and a receipt.</p>
         </div>
 
-        <div class="stack">
+        <div class="stack" data-spotlight=".stack-row">
           <article class="stack-row reveal">
             <div class="stack-num">01</div>
             <div class="stack-copy">
@@ -1060,6 +1068,7 @@ base_url = <span class="s">"https://decentralizedcompute.company/api/v1"</span><
               <button type="button" data-f="24">24GB</button>
               <button type="button" data-f="exact">Exact Core</button>
             </div>
+            <span class="market-src" id="market-src">Example listings</span>
             <a class="link market-note" href="/marketplace.html" style="color:var(--sand)">Open the full marketplace →</a>
           </div>
 
@@ -1166,7 +1175,7 @@ base_url = <span class="s">"https://decentralizedcompute.company/api/v1"</span><
             <li><b>CLI</b><span>Submit from YAML, tail logs, verify receipts.</span></li>
             <li><b>SDKs</b><span>Python 3.10+ and TypeScript / Node 18+.</span></li>
             <li><b>Events</b><span>Server-sent events per job and signed per-project webhooks.</span></li>
-            <li><b>Desktop</b><span>0.73.0-rc.1 beta for Windows x64. Linux next.</span></li>
+            <li><b>Release</b><span>CLI 0.74.0 for Linux x64 and ARM64 with marketplace rentals. Windows desktop beta.</span></li>
           </ul>
           <div class="actions">
             <a class="btn solid" href="/app.html#downloads">Download desktop beta <span class="arr">→</span></a>
@@ -1375,6 +1384,7 @@ tdcc receipts show job_8fq1za --verify</pre>
     </section>
   </main>
 
+  <!-- chrome:footer -->
   <footer>
     <div class="wrap">
       <div class="foot-grid">
@@ -1384,7 +1394,7 @@ tdcc receipts show job_8fq1za --verify</pre>
         </div>
         <div>
           <h4>Product</h4>
-          <ul><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="#developers">Developers</a></li><li><a href="#workloads">Workloads</a></li></ul>
+          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
         </div>
         <div>
           <h4>Company</h4>
@@ -1396,9 +1406,10 @@ tdcc receipts show job_8fq1za --verify</pre>
         </div>
       </div>
       <div class="wordmark" aria-hidden="true">decentralized compute</div>
-      <div class="legal"><span>© 2026 The Decentralized Compute Company</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></span></div>
+      <div class="legal"><span>© 2026 The Decentralized Compute Company</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/facts.html">Facts</a></span></div>
     </div>
   </footer>
+  <!-- /chrome:footer -->
 
   <script>
     (() => {
@@ -1499,6 +1510,30 @@ tdcc receipts show job_8fq1za --verify</pre>
           market.querySelectorAll('.filters button').forEach((o) => o.classList.toggle('on', o === b));
           market.querySelectorAll('.listing').forEach((l) => { l.hidden = b.dataset.f !== 'all' && l.dataset.f !== b.dataset.f; });
         }));
+        // Show real listings when the marketplace has any; the cards in the
+        // markup stay as labelled examples otherwise.
+        const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+        fetch('/api/listings?limit=12&sort=rep').then((r) => (r.ok ? r.json() : null)).then((d) => {
+          const live = (d && d.listings || []).sort((a, b) => b.online - a.online).slice(0, 5);
+          if (!live.length) return;
+          const grid = document.getElementById('listings');
+          const exact = grid.querySelector('.listing.exact');
+          grid.querySelectorAll('.listing:not(.exact)').forEach((el) => el.remove());
+          const cls = (v) => (v >= 80 ? '80' : v >= 40 ? '48' : '24');
+          grid.insertAdjacentHTML('afterbegin', live.map((l) => {
+            const rep = l.uptime_7d !== null ? [l.uptime_7d, `${l.uptime_7d}%`, 'Uptime'] : l.host_rating ? [l.host_rating * 20, l.host_rating.toFixed(1), 'Rating'] : null;
+            return `<a class="listing" data-f="${cls(l.vram_gb)}" href="/marketplace.html"><div class="l-top"><span class="l-class">${esc(l.vram_gb)}GB class</span><span class="l-av${l.online ? '' : ' soon'}"><i></i>${l.online ? 'Online' : 'Listed'}</span></div>`
+              + `<h3>${esc(l.gpu_model)}${l.gpu_count > 1 ? ` ×${esc(l.gpu_count)}` : ''}</h3><p class="l-spec">${esc(l.region_label)} · ${esc(l.host_kind_label)} · ${esc(l.available)} free</p>`
+              + (rep ? `<div class="l-rep"><span>${rep[2]}</span><span class="meter"><i style="width:${Math.max(4, Math.min(100, rep[0]))}%"></i></span><b>${esc(rep[1])}</b></div>` : `<div class="l-rep"><span>New host</span><span class="meter"></span><b>—</b></div>`)
+              + `<div class="l-foot"><span class="price" data-rent="$${(l.price_cents / 100).toFixed(2)} / GPU-hour" data-job="Pay per accepted job"></span><span class="l-cta">Rent →</span></div></a>`;
+          }).join(''));
+          if (exact) grid.appendChild(exact);
+          const src = document.getElementById('market-src');
+          src.textContent = `${d.total} live listing${d.total === 1 ? '' : 's'}`;
+          src.classList.add('live');
+          const on = market.querySelector('.filters button.on');
+          if (on) on.click();
+        }).catch(() => {});
         const exactCard = market.querySelector('.listing.exact');
         exactCard.style.cursor = 'pointer';
         exactCard.addEventListener('click', () => document.getElementById('exact-core').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }));
@@ -1714,5 +1749,7 @@ tdcc receipts show job_8fq1za --verify</pre>
       document.getElementById('join').scrollIntoView();
     }
   </script>
+  <script src="/js/market.js"></script>
+  <script src="/js/motion.js"></script>
 </body>
 </html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0c0b09" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="robots" content="noindex" />
+  <title>Moderation | The Decentralized Compute Company</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/styles/site.css" />
+  <style>
+    .ad { padding-top: clamp(48px, 7vw, 88px); padding-bottom: 96px; display: grid; gap: 48px; }
+    .ad h1 { font-family: var(--serif); font-size: clamp(38px, 5vw, 64px); line-height: 1.05; letter-spacing: -.02em; }
+    .ad h2 { font-family: var(--serif); font-size: 28px; margin-bottom: 14px; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); border: 1px solid var(--line); }
+    .stats div { padding: 20px 22px; border-right: 1px solid var(--line); background: var(--panel); }
+    .stats b { display: block; font-family: var(--serif); font-size: 36px; font-weight: 400; line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .stats span { color: var(--muted); font-size: 13px; }
+    .tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .tbl th { text-align: left; color: var(--muted); font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; font-weight: 400; padding: 10px; border-bottom: 1px solid var(--line); }
+    .tbl td { padding: 12px 10px; border-bottom: 1px solid var(--line); color: var(--body); vertical-align: top; overflow-wrap: anywhere; }
+    .tbl td b { color: var(--text); font-weight: 500; }
+    .tbl .acts { display: flex; flex-wrap: wrap; gap: 6px; }
+    .scroll { overflow-x: auto; border: 1px solid var(--line); }
+    .empty { padding: 24px; color: var(--muted); text-align: center; }
+    .muted { color: var(--muted); font-size: 12.5px; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <!-- chrome:mark -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="0 0 120 80">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z" />
+        <g stroke-width="1.4" opacity=".85">
+          <path d="M62 14 V70" />
+          <path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" />
+          <path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" />
+          <path d="M38 26 Q62 31 86 26" /><path d="M31 39 Q62 45 93 39" /><path d="M29 54 Q62 60 95 54" />
+        </g>
+      </g>
+      <g fill="currentColor">
+        <rect x="59.5" y="26.5" width="5" height="5" /><rect x="45" y="39" width="5" height="5" /><rect x="74" y="39" width="5" height="5" />
+        <rect x="59.5" y="42" width="5" height="5" /><rect x="33" y="52" width="4.5" height="4.5" /><rect x="86.5" y="52" width="4.5" height="4.5" />
+        <rect x="59.5" y="57" width="5" height="5" /><rect x="47" y="27" width="4" height="4" /><rect x="73" y="27" width="4" height="4" />
+      </g>
+    </symbol>
+  </svg>
+  <!-- /chrome:mark -->
+  <!-- chrome:nav -->
+  <header class="nav" id="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="/" aria-label="The Decentralized Compute Company — home">
+        <svg aria-hidden="true"><use href="#mark" /></svg>
+        <span class="brand-name">tdcc</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
+        <a href="/exact-core.html">Exact Core</a>
+        <a href="/marketplace.html">Marketplace</a>
+        <a href="/#platform">Platform</a>
+        <a href="/#developers">Developers</a>
+        <a href="/app.html">App</a>
+        <a href="/team.html">Team</a>
+        <a href="/litepaper.html">Litepaper</a>
+        <a href="/cask-q.html">Research</a>
+        <a class="btn solid sm nav-cta" href="/marketplace.html#hosts">List your GPU</a>
+      </nav>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </header>
+  <!-- /chrome:nav -->
+  <main id="content" class="wrap ad">
+    <div><p class="eyebrow">Moderation</p><h1>Marketplace moderation</h1></div>
+    <div id="body"><p class="mono">Loading…</p></div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="/" aria-label="TDCC home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
+          <p class="about">A GPU marketplace, a job network that checks its own work, and Exact Core, an AI chip whose answers anyone can re-check.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul><li><a href="/team.html">Team</a></li><li><a href="/litepaper.html">Litepaper</a></li><li><a href="/cask-q.html">Research</a></li><li><a href="/two-laptops-80-tps.html">Engineering</a></li><li><a href="/facts.html">Facts</a></li></ul>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <ul><li><a href="https://x.com/computecompany" target="_blank" rel="noreferrer">X / @computecompany</a></li><li><a href="https://www.linkedin.com/in/anilyagiz/" target="_blank" rel="noreferrer">LinkedIn</a></li><li><a href="mailto:anil@decentralizedcompute.company">Email</a></li><li><a href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">GitHub</a></li><li><a href="/feed.xml">RSS</a></li></ul>
+        </div>
+      </div>
+      <div class="wordmark" aria-hidden="true">decentralized compute</div>
+      <div class="legal"><span>© 2026 The Decentralized Compute Company</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/facts.html">Facts</a></span></div>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script src="/js/market.js"></script>
+  <script src="/js/site.js"></script>
+  <script>
+    (() => {
+      const { api, esc, money, ago, toast, onUser, openAuth } = window.TDCC;
+      const body = document.getElementById('body');
+
+      async function load() {
+        let d;
+        try { d = await api('GET', '/api/admin'); }
+        catch (err) {
+          body.innerHTML = err.status === 401 ? '<p>Sign in with an admin account.</p>' : '<p>This page is only for marketplace moderators.</p>';
+          return;
+        }
+        const st = d.stats;
+        body.innerHTML = `
+          <div class="stats"><div><b>${st.users}</b><span>Accounts</span></div><div><b>${st.active_listings}</b><span>Active listings</span></div><div><b>${st.pending_rentals}</b><span>Requests waiting</span></div><div><b>${st.running_rentals}</b><span>Running rentals</span></div></div>
+          <section><h2>Open disputes (${d.disputes.length})</h2>${d.disputes.length ? `<div class="scroll"><table class="tbl"><thead><tr><th>Rental</th><th>Problem</th><th>Host / renter</th><th>Money</th><th></th></tr></thead><tbody>
+            ${d.disputes.map((x) => `<tr><td><b>${x.gpu_count} × ${esc(x.gpu_model)} · ${x.hours} h</b><div class="muted">${esc(x.rental_id)} · ${esc(x.rental_status)}</div></td>
+              <td>${esc(x.reason)}<div class="muted">by ${esc(x.opened_by_name)} (${esc(x.opened_by_email)}) · ${ago(x.created_at)}</div></td>
+              <td>${esc(x.host_name)}<div class="muted">${esc(x.host_email)}</div>${esc(x.renter_name)}<div class="muted">${esc(x.renter_email)}</div></td>
+              <td>${money(x.total_cents)}<div class="muted">${esc(x.payment_status)}${x.refunded_cents ? ` · ${money(x.refunded_cents)} refunded` : ''} · payout ${esc(x.payout_status)}</div></td>
+              <td><div class="acts">${x.payment_status === 'captured' || x.payment_status === 'partially_refunded' ? `<button class="btn sm solid" data-refund="${esc(x.id)}" data-max="${x.total_cents - x.refunded_cents}">Refund renter</button><button class="btn sm" data-payhost="${esc(x.id)}">Pay host</button>` : ''}
+              <button class="btn sm" data-settle="${esc(x.id)}">Close</button></div></td></tr>`).join('')}
+          </tbody></table></div>` : '<div class="empty">No open disputes.</div>'}</section>
+          <section><h2>Open reports (${d.reports.length})</h2>${d.reports.length ? `<div class="scroll"><table class="tbl"><thead><tr><th>Listing</th><th>Reason</th><th>Reported by</th><th>Owner</th><th></th></tr></thead><tbody>
+            ${d.reports.map((r) => `<tr><td><b>${esc(r.gpu_model)}</b><div class="muted">${esc(r.listing_id)} · ${esc(r.listing_status)}</div></td>
+              <td>${esc(r.reason)}<div class="muted">${ago(r.created_at)}</div></td>
+              <td>${esc(r.reporter_name)}<div class="muted">${esc(r.reporter_email)}</div></td>
+              <td>${esc(r.owner_name)}<div class="muted">${esc(r.owner_email)}${r.owner_suspended_at ? ' · suspended' : ''}</div></td>
+              <td><div class="acts"><button class="btn sm solid" data-hide="${esc(r.listing_id)}">Hide listing</button><button class="btn sm" data-dismiss="${esc(r.id)}">Dismiss</button>
+              ${r.owner_suspended_at ? '' : `<button class="btn sm" data-suspend="${esc(r.owner_id)}">Suspend owner</button>`}</div></td></tr>`).join('')}
+          </tbody></table></div>` : '<div class="empty">No open reports.</div>'}</section>
+          <section><h2>All listings (${d.listings.length})</h2>${d.listings.length ? `<div class="scroll"><table class="tbl"><thead><tr><th>Listing</th><th>Price</th><th>Status</th><th>Owner</th><th></th></tr></thead><tbody>
+            ${d.listings.map((l) => `<tr><td><b>${l.gpu_count} × ${esc(l.gpu_model)} · ${l.vram_gb}GB</b><div class="muted">${esc(l.id)} · ${esc(l.region)} · ${ago(l.created_at)}${l.open_reports ? ` · ${l.open_reports} open report(s)` : ''}</div></td>
+              <td>${money(l.price_cents)}/h</td>
+              <td>${esc(l.status)}${l.moderation_note ? `<div class="muted">${esc(l.moderation_note)}</div>` : ''}</td>
+              <td>${esc(l.owner_name)}<div class="muted">${esc(l.owner_email)}${l.owner_suspended_at ? ' · suspended' : ''}</div></td>
+              <td><div class="acts">${l.status === 'hidden' ? `<button class="btn sm" data-restore="${esc(l.id)}">Restore (paused)</button>` : `<button class="btn sm" data-hide="${esc(l.id)}">Hide</button>`}
+              ${l.owner_suspended_at ? `<button class="btn sm" data-unsuspend="${esc(l.owner_id)}">Unsuspend owner</button>` : `<button class="btn sm" data-suspend="${esc(l.owner_id)}">Suspend owner</button>`}</div></td></tr>`).join('')}
+          </tbody></table></div>` : '<div class="empty">No listings yet.</div>'}</section>`;
+      }
+
+      body.addEventListener('click', async (e) => {
+        const b = e.target.closest('button');
+        if (!b) return;
+        let call;
+        if (b.dataset.hide) {
+          const note = prompt('Reason shown to the owner (optional):', 'This listing breaks the marketplace terms.');
+          if (note === null) return;
+          call = api('POST', `/api/admin/listings/${b.dataset.hide}/hide`, { note });
+        } else if (b.dataset.restore) call = api('POST', `/api/admin/listings/${b.dataset.restore}/restore`, {});
+        else if (b.dataset.refund) {
+          const max = +b.dataset.max;
+          const amt = prompt(`Refund how much to the renter, in USD? (up to ${money(max)})`, (max / 100).toFixed(2));
+          if (amt === null) return;
+          const cents = Math.round(parseFloat(amt) * 100);
+          if (!(cents > 0 && cents <= max)) { toast('Enter an amount up to ' + money(max), true); return; }
+          const note = prompt('Note for the record (optional):', '') || '';
+          call = api('POST', `/api/admin/disputes/${b.dataset.refund}`, { action: 'refund', amount_cents: cents, note });
+        } else if (b.dataset.payhost) {
+          if (!confirm('Close the dispute and pay the host now?')) return;
+          call = api('POST', `/api/admin/disputes/${b.dataset.payhost}`, { action: 'pay_host' });
+        } else if (b.dataset.settle) {
+          const note = prompt('How was it settled? (kept on record)', '');
+          if (note === null) return;
+          call = api('POST', `/api/admin/disputes/${b.dataset.settle}`, { action: 'dismiss', note });
+        }
+        else if (b.dataset.dismiss) call = api('POST', `/api/admin/reports/${b.dataset.dismiss}/dismiss`, {});
+        else if (b.dataset.suspend) {
+          if (!confirm('Suspend this account? It is signed out, its listings are hidden, and its pending requests are cancelled.')) return;
+          call = api('POST', `/api/admin/users/${b.dataset.suspend}/suspend`, {});
+        } else if (b.dataset.unsuspend) call = api('POST', `/api/admin/users/${b.dataset.unsuspend}/unsuspend`, {});
+        else return;
+        b.disabled = true;
+        try { await call; toast('Done'); load(); } catch (err) { toast(err.message, true); b.disabled = false; }
+      });
+
+      onUser((u) => { if (u) load(); else { body.innerHTML = '<p>Sign in with an admin account.</p>'; openAuth({ mode: 'login', reason: 'Moderators only.' }); } });
+    })();
+  </script>
+</body>
+</html>

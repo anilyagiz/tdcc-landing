@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f7f4ee" />
-  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#0c0b09" />
+  <meta name="color-scheme" content="dark" />
   <title>Introducing TDCC Exact Core | The Decentralized Compute Company</title>
   <meta name="description" content="TDCC Exact Core is an open-source AI chip, built on openTPU, whose every answer anyone can re-check on a laptop. A Solana market pays honest providers and slashes cheaters." />
   <link rel="canonical" href="https://decentralizedcompute.company/exact-core.html" />
@@ -31,157 +31,108 @@
   }
   </script>
   <style>
-    /* This page is a light, editorial launch post. Tokens are remapped so the shared nav/footer follow. */
-    :root {
-      --bg: #f7f4ee;
-      --bg-2: #efebe3;
-      --panel: #ffffff;
-      --line: rgba(23, 20, 15, .1);
-      --line-2: rgba(23, 20, 15, .18);
-      --text: #17140f;
-      --body: #4a443b;
-      --muted: #8a8174;
-      --sand: #8a6c3e;
-      --cream: #17140f;
-      --ink: #f7f4ee;
-      --ok: #3f7a35;
-      --warn: #a3652a;
-      --col: 700px;
-    }
-    body { font-size: 17px; }
-    .nav { background: rgba(247, 244, 238, .86); }
-    .nav-links .btn { color: var(--ink); }
-    .nav-links .btn:hover { background: #3a3228; border-color: #3a3228; }
-    @media (max-width: 1080px) { .nav-links { background: rgba(247, 244, 238, .98); } }
+    /* ---------- hero ---------- */
+    .hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--line);
+      background: radial-gradient(ellipse 50% 70% at 78% 30%, rgba(216, 191, 148, .12), transparent 70%), var(--bg); }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(32px, 5vw, 72px); align-items: center; padding-top: clamp(56px, 8vw, 112px); padding-bottom: clamp(40px, 5vw, 64px); }
+    .hero .display { max-width: 11ch; font-size: clamp(46px, 6vw, 88px); }
+    .hero .lede { margin-top: 26px; max-width: 42ch; }
+    .hero .actions { margin-top: 34px; }
+    .hero .page-meta { margin-top: 36px; }
+    .stage { position: relative; border: 1px solid var(--line); background:
+      radial-gradient(ellipse 60% 60% at 50% 50%, rgba(216, 191, 148, .16), transparent 70%), #0a0907; overflow: hidden; }
+    .stage .fig { position: relative; z-index: 2; background: rgba(10, 9, 7, .6); }
+    .stage .chip-stage { max-width: 600px; margin: 0 auto; }
+    .stage .chip-caption { display: none; }
 
-    .col { width: 100%; max-width: calc(var(--col) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
-    .wide { width: 100%; max-width: calc(1120px + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+    /* spec band under the hero */
+    .specs { margin-bottom: clamp(56px, 7vw, 96px); }
+    .specs .card { display: flex; flex-direction: column; }
+    .specs .stat-n { font-size: clamp(34px, 3.6vw, 52px); font-variant-numeric: tabular-nums; }
+    .specs .stat-l { max-width: 26ch; }
 
-    /* hero */
-    .launch { padding: clamp(64px, 9vw, 120px) 0 clamp(40px, 5vw, 64px); text-align: center; }
-    .kicker { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 14px; color: var(--muted); font-size: 14px; }
-    .kicker span + span::before { content: "·"; margin-right: 14px; }
-    .launch h1 { margin: 22px auto 0; max-width: 14ch; font-family: var(--serif); font-size: clamp(46px, 7.2vw, 96px); line-height: 1; letter-spacing: -.03em; }
-    .launch .sub { margin: 26px auto 0; max-width: 34em; color: var(--body); font-size: clamp(18px, 1.7vw, 21px); line-height: 1.55; }
-    .launch .actions { justify-content: center; margin-top: 34px; }
-    .btn { text-transform: none; letter-spacing: 0; font-family: var(--sans); font-size: 15px; border-radius: 999px; padding: 0 22px; }
-    .btn.solid:hover { background: #3a3228; border-color: #3a3228; color: var(--ink); }
+    /* ---------- intro ---------- */
+    .intro { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 80px); align-items: start; }
+    .intro .lead { color: var(--text); font-family: var(--serif); font-size: clamp(22px, 2.2vw, 30px); line-height: 1.4; letter-spacing: -.005em; }
+    .intro .lead a, .text a { color: var(--sand); text-decoration: underline; text-decoration-color: rgba(216, 191, 148, .35); text-underline-offset: 3px; }
+    .intro .lead a:hover, .text a:hover { text-decoration-color: var(--sand); }
+    .intro .side { padding-top: 10px; color: var(--body); font-size: 17px; line-height: 1.75; }
 
-    /* hero media: the chip on a dark stage */
-    .media { position: relative; margin-top: clamp(40px, 5vw, 64px); border-radius: 22px; overflow: hidden; background:
-      radial-gradient(ellipse 60% 70% at 50% 45%, rgba(216,191,148,.18), transparent 70%), #0e0c09; }
-    .media .chip-stage { max-width: 640px; margin: 0 auto; }
-    .media-cap { position: absolute; left: 24px; right: 24px; bottom: 18px; display: flex; justify-content: space-between; color: rgba(239,232,220,.5); font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; }
-    .media-cap b { color: rgba(216,191,148,.85); font-weight: 400; }
-    .media .chip-caption { display: none; }
+    /* body text blocks */
+    .text { color: var(--body); font-size: 17px; line-height: 1.75; max-width: 66ch; }
+    .text > * + * { margin-top: 1.1em; }
+    .text h3 { color: var(--text); font-family: var(--serif); font-size: 26px; line-height: 1.15; letter-spacing: -.01em; }
+    .text code, .card code, figcaption code { padding: 1px 6px; border: 1px solid var(--line); background: var(--panel); color: var(--cream); font-family: var(--mono); font-size: .84em; overflow-wrap: anywhere; }
+    .split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(32px, 5vw, 72px); align-items: start; }
+    sup a { margin-left: 2px; color: var(--sand); font-family: var(--mono); font-size: .7em; }
+    sup a:hover { color: var(--text); }
 
-    /* highlights row */
-    .highlights { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 28px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-    .highlights div { padding: 22px 20px 22px 0; }
-    .highlights div + div { padding-left: 20px; border-left: 1px solid var(--line); }
-    .highlights .n { font-family: var(--serif); font-size: clamp(30px, 3.2vw, 42px); line-height: 1; letter-spacing: -.02em; }
-    .highlights p { margin-top: 8px; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
+    /* numbered cards (blocks + steps) */
+    .card .idx { display: flex; justify-content: space-between; margin-bottom: 40px; color: var(--muted); font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; }
+    .card .idx b { color: var(--sand); font-weight: 400; }
+    .cap { margin-top: 14px; color: var(--muted); font-size: 13.5px; }
+    .detail { margin-top: clamp(40px, 5vw, 64px); }
 
-    /* prose */
-    .post { padding: clamp(56px, 7vw, 96px) 0 clamp(40px, 5vw, 72px); }
-    .post p { color: var(--body); line-height: 1.75; }
-    .post p + p { margin-top: 18px; }
-    .post .lead { color: var(--text); font-size: clamp(19px, 1.8vw, 22px); line-height: 1.6; }
-    .post h2 { margin: clamp(56px, 7vw, 88px) 0 18px; font-family: var(--serif); font-size: clamp(28px, 3vw, 38px); line-height: 1.12; letter-spacing: -.015em; }
-    .post h3 { margin: 34px 0 10px; font-size: 18px; font-weight: 600; }
-    .post a { color: var(--text); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 3px; }
-    .post a:hover { text-decoration-color: var(--text); }
-    .post code { font-family: var(--mono); font-size: .84em; background: var(--bg-2); padding: 1px 5px; border-radius: 4px; word-break: break-all; }
-    .post ul { margin: 16px 0 0; padding-left: 20px; color: var(--body); line-height: 1.75; }
-    .post li + li { margin-top: 6px; }
-    sup a { text-decoration: none !important; color: var(--sand) !important; font-size: .75em; padding-left: 1px; }
-
-    .figure { margin: 36px 0 0; }
-    .figure figcaption { margin-top: 12px; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
-    .card { border: 1px solid var(--line); border-radius: 16px; background: var(--panel); overflow: hidden; }
-
-    /* bar charts */
-    .chart { padding: 26px 26px 22px; }
-    .chart-title { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 20px; font-size: 14px; font-weight: 600; }
-    .chart-title span { color: var(--muted); font-weight: 400; }
-    .legend { display: flex; gap: 18px; margin-bottom: 18px; color: var(--muted); font-size: 13px; }
-    .legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: -1px; }
-    .k1 { background: #cdbf9f; }
-    .k2 { background: #17140f; }
-    .bars { display: grid; gap: 18px; }
-    .bar-group { display: grid; grid-template-columns: 120px 1fr; gap: 14px; align-items: center; }
-    .bar-group > span { font-size: 14px; color: var(--text); }
+    /* ---------- charts ---------- */
+    .charts { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; align-items: stretch; }
+    .charts .panel { display: flex; flex-direction: column; }
+    .chart { padding: 24px 24px 26px; flex: 1; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-bottom: 22px; color: var(--muted); font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; }
+    .legend i { display: inline-block; width: 10px; height: 10px; margin-right: 8px; vertical-align: -1px; }
+    .k1 { background: rgba(216, 191, 148, .38); }
+    .k2 { background: var(--sand); }
+    .bars { display: grid; gap: 20px; }
+    .bar-group { display: grid; grid-template-columns: 116px minmax(0, 1fr); gap: 14px; align-items: center; }
+    .bar-group > span { color: var(--text); font-family: var(--mono); font-size: 12px; letter-spacing: .02em; }
     .bar-stack { display: grid; gap: 5px; }
-    .bar { position: relative; height: 22px; border-radius: 4px; background: var(--bg-2); }
-    .bar i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: 4px; transition: width 1.2s cubic-bezier(.2, .7, .1, 1); }
-    .bar b { position: absolute; top: 50%; transform: translateY(-50%); font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .bar { position: relative; height: 22px; background: rgba(236, 224, 202, .05); }
+    .bar i { position: absolute; inset: 0 auto 0 0; width: 0; transition: width 1.2s cubic-bezier(.2, .7, .1, 1); }
+    .bar b { position: absolute; top: 50%; left: 8px; transform: translateY(-50%); color: var(--text); font-family: var(--mono); font-size: 11.5px; font-weight: 400; font-variant-numeric: tabular-nums; white-space: nowrap; transition: left 1.2s cubic-bezier(.2, .7, .1, 1); }
+    .bar b.end { left: auto !important; right: 8px; color: var(--ink); }
+    .bar b.inside { left: auto !important; right: calc(100% - var(--w) + 8px); }
     .in .bar i { width: var(--w); }
     .in .bar b { left: calc(var(--w) + 8px); }
-    .bar b { left: 8px; transition: left 1.2s cubic-bezier(.2, .7, .1, 1); }
+    .chart-note { margin-top: 22px; color: var(--body); font-size: 15px; line-height: 1.65; }
+    .perf-table { margin-top: 24px; }
+    .perf-table table.data { min-width: 680px; }
+    table.data td:first-child { color: var(--text); }
+    table.data td, table.data th { white-space: nowrap; }
+    table.data td.wrap-ok { white-space: normal; min-width: 260px; }
+    table.data .tag { margin-right: 10px; }
+    .limits table.data { min-width: 520px; }
+    .limits table.data td:first-child { white-space: normal; min-width: 150px; }
 
-    .duo { display: grid; grid-template-columns: 1fr 1fr; }
-    .duo > div { padding: 24px 26px; }
-    .duo > div + div { border-left: 1px solid var(--line); }
-    .duo .lbl { color: var(--muted); font-size: 13px; }
-    .duo .n { margin-top: 6px; font-family: var(--serif); font-size: 40px; line-height: 1; letter-spacing: -.02em; }
-    .duo p { margin-top: 10px; font-size: 14.5px; line-height: 1.55; }
+    /* ---------- economics ---------- */
+    .econ { margin-top: 24px; }
+    .econ .stat-n { margin-top: 4px; }
+    .econ p.stat-l { max-width: 44ch; font-size: 15px; }
 
-    /* steps */
-    .steps { list-style: none; margin: 30px 0 0; padding: 0; counter-reset: s; }
-    .steps li { counter-increment: s; display: grid; grid-template-columns: 40px 90px 1fr; gap: 10px; padding: 16px 0; border-top: 1px solid var(--line); color: var(--body); line-height: 1.6; }
-    .steps li:last-child { border-bottom: 1px solid var(--line); }
-    .steps li::before { content: counter(s); color: var(--muted); font-variant-numeric: tabular-nums; }
-    .steps b { color: var(--text); font-weight: 600; }
+    /* ---------- terminal ---------- */
+    .term { align-self: start; }
+    .term .fig span:first-child::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 10px; background: var(--sand); vertical-align: 1px; }
+    .term .code { background: #0a0907; }
+    .term figcaption { padding: 12px 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
 
-    /* code */
-    .term { background: #0e0c09; color: #c4bbad; border-radius: 16px; overflow: hidden; }
-    .term .bar-top { display: flex; align-items: center; gap: 7px; padding: 12px 16px; border-bottom: 1px solid rgba(236,224,202,.1); }
-    .term .bar-top i { width: 10px; height: 10px; border-radius: 50%; background: rgba(236,224,202,.16); }
-    .term .bar-top span { margin-left: 10px; color: rgba(236,224,202,.45); font-family: var(--mono); font-size: 11px; }
-    .term pre { margin: 0; padding: 20px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; line-height: 1.75; white-space: pre; }
-    .term .c { color: #6f685d; } .term .k { color: #d8bf94; } .term .s { color: #b9d99a; }
+    /* ---------- footnotes ---------- */
+    .notes { margin-top: clamp(48px, 6vw, 72px); padding-top: 22px; border-top: 1px solid var(--line); }
+    .notes h3 { margin-bottom: 14px; color: var(--muted); font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; }
+    .notes ol { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13.5px; line-height: 1.6; max-width: 80ch; }
+    .notes li + li { margin-top: 8px; }
+    .notes li::marker { color: var(--sand); font-family: var(--mono); }
+    .notes a { color: var(--sand); }
+    .cta-wrap { padding-bottom: clamp(72px, 9vw, 128px); }
 
-    /* tables */
-    .tbl { overflow-x: auto; }
-    table { width: 100%; min-width: 600px; border-collapse: collapse; }
-    th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--line); font-size: 14px; }
-    th { color: var(--muted); font-weight: 500; font-size: 12.5px; }
-    td { color: var(--body); font-variant-numeric: tabular-nums; }
-    td:first-child { color: var(--text); }
-    .num { text-align: right; }
-    th, td { white-space: nowrap; }
-    @media (min-width: 1000px) { .bleed { margin-left: -110px; margin-right: -110px; } }
-    tr:last-child td { border-bottom: 0; }
-    .pill-s { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 500; margin-right: 6px; }
-    .pill-s.ok { background: rgba(63,122,53,.1); color: var(--ok); }
-    .pill-s.no { background: rgba(163,101,42,.12); color: var(--warn); }
-    .pill-s.pl { background: var(--bg-2); color: var(--muted); }
-
-    .note { margin-top: 30px; padding: 20px 22px; border-radius: 14px; background: var(--bg-2); color: var(--body); font-size: 15.5px; line-height: 1.65; }
-    .note b { color: var(--text); }
-
-    .foot-notes { margin-top: clamp(56px, 7vw, 88px); padding-top: 22px; border-top: 1px solid var(--line); }
-    .foot-notes ol { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13.5px; line-height: 1.6; }
-    .foot-notes li + li { margin-top: 8px; }
-
-    .end { padding: clamp(56px, 7vw, 96px) 0; border-top: 1px solid var(--line); text-align: center; }
-    .end h2 { font-family: var(--serif); font-size: clamp(32px, 4vw, 52px); line-height: 1.05; letter-spacing: -.02em; }
-    .end p { margin: 16px auto 0; max-width: 36em; color: var(--body); }
-    .end .actions { justify-content: center; margin-top: 28px; }
-
-    footer .brand-name { color: var(--text); }
-
-    /* chip (same drawing as the landing page) */
+    /* ---------- chip illustration (same drawing as the landing page) ---------- */
     .chip-stage { position: relative; aspect-ratio: 1; perspective: 1400px; display: grid; place-items: center; }
     .chip-tilt { position: relative; width: 82%; aspect-ratio: 1; transform-style: preserve-3d; transform: rotateX(var(--rx, 52deg)) rotateZ(var(--rz, -38deg)); transition: transform .5s cubic-bezier(.2, .7, .1, 1); }
     .chip-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-    .chip-shadow { position: absolute; inset: 6%; transform: translateZ(-60px); background: rgba(0,0,0,.75); filter: blur(30px); border-radius: 20px; }
-    .chip-lid { position: absolute; left: 27.5%; top: 27.5%; width: 45%; aspect-ratio: 1; transform: translateZ(var(--lift, 90px)); transition: transform .8s cubic-bezier(.2, .7, .1, 1); filter: drop-shadow(0 30px 30px rgba(0,0,0,.55)); }
+    .chip-shadow { position: absolute; inset: 6%; transform: translateZ(-60px); background: rgba(0, 0, 0, .75); filter: blur(30px); }
+    .chip-lid { position: absolute; left: 27.5%; top: 27.5%; width: 45%; aspect-ratio: 1; transform: translateZ(var(--lift, 90px)); transition: transform .8s cubic-bezier(.2, .7, .1, 1); filter: drop-shadow(0 30px 30px rgba(0, 0, 0, .55)); }
     .chip-lid svg { width: 100%; height: 100%; }
     .chip-stage:hover .chip-lid { --lift: 140px; }
     .lid-t { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; fill: #2a2117; font-weight: 600; }
     .lid-s { font-family: var(--mono); font-size: 7px; letter-spacing: .16em; fill: #4a3b28; }
-    .chip-lbl { font-family: var(--mono); font-size: 7px; letter-spacing: .14em; fill: rgba(216,191,148,.75); }
+    .chip-lbl { font-family: var(--mono); font-size: 7px; letter-spacing: .14em; fill: rgba(216, 191, 148, .75); }
     .traces-live path { stroke-dasharray: 14 400; stroke-dashoffset: 14; animation: flow 3.6s linear infinite; animation-delay: var(--dl); filter: drop-shadow(0 0 3px #f3dfb8); }
     @keyframes flow { to { stroke-dashoffset: -400; } }
     .mm-glow { animation: mm 2.4s ease-in-out infinite; }
@@ -193,36 +144,61 @@
     .seq-run { animation: seq 1.8s steps(6) infinite; }
     @keyframes seq { to { transform: translateX(96px); } }
     .chip-caption { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-    @media (prefers-reduced-motion: reduce) { .traces-live path, .mm-glow, .log-rows rect, .seq-run { animation: none; } }
 
-    @media (max-width: 760px) {
-      .highlights { grid-template-columns: 1fr 1fr; }
-      .highlights div:nth-child(3) { padding-left: 0; border-left: 0; }
-      .highlights div:nth-child(n+3) { border-top: 1px solid var(--line); }
-      .duo { grid-template-columns: 1fr; }
-      .duo > div + div { border-left: 0; border-top: 1px solid var(--line); }
-      .bar-group { grid-template-columns: 1fr; gap: 8px; }
-      .steps li { grid-template-columns: 28px 1fr; }
-      .steps li span { grid-column: 2; }
-      .media-cap { font-size: 9.5px; }
+    @media (prefers-reduced-motion: reduce) {
+      .traces-live path, .mm-glow, .log-rows rect, .seq-run { animation: none; }
+      .bar i, .bar b, .chip-tilt, .chip-lid { transition: none; }
+    }
+    @media (max-width: 1080px) {
+      .charts { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 960px) {
+      .hero-grid, .intro, .split { grid-template-columns: minmax(0, 1fr); }
+      .stage .chip-stage { max-width: 520px; }
+    }
+    @media (max-width: 600px) {
+      .bar-group { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+      .chart { padding: 20px 16px 22px; }
+      .card .idx { margin-bottom: 20px; }
+      .stage .fig { font-size: 9.5px; }
+      .hero .page-meta { gap: 6px 18px; }
+      .hero .page-meta span + span::before { content: none; }
+      .specs.grid.c4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .specs .card { padding: 18px 16px; }
+      .specs .stat-n { font-size: 28px; }
+      .specs .stat-l { font-size: 13px; }
     }
   </style>
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
+  <!-- chrome:mark -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <symbol id="mark" viewBox="0 0 120 80">
       <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z" />
-        <g stroke-width="1.4" opacity=".85"><path d="M62 14 V70" /><path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" /><path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" /><path d="M38 26 Q62 31 86 26" /><path d="M31 39 Q62 45 93 39" /><path d="M29 54 Q62 60 95 54" /></g>
+        <g stroke-width="1.4" opacity=".85">
+          <path d="M62 14 V70" />
+          <path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" />
+          <path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" />
+          <path d="M38 26 Q62 31 86 26" /><path d="M31 39 Q62 45 93 39" /><path d="M29 54 Q62 60 95 54" />
+        </g>
       </g>
-      <g fill="currentColor"><rect x="59.5" y="26.5" width="5" height="5" /><rect x="45" y="39" width="5" height="5" /><rect x="74" y="39" width="5" height="5" /><rect x="59.5" y="42" width="5" height="5" /><rect x="33" y="52" width="4.5" height="4.5" /><rect x="86.5" y="52" width="4.5" height="4.5" /><rect x="59.5" y="57" width="5" height="5" /></g>
+      <g fill="currentColor">
+        <rect x="59.5" y="26.5" width="5" height="5" /><rect x="45" y="39" width="5" height="5" /><rect x="74" y="39" width="5" height="5" />
+        <rect x="59.5" y="42" width="5" height="5" /><rect x="33" y="52" width="4.5" height="4.5" /><rect x="86.5" y="52" width="4.5" height="4.5" />
+        <rect x="59.5" y="57" width="5" height="5" /><rect x="47" y="27" width="4" height="4" /><rect x="73" y="27" width="4" height="4" />
+      </g>
     </symbol>
   </svg>
-
-  <header class="nav">
+  <!-- /chrome:mark -->
+  <!-- chrome:nav -->
+  <header class="nav" id="nav">
     <div class="wrap nav-inner">
-      <a class="brand" href="/" aria-label="The Decentralized Compute Company home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">tdcc</span></a>
+      <a class="brand" href="/" aria-label="The Decentralized Compute Company — home">
+        <svg aria-hidden="true"><use href="#mark" /></svg>
+        <span class="brand-name">tdcc</span>
+      </a>
       <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
         <a href="/exact-core.html" aria-current="page">Exact Core</a>
         <a href="/marketplace.html">Marketplace</a>
@@ -230,27 +206,32 @@
         <a href="/#developers">Developers</a>
         <a href="/app.html">App</a>
         <a href="/team.html">Team</a>
+        <a href="/litepaper.html">Litepaper</a>
         <a href="/cask-q.html">Research</a>
-        <a class="btn solid sm" href="/#join">Get early access</a>
+        <a class="btn solid sm nav-cta" href="/#join">Get early access</a>
       </nav>
       <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
     </div>
   </header>
+  <!-- /chrome:nav -->
 
   <main id="content">
-    <header class="launch">
-      <div class="col">
-        <div class="kicker"><span>Announcement</span><span>Hardware</span><span>Open source</span></div>
-        <h1>Introducing TDCC Exact Core</h1>
-        <p class="sub">An AI chip whose every answer anyone can re-check, and a Solana market to rent it.</p>
-        <div class="actions">
-          <a class="btn solid" href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">View on GitHub</a>
-          <a class="btn" href="#try">Run the demo</a>
+    <header class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>Exact Core</span></nav>
+          <p class="eyebrow">Announcement · Hardware · Open source</p>
+          <h1 class="display">Introducing TDCC Exact Core</h1>
+          <p class="lede">An AI chip whose every answer anyone can re-check, and a Solana market to rent it.</p>
+          <div class="actions">
+            <a class="btn solid" href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">View on GitHub</a>
+            <a class="btn" href="#try">Run the demo</a>
+          </div>
+          <div class="page-meta"><span>EC-01</span><span>Kintex-7 xc7k480t</span><span>Built on openTPU</span></div>
         </div>
-      </div>
-      <div class="wide">
-        <div class="media" aria-label="Illustration of the TDCC Exact Core chip">
-          <div class="chip-stage" id="chip-stage" aria-label="Illustration of the TDCC Exact Core chip">
+        <div class="stage">
+          <div class="fig"><span>TDCC Exact Core · <b>EC-01</b></span><span>Illustration</span></div>
+          <div class="chip-stage" id="chip-stage">
             <div class="chip-tilt" id="chip-tilt">
               <div class="chip-shadow"></div>
               <svg class="chip-svg" viewBox="0 0 400 400" role="img" aria-labelledby="chip-svg-title">
@@ -316,68 +297,106 @@
             </div>
             <div class="chip-caption"><span>Exact Core, exploded</span><span>Illustration</span></div>
           </div>
-          <div class="media-cap"><span>TDCC Exact Core · <b>EC-01</b></span><span>Illustration</span></div>
         </div>
-        <div class="highlights reveal">
-          <div><div class="n">Bit-exact</div><p>The card produces the same tokens as its simulator</p></div>
-          <div><div class="n">85.8 tok/s</div><p>LFM2.5-230M decode on the card, 4-bit weights</p></div>
-          <div><div class="n">5 rounds</div><p>To find the one bad step out of 66,862 in a dispute</p></div>
-          <div><div class="n">+14%</div><p>Cost of the trace log on the simulator</p></div>
+      </div>
+      <div class="wrap">
+        <div class="grid c4 specs reveal" aria-label="Highlights">
+          <div class="card"><span class="k">Determinism</span><div class="stat-n">Bit-exact</div><p class="stat-l">The card produces the same tokens as its simulator</p></div>
+          <div class="card"><span class="k">Decode</span><div class="stat-n">85.8 tok/s</div><p class="stat-l">LFM2.5-230M decode on the card, 4-bit weights</p></div>
+          <div class="card"><span class="k">Dispute</span><div class="stat-n">5 rounds</div><p class="stat-l">To find the one bad step out of 66,862 in a dispute</p></div>
+          <div class="card"><span class="k">Overhead</span><div class="stat-n">+14%</div><p class="stat-l">Cost of the trace log on the simulator</p></div>
         </div>
       </div>
     </header>
 
-    <article class="post">
-      <div class="col">
+    <section class="section flush" aria-label="Overview">
+      <div class="wrap intro reveal">
         <p class="lead">Today we're releasing Exact Core, the accelerator behind TDCC Exact. It is built on <a href="https://github.com/FeSens/openTPU" target="_blank" rel="noreferrer">openTPU</a>, an open-source AI accelerator whose card gives the same bits as its simulator, and it adds what an auditable chip needs: a trace log of every instruction, a fingerprint a provider posts with each answer, and a dispute that names the first instruction a dishonest run got wrong.</p>
-        <p>The result is compute you don't have to trust. Anyone with a laptop can re-run a job and get the provider's exact answer, down to the last bit of the logits. If the provider cut corners, the mismatch shows, and the dispute points to the step where it happened.</p>
+        <p class="side">The result is compute you don't have to trust. Anyone with a laptop can re-run a job and get the provider's exact answer, down to the last bit of the logits. If the provider cut corners, the mismatch shows, and the dispute points to the step where it happened.</p>
+      </div>
+    </section>
 
-        <h2>Why exact matters</h2>
-        <p>When you buy compute from someone you don't know, you get an answer back and very little else. A provider can skip part of a model to save time and still return something plausible. Re-running the job elsewhere usually doesn't settle it: floating-point math drifts across hardware, so two honest runs rarely agree bit for bit.</p>
-        <p>Exact Core removes the drift. Matrix math runs in 8-bit integers in a fixed order, and softmax and norms use fixed rounding. Every honest run, on any machine, produces the same bits, so "did they actually run it?" becomes a question with a yes-or-no answer.</p>
-        <div class="note">In our demo, a cheating provider skips one layer and still returns <b>the same Yes/No answer</b> as the honest provider. Only the fingerprint differs. That is exactly the case a buyer cannot detect on a GPU marketplace today.</div>
-
-        <h2>What's inside</h2>
-        <p>Exact Core runs on a Kintex-7 FPGA PCIe card (Inspur YPCB-00338, xc7k480t, two DDR3 channels). The only change to the openTPU design is an observer hook that runs after every instruction.</p>
-        <figure class="figure">
-          <div class="card">
-            <div class="duo">
-              <div><p class="lbl">Matrix unit</p><p>The heavy LLM math in 8-bit numbers, in a fixed order.</p></div>
-              <div><p class="lbl">Vector unit</p><p>Softmax and norms with fixed rounding, so the bits never drift.</p></div>
-            </div>
-            <div class="duo" style="border-top:1px solid var(--line)">
-              <div><p class="lbl">Trace log</p><p>Records every step, so a dispute points to the one step that differs.</p></div>
-              <div><p class="lbl">Sequencer + DMA</p><p>One instruction per cycle; every data movement is an instruction.</p></div>
-            </div>
+    <section class="section" id="why" aria-labelledby="why-h">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">01 · The problem</p><h2 class="h2" id="why-h">Why exact matters</h2></div>
+        </div>
+        <div class="split">
+          <div class="text">
+            <p>When you buy compute from someone you don't know, you get an answer back and very little else. A provider can skip part of a model to save time and still return something plausible. Re-running the job elsewhere usually doesn't settle it: floating-point math drifts across hardware, so two honest runs rarely agree bit for bit.</p>
+            <p>Exact Core removes the drift. Matrix math runs in 8-bit integers in a fixed order, and softmax and norms use fixed rounding. Every honest run, on any machine, produces the same bits, so "did they actually run it?" becomes a question with a yes-or-no answer.</p>
           </div>
-          <figcaption>The four blocks of Exact Core.</figcaption>
-        </figure>
-        <h3>The trace log</h3>
-        <p>Each instruction extends a SHA-256 hash chain over the slice, the program counter, the instruction, and the registers after it. Every 4,096 steps the log checkpoints each slice's working state. The checkpoints form a Merkle tree whose root is the trace root. We chose SHA-256 because Solana's runtime offers it as a syscall.</p>
-        <h3>The fingerprint</h3>
-        <p>With each answer the provider posts <code>H(job ‖ model image ‖ answer ‖ last logits ‖ trace root)</code>. Two honest runs give the same fingerprint on any machine. The model image hash pins the exact weights and build, so a provider that quietly swaps 8-bit weights for 4-bit is rejected before anything is re-run.</p>
+          <div class="callout reveal"><b>In the demo</b>In our demo, a cheating provider skips one layer and still returns <strong>the same Yes/No answer</strong> as the honest provider. Only the fingerprint differs. That is exactly the case a buyer cannot detect on a GPU marketplace today.</div>
+        </div>
+      </div>
+    </section>
 
-        <h2>Performance</h2>
-        <p>The design runs ten modern models with their real weights on the card, and the card's tokens match the simulator's bit for bit.<sup><a href="#fn1" id="r1">1</a></sup></p>
-        <figure class="figure reveal">
-          <div class="card chart">
-            <div class="chart-title">Decode throughput on the card <span>tokens / second, higher is better</span></div>
-            <div class="legend"><span><i class="k1"></i>int8</span><span><i class="k2"></i>4-bit, int8 head</span></div>
-            <div class="bars">
-              <div class="bar-group"><span>LFM2.5-230M</span><div class="bar-stack"><div class="bar"><i class="k1" style="--w:68.8%"></i><b style="--w:68.8%">59.0</b></div><div class="bar"><i class="k2" style="--w:100%"></i><b style="--w:100%;left:auto;right:8px;color:#f7f4ee">85.8</b></div></div></div>
-              <div class="bar-group"><span>Qwen3-0.6B</span><div class="bar-stack"><div class="bar"><i class="k1" style="--w:25.2%"></i><b style="--w:25.2%">21.6</b></div><div class="bar"><i class="k2" style="--w:36.5%"></i><b style="--w:36.5%">31.3</b></div></div></div>
-              <div class="bar-group"><span>Qwen3.5-0.8B</span><div class="bar-stack"><div class="bar"><i class="k1" style="--w:20.5%"></i><b style="--w:20.5%">17.6</b></div><div class="bar"><i class="k2" style="--w:28.6%"></i><b style="--w:28.6%">24.5</b></div></div></div>
-            </div>
+    <section class="section" id="inside" aria-labelledby="inside-h">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">02 · Architecture</p><h2 class="h2" id="inside-h">What's inside</h2></div>
+          <p class="lede">Exact Core runs on a Kintex-7 FPGA PCIe card (Inspur YPCB-00338, xc7k480t, two DDR3 channels). The only change to the openTPU design is an observer hook that runs after every instruction.</p>
+        </div>
+        <figure class="mt-0" style="margin:0">
+          <div class="grid c4 reveal">
+            <div class="card"><div class="idx"><span>Block</span><b>01</b></div><h3>Matrix unit</h3><p>The heavy LLM math in 8-bit numbers, in a fixed order.</p></div>
+            <div class="card"><div class="idx"><span>Block</span><b>02</b></div><h3>Vector unit</h3><p>Softmax and norms with fixed rounding, so the bits never drift.</p></div>
+            <div class="card"><div class="idx"><span>Block</span><b>03</b></div><h3>Trace log</h3><p>Records every step, so a dispute points to the one step that differs.</p></div>
+            <div class="card"><div class="idx"><span>Block</span><b>04</b></div><h3>Sequencer + DMA</h3><p>One instruction per cycle; every data movement is an instruction.</p></div>
           </div>
-          <figcaption>Device decode rate on the Kintex-7 card. While decoding, the card uses 82–85% of its peak DRAM bandwidth.</figcaption>
+          <figcaption class="cap">The four blocks of Exact Core.</figcaption>
         </figure>
-        <figure class="figure bleed">
-          <div class="card tbl">
-            <table>
-              <thead><tr><th>Model</th><th>Weights</th><th class="num">Decode, device</th><th class="num">Decode, wall</th><th class="num">Prefill, device</th><th class="num">DRAM while decoding</th></tr></thead>
+        <div class="split detail">
+          <div class="text">
+            <h3>The trace log</h3>
+            <p>Each instruction extends a SHA-256 hash chain over the slice, the program counter, the instruction, and the registers after it. Every 4,096 steps the log checkpoints each slice's working state. The checkpoints form a Merkle tree whose root is the trace root. We chose SHA-256 because Solana's runtime offers it as a syscall.</p>
+          </div>
+          <div class="text">
+            <h3>The fingerprint</h3>
+            <p>With each answer the provider posts <code>H(job ‖ model image ‖ answer ‖ last logits ‖ trace root)</code>. Two honest runs give the same fingerprint on any machine. The model image hash pins the exact weights and build, so a provider that quietly swaps 8-bit weights for 4-bit is rejected before anything is re-run.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="performance" aria-labelledby="perf-h">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">03 · Measured on the card</p><h2 class="h2" id="perf-h">Performance</h2></div>
+          <p class="lede">The design runs ten modern models with their real weights on the card, and the card's tokens match the simulator's bit for bit.<sup><a href="#fn1" id="r1" aria-label="Footnote 1">1</a></sup></p>
+        </div>
+        <div class="charts">
+          <figure class="panel reveal" style="margin:0">
+            <div class="fig"><span>Decode throughput on the card</span><span>tok/s · <b>higher is better</b></span></div>
+            <div class="chart">
+              <div class="legend"><span><i class="k1"></i>int8</span><span><i class="k2"></i>4-bit, int8 head</span></div>
+              <div class="bars">
+                <div class="bar-group"><span>LFM2.5-230M</span><div class="bar-stack"><div class="bar"><i class="k1" style="--w:68.8%"></i><b style="--w:68.8%">59.0</b></div><div class="bar"><i class="k2" style="--w:100%"></i><b class="end" style="--w:100%">85.8</b></div></div></div>
+                <div class="bar-group"><span>Qwen3-0.6B</span><div class="bar-stack"><div class="bar"><i class="k1" style="--w:25.2%"></i><b style="--w:25.2%">21.6</b></div><div class="bar"><i class="k2" style="--w:36.5%"></i><b style="--w:36.5%">31.3</b></div></div></div>
+                <div class="bar-group"><span>Qwen3.5-0.8B</span><div class="bar-stack"><div class="bar"><i class="k1" style="--w:20.5%"></i><b style="--w:20.5%">17.6</b></div><div class="bar"><i class="k2" style="--w:28.6%"></i><b style="--w:28.6%">24.5</b></div></div></div>
+              </div>
+            </div>
+            <figcaption class="cap" style="margin:0;padding:12px 16px;border-top:1px solid var(--line)">Device decode rate on the Kintex-7 card. While decoding, the card uses 82–85% of its peak DRAM bandwidth.</figcaption>
+          </figure>
+          <figure class="panel reveal" style="margin:0">
+            <div class="fig"><span>Trace log overhead</span><span>s · <b>lower is better</b></span></div>
+            <div class="chart">
+              <div class="bars">
+                <div class="bar-group"><span>Log off</span><div class="bar"><i class="k1" style="--w:87.8%"></i><b class="inside" style="--w:87.8%">32.5 s</b></div></div>
+                <div class="bar-group"><span>Log on</span><div class="bar"><i class="k2" style="--w:100%"></i><b class="end" style="--w:100%">37.0 s · +14%</b></div></div>
+              </div>
+              <p class="chart-note">Verifiability is cheap. On the simulator, a 31-token prompt on LFM2.5-230M takes 37.0 seconds with the trace log on and 32.5 seconds with it off, and the logits are bit-identical either way.<sup><a href="#fn2" id="r2" aria-label="Footnote 2">2</a></sup></p>
+            </div>
+            <figcaption class="cap" style="margin:0;padding:12px 16px;border-top:1px solid var(--line)">Seconds for a 31-token prompt.</figcaption>
+          </figure>
+        </div>
+        <figure class="perf-table reveal" style="margin-left:0;margin-right:0;margin-bottom:0">
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th scope="col">Model</th><th scope="col">Weights</th><th scope="col" class="num">Decode, device</th><th scope="col" class="num">Decode, wall</th><th scope="col" class="num">Prefill, device</th><th scope="col" class="num">DRAM while decoding</th></tr></thead>
               <tbody>
                 <tr><td>LFM2.5-230M</td><td>int8</td><td class="num">59.0</td><td class="num">52.3</td><td class="num">295.6</td><td class="num">14.5 GB/s (85%)</td></tr>
-                <tr><td>LFM2.5-230M</td><td>4-bit, int8 head</td><td class="num">85.8</td><td class="num">82.1</td><td class="num">335.4</td><td class="num">14.1 GB/s (82%)</td></tr>
+                <tr class="hl"><td>LFM2.5-230M</td><td>4-bit, int8 head</td><td class="num">85.8</td><td class="num">82.1</td><td class="num">335.4</td><td class="num">14.1 GB/s (82%)</td></tr>
                 <tr><td>Qwen3-0.6B</td><td>int8</td><td class="num">21.6</td><td class="num">21.3</td><td class="num">92.1</td><td class="num">14.4 GB/s (84%)</td></tr>
                 <tr><td>Qwen3-0.6B</td><td>4-bit, int8 head</td><td class="num">31.3</td><td class="num">30.7</td><td class="num">103.4</td><td class="num">13.9 GB/s (82%)</td></tr>
                 <tr><td>Qwen3.5-0.8B</td><td>int8</td><td class="num">17.6</td><td class="num">16.3</td><td class="num">61.4</td><td class="num">14.5 GB/s (85%)</td></tr>
@@ -385,45 +404,50 @@
               </tbody>
             </table>
           </div>
-          <figcaption>Throughput in tokens per second.</figcaption>
+          <figcaption class="cap">Throughput in tokens per second.</figcaption>
         </figure>
-        <p style="margin-top:28px">Verifiability is cheap. On the simulator, a 31-token prompt on LFM2.5-230M takes 37.0 seconds with the trace log on and 32.5 seconds with it off, and the logits are bit-identical either way.<sup><a href="#fn2" id="r2">2</a></sup></p>
-        <figure class="figure reveal">
-          <div class="card chart">
-            <div class="chart-title">Trace log overhead <span>seconds for a 31-token prompt, lower is better</span></div>
-            <div class="bars">
-              <div class="bar-group"><span>Log off</span><div class="bar"><i class="k1" style="--w:87.8%"></i><b style="--w:87.8%">32.5 s</b></div></div>
-              <div class="bar-group"><span>Log on</span><div class="bar"><i class="k2" style="--w:100%"></i><b style="--w:100%;left:auto;right:8px;color:#f7f4ee">37.0 s · +14%</b></div></div>
-            </div>
-          </div>
-        </figure>
+      </div>
+    </section>
 
-        <h2>How TDCC Exact works</h2>
-        <p>Compute runs off-chain. Money, proofs, and penalties live on Solana.</p>
-        <ol class="steps">
-          <li><b>Rent</b><span>A renter opens a job on Solana. The USDC waits in escrow.</span></li>
-          <li><b>Run</b><span>A provider runs it on Exact Core and posts the answer's fingerprint.</span></li>
-          <li><b>Check</b><span>Any verifier re-runs it on a laptop. A mismatch opens a challenge.</span></li>
-          <li><b>Settle</b><span>Honest providers get paid. A cheater loses its stake.</span></li>
+    <section class="section" id="how" aria-labelledby="how-h">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">04 · The market</p><h2 class="h2" id="how-h">How TDCC Exact works</h2></div>
+          <p class="lede">Compute runs off-chain. Money, proofs, and penalties live on Solana.</p>
+        </div>
+        <ol class="grid c4 reveal" style="list-style:none;margin:0;padding:0">
+          <li class="card"><div class="idx"><span>Step</span><b>01</b></div><h3>Rent</h3><p>A renter opens a job on Solana. The USDC waits in escrow.</p></li>
+          <li class="card"><div class="idx"><span>Step</span><b>02</b></div><h3>Run</h3><p>A provider runs it on Exact Core and posts the answer's fingerprint.</p></li>
+          <li class="card"><div class="idx"><span>Step</span><b>03</b></div><h3>Check</h3><p>Any verifier re-runs it on a laptop. A mismatch opens a challenge.</p></li>
+          <li class="card"><div class="idx"><span>Step</span><b>04</b></div><h3>Settle</h3><p>Honest providers get paid. A cheater loses its stake.</p></li>
         </ol>
-        <figure class="figure">
-          <div class="card duo">
-            <div><p class="lbl">When the work is accepted</p><div class="n">80 / 20</div><p>80% of the price goes to the host and 20% to TDCC.</p></div>
-            <div><p class="lbl">When a provider is caught</p><div class="n">Slashed</div><p>The renter is refunded, the verifier gets half of the provider's stake, and TDCC keeps the rest.</p></div>
+        <div class="grid c2 econ reveal">
+          <div class="card"><span class="k">When the work is accepted</span><div class="stat-n">80 / 20</div><p class="stat-l">80% of the price goes to the host and 20% to TDCC.</p></div>
+          <div class="card"><span class="k">When a provider is caught</span><div class="stat-n">Slashed</div><p class="stat-l">The renter is refunded, the verifier gets half of the provider's stake, and TDCC keeps the rest.</p></div>
+        </div>
+        <div class="split detail">
+          <div class="text">
+            <h3>Receipts you can stake money on</h3>
+            <p>Honest runs share a fingerprint, so a provider could try to copy someone else's receipt without doing the work. Receipts are therefore posted by commit-reveal: first a hash that binds the provider's key and a salt, then the fingerprint, after the commit window has closed.</p>
           </div>
-        </figure>
-        <h3>Receipts you can stake money on</h3>
-        <p>Honest runs share a fingerprint, so a provider could try to copy someone else's receipt without doing the work. Receipts are therefore posted by commit-reveal: first a hash that binds the provider's key and a salt, then the fingerprint, after the commit window has closed.</p>
-        <h3>The dispute</h3>
-        <p>Once a run goes wrong, its hash chain differs at every later checkpoint. A binary search finds the first bad checkpoint in log₂ rounds, then both sides replay that window step by step and the first differing record is the fault. On LFM2.5-230M, with a provider skipping one layer, the dispute names the fault in 5 rounds over 21 checkpoints: step 7,166 of 66,862.</p>
-        <p>The Anchor program holds the escrow and stakes, takes receipts by commit-reveal, and executes the transfers. Program ID <code>HzpKeqHLg7Mmjh1JmGymef7Z7hf3JXhaagp6UgTSH24A</code>.</p>
+          <div class="text">
+            <h3>The dispute</h3>
+            <p>Once a run goes wrong, its hash chain differs at every later checkpoint. A binary search finds the first bad checkpoint in log₂ rounds, then both sides replay that window step by step and the first differing record is the fault. On LFM2.5-230M, with a provider skipping one layer, the dispute names the fault in 5 rounds over 21 checkpoints: step 7,166 of 66,862.</p>
+            <p>The Anchor program holds the escrow and stakes, takes receipts by commit-reveal, and executes the transfers. Program ID <code>HzpKeqHLg7Mmjh1JmGymef7Z7hf3JXhaagp6UgTSH24A</code>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        <h2 id="try">Try it</h2>
-        <p>The demo runs on a laptop in about ten seconds using the built-in tiny model, with no card required. Provider A runs honestly; provider B skips layer 1 to save time.</p>
-        <figure class="figure">
-          <div class="term">
-            <div class="bar-top"><i></i><i></i><i></i><span>tdcc-exact demo</span></div>
-<pre><span class="c">$</span> pip install -e .
+    <section class="section" id="try" aria-labelledby="try-h">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">05 · Ten seconds, no card</p><h2 class="h2" id="try-h">Try it</h2></div>
+          <p class="lede">The demo runs on a laptop in about ten seconds using the built-in tiny model, with no card required. Provider A runs honestly; provider B skips layer 1 to save time.</p>
+        </div>
+        <figure class="panel term reveal" style="margin:0">
+          <div class="fig"><span>tdcc-exact demo</span><span>Terminal</span></div>
+<pre class="code"><span class="c">$</span> pip install -e .
 <span class="c">$</span> tdcc-exact demo
 
 1. renter opens a yes/no oracle job on tiny, locks 2.00 USDC
@@ -437,85 +461,100 @@
    bisection: checkpoint 0 of 3 differs (2 rounds), steps 1..1302
    first fault: <span class="k">step 659</span>, slice 0, pc 11 (state)
 5. settlement (the Solana program executes these transfers)</pre>
-          </div>
           <figcaption>Run the same steps against a local validator or devnet with <code>tdcc-exact demo --localnet</code>; each step becomes a transaction with an Explorer link.</figcaption>
         </figure>
+      </div>
+    </section>
 
-        <h2>Limitations</h2>
-        <p>We want to be precise about what is built today.</p>
-        <figure class="figure">
-          <div class="card tbl">
-            <table style="min-width:480px">
-              <thead><tr><th>Piece</th><th>Status</th></tr></thead>
-              <tbody>
-                <tr><td>Trace log, fingerprint, dispute</td><td><span class="pill-s ok">Working</span>on the bit-exact simulator, tested</td></tr>
-                <tr><td>Commit-reveal receipts, model registry</td><td><span class="pill-s ok">Done</span>tested</td></tr>
-                <tr><td>Solana program</td><td><span class="pill-s ok">Working</span>on a local validator, arbiter-decided challenges</td></tr>
-                <tr><td>Trace log in hardware</td><td><span class="pill-s no">Not built</span>the card has a performance trace, not this hash chain</td></tr>
-                <tr><td>On-chain bisection, challenge bond</td><td><span class="pill-s pl">Planned</span></td></tr>
-              </tbody>
-            </table>
+    <section class="section limits" id="limitations" aria-labelledby="lim-h">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">06 · Status</p><h2 class="h2" id="lim-h">Limitations</h2></div>
+          <p class="lede">We want to be precise about what is built today.</p>
+        </div>
+        <div class="table-wrap reveal">
+          <table class="data">
+            <thead><tr><th scope="col">Piece</th><th scope="col">Status</th></tr></thead>
+            <tbody>
+              <tr><td>Trace log, fingerprint, dispute</td><td class="wrap-ok"><span class="tag ok">Working</span>on the bit-exact simulator, tested</td></tr>
+              <tr><td>Commit-reveal receipts, model registry</td><td class="wrap-ok"><span class="tag ok">Done</span>tested</td></tr>
+              <tr><td>Solana program</td><td class="wrap-ok"><span class="tag ok">Working</span>on a local validator, arbiter-decided challenges</td></tr>
+              <tr><td>Trace log in hardware</td><td class="wrap-ok"><span class="tag warn">Not built</span>the card has a performance trace, not this hash chain</td></tr>
+              <tr><td>On-chain bisection, challenge bond</td><td class="wrap-ok"><span class="tag">Planned</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout reveal" style="margin-top:24px;max-width:80ch"><b>The demo proves the work is verifiable, not that the model is right.</b>Exact Core agrees with the fp32 reference on every test question, so the chip computes the model faithfully. But the 230M model answers Yes to everything with this prompt. A production oracle needs a larger model or a calibrated threshold.</div>
+      </div>
+    </section>
+
+    <section class="section" id="opentpu" aria-labelledby="otpu-h">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">07 · Upstream</p><h2 class="h2" id="otpu-h">Built on openTPU</h2></div>
+          <p class="lede">openTPU lives in one small repository you can read end to end: the hardware design in SystemVerilog, the instruction set, a bit-exact simulator, a kernel language and its compiler, and the host software that drives a real PCIe card. Exact Core keeps upstream's command and package names so that upstream improvements merge in cleanly. We're grateful to its authors.</p>
+        </div>
+        <div class="cta-band reveal">
+          <p class="eyebrow">Open source · USDC escrow on Solana</p>
+          <h2 class="h2">Run it, read it, rent it.</h2>
+          <p>The code is open on GitHub. Exact Core cards will appear as listings in the TDCC marketplace, paid through USDC escrow on Solana.</p>
+          <div class="actions">
+            <a class="btn solid" href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">GitHub repository</a>
+            <a class="btn" href="/marketplace.html">Open the marketplace</a>
           </div>
-        </figure>
-        <div class="note"><b>The demo proves the work is verifiable, not that the model is right.</b> Exact Core agrees with the fp32 reference on every test question, so the chip computes the model faithfully. But the 230M model answers Yes to everything with this prompt. A production oracle needs a larger model or a calibrated threshold.</div>
-
-        <h2>Built on openTPU</h2>
-        <p>openTPU lives in one small repository you can read end to end: the hardware design in SystemVerilog, the instruction set, a bit-exact simulator, a kernel language and its compiler, and the host software that drives a real PCIe card. Exact Core keeps upstream's command and package names so that upstream improvements merge in cleanly. We're grateful to its authors.</p>
-
-        <div class="foot-notes">
+        </div>
+        <div class="notes">
+          <h3>Notes</h3>
           <ol>
             <li id="fn1">Measured on an Inspur YPCB-00338 card (Xilinx Kintex-7 xc7k480t, two DDR3 channels), as documented in the openTPU results. <a href="#r1" aria-label="Back to text">↩</a></li>
             <li id="fn2">Simulator timing on a 4-core cloud VM, LFM2.5-230M int8. Logits with the log on and off were checked to be bit-identical. <a href="#r2" aria-label="Back to text">↩</a></li>
           </ol>
         </div>
       </div>
-    </article>
-
-    <section class="end">
-      <div class="col">
-        <h2>Run it, read it, rent it.</h2>
-        <p>The code is open on GitHub. Exact Core cards will appear as listings in the TDCC marketplace, paid through USDC escrow on Solana.</p>
-        <div class="actions">
-          <a class="btn solid" href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">GitHub repository</a>
-          <a class="btn" href="/marketplace.html">Open the marketplace</a>
-        </div>
-      </div>
     </section>
   </main>
-
+  <!-- chrome:footer -->
   <footer>
     <div class="wrap">
-      <div class="foot">
-        <a class="brand" href="/"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
-        <div class="foot-links"><a href="/exact-core.html">Exact Core</a><a href="/marketplace.html">Marketplace</a><a href="/app.html">App</a><a href="/team.html">Team</a><a href="/litepaper.html">Litepaper</a><a href="/cask-q.html">Research</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="/" aria-label="TDCC home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
+          <p class="about">A GPU marketplace, a job network that checks its own work, and Exact Core, an AI chip whose answers anyone can re-check.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul><li><a href="/team.html">Team</a></li><li><a href="/litepaper.html">Litepaper</a></li><li><a href="/cask-q.html">Research</a></li><li><a href="/two-laptops-80-tps.html">Engineering</a></li><li><a href="/facts.html">Facts</a></li></ul>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <ul><li><a href="https://x.com/computecompany" target="_blank" rel="noreferrer">X / @computecompany</a></li><li><a href="https://www.linkedin.com/in/anilyagiz/" target="_blank" rel="noreferrer">LinkedIn</a></li><li><a href="mailto:anil@decentralizedcompute.company">Email</a></li><li><a href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">GitHub</a></li><li><a href="/feed.xml">RSS</a></li></ul>
+        </div>
       </div>
-      <p class="legal">© 2026 The Decentralized Compute Company</p>
+      <div class="wordmark" aria-hidden="true">decentralized compute</div>
+      <div class="legal"><span>© 2026 The Decentralized Compute Company</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/facts.html">Facts</a></span></div>
     </div>
   </footer>
+  <!-- /chrome:footer -->
 
   <script>
+    // Chip illustration: tilt toward the pointer (skipped with reduced motion).
     (() => {
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const menuBtn = document.getElementById('menu-btn'), links = document.getElementById('nav-links');
-      menuBtn.addEventListener('click', () => menuBtn.setAttribute('aria-expanded', String(links.classList.toggle('open'))));
-
-      const items = document.querySelectorAll('.reveal');
-      if ('IntersectionObserver' in window && !reduce) {
-        const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.15 });
-        items.forEach((el) => io.observe(el));
-      } else items.forEach((el) => el.classList.add('in'));
-
       const stage = document.getElementById('chip-stage'), tilt = document.getElementById('chip-tilt');
-      if (stage && !reduce) {
-        stage.addEventListener('pointermove', (e) => {
-          const r = stage.getBoundingClientRect();
-          const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
-          tilt.style.setProperty('--rx', `${52 - y * 22}deg`);
-          tilt.style.setProperty('--rz', `${-38 + x * 28}deg`);
-        });
-        stage.addEventListener('pointerleave', () => { tilt.style.removeProperty('--rx'); tilt.style.removeProperty('--rz'); });
-      }
+      if (!stage || !tilt || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      stage.addEventListener('pointermove', (e) => {
+        const r = stage.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+        tilt.style.setProperty('--rx', `${52 - y * 22}deg`);
+        tilt.style.setProperty('--rz', `${-38 + x * 28}deg`);
+      });
+      stage.addEventListener('pointerleave', () => { tilt.style.removeProperty('--rx'); tilt.style.removeProperty('--rz'); });
     })();
   </script>
+  <script src="/js/market.js"></script>
+  <script src="/js/site.js"></script>
 </body>
 </html>

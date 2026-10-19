@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0c0b09" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="robots" content="noindex" />
+  <title>My account | The Decentralized Compute Company</title>
+  <meta name="description" content="Your TDCC marketplace account: rentals, requests on your GPUs, listings, and settings." />
+  <link rel="canonical" href="https://decentralizedcompute.company/account.html" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <link rel="stylesheet" href="/styles/site.css" />
+  <style>
+    .a-head { padding: clamp(48px, 7vw, 88px) 0 0; background: radial-gradient(ellipse 55% 80% at 88% 0%, rgba(216,191,148,.08), transparent 70%); }
+    .a-head-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px; }
+    .a-head h1 { font-family: var(--serif); font-size: clamp(36px, 5vw, 64px); line-height: 1.05; letter-spacing: -.02em; }
+    .a-head p { margin-top: 10px; color: var(--muted); font-size: 14px; }
+    .a-tabs { display: flex; gap: 2px; overflow-x: auto; margin-top: 28px; border-bottom: 1px solid var(--line); }
+    .a-tabs a { padding: 12px 14px; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; border-bottom: 1px solid transparent; margin-bottom: -1px; }
+    .a-tabs a[aria-current="page"] { color: var(--text); border-bottom-color: var(--sand); }
+    .badge { display: inline-block; min-width: 18px; margin-left: 6px; padding: 0 5px; background: var(--sand); color: var(--ink); font-size: 10px; text-align: center; letter-spacing: 0; }
+    .pane { padding: 32px 0 clamp(64px, 8vw, 104px); }
+    .pane-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+    .pane-head h2 { font-family: var(--serif); font-size: 30px; }
+    .cards { display: grid; gap: 12px; }
+    .card { display: grid; gap: 12px; padding: 20px; border: 1px solid var(--line); background: var(--panel); }
+    .card-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 20px; align-items: baseline; }
+    .card-top b { font-size: 17px; font-weight: 500; color: var(--text); }
+    .card-top .price { font-family: var(--serif); font-size: 22px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--muted); font-family: var(--mono); font-size: 12px; }
+    .quote { padding: 10px 12px; border-left: 2px solid var(--line-2); color: var(--body); font-size: 14px; white-space: pre-line; overflow-wrap: anywhere; }
+    .reveal-box { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid rgba(185,217,154,.3); background: rgba(185,217,154,.04); font-size: 14px; color: var(--body); overflow-wrap: anywhere; }
+    .reveal-box b { color: var(--ok); font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 500; }
+    .reveal-box a { color: var(--sand); }
+    .reveal-box code { font-family: var(--mono); font-size: 12px; }
+    .card-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .card-actions .inp { flex: 1; min-width: 200px; height: 36px; }
+    .st { display: inline-block; padding: 2px 8px; border: 1px solid var(--line-2); font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+    .st.pending { color: var(--warn); border-color: rgba(227,179,122,.45); }
+    .st.accepted, .st.active { color: var(--ok); border-color: rgba(185,217,154,.4); }
+    .st.online { color: var(--ok); border-color: rgba(185,217,154,.4); }
+    .empty { padding: 36px 20px; text-align: center; color: var(--muted); border: 1px dashed var(--line-2); }
+    .empty a { color: var(--sand); }
+    .cmd { display: flex; gap: 8px; align-items: stretch; }
+    .cmd code { flex: 1; padding: 10px 12px; border: 1px solid var(--line-2); background: var(--bg); font-family: var(--mono); font-size: 12px; overflow-x: auto; white-space: nowrap; }
+    .edit { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; padding-top: 4px; }
+    .edit .full { grid-column: 1 / -1; }
+    .settings { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .settings form { display: grid; gap: 14px; align-content: start; padding: 24px; border: 1px solid var(--line); background: var(--panel); }
+    .settings h3 { font-family: var(--serif); font-size: 24px; }
+    .settings form.danger { grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; column-gap: 32px; border-color: rgba(227,179,122,.28); background: rgba(227,179,122,.03); }
+    .settings form.danger h3 { color: var(--warn); }
+    .settings form.danger h3, .settings form.danger p, .settings form.danger .form-err { grid-column: 1 / -1; }
+    .danger-btn { border-color: rgba(227,179,122,.45); color: var(--warn); }
+    .danger-btn:hover { background: var(--warn); border-color: var(--warn); color: var(--ink); }
+    @media (max-width: 700px) { .settings form.danger { grid-template-columns: 1fr; } }
+    .settings p { color: var(--body); font-size: 14px; }
+    .signin { max-width: 560px; padding: 36px; border: 1px solid var(--line); background: var(--panel); }
+    .signin-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); align-items: start; }
+    .signin-grid .signin { max-width: none; background: radial-gradient(ellipse 70% 90% at 100% 0%, rgba(216,191,148,.1), transparent 70%), var(--panel); }
+    .perks { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+    .perks li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 16px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+    .perks span { color: var(--sand); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; padding-top: 4px; }
+    .perks b { color: var(--text); font-family: var(--serif); font-size: 22px; font-weight: 400; }
+    .perks p { margin-top: 6px; color: var(--body); font-size: 14.5px; }
+    .perks code { font-family: var(--mono); font-size: 12.5px; color: var(--cream); }
+    @media (max-width: 860px) { .signin-grid { grid-template-columns: 1fr; } .signin { padding: 26px; } }
+    .signin h2 { font-family: var(--serif); font-size: 34px; line-height: 1.1; }
+    .signin p { margin: 12px 0 24px; color: var(--body); }
+    .loading { color: var(--muted); font-family: var(--mono); font-size: 12px; }
+    .thread { display: grid; gap: 8px; max-height: 360px; overflow-y: auto; padding: 4px 0; }
+    .msg { max-width: 80%; padding: 8px 12px; border: 1px solid var(--line-2); font-size: 14px; color: var(--body); white-space: pre-line; overflow-wrap: anywhere; }
+    .msg.mine { justify-self: end; border-color: rgba(216,191,148,.4); }
+    .msg small { display: block; margin-top: 4px; color: var(--muted); font-family: var(--mono); font-size: 10.5px; }
+    .stars { display: inline-flex; gap: 4px; }
+    .stars button { padding: 2px 6px; border: 1px solid var(--line-2); background: none; color: var(--muted); cursor: pointer; font-size: 16px; }
+    .stars button[aria-pressed="true"] { color: var(--sand); border-color: var(--sand); }
+    .sessions { display: grid; gap: 8px; }
+    .sessions div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--body); }
+    .codes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; font-family: var(--mono); font-size: 13px; }
+    .payout { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; padding: 16px 20px; border: 1px solid var(--line); background: var(--panel); font-size: 14px; color: var(--body); }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <!-- chrome:mark -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="0 0 120 80">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z" />
+        <g stroke-width="1.4" opacity=".85">
+          <path d="M62 14 V70" />
+          <path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" />
+          <path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" />
+          <path d="M38 26 Q62 31 86 26" /><path d="M31 39 Q62 45 93 39" /><path d="M29 54 Q62 60 95 54" />
+        </g>
+      </g>
+      <g fill="currentColor">
+        <rect x="59.5" y="26.5" width="5" height="5" /><rect x="45" y="39" width="5" height="5" /><rect x="74" y="39" width="5" height="5" />
+        <rect x="59.5" y="42" width="5" height="5" /><rect x="33" y="52" width="4.5" height="4.5" /><rect x="86.5" y="52" width="4.5" height="4.5" />
+        <rect x="59.5" y="57" width="5" height="5" /><rect x="47" y="27" width="4" height="4" /><rect x="73" y="27" width="4" height="4" />
+      </g>
+    </symbol>
+  </svg>
+  <!-- /chrome:mark -->
+  <!-- chrome:nav -->
+  <header class="nav" id="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="/" aria-label="The Decentralized Compute Company — home">
+        <svg aria-hidden="true"><use href="#mark" /></svg>
+        <span class="brand-name">tdcc</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
+        <a href="/exact-core.html">Exact Core</a>
+        <a href="/marketplace.html">Marketplace</a>
+        <a href="/#platform">Platform</a>
+        <a href="/#developers">Developers</a>
+        <a href="/app.html">App</a>
+        <a href="/team.html">Team</a>
+        <a href="/litepaper.html">Litepaper</a>
+        <a href="/cask-q.html">Research</a>
+        <a class="btn solid sm nav-cta" href="/marketplace.html#hosts">List your GPU</a>
+      </nav>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </header>
+  <!-- /chrome:nav -->
+
+  <main id="content">
+    <section class="a-head">
+      <div class="wrap">
+        <div class="a-head-row">
+          <div>
+            <p class="eyebrow">My account</p>
+            <h1 id="hello">Your marketplace</h1>
+            <p id="who"></p>
+          </div>
+          <div class="actions" id="head-actions" hidden><a class="btn" href="/admin.html" id="admin-link" hidden>Moderation</a><a class="btn" href="/marketplace.html">Browse GPUs</a><button class="btn" type="button" id="logout">Sign out</button></div>
+        </div>
+        <div class="form-err" id="verify-banner" role="status" style="margin-top:24px"></div>
+        <nav class="a-tabs" id="tabs" aria-label="Account sections" hidden>
+          <a href="#rentals" data-tab="rentals">My rentals</a>
+          <a href="#requests" data-tab="requests">Requests on my GPUs<span class="badge" id="req-badge" hidden></span></a>
+          <a href="#listings" data-tab="listings">My GPUs</a>
+          <a href="#settings" data-tab="settings">Settings</a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="pane">
+      <div class="wrap" id="pane"><p class="loading">Loading…</p></div>
+    </section>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="/" aria-label="TDCC home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
+          <p class="about">A GPU marketplace, a job network that checks its own work, and Exact Core, an AI chip whose answers anyone can re-check.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul><li><a href="/team.html">Team</a></li><li><a href="/litepaper.html">Litepaper</a></li><li><a href="/cask-q.html">Research</a></li><li><a href="/two-laptops-80-tps.html">Engineering</a></li><li><a href="/facts.html">Facts</a></li></ul>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <ul><li><a href="https://x.com/computecompany" target="_blank" rel="noreferrer">X / @computecompany</a></li><li><a href="https://www.linkedin.com/in/anilyagiz/" target="_blank" rel="noreferrer">LinkedIn</a></li><li><a href="mailto:anil@decentralizedcompute.company">Email</a></li><li><a href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">GitHub</a></li><li><a href="/feed.xml">RSS</a></li></ul>
+        </div>
+      </div>
+      <div class="wordmark" aria-hidden="true">decentralized compute</div>
+      <div class="legal"><span>© 2026 The Decentralized Compute Company</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/facts.html">Facts</a></span></div>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+
+  <script src="/js/market.js"></script>
+  <script src="/js/site.js"></script>
+  <script>
+    (() => {
+      const { api, esc, money, ago, toast, onUser, openAuth, logout, setUser, resendVerification } = window.TDCC;
+      const $ = (id) => document.getElementById(id);
+      const pane = $('pane');
+
+      const ENV = { pytorch: 'PyTorch', vllm: 'vLLM', ubuntu: 'Ubuntu base', custom: 'Own image', model: 'Served models' };
+      const ACCESS = { ssh: 'SSH', jupyter: 'Jupyter', api: 'API only', tdcc: 'tdcc API' };
+      const until = (ts) => {
+        const left = ts - Math.floor(Date.now() / 1000);
+        const when = new Date(ts * 1000).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+        if (left <= 0) return `ended ${when}`;
+        const h = Math.floor(left / 3600), m = Math.floor((left % 3600) / 60);
+        return `ends ${when} (${h ? `${h} h ` : ''}${m} min left)`;
+      };
+      const machineBox = (r, host) => {
+        const m = r.machine;
+        if (!m) return '';
+        if (m.state === 'failed') return `<div class="form-err show">The machine could not be started: ${esc(m.error || 'unknown error')}. ${host ? 'Check Docker on your machine; tdcc retries on the next check-in after you fix it, or cancel the rental.' : 'The host has been told. You can message them or cancel for a refund.'}</div>`;
+        if (m.state !== 'running') return `<div class="reveal-box"><b>Machine starting</b><span>${host ? 'Your machine is preparing the container.' : 'The host\'s machine is preparing your container. The first start downloads the environment and can take a few minutes; this page shows how to connect as soon as it is ready.'}</span></div>`;
+        if (host) return `<div class="meta"><span class="st online">Container running</span><span>port ${m.port}</span></div>`;
+        if (m.ssh) return `<div class="reveal-box"><b>Your machine is ready</b><span>Connect with the SSH key you gave:</span>
+          <div class="cmd"><code>${esc(m.ssh)}</code><button class="btn sm" data-copy="${esc(m.ssh)}">Copy</button></div>
+          <span>You are root in your own container with the rented GPUs. Everything in it is deleted when the rental ends, so copy your results off before then. Access ${esc(until(r.access_expires_at))}.</span></div>`;
+        if (m.jupyter_url) return `<div class="reveal-box"><b>Your notebook is ready</b><span><a href="${esc(m.jupyter_url)}" target="_blank" rel="noopener noreferrer">Open Jupyter →</a> (the link contains your private token; do not share it)</span>
+          ${m.tls_fingerprint ? `<span>The connection is encrypted with a certificate made just for your machine, so your browser will say it is not trusted. Before you continue, check that the certificate's SHA-256 fingerprint is:</span><code style="font-size:11px;overflow-wrap:anywhere">${esc(m.tls_fingerprint)}</code>` : ''}
+          <span>Everything is deleted when the rental ends, so download your results before then. Access ${esc(until(r.access_expires_at))}.</span></div>`;
+        return '';
+      };
+      const usageLine = (r) => {
+        if (!r.usage || !(r.usage.connections || r.usage.refused)) return '';
+        const mins = Math.round(r.usage.active_secs / 60);
+        return `<div class="meta"><span>Usage: ${r.usage.connections} connection${r.usage.connections === 1 ? '' : 's'}</span><span>${mins} min with a request open</span>${r.usage.refused ? `<span>${r.usage.refused} turned away by the fair-use limit</span>` : ''}</div>`;
+      };
+      const tdccBox = (r) => {
+        if (r.access !== 'tdcc' || r.status !== 'accepted') return '';
+        if (!r.join_token) return `<div class="reveal-box"><b>tdcc access</b><span>Accepted. The host's machine is not checking in right now, so the connect command is not available yet. It appears here as soon as the machine is back online. Access ${esc(until(r.access_expires_at))}.</span></div>`;
+        const cmd = `tdcc client --join ${r.join_token}`;
+        return `<div class="reveal-box"><b>Connect through tdcc</b>
+          <span>1. On the computer where you ran <code>tdcc auth init</code>, run:</span>
+          <div class="cmd"><code>${esc(cmd)}</code><button class="btn sm" data-copy="${esc(cmd)}">Copy</button></div>
+          <span>2. Point any OpenAI-compatible client at <code>http://localhost:9337/v1</code>. To see the host's models, open <code>http://localhost:9337/v1/models</code>.</span>
+          <span>Access ${esc(until(r.access_expires_at))}. It closes by itself; nothing to clean up.</span></div>`;
+      };
+      const STATUS = { pending: 'Waiting for host', awaiting_payment: 'Waiting for payment', accepted: 'Accepted', declined: 'Declined', cancelled: 'Cancelled', completed: 'Completed', expired: 'No answer', active: 'Listed', paused: 'Paused', hidden: 'Hidden by moderators' };
+      const PAY = { authorized: 'Card authorized, not charged yet', captured: 'Paid by card', released: 'Card hold released', refunded: 'Refunded', partially_refunded: 'Partly refunded', failed: 'Payment failed' };
+      const when = (ts) => new Date(ts * 1000).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+      const payLine = (r, host) => {
+        if (!r.payment_status || r.payment_status === 'none' || r.payment_status === 'awaiting') return '';
+        let t = PAY[r.payment_status] || r.payment_status;
+        if (r.refunded_cents) t += ` · ${money(r.refunded_cents)} back to the renter`;
+        if (host && r.payout_status === 'held') t += ` · you receive ${money(Math.max(0, r.total_cents - r.refunded_cents - r.fee_cents))} about a day after the rental ends`;
+        if (host && r.payout_status === 'paid') t += ' · paid out to you';
+        return `<span>${esc(t)}</span>`;
+      };
+      const startLine = (r) => r.access_starts_at ? `<span>${r.access_starts_at > Date.now() / 1000 ? 'Starts' : 'Started'} ${esc(when(r.access_starts_at))}</span>`
+        : r.start_at ? `<span>Wants to start ${esc(when(r.start_at))}</span>` : '';
+      // Messages, reviews, and disputes, shared by both sides.
+      const extras = (r) => {
+        if (r.status === 'awaiting_payment') return '';
+        const b = [`<button class="btn sm" data-msgs="${esc(r.id)}">Messages${r.message_count ? ` (${r.message_count})` : ''}</button>`];
+        if (r.can_review) b.push(`<button class="btn sm" data-review="${esc(r.id)}">Leave a review</button>`);
+        if (r.dispute_open) b.push('<span class="st pending">Dispute open</span>');
+        else if (['accepted', 'completed'].includes(r.status) || (r.status === 'cancelled' && r.access_starts_at)) b.push(`<button class="btn sm" data-dispute="${esc(r.id)}">Report a problem</button>`);
+        return `<div class="card-actions">${b.join('')}</div><div data-slot></div>`;
+      };
+      let user = null, current = null;
+
+      const tabOf = () => (['rentals', 'requests', 'listings', 'settings'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'rentals');
+      const status = (s) => `<span class="st ${esc(s)}">${esc(STATUS[s] || s)}</span>`;
+      const act = async (fn, okMsg) => {
+        try { await fn(); if (okMsg) toast(okMsg); show(current, true); }
+        catch (err) { toast(err.message, true); }
+      };
+
+      async function refreshBadge() {
+        try {
+          const { requests } = await api('GET', '/api/my/requests');
+          const n = requests.filter((r) => r.status === 'pending').length;
+          $('req-badge').textContent = n; $('req-badge').hidden = !n;
+          return requests;
+        } catch { return null; }
+      }
+
+      // ---------- rentals (as renter) ----------
+      async function rentals() {
+        const { rentals } = await api('GET', '/api/my/rentals');
+        if (!rentals.length) return `<div class="empty">You have not rented anything yet. <a href="/marketplace.html">Find a GPU →</a></div>`;
+        return `<div class="cards">${rentals.map((r) => `
+          <article class="card">
+            <div class="card-top"><b>${r.gpu_count} × ${esc(r.gpu_model)} · ${r.vram_gb}GB</b><span class="price">${money(r.total_cents)}</span></div>
+            <div class="meta">${status(r.status)}<span>${r.hours} h</span>${startLine(r)}<span>${esc(r.region_label)}</span><span>${esc(ENV[r.environment])}${r.image ? ' · ' + esc(r.image) : ''}</span><span>${esc(ACCESS[r.access])}</span><span>Host: ${esc(r.host_name)}</span><span>Sent ${ago(r.created_at)}</span>${payLine(r, false)}</div>
+            ${r.status === 'pending' ? '<p class="meta">The host has your request. You will see their reply here, and you can message them below.</p>' : ''}
+            ${r.status === 'awaiting_payment' ? '<p class="meta">The card payment was not finished, so the host has not seen this request. Cancel it and send a new one to try again.</p>' : ''}
+            ${r.host_email ? `<div class="reveal-box"><b>Host contact</b><span><a href="mailto:${esc(r.host_email)}">${esc(r.host_email)}</a>${r.payment_status === 'captured' ? '' : ' — agree on payment with the host.'}</span>${r.host_note ? `<span>${esc(r.host_note)}</span>` : ''}</div>` : (r.host_note ? `<div class="quote">${esc(r.host_note)}</div>` : '')}
+            ${tdccBox(r)}${machineBox(r, false)}${usageLine(r)}
+            ${['pending', 'accepted', 'awaiting_payment'].includes(r.status) ? `<div class="card-actions">
+              ${r.status === 'accepted' ? `<button class="btn sm" data-do="complete" data-id="${esc(r.id)}">Mark finished</button>` : ''}
+              <button class="btn sm" data-do="cancel" data-id="${esc(r.id)}">${r.status === 'accepted' ? 'Cancel rental' : 'Cancel request'}</button></div>` : ''}
+            ${extras(r)}
+          </article>`).join('')}</div>`;
+      }
+
+      // ---------- requests (as host) ----------
+      async function requests() {
+        const list = await refreshBadge();
+        if (!list) throw new Error('Could not load requests.');
+        if (!list.length) return `<div class="empty">No requests yet. Requests on your GPUs show up here. <a href="#listings">See my GPUs →</a></div>`;
+        return `<div class="cards">${list.map((r) => `
+          <article class="card">
+            <div class="card-top"><b>${esc(r.renter_name)} wants ${r.gpu_count} × ${esc(r.gpu_model)} for ${r.hours} h</b><span class="price">${money(r.total_cents)}</span></div>
+            <div class="meta">${status(r.status)}${startLine(r)}<span>${esc(ENV[r.environment])}${r.image ? ' · ' + esc(r.image) : ''}</span><span>${esc(ACCESS[r.access])}</span><span>${money(r.price_cents)} / GPU·h</span><span>Received ${ago(r.created_at)}</span>${r.renter_reviews ? `<span>Renter ${esc(TDCC.stars(r.renter_rating, r.renter_reviews))}</span>` : '<span>New renter</span>'}${payLine(r, true)}</div>
+            ${r.message ? `<div class="quote">${esc(r.message)}</div>` : ''}
+            ${machineBox(r, true)}${usageLine(r)}${r.access === 'tdcc' ? `<div class="meta"><span>tdcc owner ID ${esc(r.renter_owner_id.slice(0, 12))}…</span><span>${r.status === 'accepted' ? `Your node admits this renter automatically; access ${esc(until(r.access_expires_at))}` : r.status === 'pending' ? 'Accepting opens access right away for the rented hours' : 'No access'}</span></div>` : ''}
+            ${r.renter_email ? `<div class="reveal-box"><b>Renter contact</b><span><a href="mailto:${esc(r.renter_email)}">${esc(r.renter_email)}</a> — send them access details${r.payment_status === 'captured' ? '' : ' and agree on payment'}.</span>${r.ssh_key ? `<span>SSH key:</span><code>${esc(r.ssh_key)}</code><span><button class="btn sm" data-copy="${esc(r.ssh_key)}">Copy SSH key</button></span>` : ''}</div>` : ''}
+            ${r.status === 'pending' ? `<div class="card-actions"><input class="inp" id="note-${esc(r.id)}" maxlength="1000" placeholder="Optional note to the renter, e.g. start time" />
+              <button class="btn sm solid" data-do="accept" data-id="${esc(r.id)}">Accept</button><button class="btn sm" data-do="decline" data-id="${esc(r.id)}">Decline</button></div>` : ''}
+            ${r.status === 'accepted' ? `<div class="card-actions"><button class="btn sm" data-do="complete" data-id="${esc(r.id)}">Mark finished</button><button class="btn sm" data-do="cancel" data-id="${esc(r.id)}">Cancel rental</button></div>` : ''}
+            ${extras(r)}
+          </article>`).join('')}</div>`;
+      }
+
+      // ---------- listings ----------
+      async function listings() {
+        const { listings } = await api('GET', '/api/my/listings');
+        let head = `<div class="pane-head"><h2>My GPUs</h2><a class="btn solid sm" href="/marketplace.html#hosts">List another GPU</a></div>`;
+        const pay = await api('GET', '/api/me/payouts').catch(() => ({ enabled: false }));
+        if (pay.enabled) {
+          head += pay.ready
+            ? `<div class="payout"><span>Payouts are set up. Earned: <b>${money(pay.paid_cents)}</b> paid out, <b>${money(pay.pending_cents)}</b> on the way. The marketplace fee is ${(pay.fee_bps / 100).toFixed(1).replace(/\.0$/, '')}%.</span><button class="btn sm" data-payouts>Open Stripe dashboard</button></div>`
+            : `<div class="payout"><span><b>Set up payouts to go live.</b> Renters pay by card and we send your earnings to your bank through Stripe. Until you finish, your GPUs are not shown to renters.</span><button class="btn sm solid" data-payouts>${pay.account ? 'Finish payout setup' : 'Set up payouts'}</button></div>`;
+        }
+        if (!listings.length) return head + `<div class="empty">You have not listed a GPU yet. <a href="/marketplace.html#hosts">List one in two minutes →</a></div>`;
+        return head + `<div class="cards">${listings.map((l) => `
+          <article class="card" id="l-${esc(l.id)}">
+            <div class="card-top"><b>${l.gpu_count} × ${esc(l.gpu_model)} · ${l.vram_gb}GB</b><span class="price">${money(l.price_cents)} <span class="meta" style="display:inline">/ GPU·h</span></span></div>
+            <div class="meta">${status(l.status)}${l.online ? '<span class="st online">Machine online</span>' : ''}<span>${esc(l.region_label)}</span><span>${esc(l.host_kind_label)}</span><span>${l.available} of ${l.gpu_count} free</span><span>${l.host_completed} completed</span>${l.host_rating ? `<span>${esc(TDCC.stars(l.host_rating, l.host_reviews))}</span>` : ''}${l.uptime_7d !== null ? `<span>${l.uptime_7d}% uptime (7 days)</span>` : ''}${l.hardware_verified ? '<span class="st online">Hardware checked</span>' : ''}
+              ${l.node_linked ? `<span>${l.node_seen_at ? 'Machine last seen ' + ago(l.node_seen_at) : 'Machine linked, waiting for first check-in'}${l.node_version ? ' · tdcc ' + esc(l.node_version) : ''}</span>` : ''}</div>
+            ${l.machine_rentals ? '<div class="meta"><span class="st online">Instant machines on</span><span>Accepted SSH and Jupyter rentals start in their own container automatically.</span></div>' : (l.online ? '<div class="meta">To start renters\' machines automatically in isolated containers: <code>tdcc market machines on --public-host &lt;your address&gt;</code></div>' : '')}
+            ${l.api_rentals ? '<div class="meta"><span class="st online">tdcc API rentals on</span></div>' : (l.online ? '<div class="meta">tdcc API rentals are off. To offer them: <code>tdcc market api-rentals on</code>, then serve with <code>--trust-policy allowlist</code>.</div>' : '')}
+            ${l.node_gpus.length ? `<div class="meta">Machine reports: ${l.node_gpus.map((g) => esc(g.name) + (g.vram_gb ? ` (${g.vram_gb} GB)` : '')).join(', ')}</div>` : ''}
+            ${l.description ? `<div class="quote">${esc(l.description)}</div>` : ''}
+            ${l.status === 'hidden' ? `<div class="form-err show">${esc(l.moderation_note || 'Moderators hid this listing.')} To appeal, email anil@decentralizedcompute.company.</div>
+            <div class="card-actions"><button class="btn sm" data-do="remove" data-id="${esc(l.id)}">Remove</button></div>` : `<div class="card-actions">
+              <button class="btn sm" data-edit="${esc(l.id)}">Edit</button>
+              <button class="btn sm" data-do="${l.status === 'active' ? 'pause' : 'resume'}" data-id="${esc(l.id)}">${l.status === 'active' ? 'Pause' : 'Resume'}</button>
+              <button class="btn sm" data-do="link" data-id="${esc(l.id)}">${l.node_linked ? 'New link token' : 'Link machine'}</button>
+              ${l.node_linked ? `<button class="btn sm" data-do="unlink" data-id="${esc(l.id)}">Unlink machine</button>` : ''}
+              <button class="btn sm" data-do="remove" data-id="${esc(l.id)}">Remove</button>
+            </div>`}
+            <div data-slot></div>
+          </article>`).join('')}</div>`;
+      }
+
+      function editForm(l) {
+        return `<form class="edit" data-save="${esc(l.id)}">
+          <label class="fl">Price per GPU-hour (USD)<input class="inp" name="price" type="number" min="0.01" max="1000" step="0.01" value="${(l.price_cents / 100).toFixed(2)}" required /></label>
+          <label class="fl">How many GPUs<input class="inp" name="gpu_count" type="number" min="1" max="512" value="${l.gpu_count}" required /></label>
+          <label class="fl">Minimum hours<input class="inp" name="min_hours" type="number" min="1" max="720" value="${l.min_hours}" /></label>
+          <label class="fl full">Description<textarea class="inp" name="description" maxlength="600">${esc(l.description)}</textarea></label>
+          <div class="card-actions full"><button class="btn sm solid" type="submit">Save changes</button><button class="btn sm" type="button" data-cancel-edit>Cancel</button></div>
+        </form>`;
+      }
+
+      // ---------- settings ----------
+      async function settings() {
+        const [sess, act] = await Promise.all([api('GET', '/api/me/sessions'), api('GET', '/api/me/activity')]);
+        const EVENTS = { login: 'Signed in', login_failed: 'Wrong password', '2fa_failed': 'Wrong two-factor code', '2fa_enabled': 'Two-factor sign-in turned on', '2fa_disabled': 'Two-factor sign-in turned off', password_changed: 'Password changed', password_reset: 'Password reset by email', email_change_requested: 'Email change requested', email_changed: 'Email changed', sessions_revoked: 'Signed out devices', signup: 'Account created', payout_setup_started: 'Payout setup started' };
+        return `<div class="settings">
+          <form id="tfa-form" novalidate>
+            <h3>Two-factor sign-in</h3>
+            ${user.two_factor ? `<p>On. Signing in needs your password and a code from your authenticator app.</p>
+              <div class="form-err" role="alert"></div>
+              <label class="fl">Password<input class="inp" name="password" type="password" autocomplete="current-password" required /></label>
+              <label class="fl">Code or recovery code<input class="inp" name="code" autocomplete="one-time-code" required /></label>
+              <button class="btn" type="submit">Turn off</button>`
+            : `<p>Protect your account with a code from an authenticator app (Google Authenticator, 1Password, Authy…) in addition to your password.</p>
+              <div class="form-err" role="alert"></div><div data-tfa></div>
+              <button class="btn solid" type="button" data-tfa-start>Turn on</button>`}
+          </form>
+          <form id="pw-form" novalidate>
+            <h3>Change password</h3>
+            <div class="form-err" role="alert"></div>
+            <label class="fl">Current password<input class="inp" name="current_password" type="password" autocomplete="current-password" required /></label>
+            <label class="fl">New password<input class="inp" name="new_password" type="password" autocomplete="new-password" minlength="10" required /><small>At least 10 characters. You will be signed out on other devices.</small></label>
+            <button class="btn solid" type="submit">Update password</button>
+          </form>
+          <form id="email-form" novalidate>
+            <h3>Change email</h3>
+            ${user.pending_email ? `<p>We sent a confirmation link to <b>${esc(user.pending_email)}</b>. Your sign-in email changes once you open it.</p>` : '<p>We send a confirmation link to the new address; the change happens once you open it.</p>'}
+            <div class="form-err" role="alert"></div>
+            <label class="fl">New email<input class="inp" name="email" type="email" autocomplete="email" required /></label>
+            <label class="fl">Password<input class="inp" name="password" type="password" autocomplete="current-password" required /></label>
+            <button class="btn" type="submit">Change email</button>
+          </form>
+          <form id="sess-form" novalidate>
+            <h3>Signed-in devices</h3>
+            <div class="sessions">${sess.sessions.map((x) => `<div><span>${esc(x.user_agent ? x.user_agent.replace(/^Mozilla\/5.0 /, '').slice(0, 70) : 'Unknown device')}${x.current ? ' <b>(this device)</b>' : ''}</span><span class="meta">active ${ago(x.last_seen_at)}${x.current ? '' : ` <button class="btn sm" type="button" data-revoke="${esc(x.id)}">Sign out</button>`}</span></div>`).join('')}</div>
+            ${sess.sessions.length > 1 ? '<button class="btn" type="button" data-revoke="others">Sign out all other devices</button>' : ''}
+          </form>
+          <form id="act-form" novalidate>
+            <h3>Recent account activity</h3>
+            <div class="sessions">${act.events.slice(0, 12).map((e) => `<div><span>${esc(EVENTS[e.event] || e.event)}${e.detail ? ' · ' + esc(e.detail) : ''}</span><span class="meta">${ago(e.created_at)}${e.ip && e.ip !== 'local' ? ' · ' + esc(e.ip) : ''}</span></div>`).join('') || '<p>Nothing yet.</p>'}</div>
+          </form>
+          <form id="export-form" novalidate>
+            <h3>Your data</h3>
+            <p>Download everything we store about you (profile, listings, rentals, messages, reviews, activity) as a JSON file.</p>
+            <button class="btn" type="button" data-export>Download my data</button>
+          </form>
+          <form id="del-form" class="danger" novalidate>
+            <h3>Delete account</h3>
+            <p>This removes your account, your listings, and your request history. Running rentals must be finished or cancelled first. This cannot be undone.</p>
+            <div class="form-err" role="alert"></div>
+            <label class="fl">Password<input class="inp" name="password" type="password" autocomplete="current-password" required /></label>
+            <button class="btn danger-btn" type="submit">Delete my account</button>
+          </form>
+        </div>`;
+      }
+
+      const VIEWS = { rentals, requests, listings, settings };
+      let listingCache = [];
+      async function show(tab, quiet = false) {
+        current = tab;
+        document.querySelectorAll('#tabs a').forEach((a) => a.setAttribute('aria-current', a.dataset.tab === tab ? 'page' : 'false'));
+        if (!quiet) pane.innerHTML = '<p class="loading">Loading…</p>';
+        try {
+          if (tab === 'listings') listingCache = (await api('GET', '/api/my/listings')).listings;
+          pane.innerHTML = await VIEWS[tab]();
+        } catch (err) {
+          if (err.status === 401) return signedOut();
+          pane.innerHTML = `<div class="empty">${esc(err.message)}</div>`;
+        }
+        if (tab !== 'requests') refreshBadge();
+      }
+
+      function signedOut() {
+        user = null;
+        $('tabs').hidden = true; $('head-actions').hidden = true; $('verify-banner').classList.remove('show');
+        $('hello').textContent = 'Your marketplace'; $('who').textContent = '';
+        pane.innerHTML = `<div class="signin-grid">
+          <div class="signin"><p class="eyebrow">One account, both sides</p><h2>Sign in to rent or list GPUs.</h2><p>One free account for both: rent GPUs from hosts, or list your own and answer requests.</p>
+          <div class="actions"><button class="btn solid" type="button" data-auth="signup">Create account</button><button class="btn" type="button" data-auth="login">Sign in</button></div></div>
+          <ol class="perks">
+            <li><span>01</span><div><b>Rent</b><p>Send a request to any listed GPU. You get SSH, Jupyter, or API access once the host accepts.</p></div></li>
+            <li><span>02</span><div><b>Host</b><p>List your machine, link it with <code>tdcc market link</code>, and accept the requests you want.</p></div></li>
+            <li><span>03</span><div><b>Track</b><p>Requests, messages, usage, reviews, and payouts in one place.</p></div></li>
+          </ol></div>`;
+      }
+
+      function signedIn(u) {
+        user = u;
+        $('tabs').hidden = false; $('head-actions').hidden = false;
+        $('hello').textContent = `Hi, ${u.name.split(' ')[0]}`;
+        $('who').textContent = u.email;
+        $('admin-link').hidden = !u.is_admin;
+        const vb = $('verify-banner');
+        vb.classList.toggle('show', !!u.needs_verification);
+        vb.innerHTML = u.needs_verification ? `Confirm your email to list GPUs and send rental requests. We sent a link to <b>${esc(u.email)}</b>. <button class="link" type="button" id="resend" style="background:none;border:0;padding:0;cursor:pointer">Send it again</button>` : '';
+        if (u.needs_verification) $('resend').addEventListener('click', resendVerification);
+        show(tabOf());
+      }
+
+      window.addEventListener('hashchange', () => { if (user) show(tabOf()); });
+      $('logout').addEventListener('click', async () => { await logout(); toast('Signed out'); });
+      onUser((u) => (u ? signedIn(u) : signedOut()));
+
+      pane.addEventListener('click', async (e) => {
+        const auth = e.target.closest('[data-auth]');
+        if (auth) return openAuth({ mode: auth.dataset.auth });
+        const copy = e.target.closest('[data-copy]');
+        if (copy) {
+          try { await navigator.clipboard.writeText(copy.dataset.copy); toast('Copied'); } catch { toast('Copy failed. Select the text and copy it manually.', true); }
+          return;
+        }
+        const edit = e.target.closest('[data-edit]');
+        if (edit) {
+          const l = listingCache.find((x) => x.id === edit.dataset.edit);
+          const slot = edit.closest('.card').querySelector('[data-slot]');
+          slot.innerHTML = editForm(l);
+          return;
+        }
+        if (e.target.closest('[data-cancel-edit]')) { e.target.closest('[data-slot]').innerHTML = ''; return; }
+        const slotOf = (el) => el.closest('.card').querySelector('[data-slot]:last-of-type');
+        const msgs = e.target.closest('[data-msgs]');
+        if (msgs) {
+          const slot = slotOf(msgs);
+          if (slot.dataset.open === 'msgs') { slot.innerHTML = ''; slot.dataset.open = ''; return; }
+          slot.dataset.open = 'msgs';
+          return loadThread(slot, msgs.dataset.msgs);
+        }
+        const rev = e.target.closest('[data-review]');
+        if (rev) {
+          const slot = slotOf(rev); slot.dataset.open = 'review';
+          slot.innerHTML = `<form class="edit" data-review-form="${esc(rev.dataset.review)}"><div class="full"><span class="meta">How did it go?</span><div class="stars" role="group" aria-label="Rating">${[1, 2, 3, 4, 5].map((n) => `<button type="button" data-star="${n}" aria-pressed="false">★</button>`).join('')}</div></div>
+            <label class="fl full">Comment (optional, shown publicly)<textarea class="inp" name="comment" maxlength="1000"></textarea></label>
+            <div class="card-actions full"><button class="btn sm solid" type="submit">Post review</button></div></form>`;
+          return;
+        }
+        const star = e.target.closest('[data-star]');
+        if (star) {
+          const n = +star.dataset.star;
+          star.parentElement.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(+x.dataset.star <= n)));
+          star.closest('form').dataset.rating = n;
+          return;
+        }
+        const dis = e.target.closest('[data-dispute]');
+        if (dis) {
+          const slot = slotOf(dis); slot.dataset.open = 'dispute';
+          slot.innerHTML = `<form class="edit" data-dispute-form="${esc(dis.dataset.dispute)}"><label class="fl full">What went wrong? Our team reads every report and replies by email.<textarea class="inp" name="reason" minlength="10" maxlength="2000" required></textarea></label>
+            <div class="card-actions full"><button class="btn sm solid" type="submit">Send to TDCC</button><span class="meta">If you paid by card, the host's payout waits until this is settled.</span></div></form>`;
+          return;
+        }
+        if (e.target.closest('[data-payouts]')) {
+          const b = e.target.closest('[data-payouts]'); b.disabled = true;
+          try { location.href = (await api('POST', '/api/me/payouts', {})).url; } catch (err) { toast(err.message, true); b.disabled = false; }
+          return;
+        }
+        const rv = e.target.closest('[data-revoke]');
+        if (rv) {
+          try { await api('POST', '/api/me/sessions/revoke', { id: rv.dataset.revoke }); toast('Signed out'); show('settings', true); } catch (err) { toast(err.message, true); }
+          return;
+        }
+        if (e.target.closest('[data-export]')) {
+          try {
+            const data = await api('GET', '/api/me/export');
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+            a.download = 'tdcc-marketplace-data.json';
+            document.body.appendChild(a); a.click(); a.remove();
+          } catch (err) { toast(err.message, true); }
+          return;
+        }
+        if (e.target.closest('[data-tfa-start]')) {
+          const b = e.target.closest('[data-tfa-start]');
+          try {
+            const { secret, uri } = await api('GET', '/api/me/2fa');
+            b.hidden = true;
+            const box = b.closest('form').querySelector('[data-tfa]');
+            box.innerHTML = `<p>1. In your authenticator app, add an account with this key (or open the link on your phone):</p>
+              <div class="cmd"><code>${esc(secret.match(/.{1,4}/g).join(' '))}</code><button class="btn sm" type="button" data-copy="${esc(secret)}">Copy</button></div>
+              <p><a class="link" href="${esc(uri)}">Open in authenticator app</a></p>
+              <input type="hidden" name="secret" value="${esc(secret)}" />
+              <label class="fl">2. Enter the 6-digit code it shows<input class="inp" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required /></label>
+              <button class="btn solid" type="submit">Confirm and turn on</button>`;
+          } catch (err) { toast(err.message, true); }
+          return;
+        }
+        const b = e.target.closest('[data-do]');
+        if (!b) return;
+        const id = b.dataset.id, what = b.dataset.do;
+        b.disabled = true;
+        try {
+          if (['accept', 'decline', 'cancel', 'complete'].includes(what)) {
+            if (what === 'cancel' && !confirm('Cancel this request?')) return;
+            const note = $('note-' + id);
+            await act(() => api('POST', `/api/rentals/${id}/${what}`, { note: note ? note.value.trim() : '' }),
+              { accept: 'Accepted. You can now see the renter\'s contact details.', decline: 'Declined', cancel: 'Cancelled', complete: 'Marked as finished' }[what]);
+          } else if (what === 'pause' || what === 'resume') {
+            await act(() => api('PATCH', `/api/listings/${id}`, { status: what === 'pause' ? 'paused' : 'active' }), what === 'pause' ? 'Paused. Renters no longer see it.' : 'Listed again');
+          } else if (what === 'remove') {
+            if (!confirm('Remove this listing? Renters will no longer see it.')) return;
+            await act(() => api('DELETE', `/api/listings/${id}`), 'Listing removed');
+          } else if (what === 'unlink') {
+            await act(() => api('DELETE', `/api/listings/${id}/node-token`), 'Machine unlinked');
+          } else if (what === 'link') {
+            const l = listingCache.find((x) => x.id === id);
+            if (l.node_linked && !confirm('Create a new token? The machine linked now will stop checking in until you run the new command.')) return;
+            const { token } = await api('POST', `/api/listings/${id}/node-token`, {});
+            const slot = b.closest('.card').querySelector('[data-slot]');
+            slot.innerHTML = `<div class="reveal-box"><b>Run this on the machine with the GPU</b>
+              <div class="cmd"><code>tdcc market link ${esc(token)}</code><button class="btn sm" data-copy="tdcc market link ${esc(token)}">Copy</button></div>
+              <span>This token is shown only once. Keep <code>tdcc serve</code> or <code>tdcc market online</code> running and the listing shows as online within a minute. Don't have tdcc yet? <a href="/app.html">Install it</a>.</span></div>`;
+          }
+        } catch (err) {
+          toast(err.message, true);
+        } finally {
+          b.disabled = false;
+        }
+      });
+
+      async function loadThread(slot, id) {
+        try {
+          const { messages } = await api('GET', `/api/rentals/${id}/messages`);
+          slot.innerHTML = `<div class="thread">${messages.map((m) => `<div class="msg${m.mine ? ' mine' : ''}">${esc(m.body)}<small>${m.mine ? 'You' : esc(m.author)} · ${ago(m.created_at)}</small></div>`).join('') || '<p class="meta">No messages yet.</p>'}</div>
+            <form class="card-actions" data-thread="${esc(id)}"><textarea class="inp" name="body" maxlength="2000" rows="2" placeholder="Write a message…" required></textarea><button class="btn sm solid" type="submit">Send</button></form>`;
+          const t = slot.querySelector('.thread'); t.scrollTop = t.scrollHeight;
+        } catch (err) { toast(err.message, true); }
+      }
+
+      pane.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const err = f.querySelector('.form-err');
+        const fail = (m) => { if (err) { err.textContent = m; err.classList.add('show'); } else toast(m, true); };
+        const btn = f.querySelector('[type=submit]'); btn.disabled = true;
+        try {
+          if (f.dataset.save) {
+            const d = Object.fromEntries(new FormData(f).entries());
+            await api('PATCH', `/api/listings/${f.dataset.save}`, { price: Number(d.price), gpu_count: Number(d.gpu_count), min_hours: Number(d.min_hours || 1), description: d.description });
+            toast('Saved'); show('listings', true);
+          } else if (f.id === 'pw-form') {
+            await api('POST', '/api/me/password', { current_password: f.current_password.value, new_password: f.new_password.value });
+            f.reset(); err.classList.remove('show'); toast('Password updated');
+          } else if (f.dataset.thread) {
+            await api('POST', `/api/rentals/${f.dataset.thread}/messages`, { body: f.body.value });
+            f.body.value = '';
+            await loadThread(f.closest('[data-slot]'), f.dataset.thread);
+          } else if (f.dataset.reviewForm) {
+            if (!f.dataset.rating) return fail('Choose 1 to 5 stars.');
+            await api('POST', `/api/rentals/${f.dataset.reviewForm}/review`, { rating: +f.dataset.rating, comment: f.comment.value.trim() });
+            toast('Thanks for your review'); show(current, true);
+          } else if (f.dataset.disputeForm) {
+            await api('POST', `/api/rentals/${f.dataset.disputeForm}/dispute`, { reason: f.reason.value.trim() });
+            toast('Sent. We will reply by email.'); show(current, true);
+          } else if (f.id === 'email-form') {
+            const d = await api('POST', '/api/me/email', { email: f.email.value.trim(), password: f.password.value });
+            setUser(await TDCC.me(true));
+            toast(d.changed ? 'Email changed. Confirm it from your account page.' : 'Check the new inbox for the confirmation link.');
+          } else if (f.id === 'tfa-form') {
+            if (user.two_factor) {
+              await api('DELETE', '/api/me/2fa', { password: f.password.value, code: f.code.value.trim() });
+              user = await TDCC.me(true); toast('Two-factor sign-in is off'); show('settings', true);
+            } else {
+              const d = await api('POST', '/api/me/2fa', { secret: f.secret.value, code: f.code.value.trim() });
+              user = await TDCC.me(true);
+              f.innerHTML = `<h3>Two-factor sign-in is on</h3><p>Save these recovery codes somewhere safe. Each one signs you in once if you lose your phone. They are shown only now.</p>
+                <div class="codes">${d.recovery_codes.map((c) => `<span>${esc(c)}</span>`).join('')}</div>
+                <button class="btn" type="button" data-copy="${esc(d.recovery_codes.join('\n'))}">Copy codes</button>`;
+            }
+          } else if (f.id === 'del-form') {
+            if (!confirm('Delete your account permanently?')) return;
+            await api('DELETE', '/api/me', { password: f.password.value });
+            setUser(null); toast('Your account was deleted');
+          }
+        } catch (ex) {
+          fail(ex.message);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
