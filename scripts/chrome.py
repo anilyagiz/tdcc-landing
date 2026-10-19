@@ -46,6 +46,7 @@ PAGES = {
     "litepaper.html": ("/litepaper.html", EARLY),
     "cask-q.html": ("/cask-q.html", EARLY),
     "two-laptops-80-tps.html": ("/cask-q.html", EARLY),
+    "launch.html": (None, EARLY),
 }
 
 MARK = """<svg width="0" height="0" style="position:absolute" aria-hidden="true">
