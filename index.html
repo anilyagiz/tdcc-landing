@@ -635,6 +635,7 @@
     ]
   }
   </script>
+  <link rel="stylesheet" href="/styles/motion.css" />
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -736,10 +737,10 @@
     <!-- ================= STATS ================= -->
     <section class="wrap" aria-label="TDCC at a glance" style="padding-top:clamp(64px,8vw,112px)">
       <div class="stats reveal">
-        <div class="stat"><div class="n">80<sup>TOK/S</sup></div><p>Qwen 3.8 27B on two compact laptops, up from about 50 tok/s with the same weights.</p></div>
-        <div class="stat"><div class="n">85.8<sup>TOK/S</sup></div><p>LFM2.5-230M decoding on the Exact Core FPGA card, bit for bit with the simulator.</p></div>
-        <div class="stat"><div class="n">10<sup>MODELS</sup></div><p>Modern open models running with real weights on the Exact Core card.</p></div>
-        <div class="stat"><div class="n">$50K<sup>RAISED</sup></div><p>On star.fun in about ten minutes, at an $8M campaign valuation, July 2026.</p></div>
+        <div class="stat"><div class="n"><span data-count="80">80</span><sup>TOK/S</sup></div><p>Qwen 3.8 27B on two compact laptops, up from about 50 tok/s with the same weights.</p></div>
+        <div class="stat"><div class="n"><span data-count="85.8" data-decimals="1">85.8</span><sup>TOK/S</sup></div><p>LFM2.5-230M decoding on the Exact Core FPGA card, bit for bit with the simulator.</p></div>
+        <div class="stat"><div class="n"><span data-count="10">10</span><sup>MODELS</sup></div><p>Modern open models running with real weights on the Exact Core card.</p></div>
+        <div class="stat"><div class="n">$<span data-count="50">50</span>K<sup>RAISED</sup></div><p>On star.fun in about ten minutes, at an $8M campaign valuation, July 2026.</p></div>
       </div>
     </section>
 
@@ -940,7 +941,7 @@
           <p class="lede">Underneath are schedulers, isolated runtimes, compatibility checks, verification, reputation, and payouts. What your team sees is a job, its state, and a receipt.</p>
         </div>
 
-        <div class="stack">
+        <div class="stack" data-spotlight=".stack-row">
           <article class="stack-row reveal">
             <div class="stack-num">01</div>
             <div class="stack-copy">
@@ -1714,5 +1715,6 @@ tdcc receipts show job_8fq1za --verify</pre>
       document.getElementById('join').scrollIntoView();
     }
   </script>
+  <script src="/js/motion.js"></script>
 </body>
 </html>

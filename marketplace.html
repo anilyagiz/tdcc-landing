@@ -18,8 +18,13 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@computecompany" />
   <link rel="stylesheet" href="/styles/site.css" />
+  <link rel="stylesheet" href="/styles/motion.css" />
   <style>
-    .m-head { padding: clamp(56px, 8vw, 104px) 0 40px; border-bottom: 1px solid var(--line); background: radial-gradient(ellipse 50% 90% at 85% 0%, rgba(216,191,148,.09), transparent 70%); }
+    .m-head { position: relative; padding: clamp(56px, 8vw, 104px) 0 40px; border-bottom: 1px solid var(--line); background: radial-gradient(ellipse 50% 90% at 85% 0%, rgba(216,191,148,.09), transparent 70%); }
+    .m-head > .wrap { position: relative; z-index: 1; }
+    .m-head .lede { text-shadow: 0 1px 18px rgba(12,11,9,.9); }
+    .m-head .notice { background: rgba(18, 16, 12, .92); backdrop-filter: blur(4px); }
+    @media (min-width: 981px) { #host-wrap { position: sticky; top: 96px; align-self: start; } }
     .m-head-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 48px; align-items: end; }
     .m-head .display { max-width: 13ch; }
     .notice { display: flex; gap: 12px; margin-top: 36px; padding: 14px 16px; border: 1px solid rgba(227,179,122,.3); background: rgba(227,179,122,.05); color: var(--body); font-size: 14px; }
@@ -106,6 +111,9 @@
     .host-steps { list-style: none; margin: 32px 0 0; padding: 0; counter-reset: h; }
     .host-steps li { counter-increment: h; display: grid; grid-template-columns: 44px 1fr; padding: 16px 0; border-top: 1px solid var(--line); }
     .host-steps li::before { content: "0" counter(h); font-family: var(--mono); font-size: 11px; color: var(--muted); padding-top: 4px; }
+    .host-steps[data-draw] li { grid-template-columns: 58px 1fr; }
+    .host-steps[data-draw] li::before { padding-left: 18px; }
+    .host-steps[data-draw]::before, .host-steps[data-draw]::after { left: 0; }
     .host-steps b { display: block; font-weight: 500; color: var(--text); }
     .host-steps span { color: var(--body); font-size: 14.5px; }
     .form { display: grid; gap: 14px; padding: 28px; border: 1px solid var(--line); background: var(--panel); }
@@ -180,6 +188,10 @@
 
   <main id="content">
     <section class="m-head">
+      <div class="net-stage" aria-hidden="true">
+        <canvas data-network></canvas>
+        <div class="net-legend"><span><i class="on"></i>Online GPU</span><span><i></i>Listed GPU</span><span>Work moving across the network</span></div>
+      </div>
       <div class="wrap">
         <div class="m-head-grid">
           <div>
@@ -188,12 +200,13 @@
           </div>
           <div>
             <p class="lede">Data centers, micro-clusters, and independent hosts list their GPUs here and set their own hourly price. Pick a machine, send a request, and the host confirms it.</p>
-            <div class="actions" style="margin-top:24px"><a class="btn solid" href="#market">Find a GPU</a><a class="btn" href="#hosts">List your GPU</a></div>
+            <div class="actions" style="margin-top:24px"><a class="btn solid shine" href="#market">Find a GPU</a><a class="btn" href="#hosts">List your GPU</a></div>
           </div>
         </div>
-        <div class="notice" role="note"><b>EARLY ACCESS</b><span>No card is needed and nothing is charged on this site. When a host accepts your request, you both see each other's email and agree on payment and start time directly. Hosts with a linked TDCC node show as <span class="online">online</span> with hardware reported by the machine itself.</span></div>
+        <div class="notice" role="note"><b id="notice-tag">EARLY ACCESS</b><span id="notice-text">No card is needed and nothing is charged on this site. When a host accepts your request, you both see each other's email and agree on payment and start time directly. Hosts with a linked TDCC node show as <span class="online">online</span> with hardware reported by the machine itself.</span></div>
       </div>
     </section>
+    <div class="ticker" data-ticker hidden aria-label="GPUs listed right now"><div class="ticker-track"></div></div>
 
     <section class="market" id="market" aria-label="GPU listings">
       <div class="wrap">
@@ -220,7 +233,7 @@
 
         <div class="table" role="table" aria-label="Available GPUs">
           <div class="row headrow" role="row"><span role="columnheader">GPU</span><span role="columnheader" class="c-region">Region</span><span role="columnheader" class="c-host">Host</span><span role="columnheader" class="c-avail">Available</span><span role="columnheader" class="c-rep">Track record</span><span role="columnheader">Price</span><span role="columnheader" class="act"><span class="sr-only">Action</span></span></div>
-          <div id="rows"><div class="loading">Loading listings…</div></div>
+          <div id="rows" data-spotlight=".row"><div class="loading">Loading listings…</div></div>
           <div class="row exact" role="row">
             <span class="gpu" role="cell"><b>Exact Core · FPGA card</b><span>Bit-exact, re-checkable</span></span>
             <span class="c-region" role="cell">eu-central</span>
@@ -240,13 +253,18 @@
         <div>
           <p class="eyebrow">For GPU owners</p>
           <h2 class="h2" id="hosts-title">List your GPU in two minutes.</h2>
-          <ol class="host-steps">
+          <ol class="host-steps" data-draw>
             <li><div><b>Fill in the form</b><span>GPU, how many, region, and your hourly price. You will be asked to create a free account.</span></div></li>
             <li><div><b>Your listing goes live</b><span>Renters see it right away. Pause it or change the price any time from your account.</span></div></li>
             <li><div><b>Optional: link your machine</b><span>Run <code>tdcc market link</code> with the token from your account. Your listing then shows as online with the GPUs the machine actually reports.</span></div></li>
             <li><div><b>Optional: instant API rentals</b><span>Run <code>tdcc market api-rentals on</code> and serve with <code>--trust-policy allowlist</code>. Renters you accept then use your models through tdcc for exactly the hours they paid for, with no access to anything else on your machine.</span></div></li>
+            <li><div><b>Optional: instant machines</b><span>Run <code>tdcc market machines on</code> with Docker installed. Each SSH or Jupyter renter you accept then gets an isolated container with the GPUs they rented, deleted when the rental ends.</span></div></li>
             <li><div><b>Accept the requests you want</b><span>You see each request first. Contact details are shared only after you accept.</span></div></li>
           </ol>
+          <div class="term reveal" aria-label="Example: linking a machine with tdcc">
+            <div class="term-bar"><i></i><i></i><i></i><span>your machine</span></div>
+            <pre data-typing data-lines='[{"t":"$ curl -fsSL https://raw.githubusercontent.com/anilyagiz/tdcc-mesh/v0.74.0/install.sh | bash","k":"cmd"},{"t":"tdcc 0.74.0 installed","k":"dim"},{"t":"$ tdcc market link tdcc_node_••••••••","k":"cmd"},{"t":"✅ Linked this machine to marketplace listing gpu_7Qm2…","k":"ok"},{"t":"   Reporting NVIDIA GeForce RTX 4090 (24 GB)","k":"dim"},{"t":"$ tdcc market machines on --public-host gpu.example.com","k":"cmd"},{"t":"Machine rentals: ON","k":"ok"},{"t":"$ tdcc market online","k":"cmd"},{"t":"Listing gpu_7Qm2…: listed and online. 1 rental request is waiting.","k":"ok"}]'></pre>
+          </div>
         </div>
         <div id="host-wrap">
           <form class="form" id="host-form" aria-labelledby="host-form-title" novalidate>
@@ -364,6 +382,7 @@
   </footer>
 
   <script src="/js/market.js"></script>
+  <script src="/js/motion.js"></script>
   <script>
     (() => {
       const { api, esc, money, toast, requireUser, resendVerification } = window.TDCC;
@@ -407,9 +426,11 @@
         REGIONS = d.regions; next = d.next_offset;
         const filtered = st.vram !== 'all' || st.region !== 'all' || st.q || st.online;
         if (!filtered) {
-          $('s-gpus').textContent = d.free_gpus;
-          $('s-hosts').textContent = d.total;
-          $('s-regions').textContent = d.active_regions.length;
+          const M = window.TDCCMotion;
+          const set = (id, n) => (M ? M.count($(id), n) : ($(id).textContent = n));
+          set('s-gpus', d.free_gpus); set('s-hosts', d.total); set('s-regions', d.active_regions.length);
+          if (!append && M) M.ticker(document.querySelector('[data-ticker]'), d.listings.slice(0, 24).map((l) =>
+            `<span class="dot${l.online ? ' on' : ''}"></span><b>${esc(l.gpu_model)}</b> ${l.vram_gb}GB × ${l.gpu_count}<span>${esc(l.region_label)}</span><span class="px">${money(l.price_cents)}/h</span>${l.machine_rentals ? '<span>instant machine</span>' : l.api_rentals ? '<span>tdcc API</span>' : ''}`));
         }
         const sel = $('f-region');
         sel.innerHTML = '<option value="all">Any</option>' + d.active_regions.map((r) => `<option value="${esc(r)}">${esc(REGIONS[r] || r)}</option>`).join('');
@@ -438,7 +459,7 @@
         const max = Math.max(1, ...L.map((l) => l.host_completed));
         rowsEl.innerHTML = L.length ? L.map((l) => {
           const av = l.available ? `<span class="avail${l.available < 2 ? ' low' : ''}"><i></i>${l.available} of ${l.gpu_count} free</span>` : '<span class="avail soon"><i></i>Booked now</span>';
-          return `<div class="row" role="row">
+          return `<div class="row spot" role="row">
             <span class="gpu" role="cell"><b>${esc(l.gpu_model)} · ${l.vram_gb}GB</b><span>${badges(l)}</span></span>
             <span class="c-region" role="cell">${esc(l.region_label)}</span>
             <span class="c-host" role="cell">${esc(l.host_name)} · ${esc(l.host_kind_label)}</span>
@@ -450,6 +471,7 @@
         }).join('') + (next !== null ? `<div class="row" role="row" style="grid-template-columns:1fr"><button class="btn" type="button" id="more">Show more (${total - L.length} left)</button></div>` : '')
           : `<div class="empty">${filtered ? 'Nothing matches these filters.' : 'No GPUs are listed yet. <a class="link" href="#hosts">Be the first to list one →</a>'}</div>`;
         $('count').textContent = `${total} listing${total === 1 ? '' : 's'} · prices set by hosts, per GPU-hour`;
+        if (window.TDCCMotion) window.TDCCMotion.stagger(rowsEl, '.row:not(.st-in)');
       };
       rowsEl.addEventListener('click', (e) => { if (e.target.closest('#more')) { e.target.disabled = true; load(true); } });
 
@@ -632,6 +654,8 @@
 
       TDCC.config().then((c) => {
         if (c.payments) {
+          $('notice-tag').textContent = 'SECURE PAYMENTS';
+          $('notice-text').innerHTML = 'Pay by card through Stripe. Your card is only authorized when you send a request and charged when the host accepts; we hold the money until a day after your rental ends. Hosts with a linked TDCC node show as <span class="online">online</span> with hardware reported by the machine itself.';
           $('e-note').textContent = 'Your card is only authorized now. It is charged when the host accepts, and released if they decline. Hosts are paid a day after your rental ends, so you can raise a problem first.';
           $('request').textContent = 'Continue to payment →';
         }
