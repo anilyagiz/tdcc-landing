@@ -241,6 +241,59 @@
     document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
   }
 
+  // ---------- animated graphics card ----------
+  // Fans spin with a simulated load, memory lights flicker with it, the
+  // card tilts toward the cursor and bobs gently, and the floating chips
+  // show the numbers. Purely illustrative.
+  function gpu(root) {
+    const card = root.querySelector(".gpu-card");
+    const fans = [...root.querySelectorAll(".gpu-fan")].map((g) => ({ g, a: Math.random() * 360 }));
+    const leds = [...root.querySelectorAll(".gpu-leds rect")];
+    const out = (sel) => root.querySelector(sel);
+    let load = 0.72, target = 0.72, running = false, last = 0, tx = 0, ty = 0;
+    const show = () => {
+      root.style.setProperty("--load", load.toFixed(3));
+      const set = (sel, v) => { const el = out(sel); if (el) el.textContent = v; };
+      set("[data-gpu-util]", Math.round(load * 100));
+      set("[data-gpu-mem]", (8 + load * 13.5).toFixed(1));
+      set("[data-gpu-temp]", Math.round(44 + load * 28));
+      set("[data-gpu-tps]", Math.round(12 + load * 46));
+      const bar = out("[data-gpu-util-bar]");
+      if (bar) bar.style.width = `${Math.round(load * 100)}%`;
+    };
+    show();
+    if (reduce) return;
+    setInterval(() => { if (running) target = Math.min(0.98, Math.max(0.28, target + (Math.random() - 0.45) * 0.35)); }, 1600);
+    setInterval(() => { if (running) show(); }, 700);
+    const frame = (now) => {
+      if (!running) return;
+      const dt = Math.min(48, now - (last || now)); last = now;
+      load += (target - load) * Math.min(1, dt / 900);
+      const speed = 0.12 + load * 0.95; // degrees per ms
+      for (const f of fans) {
+        f.a = (f.a + speed * dt) % 360;
+        f.g.setAttribute("transform", `translate(${f.g.dataset.cx} ${f.g.dataset.cy}) rotate(${f.a.toFixed(1)})`);
+      }
+      if (Math.random() < 0.35) for (const l of leds) l.style.opacity = Math.random() < load ? (0.55 + Math.random() * 0.45).toFixed(2) : "0.12";
+      const bob = Math.sin(now / 1400) * 5;
+      card.style.setProperty("--bob", `${bob.toFixed(2)}px`);
+      card.style.setProperty("--ry", `${(-16 + tx * 14).toFixed(2)}deg`);
+      card.style.setProperty("--rx", `${(8 - ty * 10).toFixed(2)}deg`);
+      requestAnimationFrame(frame);
+    };
+    const hero = root.closest("section") || root;
+    hero.addEventListener("pointermove", (e) => {
+      const r = root.getBoundingClientRect();
+      tx = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (r.width / 1.2)));
+      ty = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height / 2)) / (r.height / 1.2)));
+    }, { passive: true });
+    hero.addEventListener("pointerleave", () => { tx = 0; ty = 0; });
+    const start = () => { if (!running && !document.hidden) { running = true; last = 0; requestAnimationFrame(frame); } };
+    const stop = () => { running = false; };
+    onView(root, (e) => (e.isIntersecting ? start() : stop()), { keep: true, margin: "0px" });
+    document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
+  }
+
   function hexA(hex, a) {
     const m = hex.replace("#", "").match(/.{2}/g);
     if (!m || m.length < 3) return `rgba(216,191,148,${a})`;
@@ -250,6 +303,7 @@
 
   function init() {
     document.querySelectorAll("canvas[data-network]").forEach(network);
+    document.querySelectorAll("[data-gpu]").forEach(gpu);
     document.querySelectorAll("[data-spotlight]").forEach(spotlight);
     document.querySelectorAll("pre[data-typing]").forEach(typing);
     document.querySelectorAll("[data-draw]").forEach(drawLine);
