@@ -435,6 +435,20 @@
     .honest { padding: 16px 24px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; }
     .honest b { color: var(--body); font-weight: 500; }
 
+    /* ---------- products ---------- */
+    .products { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+    .product { position: relative; display: flex; flex-direction: column; gap: 14px; min-height: 360px; padding: clamp(28px, 3vw, 44px); background: var(--bg); transition: background .3s ease; }
+    .product::before { content: ""; position: absolute; left: 0; top: 0; height: 2px; width: 0; background: var(--sand); transition: width .5s cubic-bezier(.2,.7,.1,1); }
+    .product:hover { background: var(--bg-2); }
+    .product:hover::before { width: 100%; }
+    .p-k { color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+    .product h3 { margin-top: 28px; font-family: var(--serif); font-size: clamp(28px, 2.6vw, 38px); font-weight: 400; line-height: 1.08; letter-spacing: -.015em; color: var(--text); }
+    .product p { color: var(--body); font-size: 15.5px; line-height: 1.6; }
+    .p-go { margin-top: auto; padding-top: 20px; color: var(--sand); font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; }
+    .p-go i { display: inline-block; font-style: normal; transition: transform .25s ease; }
+    .product:hover .p-go i { transform: translateX(4px); }
+    @media (max-width: 960px) { .products { grid-template-columns: 1fr; } .product { min-height: 0; } }
+
     /* ---------- marketplace ---------- */
     .market { border: 1px solid var(--line); background: var(--bg-2); }
     .market-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
@@ -448,7 +462,8 @@
     .market-src { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; color: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
     .market-src.live { color: var(--ok); }
     .market-src.live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px rgba(185,217,154,.7); }
-    .market-src + .market-note { margin-left: 0; }
+    .market-src { margin-left: 0; }
+    .market-src + .market-note { margin-left: auto; }
     a.listing { color: inherit; }
     .market-note { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
     .listings { display: grid; grid-template-columns: repeat(3, 1fr); }
@@ -547,8 +562,13 @@
       .rows div { grid-template-columns: 96px 1fr auto; padding: 12px 16px; }
     }
     @media (max-width: 520px) {
-      .stats { grid-template-columns: 1fr; }
-      .stat + .stat { border-left: 0; border-top: 1px solid var(--line); }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .stat { padding: 22px 14px 20px; }
+      .stat + .stat { border-left: 0; }
+      .stat:nth-child(even) { border-left: 1px solid var(--line); }
+      .stat:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .stat .n { font-size: 34px; }
+      .stat p { font-size: 12.5px; }
       .pipeline { grid-template-columns: 1fr; }
       .step + .step { border-left: 0; border-top: 1px solid var(--line); }
       .principles { grid-template-columns: 1fr; }
@@ -672,14 +692,11 @@
         <span class="brand-name">tdcc</span>
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
-        <a href="/exact-core.html">Exact Core</a>
         <a href="/marketplace.html">Marketplace</a>
-        <a href="/#platform">Platform</a>
-        <a href="/#developers">Developers</a>
         <a href="/app.html">App</a>
-        <a href="/team.html">Team</a>
-        <a href="/litepaper.html">Litepaper</a>
+        <a href="/exact-core.html">Exact Core</a>
         <a href="/cask-q.html">Research</a>
+        <a href="/team.html">Company</a>
         <a class="btn solid sm nav-cta" href="/#join">Get early access</a>
       </nav>
       <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
@@ -697,13 +714,11 @@
       <div class="wrap">
         <div class="hero-top fade-in" style="--d:.2s">
           <a class="pill" href="/launch.html"><b>NEW</b>Rebrand live · Desktop GA Oct 20 · Marketplace Oct 31</a>
-          <a class="pill" href="/exact-core.html"><b>CHIP</b>Announcing TDCC Exact Core</a>
         </div>
       </div>
 
       <div class="wrap hero-content">
         <div>
-          <p class="eyebrow fade-in" style="--d:.1s">AI inference &amp; compute network</p>
           <h1 id="hero-title" class="display title-in"><span class="ln"><span>Every GPU</span></span><span class="ln"><span>on Earth,</span></span><span class="ln"><span>working</span></span><span class="ln"><span><em>as one.</em></span></span></h1>
         </div>
         <div class="hero-side fade-in" style="--d:.9s">
@@ -712,7 +727,6 @@
             <a class="btn solid" href="#join">Get early access <span class="arr">→</span></a>
             <a class="btn" href="/app.html">Explore the app</a>
           </div>
-          <div class="terminal" aria-label="Example command"><span class="p">$</span><span id="typed">tdcc jobs submit ./job.yaml --watch</span><span class="caret" aria-hidden="true"></span></div>
         </div>
       </div>
 
@@ -731,15 +745,6 @@
       </div>
     </section>
 
-    <!-- ================= LATEST ================= -->
-    <div class="wrap">
-      <ul class="latest" aria-label="Latest from TDCC">
-        <li><a href="/exact-core.html"><span>Chip</span>Exact Core: an AI chip whose answers anyone can re-check</a></li>
-        <li><a href="/app.html#downloads"><span>Release</span>tdcc 0.74.0 for Linux x64 &amp; ARM64</a></li>
-        <li><a href="/cask-q.html"><span>Paper</span>CASK-Q: 25% lower attention error at 2-bit, same size</a></li>
-        <li><a href="https://x.com/stardotfun/status/2080051528732193280" target="_blank" rel="noreferrer"><span>Funding</span>$50K raised on star.fun in about 10 minutes</a></li>
-      </ul>
-    </div>
 
     <!-- ================= STATS ================= -->
     <section class="wrap" aria-label="TDCC at a glance" style="padding-top:clamp(64px,8vw,112px)">
@@ -748,6 +753,95 @@
         <div class="stat"><div class="n"><span data-count="85.8" data-decimals="1">85.8</span><sup>TOK/S</sup></div><p>LFM2.5-230M decoding on the Exact Core FPGA card, bit for bit with the simulator.</p></div>
         <div class="stat"><div class="n"><span data-count="10">10</span><sup>MODELS</sup></div><p>Modern open models running with real weights on the Exact Core card.</p></div>
         <div class="stat"><div class="n">$<span data-count="50">50</span>K<sup>RAISED</sup></div><p>On star.fun in about ten minutes, at an $8M campaign valuation, July 2026.</p></div>
+      </div>
+    </section>
+
+
+    <!-- ================= PRODUCTS ================= -->
+    <section class="block" id="products" aria-labelledby="products-title">
+      <div class="wrap">
+        <div class="head reveal">
+          <div>
+            <p class="eyebrow">Products</p>
+            <h2 id="products-title" class="h2">One network. Three ways in.</h2>
+          </div>
+          <p class="lede">Rent a machine, send a job, or run on hardware whose answers anyone can check. Same network, same account.</p>
+        </div>
+        <div class="products reveal">
+          <a class="product" href="/marketplace.html">
+            <span class="p-k">01 · Marketplace</span>
+            <h3>Rent a GPU, or earn from yours.</h3>
+            <p>Hourly GPUs from data centers, clusters, and homes. Instant SSH and Jupyter machines, or models as an API.</p>
+            <span class="p-go">Open the marketplace <i>→</i></span>
+          </a>
+          <a class="product" href="/app.html">
+            <span class="p-k">02 · TDCC App</span>
+            <h3>Send the job. Pay for the result.</h3>
+            <p>Console, CLI, SDKs, and a job API. Work is matched to hardware, run in isolation, and checked before it is billed.</p>
+            <span class="p-go">Explore the app <i>→</i></span>
+          </a>
+          <a class="product" href="/exact-core.html">
+            <span class="p-k">03 · Exact Core</span>
+            <h3>Answers anyone can re-check.</h3>
+            <p>Our own open-source AI chip. Same bits as its simulator, so any laptop can replay a job and catch a dishonest run.</p>
+            <span class="p-go">Meet the chip <i>→</i></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+
+
+
+    <!-- ================= MARKETPLACE ================= -->
+    <section class="block" id="marketplace" aria-labelledby="market-title">
+      <div class="wrap">
+        <div class="head reveal">
+          <div>
+            <p class="eyebrow">GPU marketplace</p>
+            <h2 id="market-title" class="h2">Rent the machine, or pay for the result.</h2>
+          </div>
+          <p class="lede">Every GPU on the network is also listed in the TDCC marketplace. Rent raw capacity when you want the box. Submit a job when you want the answer. Same hosts, same reputation, one account.</p>
+        </div>
+
+        <div class="market reveal">
+          <div class="market-bar">
+            <span class="market-src" id="market-src">Example listings</span>
+            <a class="link market-note" href="/marketplace.html" style="color:var(--sand)">Open the full marketplace →</a>
+          </div>
+
+          <div class="listings" id="listings">
+            <article class="listing" data-f="80"><div class="l-top"><span class="l-class">80GB class</span><span class="l-av"><i></i>Available</span></div><h3>Data-center node</h3><p class="l-spec">80 GB VRAM · eu-central · ×8</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:96%"></i></span><b>0.96</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
+            <article class="listing" data-f="80"><div class="l-top"><span class="l-class">80GB class</span><span class="l-av"><i></i>Available</span></div><h3>Certified micro-cluster</h3><p class="l-spec">80 GB VRAM · us-east · ×2</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:92%"></i></span><b>0.92</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
+            <article class="listing" data-f="48"><div class="l-top"><span class="l-class">48GB class</span><span class="l-av"><i></i>Available</span></div><h3>Regional cluster</h3><p class="l-spec">48 GB VRAM · ap-south · ×4</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:89%"></i></span><b>0.89</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
+            <article class="listing" data-f="24"><div class="l-top"><span class="l-class">24GB class</span><span class="l-av"><i></i>Available</span></div><h3>Independent host</h3><p class="l-spec">24 GB consumer GPU · eu-west · ×1</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:84%"></i></span><b>0.84</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
+            <article class="listing exact" data-f="exact"><div class="l-top"><span class="l-class">Exact Core</span><span class="l-av soon"><i></i>Coming</span></div><h3>Exact Core card</h3><p class="l-spec">Kintex-7 PCIe · bit-exact · re-checkable</p><div class="l-rep"><span>Verification</span><span class="meter"><i style="width:100%"></i></span><b>exact</b></div><div class="l-foot"><span class="price" data-rent="USDC escrow on Solana" data-job="USDC escrow on Solana"></span><span class="l-cta">Learn →</span></div></article>
+            <article class="listing" data-f="24"><div class="l-top"><span class="l-class">24GB class</span><span class="l-av"><i></i>Available</span></div><h3>Two-laptop pair</h3><p class="l-spec">Coordinated · 27B-class decode · ×2</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:81%"></i></span><b>0.81</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= NETWORK / HOW ================= -->
+    <section class="block" id="network" aria-labelledby="network-title">
+      <div class="wrap">
+        <div class="head reveal">
+          <div>
+            <p class="eyebrow">How it works</p>
+            <h2 id="network-title" class="h2">What happens after you submit a job.</h2>
+          </div>
+          <p class="lede">GPUs are not interchangeable. TDCC matches every job with hardware that fits its model, memory, speed, price, and reliability needs, then checks that the work was actually done.</p>
+        </div>
+
+        <div class="pipeline reveal">
+          <article class="step"><p class="mono">01 / Submit</p><div class="dot"></div><h3>Submit</h3><p>Send a training, fine-tuning, or inference job through the API, CLI, SDK, or console.</p></article>
+          <article class="step"><p class="mono">02 / Match</p><div class="dot"></div><h3>Match</h3><p>The router finds a data center or GPU that fits memory, speed, price, and reliability.</p></article>
+          <article class="step"><p class="mono">03 / Run</p><div class="dot"></div><h3>Run</h3><p>The job executes in an approved, isolated runtime with live telemetry and automatic requeue.</p></article>
+          <article class="step"><p class="mono">04 / Verify</p><div class="dot"></div><h3>Verify</h3><p>The result is checked before it is billed. Hosts are paid only for accepted work.</p></article>
+        </div>
+
+        <p class="quote-line reveal">AI teams bring the models. TDCC brings the compute.</p>
       </div>
     </section>
 
@@ -763,7 +857,6 @@
               <a class="btn solid" href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">View on GitHub <span class="arr">→</span></a>
               <a class="btn" href="/exact-core.html">Read the announcement</a>
             </div>
-            <div class="terminal" style="margin-top:22px;max-width:460px"><span class="p">$</span><span>pip install -e . &amp;&amp; tdcc-exact demo</span></div>
           </div>
 
           <div class="chip-stage reveal" id="chip-stage" aria-label="Illustration of the TDCC Exact Core chip">
@@ -834,335 +927,10 @@
           </div>
         </div>
 
-        <div class="chip-blocks reveal">
-          <article><p class="mono">Matrix unit</p><p>The heavy LLM math in 8-bit numbers, in a fixed order.</p></article>
-          <article><p class="mono">Vector unit</p><p>Softmax and norms with fixed rounding, so the bits never drift.</p></article>
-          <article class="hl"><p class="mono">Trace log</p><p>Records every step, so a dispute points to the one step that differs.</p></article>
-          <article><p class="mono">Sequencer + DMA</p><p>One instruction per cycle; every data movement is an instruction.</p></article>
-        </div>
-
-        <div class="chip-grid">
-          <div class="reveal" id="exact-flow">
-            <p class="eyebrow">How TDCC Exact works</p>
-            <ol class="exact-steps">
-              <li><b>Rent</b><span>A renter opens a job on Solana; the USDC waits in escrow.</span></li>
-              <li><b>Run</b><span>A provider runs it on Exact Core and posts the answer's fingerprint.</span></li>
-              <li><b>Check</b><span>Any verifier re-runs it on a laptop. A mismatch opens a challenge.</span></li>
-              <li><b>Settle</b><span>Honest providers get paid: 80% to the host, 20% to TDCC. A cheater loses its stake; the renter is refunded and the verifier takes a share.</span></li>
-            </ol>
-            <p class="prog">Solana program <code>HzpKeqHLg7Mmjh1JmGymef7Z7hf3JXhaagp6UgTSH24A</code></p>
-          </div>
-          <div class="panel reveal">
-            <div class="fig"><span>tdcc-exact demo</span><b>CHEATER CAUGHT</b></div>
-<pre class="code"><span class="c">1. renter opens a yes/no oracle job, locks 2.00 USDC</span>
-<span class="c">2. provider A runs honestly; B skips layer 1</span>
-   A: NO  <span class="k">3c85c23e…</span>
-   B: NO  <span class="k">5013c640…</span>  <span class="c">same answer, other fingerprint</span>
-<span class="c">3. a verifier re-runs the job on this laptop</span>
-   A: match    → <span class="s">accept</span>
-   B: MISMATCH → <span class="k">challenge</span>
-<span class="c">4. bisecting B's trace</span>
-   first fault: <span class="k">step 659</span>, slice 0, pc 11
-<span class="c">5. settlement</span>
-   final: {'A': <span class="s">'Settled'</span>, 'B': <span class="k">'Slashed'</span>}</pre>
-          </div>
-        </div>
-
-        <div class="chip-results reveal">
-          <div class="fig"><span>Measured on the card · Kintex-7 xc7k480t, two DDR3 channels</span><b>Same tokens as the simulator, bit for bit</b></div>
-          <div class="res">
-            <div><span class="n">85.8</span><span class="u">tok/s</span><p>LFM2.5-230M, 4-bit · device decode</p></div>
-            <div><span class="n">31.3</span><span class="u">tok/s</span><p>Qwen3-0.6B, 4-bit · device decode</p></div>
-            <div><span class="n">24.5</span><span class="u">tok/s</span><p>Qwen3.5-0.8B, 4-bit · device decode</p></div>
-            <div><span class="n">10</span><span class="u">models</span><p>Modern models running with real weights on the card</p></div>
-          </div>
-          <p class="honest"><b>Honest status.</b> The Exact layer (trace log, fingerprint, dispute) runs on the bit-exact simulator today. The trace log in hardware and its speed on the card are not built or measured yet.</p>
-        </div>
       </div>
     </section>
 
-    <!-- ================= THESIS ================= -->
-    <section class="block" id="thesis" aria-labelledby="thesis-title" style="border-top:0">
-      <div class="wrap">
-        <div class="head reveal">
-          <div>
-            <p class="eyebrow">Why this exists</p>
-            <h2 id="thesis-title" class="h2">AI runs on compute that is scattered across thousands of operators.</h2>
-          </div>
-          <p class="lede">Demand for AI compute compounds every year, while supply sits fragmented across thousands of operators that no single team can reach. Data centers have capacity they cannot fill; AI teams have workloads they cannot place. TDCC is the grid between them.</p>
-        </div>
 
-        <div class="thesis reveal">
-          <div class="thesis-col">
-            <p class="mono">Today · renting machines</p>
-            <h3>You buy hours and inherit every risk.</h3>
-            <ul>
-              <li>Pick hardware, drivers, regions, and images yourself</li>
-              <li>A stalled run at hour six is still billed</li>
-              <li>Silent failures look exactly like success</li>
-              <li>Capacity is locked to whichever cloud you chose</li>
-            </ul>
-          </div>
-          <div class="thesis-col">
-            <p class="mono" style="color:var(--sand)">TDCC · receiving work</p>
-            <h3>You buy accepted results. The network carries the risk.</h3>
-            <ul>
-              <li>Describe the workload, not the machine</li>
-              <li>Failed or stalled jobs requeue automatically to another host</li>
-              <li>Every result is checked against acceptance criteria</li>
-              <li>One API reaches data centers and independent GPUs alike</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="layers reveal" aria-labelledby="layers-title">
-          <h3 id="layers-title" class="sr-only">Where TDCC fits</h3>
-          <article class="layer">
-            <p class="mono">01 / Research layer</p>
-            <h3>Exa makes web knowledge easier to ask for.</h3>
-            <p><a href="https://exa.ai/" target="_blank" rel="noreferrer">Exa</a> lets you describe a question and receive organized information from the web. It changed how a research request begins.</p>
-          </article>
-          <article class="layer">
-            <p class="mono">02 / Capacity layer</p>
-            <h3>Vast makes GPU capacity easier to rent.</h3>
-            <p><a href="https://vast.ai/" target="_blank" rel="noreferrer">Vast</a> exposes a broad GPU marketplace where you find and rent an instance. It changed how a compute rental begins.</p>
-          </article>
-          <article class="layer us">
-            <p class="mono">03 / Work layer</p>
-            <h3>TDCC is built for the accepted outcome.</h3>
-            <p>A job is matched to suitable capacity and evaluated against its acceptance criteria. Settlement follows only after useful work is accepted.</p>
-          </article>
-        </div>
-        <div class="layers-note reveal"><span>Different layers, not a head-to-head benchmark.</span><a class="link" href="/litepaper.html">Read the litepaper →</a></div>
-      </div>
-    </section>
-
-    <!-- ================= PLATFORM ================= -->
-    <section class="block" id="platform" aria-labelledby="platform-title">
-      <div class="wrap">
-        <div class="head reveal">
-          <div>
-            <p class="eyebrow">The platform</p>
-            <h2 id="platform-title" class="h2">Inference, fine-tuning, training, verification.</h2>
-          </div>
-          <p class="lede">Underneath are schedulers, isolated runtimes, compatibility checks, verification, reputation, and payouts. What your team sees is a job, its state, and a receipt.</p>
-        </div>
-
-        <div class="stack" data-spotlight=".stack-row">
-          <article class="stack-row reveal">
-            <div class="stack-num">01</div>
-            <div class="stack-copy">
-              <h3>Inference <span class="tag live">Live</span></h3>
-              <p>Serve open-weight models and batch jobs through one OpenAI- and Anthropic-compatible gateway. Point the tools you already use at a single URL.</p>
-              <ul class="specs">
-                <li><span>1.1</span>Batch inference and dedicated open-model endpoints</li>
-                <li><span>1.2</span>Drop-in gateway for Claude Code, Codex, and OpenCode</li>
-                <li><span>1.3</span>Streaming responses; upstream credentials resolved server-side</li>
-              </ul>
-              <a class="link" href="#developers">Use the gateway →</a>
-            </div>
-            <div class="panel">
-              <div class="fig"><span>Gateway</span><b>OPENAI · ANTHROPIC</b></div>
-<pre class="code"><span class="c"># point any compatible tool at TDCC</span>
-<span class="k">export</span> ANTHROPIC_BASE_URL=<span class="s">"https://decentralizedcompute.company/api/anthropic"</span>
-<span class="k">export</span> ANTHROPIC_API_KEY=<span class="s">"$TDCC_API_KEY"</span>
-
-<span class="c"># or the OpenAI-compatible surface</span>
-base_url = <span class="s">"https://decentralizedcompute.company/api/v1"</span></pre>
-            </div>
-          </article>
-
-          <article class="stack-row reveal">
-            <div class="stack-num">02</div>
-            <div class="stack-copy">
-              <h3>Fine-tuning <span class="tag">Pilot</span></h3>
-              <p>LoRA and QLoRA runs matched to hardware that fits the model, memory, deadline, and budget. If a host drops mid-run, the job moves to another one.</p>
-              <ul class="specs">
-                <li><span>2.1</span>Constraints for VRAM, region, deadline, and max spend</li>
-                <li><span>2.2</span>Dry-run estimates before a job is committed</li>
-                <li><span>2.3</span>Accepted on eval delta against a held-out set</li>
-              </ul>
-              <a class="link" href="/app.html">See the console →</a>
-            </div>
-            <div class="panel">
-              <div class="fig"><span>job_8fq2c1 · finetune.lora</span><b>RUNNING</b></div>
-              <div class="rows">
-                <div><span class="k">Matched</span><span>eu-central · 1× 80GB</span><span class="ok">done</span></div>
-                <div><span class="k">Provisioned</span><span>runtime · sha 4c9a…</span><span class="ok">done</span></div>
-                <div><span class="k">Training</span><span><span class="bar"><i></i></span></span><span class="warn">step 1840</span></div>
-                <div><span class="k">Verification</span><span>2 passes queued</span><span>pending</span></div>
-                <div><span class="k">Budget</span><span>$38.40 / $120.00</span><span>32%</span></div>
-              </div>
-            </div>
-          </article>
-
-          <article class="stack-row reveal">
-            <div class="stack-num">03</div>
-            <div class="stack-copy">
-              <h3>Training &amp; evaluation <span class="tag">Planned</span></h3>
-              <p>Reproducible evaluation suites today; multi-node training on data-center clusters next, with checkpoint continuity and eval gates.</p>
-              <ul class="specs">
-                <li><span>3.1</span>Reproducible scoring runs for any model</li>
-                <li><span>3.2</span>Synthetic data generation with schema and duplication checks</li>
-                <li><span>3.3</span>Full pre-training on multi-node clusters</li>
-              </ul>
-              <a class="link" href="#workloads">Workload catalogue →</a>
-            </div>
-            <div class="panel">
-              <div class="fig"><span>Live stream</span><b>SSE</b></div>
-<pre class="code"><span class="c">14:02:11</span>  loss 1.284  lr 1.4e-4  tok/s <span class="k">5,910</span>
-<span class="c">14:02:38</span>  loss 1.241  lr 1.4e-4  tok/s <span class="k">6,042</span>
-<span class="c">14:03:05</span>  checkpoint written  <span class="s">adapter-1840.safetensors</span>
-<span class="c">14:03:06</span>  budget used $38.40 / $120.00</pre>
-            </div>
-          </article>
-
-          <article class="stack-row reveal">
-            <div class="stack-num">04</div>
-            <div class="stack-copy">
-              <h3>Verification &amp; settlement</h3>
-              <p>Verification is the product. Every completed job carries a receipt: what ran, where, against which criteria, and what was paid. Work that fails is never billed and never paid out.</p>
-              <ul class="specs">
-                <li><span>4.1</span>Acceptance criteria attached to the job up front</li>
-                <li><span>4.2</span>Redundant or sampled verification passes per workload</li>
-                <li><span>4.3</span>Host reputation built from verified outcomes, not self-reports</li>
-              </ul>
-              <a class="link" href="#rails">How settlement works →</a>
-            </div>
-            <div class="panel">
-              <div class="fig"><span>Receipt · job_8fq1za</span><b>ACCEPTED</b></div>
-              <div class="rows">
-                <div><span class="k">Workload</span><span>inference.batch · llama-3.1-8b</span><span></span></div>
-                <div><span class="k">Items</span><span>1,240 / 1,240</span><span class="ok">✓</span></div>
-                <div><span class="k">Criteria</span><span>schema_valid ∧ 2/2 passes</span><span class="ok">✓</span></div>
-                <div><span class="k">Charged</span><span>$27.94</span><span></span></div>
-                <div><span class="k">Host payout</span><span>$23.75</span><span class="warn">settled</span></div>
-              </div>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= MARKETPLACE ================= -->
-    <section class="block" id="marketplace" aria-labelledby="market-title">
-      <div class="wrap">
-        <div class="head reveal">
-          <div>
-            <p class="eyebrow">GPU marketplace</p>
-            <h2 id="market-title" class="h2">Rent the machine, or pay for the result.</h2>
-          </div>
-          <p class="lede">Every GPU on the network is also listed in the TDCC marketplace. Rent raw capacity when you want the box. Submit a job when you want the answer. Same hosts, same reputation, one account.</p>
-        </div>
-
-        <div class="market reveal">
-          <div class="market-bar">
-            <div class="seg" role="tablist" aria-label="Marketplace mode">
-              <button type="button" role="tab" aria-selected="true" data-mode="rent">Rent a GPU</button>
-              <button type="button" role="tab" aria-selected="false" data-mode="job">Submit a job</button>
-            </div>
-            <div class="filters" aria-label="Hardware filter">
-              <button type="button" class="on" data-f="all">All</button>
-              <button type="button" data-f="80">80GB</button>
-              <button type="button" data-f="48">48GB</button>
-              <button type="button" data-f="24">24GB</button>
-              <button type="button" data-f="exact">Exact Core</button>
-            </div>
-            <span class="market-src" id="market-src">Example listings</span>
-            <a class="link market-note" href="/marketplace.html" style="color:var(--sand)">Open the full marketplace →</a>
-          </div>
-
-          <div class="listings" id="listings">
-            <article class="listing" data-f="80"><div class="l-top"><span class="l-class">80GB class</span><span class="l-av"><i></i>Available</span></div><h3>Data-center node</h3><p class="l-spec">80 GB VRAM · eu-central · ×8</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:96%"></i></span><b>0.96</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
-            <article class="listing" data-f="80"><div class="l-top"><span class="l-class">80GB class</span><span class="l-av"><i></i>Available</span></div><h3>Certified micro-cluster</h3><p class="l-spec">80 GB VRAM · us-east · ×2</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:92%"></i></span><b>0.92</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
-            <article class="listing" data-f="48"><div class="l-top"><span class="l-class">48GB class</span><span class="l-av"><i></i>Available</span></div><h3>Regional cluster</h3><p class="l-spec">48 GB VRAM · ap-south · ×4</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:89%"></i></span><b>0.89</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
-            <article class="listing" data-f="24"><div class="l-top"><span class="l-class">24GB class</span><span class="l-av"><i></i>Available</span></div><h3>Independent host</h3><p class="l-spec">24 GB consumer GPU · eu-west · ×1</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:84%"></i></span><b>0.84</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
-            <article class="listing exact" data-f="exact"><div class="l-top"><span class="l-class">Exact Core</span><span class="l-av soon"><i></i>Coming</span></div><h3>Exact Core card</h3><p class="l-spec">Kintex-7 PCIe · bit-exact · re-checkable</p><div class="l-rep"><span>Verification</span><span class="meter"><i style="width:100%"></i></span><b>exact</b></div><div class="l-foot"><span class="price" data-rent="USDC escrow on Solana" data-job="USDC escrow on Solana"></span><span class="l-cta">Learn →</span></div></article>
-            <article class="listing" data-f="24"><div class="l-top"><span class="l-class">24GB class</span><span class="l-av"><i></i>Available</span></div><h3>Two-laptop pair</h3><p class="l-spec">Coordinated · 27B-class decode · ×2</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:81%"></i></span><b>0.81</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
-          </div>
-        </div>
-
-        <div class="market-sides reveal">
-          <article>
-            <p class="mono">For buyers</p>
-            <h3>One account, two ways to buy.</h3>
-            <p>Rent a box for full control, or hand over a job and pay only when the result is accepted. Reputation comes from verified outcomes, not self-reports.</p>
-          </article>
-          <article>
-            <p class="mono">For hosts</p>
-            <h3>List once. Earn both ways.</h3>
-            <p>Publish hardware, availability, and price. Your GPU earns from rentals and from routed jobs, whether it sits in a data center or under your desk.</p>
-            <a class="link" href="/marketplace.html#hosts" style="margin-top:16px">List your GPU →</a>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= NETWORK / HOW ================= -->
-    <section class="block" id="network" aria-labelledby="network-title">
-      <div class="wrap">
-        <div class="head reveal">
-          <div>
-            <p class="eyebrow">How it works</p>
-            <h2 id="network-title" class="h2">What happens after you submit a job.</h2>
-          </div>
-          <p class="lede">GPUs are not interchangeable. TDCC matches every job with hardware that fits its model, memory, speed, price, and reliability needs, then checks that the work was actually done.</p>
-        </div>
-
-        <div class="pipeline reveal">
-          <article class="step"><p class="mono">01 / Submit</p><div class="dot"></div><h3>Submit</h3><p>Send a training, fine-tuning, or inference job through the API, CLI, SDK, or console.</p></article>
-          <article class="step"><p class="mono">02 / Match</p><div class="dot"></div><h3>Match</h3><p>The router finds a data center or GPU that fits memory, speed, price, and reliability.</p></article>
-          <article class="step"><p class="mono">03 / Run</p><div class="dot"></div><h3>Run</h3><p>The job executes in an approved, isolated runtime with live telemetry and automatic requeue.</p></article>
-          <article class="step"><p class="mono">04 / Verify</p><div class="dot"></div><h3>Verify</h3><p>The result is checked before it is billed. Hosts are paid only for accepted work.</p></article>
-        </div>
-
-        <p class="quote-line reveal">AI teams bring the models. TDCC brings the compute.</p>
-      </div>
-    </section>
-
-    <!-- ================= AUDIENCES ================= -->
-    <section class="block" id="sides" aria-labelledby="sides-title">
-      <div class="wrap">
-        <div class="head reveal">
-          <div>
-            <p class="eyebrow">Who it is for</p>
-            <h2 id="sides-title" class="h2">Teams that need GPUs, and people who own them.</h2>
-          </div>
-          <p class="lede">Companies get compute. Data centers get demand. GPU owners get paid for useful work. Agents get a machine-callable way to buy all of it.</p>
-        </div>
-        <div class="aud reveal">
-          <article><div class="letter">A</div><h3>For AI teams</h3><p>Run training, fine-tuning, inference, and evaluation without operating a fleet. One key, one project, one bill.</p></article>
-          <article><div class="letter">B</div><h3>For data centers &amp; GPU owners</h3><p>Turn idle capacity into recurring, screened demand. Publish hardware, availability, and price; earn on accepted work.</p></article>
-          <article><div class="letter">C</div><h3>For agents &amp; tools</h3><p>A machine-callable API so autonomous workflows can buy compute exactly the way a developer does.</p></article>
-        </div>
-        <div class="hw reveal" aria-label="Capacity the router spans">
-          <span class="chip">Data-center clusters</span><span class="chip">Certified micro-clusters</span><span class="chip">Independent GPU hosts</span><span class="chip">80GB-class accelerators</span><span class="chip">48GB-class accelerators</span><span class="chip">24GB consumer GPUs</span><span class="chip">CPU pre/post-processing</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= BENCHMARK ================= -->
-    <section class="block" id="research" aria-labelledby="research-title">
-      <div class="wrap">
-        <div class="bench reveal" id="bench">
-          <div class="bench-copy">
-            <p class="eyebrow" style="margin:0">Engineering note · September 2026</p>
-            <h3 id="research-title">Two compact laptops. One 27B model. 80 tokens per second.</h3>
-            <p>We paired two small machines for a Qwen 3.8 27B workload and moved a ~50 tok/s run to 80 tok/s, a 60% gain, without touching the weights or the intended output. The work was in the path around generation: coordinating handoffs, cutting idle time, keeping one stream moving.</p>
-            <p>Most of what we do is this kind of work: getting more out of hardware that already exists.</p>
-            <a class="link" href="/two-laptops-80-tps.html">Read the engineering note →</a>
-          </div>
-          <div class="bench-viz">
-            <div class="fig"><span>Observed throughput</span><b>+60%</b></div>
-            <div class="bars">
-              <div class="row"><div class="lbl"><span>Unoptimized path</span><b>~50</b></div><div class="track"><div class="fill" style="--w:62.5%"></div></div></div>
-              <div class="row"><div class="lbl"><span>With TDCC coordination</span><b>80</b></div><div class="track"><div class="fill hot" style="--w:100%"></div></div></div>
-            </div>
-            <p class="bench-foot">Internal benchmark. Results vary with hardware, context length, sampling, and thermals.</p>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- ================= DEVELOPERS ================= -->
     <section class="block" id="developers" aria-labelledby="dev-title">
@@ -1237,111 +1005,9 @@ tdcc receipts show job_8fq1za --verify</pre>
       </div>
     </section>
 
-    <!-- ================= WORKLOADS ================= -->
-    <section class="block" id="workloads" aria-labelledby="workloads-title">
-      <div class="wrap">
-        <div class="head reveal">
-          <div>
-            <p class="eyebrow">Workload catalogue</p>
-            <h2 id="workloads-title" class="h2">What runs today, and what comes next.</h2>
-          </div>
-          <p class="lede">Each workload has its own acceptance rules, because verification means something different for a transcription batch than for a fine-tune. Start with one job or scale across data centers.</p>
-        </div>
-        <div class="table-wrap reveal">
-          <table>
-            <thead><tr><th>Workload</th><th>API type</th><th>Typical hardware</th><th>Acceptance basis</th><th>Status</th></tr></thead>
-            <tbody>
-              <tr><td>Batch inference</td><td><code>inference.batch</code></td><td>24–80GB</td><td>Schema validity + redundant sampling</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>Open-model hosting</td><td><code>inference.endpoint</code></td><td>48–80GB</td><td>Health checks + latency SLO</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>Embeddings</td><td><code>embeddings</code></td><td>24GB+</td><td>Deterministic re-computation on a sample</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>Audio transcription</td><td><code>transcribe</code></td><td>24GB+</td><td>Sampled re-run + agreement threshold</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>Image generation</td><td><code>image.generate</code></td><td>24–48GB</td><td>Output integrity + policy checks</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>LoRA / QLoRA fine-tuning</td><td><code>finetune.lora</code></td><td>48–80GB</td><td>Eval delta on a held-out set</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>Evaluations</td><td><code>eval.suite</code></td><td>24GB+</td><td>Reproducible scoring run</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>Synthetic data</td><td><code>synth.generate</code></td><td>24GB+</td><td>Schema + duplication checks</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>Agent workloads</td><td><code>agent.run</code></td><td>Mixed</td><td>Step traces + budget ceilings</td><td><span class="tag">Planned</span></td></tr>
-              <tr><td>Full pre-training</td><td><code>train.full</code></td><td>Multi-node clusters</td><td>Checkpoint continuity + eval gates</td><td><span class="tag">Planned</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
 
-    <!-- ================= ONCHAIN RAILS ================= -->
-    <section class="block" id="rails" aria-labelledby="rails-title">
-      <div class="wrap">
-        <div class="head reveal">
-          <div>
-            <p class="eyebrow">Onchain</p>
-            <h2 id="rails-title" class="h2">Settlement on Solana and Avalanche. No wallet needed to use it.</h2>
-          </div>
-          <p class="lede">Workloads run in approved compute environments, not on a blockchain. You use TDCC with an API key, like any AI provider. Chains do what they are good at: neutral coordination, auditable settlement, and paying a global supply side.</p>
-        </div>
 
-        <div class="layer-map reveal" aria-label="Where each layer lives">
-          <div><b>Compute</b><span>GPUs in data centers, micro-clusters, and independent hosts. Off-chain, isolated runtimes.</span><i>Chain-agnostic</i></div>
-          <div><b>Verification</b><span>Acceptance criteria, redundant passes, reputation from verified outcomes.</span><i>TDCC protocol</i></div>
-          <div><b>Settlement</b><span>Off-chain payouts at launch; optional public settlement records for teams that want them.</span><i>Avalanche · Solana</i></div>
-          <div><b>Interface</b><span>REST, CLI, SDKs, desktop app, and an OpenAI/Anthropic-compatible gateway.</span><i>Web2-native</i></div>
-        </div>
 
-        <div class="rails reveal" style="margin-top:28px">
-          <article class="rail">
-            <p class="mono">Coordination layer</p>
-            <h3>Avalanche</h3>
-            <p>A natural home for verifiable coordination, policy-aware execution, and customizable infrastructure. Avalanche L1s can hold auditable workload state, provider coordination, and deployments that need explicit control over rules and participants.</p>
-          </article>
-          <article class="rail">
-            <p class="mono">Throughput layer</p>
-            <h3>Solana</h3>
-            <p>A natural home for high-throughput experiences around AI: fast agent actions, frequent job events, low-friction payments, and developer-facing applications that need responsive execution at scale.</p>
-          </article>
-        </div>
-        <p class="layers-note reveal">Two integration paths around the same compute service.</p>
-      </div>
-    </section>
-
-    <!-- ================= MANIFESTO (light) ================= -->
-    <section class="block light" id="mission" aria-labelledby="mission-title">
-      <div class="wrap">
-        <div class="manifesto">
-          <div class="reveal">
-            <p class="eyebrow">Mission</p>
-            <h2 id="mission-title" class="h2">AI needs more compute than any single cloud can supply.</h2>
-            <div class="manifesto-body">
-              <p>AI teams need more GPUs to train and run models. Data centers have the capacity, but finding the right hardware and managing it is hard. Capacity sits idle while jobs wait.</p>
-              <p>TDCC connects both sides. Our mark is a cloud with a lattice inside it: one surface on top, many independent machines underneath, each paid for the work it completes.</p>
-            </div>
-          </div>
-          <div class="logo-card reveal" aria-label="TDCC logo">
-            <span class="mono t"><span>TDCC</span><span>Mark 01</span></span>
-            <img src="/assets/tdcc-logo.png" alt="TDCC logo: a cloud with a lattice dome of connected compute nodes" width="358" height="358" loading="lazy" />
-            <span class="mono b"><span>One surface</span><span>Many machines</span></span>
-          </div>
-        </div>
-        <div class="principles reveal">
-          <article><p class="mono">01</p><h3>One simple API</h3><p>Send your AI job once. TDCC handles the infrastructure.</p></article>
-          <article><p class="mono">02</p><h3>Use every GPU</h3><p>Connect data centers and independent operators to real demand.</p></article>
-          <article><p class="mono">03</p><h3>Verify the result</h3><p>Every completed job is checked before it is accepted.</p></article>
-          <article><p class="mono">04</p><h3>Built for AI</h3><p>Train, fine-tune, evaluate, and run models in one place.</p></article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= TEAM ================= -->
-    <section class="block" id="team" aria-labelledby="team-title" style="border-top:0">
-      <div class="wrap team">
-        <div class="reveal">
-          <p class="eyebrow">Team</p>
-          <h2 id="team-title" class="h2">A small team that writes the code and racks the hardware.</h2>
-          <p class="lede">TDCC is built by a small team, and we are hiring. Meet the founder, the operations lead, advisors, and the people joining next.</p>
-        </div>
-        <div class="actions reveal" style="justify-content:flex-start">
-          <a class="btn solid" href="/team.html">Meet the team <span class="arr">→</span></a>
-          <a class="btn" href="mailto:anil@decentralizedcompute.company?subject=Joining%20the%20TDCC%20team">We're hiring</a>
-        </div>
-      </div>
-    </section>
 
     <!-- ================= FAQ ================= -->
     <section class="block" id="faq" aria-labelledby="faq-title">

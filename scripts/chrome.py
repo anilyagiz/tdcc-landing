@@ -17,14 +17,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 NAV = [
-    ("/exact-core.html", "Exact Core"),
     ("/marketplace.html", "Marketplace"),
-    ("/#platform", "Platform"),
-    ("/#developers", "Developers"),
     ("/app.html", "App"),
-    ("/team.html", "Team"),
-    ("/litepaper.html", "Litepaper"),
+    ("/exact-core.html", "Exact Core"),
     ("/cask-q.html", "Research"),
+    ("/team.html", "Company"),
 ]
 EARLY = ("Get early access", "/#join")
 HOST = ("List your GPU", "/marketplace.html#hosts")
