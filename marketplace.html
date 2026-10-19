@@ -35,6 +35,15 @@
     .summary div + div { border-left: 1px solid var(--line); }
     .summary .n { font-family: var(--serif); font-size: 34px; line-height: 1; }
     .summary p { margin-top: 6px; color: var(--muted); font-size: 13px; }
+    .summary .launch-note { display: none; }
+    .summary.launch { grid-template-columns: 1fr; background: radial-gradient(ellipse 60% 120% at 100% 0%, rgba(216,191,148,.12), transparent 70%), var(--panel); }
+    .summary.launch > div:not(.launch-note) { display: none; }
+    .summary.launch .launch-note { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 32px; align-items: center; padding: clamp(24px, 3vw, 36px); border: 0; }
+    .launch-note .eyebrow { grid-column: 1; margin: 0; color: var(--ok); }
+    .launch-note h2 { grid-column: 1; font-family: var(--serif); font-size: clamp(26px, 2.8vw, 36px); line-height: 1.1; }
+    .launch-note p:not(.eyebrow) { grid-column: 1; max-width: 60ch; color: var(--body); font-size: 15px; }
+    .launch-note .btn { grid-column: 2; grid-row: 1 / span 3; }
+    @media (max-width: 760px) { .summary.launch .launch-note { grid-template-columns: 1fr; } .launch-note .btn { grid-column: 1; grid-row: auto; margin-top: 12px; justify-self: start; } }
 
     .market { padding: 32px 0 clamp(72px, 9vw, 120px); }
     .toolbar { position: sticky; top: 64px; z-index: 20; display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; padding: 14px 0; background: var(--bg); border-bottom: 1px solid var(--line); }
@@ -288,6 +297,7 @@
           <div><div class="n" id="s-gpus">–</div><p>GPUs free right now</p></div>
           <div><div class="n" id="s-hosts">–</div><p>Listings from data centers, clusters, and homes</p></div>
           <div><div class="n" id="s-regions">–</div><p>Regions</p></div>
+          <div class="launch-note"><p class="eyebrow">Just opened</p><h2>The marketplace is open.</h2><p>List a GPU in two minutes and set your own hourly price. Listing is free, and you decide which requests to accept.</p><a class="btn solid" href="#hosts">List your GPU →</a></div>
         </div>
 
         <div class="toolbar">
@@ -517,7 +527,10 @@
         if (!filtered) {
           const M = window.TDCCMotion;
           const set = (id, n) => (M ? M.count($(id), n) : ($(id).textContent = n));
-          set('s-gpus', d.free_gpus); set('s-hosts', d.total); set('s-regions', d.active_regions.length);
+          // Before the first host lists, a row of zeros reads as a dead market.
+          const summary = document.querySelector('.summary');
+          summary.classList.toggle('launch', d.total === 0);
+          if (d.total > 0) { set('s-gpus', d.free_gpus); set('s-hosts', d.total); set('s-regions', d.active_regions.length); }
           if (!append && M) M.ticker(document.querySelector('[data-ticker]'), d.listings.slice(0, 24).map((l) =>
             `<span class="dot${l.online ? ' on' : ''}"></span><b>${esc(l.gpu_model)}</b> ${l.vram_gb}GB × ${l.gpu_count}<span>${esc(l.region_label)}</span><span class="px">${money(l.price_cents)}/h</span>${l.machine_rentals ? '<span>instant machine</span>' : l.api_rentals ? '<span>tdcc API</span>' : ''}`));
         }
