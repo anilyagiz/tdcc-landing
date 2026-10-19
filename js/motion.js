@@ -186,7 +186,7 @@
       ctx.lineWidth = 1;
       for (const [a, b] of links) {
         const A = nodes[a], B = nodes[b];
-        ctx.strokeStyle = "rgba(216,191,148,0.07)";
+        ctx.strokeStyle = "rgba(154,122,69,0.14)";
         ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke();
       }
       // packets with a short trail
@@ -198,10 +198,10 @@
         const x = A.x + (B.x - A.x) * p.t, y = A.y + (B.y - A.y) * p.t;
         const tx = A.x + (B.x - A.x) * Math.max(0, p.t - 0.35), ty = A.y + (B.y - A.y) * Math.max(0, p.t - 0.35);
         const g = ctx.createLinearGradient(tx, ty, x, y);
-        g.addColorStop(0, "rgba(216,191,148,0)"); g.addColorStop(1, "rgba(245,238,228,0.75)");
+        g.addColorStop(0, "rgba(216,191,148,0)"); g.addColorStop(1, "rgba(20,18,14,0.6)");
         ctx.strokeStyle = g; ctx.lineWidth = 1.4;
         ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(x, y); ctx.stroke();
-        ctx.fillStyle = "#f5eee4"; ctx.fillRect(x - 1, y - 1, 2, 2);
+        ctx.fillStyle = "#15130f"; ctx.fillRect(x - 1, y - 1, 2, 2);
         return true;
       });
       // nodes
@@ -224,7 +224,7 @@
     function still() {
       // One calm frame for reduced motion.
       ctx.clearRect(0, 0, w, h);
-      for (const [a, b] of links) { const A = nodes[a], B = nodes[b]; ctx.strokeStyle = "rgba(216,191,148,0.07)"; ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke(); }
+      for (const [a, b] of links) { const A = nodes[a], B = nodes[b]; ctx.strokeStyle = "rgba(154,122,69,0.14)"; ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke(); }
       for (const n of nodes) { ctx.fillStyle = hexA(n.online ? ok : sand, n.online ? 0.8 : 0.35); ctx.fillRect(n.x - n.size / 2, n.y - n.size / 2, n.size, n.size); }
     }
 

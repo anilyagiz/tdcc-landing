@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#0c0b09" />
-  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="color-scheme" content="light" />
   <meta name="robots" content="index,follow" />
   <title>Two Laptops, One Faster Stream | TDCC Engineering Note</title>
   <meta name="description" content="An internal TDCC benchmark: two compact laptops, one Qwen 3.8 27B workload, and 80 tok/s without changing model weights or intended output behavior." />
@@ -32,7 +32,7 @@
     .topology .guide { fill: none; stroke: var(--line-2); stroke-width: 1.2; }
     .topology .dashed { fill: none; stroke: var(--sand); stroke-width: 1.4; stroke-dasharray: 4 6; }
     .topology .device { fill: var(--bg); stroke: var(--line-2); stroke-width: 1; }
-    .topology .device-screen { fill: #0a0907; stroke: var(--line); stroke-width: 1; }
+    .topology .device-screen { fill: #f7f6f3; stroke: var(--line); stroke-width: 1; }
     .topology .device-base { stroke: var(--line-2); stroke-width: 3; }
     .topology .model { fill: rgba(216, 191, 148, .05); stroke: rgba(216, 191, 148, .45); stroke-width: 1; }
     .topology .result { fill: var(--cream); }
@@ -43,7 +43,7 @@
     .topology .mono.ink { fill: #6b5a3c; }
     .topology .screen-copy { fill: var(--body); font-family: var(--sans); font-size: 11px; }
     .topology .result-label { fill: var(--ink); font-family: var(--serif); font-size: 19px; }
-    .topology .result-copy { fill: #5c5346; font-family: var(--sans); font-size: 11px; }
+    .topology .result-copy { fill: rgba(255, 255, 255, .62); font-family: var(--sans); font-size: 11px; }
     .topology .spark { fill: var(--sand); }
     .chart-scroll { overflow-x: auto; }
     @media (max-width: 760px) { .topology { min-width: 640px; } }
@@ -104,6 +104,7 @@
     .next .h2 { scroll-margin-top: 96px; }
     .fig-label { margin: .6em 0 0 !important; }
   </style>
+  <link rel="stylesheet" href="/styles/refine.css" />
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -135,14 +136,11 @@
         <span class="brand-name">tdcc</span>
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
-        <a href="/exact-core.html">Exact Core</a>
         <a href="/marketplace.html">Marketplace</a>
-        <a href="/#platform">Platform</a>
-        <a href="/#developers">Developers</a>
         <a href="/app.html">App</a>
-        <a href="/team.html">Team</a>
-        <a href="/litepaper.html">Litepaper</a>
+        <a href="/exact-core.html">Exact Core</a>
         <a href="/cask-q.html" aria-current="page">Research</a>
+        <a href="/team.html">Company</a>
         <a class="btn solid sm nav-cta" href="/#join">Get early access</a>
       </nav>
       <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
