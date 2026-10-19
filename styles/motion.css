@@ -21,7 +21,7 @@
 .net-legend i.on { background: var(--ok); box-shadow: 0 0 8px rgba(185, 217, 154, .7); }
 
 /* Listings ticker */
-.ticker { position: relative; overflow: hidden; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: rgba(22, 20, 15, .6);
+.ticker { position: relative; overflow: hidden; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: rgba(247, 246, 243, .85);
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
           mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
 .ticker-track { display: flex; width: max-content; animation: ticker var(--ticker-dur, 40s) linear infinite; }
@@ -38,9 +38,9 @@
 .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); animation: live 2s ease-out infinite; vertical-align: 1px; }
 
 /* Typing terminal */
-.term { margin-top: 28px; border: 1px solid var(--line-2, rgba(236,224,202,.18)); background: #0a0907; box-shadow: 0 30px 80px -40px rgba(216, 191, 148, .25); }
+.term { margin-top: 28px; border: 1px solid var(--line-2, rgba(20,18,14,.18)); background: #f7f6f3; box-shadow: 0 30px 80px -40px rgba(216, 191, 148, .25); }
 .term-bar { display: flex; align-items: center; gap: 7px; padding: 10px 14px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-.term-bar i { width: 8px; height: 8px; border-radius: 50%; background: rgba(236, 224, 202, .14); }
+.term-bar i { width: 8px; height: 8px; border-radius: 50%; background: rgba(20, 18, 14, .14); }
 .term-bar span { margin-left: 8px; }
 .term pre { margin: 0; padding: 16px 18px 18px; min-height: 238px; font-family: var(--mono); font-size: 12.5px; line-height: 1.75; color: var(--body); white-space: pre-wrap; overflow-wrap: anywhere; }
 .term .tl { display: block; }
@@ -89,9 +89,9 @@
 .gpu-bus path:nth-child(2n) { animation-duration: 1.2s; }
 .gpu-bus path:nth-child(3n) { animation-duration: .7s; }
 @keyframes bus { to { stroke-dashoffset: 24; } }
-.gpu-chip { position: absolute; display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border: 1px solid var(--line-2, rgba(236,224,202,.18)); background: rgba(14, 13, 10, .86); backdrop-filter: blur(6px); font-family: var(--mono); font-size: 11px; letter-spacing: .04em; color: var(--body); white-space: nowrap; box-shadow: 0 12px 30px -12px rgba(0, 0, 0, .7); animation: chipfloat 6s ease-in-out infinite; }
+.gpu-chip { position: absolute; display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border: 1px solid var(--line-2, rgba(20,18,14,.18)); background: rgba(255, 255, 255, .92); backdrop-filter: blur(6px); font-family: var(--mono); font-size: 11px; letter-spacing: .04em; color: var(--body); white-space: nowrap; box-shadow: 0 12px 30px -12px rgba(0, 0, 0, .7); animation: chipfloat 6s ease-in-out infinite; }
 .gpu-chip b { color: var(--text); font-weight: 500; }
-.gpu-chip .bar { display: inline-block; width: 54px; height: 4px; background: rgba(236, 224, 202, .1); }
+.gpu-chip .bar { display: inline-block; width: 54px; height: 4px; background: rgba(20, 18, 14, .1); }
 .gpu-chip .bar i { display: block; height: 100%; width: var(--w, 70%); background: linear-gradient(90deg, var(--sand), var(--ok)); transition: width .8s ease; }
 .gpu-chip.c1 { left: 0; top: 18px; }
 .gpu-chip.c2 { right: 0; top: 0; animation-delay: -1.5s; }

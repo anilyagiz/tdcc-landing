@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#0c0b09" />
-  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="color-scheme" content="light" />
 
   <title>TDCC App | The compute console for AI teams</title>
   <meta name="description" content="The TDCC App is the console, CLI, and API for verified AI compute: submit training, fine-tuning, inference, and evaluation jobs, watch them run on matched GPUs, and pay only for accepted work." />
@@ -45,7 +45,7 @@
     .app-head .display em { display: block; color: var(--sand); }
     .app-head .lede { max-width: 46ch; }
     .app-head .actions { margin-top: 32px; }
-    .release-pill { display: inline-flex; align-items: center; gap: 12px; max-width: 100%; margin-bottom: 28px; padding: 6px 12px 6px 6px; border: 1px solid var(--line-2); background: rgba(12, 11, 9, .5); color: var(--body); font-family: var(--mono); font-size: 11px; letter-spacing: .06em; transition: border-color .2s ease; }
+    .release-pill { display: inline-flex; align-items: center; gap: 12px; max-width: 100%; margin-bottom: 28px; padding: 6px 12px 6px 6px; border: 1px solid var(--line-2); background: rgba(255, 255, 255, .5); color: var(--body); font-family: var(--mono); font-size: 11px; letter-spacing: .06em; transition: border-color .2s ease; }
     .release-pill:hover { border-color: var(--sand); }
     .release-pill b { flex: none; padding: 3px 7px; background: var(--sand); color: var(--ink); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
     .hero-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 40px; border-top: 1px solid var(--line); }
@@ -54,7 +54,7 @@
     .hero-meta strong { display: block; margin-bottom: 6px; color: var(--text); font-family: var(--mono); font-size: 10.5px; font-weight: 400; letter-spacing: .12em; text-transform: uppercase; }
 
     /* ---------- in-page navigation ---------- */
-    .subnav { position: sticky; top: 64px; z-index: 50; background: rgba(12, 11, 9, .92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+    .subnav { position: sticky; top: 64px; z-index: 50; background: rgba(255, 255, 255, .92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
     .subnav-inner { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
     .subnav-inner::-webkit-scrollbar { display: none; }
     .subnav a { flex: none; padding: 15px 12px; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; transition: color .2s ease, box-shadow .2s ease; }
@@ -112,7 +112,7 @@
     .pill.run { border-color: rgba(216, 191, 148, .45); color: var(--sand); }
     .pill.run i { animation: pulse 1.8s ease-in-out infinite; }
     @keyframes pulse { 50% { opacity: .35; } }
-    .log { margin: 0; padding: 12px 14px; border: 1px solid var(--line); background: #0a0907; color: var(--body); font-family: var(--mono); font-size: 11px; line-height: 1.75; white-space: pre; overflow-x: auto; }
+    .log { margin: 0; padding: 12px 14px; border: 1px solid var(--line); background: #f7f6f3; color: var(--body); font-family: var(--mono); font-size: 11px; line-height: 1.75; white-space: pre; overflow-x: auto; }
 
     /* ---------- overview ---------- */
     .flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); }
@@ -182,7 +182,7 @@
     table.spec td { padding: 14px 16px; }
     table.spec tr:last-child th { border-bottom: 0; }
     table.data tbody tr { transition: background .15s ease; }
-    table.data tbody tr:hover td, table.data tbody tr:hover th { background: rgba(236, 224, 202, .025); }
+    table.data tbody tr:hover td, table.data tbody tr:hover th { background: rgba(20, 18, 14, .025); }
 
     /* ---------- environments ---------- */
     .env svg { width: 34px; height: 34px; margin-bottom: 22px; }
@@ -198,7 +198,7 @@
     .ctabs button[aria-selected="true"] { background: var(--sand); color: var(--ink); }
     .ctabs .code-copy { margin-left: auto; border-right: 0; border-left: 1px solid var(--line); color: var(--sand); }
     .ctabs .code-copy:hover { color: var(--text); }
-    .codebox .code { min-height: 250px; background: #0a0907; }
+    .codebox .code { min-height: 250px; background: #f7f6f3; }
     #tools .codebox .code { min-height: 0; }
     .note { margin-top: 14px; max-width: 64ch; color: var(--muted); font-size: 13.5px; }
 
@@ -221,7 +221,7 @@
     .dl-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 14px; }
     .dl-head h3 { margin: 0; }
     .dl-card p { margin: 0; color: var(--body); font-size: 15px; }
-    .dl-card .code { padding: 16px 18px; border: 1px solid var(--line); background: #0a0907; font-size: 12px; }
+    .dl-card .code { padding: 16px 18px; border: 1px solid var(--line); background: #f7f6f3; font-size: 12px; }
     .dl-card .actions { gap: 8px; margin-top: auto; }
     .dl-meta { color: var(--muted); font-family: var(--mono); font-size: 11px; line-height: 1.7; }
     .dl-card .dl-meta { color: var(--muted); font-size: 11px; }
@@ -551,7 +551,7 @@
                   <stop offset="100%" stop-color="#d8bf94" stop-opacity="0" />
                 </radialGradient>
               </defs>
-              <g stroke="rgba(236,224,202,.06)" stroke-width="1">
+              <g stroke="rgba(20,18,14,.06)" stroke-width="1">
                 <path d="M0 60H900M0 130H900M0 200H900M0 270H900M0 340H900" />
                 <path d="M120 0V380M300 0V380M480 0V380M660 0V380M840 0V380" />
               </g>
@@ -569,38 +569,38 @@
 
               <g font-size="11">
                 <!-- job queue -->
-                <rect x="40" y="74" width="140" height="44" rx="1" fill="#0c0b09" stroke="rgba(236,224,202,.18)" />
-                <text x="56" y="94" fill="#efe8dc">inference.batch</text>
+                <rect x="40" y="74" width="140" height="44" rx="1" fill="#ffffff" stroke="rgba(20,18,14,.18)" />
+                <text x="56" y="94" fill="#15130f">inference.batch</text>
                 <text x="56" y="109" fill="#8d8475">1,240 items</text>
 
-                <rect x="40" y="168" width="140" height="44" rx="1" fill="#0c0b09" stroke="rgba(236,224,202,.18)" />
-                <text x="56" y="188" fill="#efe8dc">finetune.lora</text>
+                <rect x="40" y="168" width="140" height="44" rx="1" fill="#ffffff" stroke="rgba(20,18,14,.18)" />
+                <text x="56" y="188" fill="#15130f">finetune.lora</text>
                 <text x="56" y="203" fill="#8d8475">qwen2.5-7b</text>
 
-                <rect x="40" y="266" width="140" height="44" rx="1" fill="#0c0b09" stroke="rgba(236,224,202,.18)" />
-                <text x="56" y="286" fill="#efe8dc">eval.suite</text>
+                <rect x="40" y="266" width="140" height="44" rx="1" fill="#ffffff" stroke="rgba(20,18,14,.18)" />
+                <text x="56" y="286" fill="#15130f">eval.suite</text>
                 <text x="56" y="301" fill="#8d8475">18 checks</text>
 
                 <!-- router -->
-                <rect x="368" y="150" width="164" height="80" rx="1" fill="#1a1611" stroke="#d8bf94" stroke-opacity=".7" />
-                <text x="450" y="182" fill="#f5eee4" text-anchor="middle" font-size="13">TDCC router</text>
-                <text x="450" y="201" fill="#8d8475" text-anchor="middle" font-size="10">match · isolate · verify</text>
+                <rect x="368" y="150" width="164" height="80" rx="1" fill="#15130f" stroke="#9a7a45" />
+                <text x="450" y="182" fill="#ffffff" text-anchor="middle" font-size="13">TDCC router</text>
+                <text x="450" y="201" fill="#c4bbad" text-anchor="middle" font-size="10">match · isolate · verify</text>
                 <rect x="446" y="214" width="8" height="8" fill="#d8bf94" transform="rotate(45 450 218)" />
 
                 <!-- hosts -->
-                <rect x="726" y="76" width="150" height="48" rx="1" fill="#0c0b09" stroke="rgba(236,224,202,.18)" />
+                <rect x="726" y="76" width="150" height="48" rx="1" fill="#ffffff" stroke="rgba(20,18,14,.18)" />
                 <circle cx="742" cy="94" r="3.5" fill="#b9d99a" />
-                <text x="752" y="98" fill="#efe8dc">eu-central · DC</text>
+                <text x="752" y="98" fill="#15130f">eu-central · DC</text>
                 <text x="738" y="114" fill="#8d8475">8× 80GB · verified</text>
 
-                <rect x="726" y="166" width="150" height="48" rx="1" fill="#0c0b09" stroke="rgba(236,224,202,.18)" />
+                <rect x="726" y="166" width="150" height="48" rx="1" fill="#ffffff" stroke="rgba(20,18,14,.18)" />
                 <circle cx="742" cy="184" r="3.5" fill="#d8bf94" />
-                <text x="752" y="188" fill="#efe8dc">us-east · cluster</text>
+                <text x="752" y="188" fill="#15130f">us-east · cluster</text>
                 <text x="738" y="204" fill="#8d8475">4× 48GB · running</text>
 
-                <rect x="726" y="260" width="150" height="48" rx="1" fill="#0c0b09" stroke="rgba(236,224,202,.18)" />
+                <rect x="726" y="260" width="150" height="48" rx="1" fill="#ffffff" stroke="rgba(20,18,14,.18)" />
                 <circle cx="742" cy="278" r="3.5" fill="#8d8475" />
-                <text x="752" y="282" fill="#efe8dc">ap-south · hosts</text>
+                <text x="752" y="282" fill="#15130f">ap-south · hosts</text>
                 <text x="738" y="298" fill="#8d8475">22× 24GB · queued</text>
               </g>
             </svg>
@@ -727,11 +727,11 @@
         </div>
         <div class="dial">
           <svg viewBox="0 0 220 220" role="img" aria-label="Diagram contrasting billable accepted work with unbilled failed work">
-            <circle cx="110" cy="110" r="86" fill="none" stroke="rgba(236,224,202,.1)" stroke-width="14" />
+            <circle cx="110" cy="110" r="86" fill="none" stroke="rgba(20,18,14,.1)" stroke-width="14" />
             <circle cx="110" cy="110" r="86" fill="none" stroke="#d8bf94" stroke-width="14"
                     stroke-dasharray="486 540" stroke-dashoffset="0" transform="rotate(-90 110 110)" />
-            <circle cx="110" cy="110" r="62" fill="none" stroke="rgba(236,224,202,.1)" stroke-width="1" />
-            <text x="110" y="110" text-anchor="middle" fill="#f5eee4" font-size="28">Accepted</text>
+            <circle cx="110" cy="110" r="62" fill="none" stroke="rgba(20,18,14,.1)" stroke-width="1" />
+            <text x="110" y="110" text-anchor="middle" fill="#15130f" font-size="28">Accepted</text>
             <text class="t2" x="110" y="132" text-anchor="middle" fill="#8d8475" font-size="9.5">= BILLABLE UNIT</text>
           </svg>
           <p class="dial-caption">Rejected and requeued work sits outside the billing ring by design.</p>
@@ -783,19 +783,19 @@
         </div>
         <div class="grid c4 reveal">
           <div class="card env">
-            <svg viewBox="0 0 34 34" aria-hidden="true"><rect x="3" y="11" width="28" height="18" rx="1" fill="none" stroke="#c4bbad" stroke-width="1.3"/><path d="M9 11V7h16v4" fill="none" stroke="#c4bbad" stroke-width="1.3"/><path d="M11 20h12" stroke="#d8bf94" stroke-width="2.4"/></svg>
+            <svg viewBox="0 0 34 34" aria-hidden="true"><rect x="3" y="11" width="28" height="18" rx="1" fill="none" stroke="#4b4740" stroke-width="1.3"/><path d="M9 11V7h16v4" fill="none" stroke="#4b4740" stroke-width="1.3"/><path d="M11 20h12" stroke="#d8bf94" stroke-width="2.4"/></svg>
             <h3>Containers</h3><p>OCI images with pinned digests</p>
           </div>
           <div class="card env">
-            <svg viewBox="0 0 34 34" aria-hidden="true"><path d="M17 4l11 6v14l-11 6-11-6V10z" fill="none" stroke="#c4bbad" stroke-width="1.3"/><rect x="14" y="14" width="6" height="6" fill="#d8bf94" transform="rotate(45 17 17)"/></svg>
+            <svg viewBox="0 0 34 34" aria-hidden="true"><path d="M17 4l11 6v14l-11 6-11-6V10z" fill="none" stroke="#4b4740" stroke-width="1.3"/><rect x="14" y="14" width="6" height="6" fill="#d8bf94" transform="rotate(45 17 17)"/></svg>
             <h3>Orchestrated clusters</h3><p>Data-center capacity pools</p>
           </div>
           <div class="card env">
-            <svg viewBox="0 0 34 34" aria-hidden="true"><rect x="5" y="6" width="24" height="9" rx="1" fill="none" stroke="#c4bbad" stroke-width="1.3"/><rect x="5" y="19" width="24" height="9" rx="1" fill="none" stroke="#c4bbad" stroke-width="1.3"/><rect x="9.5" y="9" width="3" height="3" fill="#d8bf94"/><rect x="9.5" y="22" width="3" height="3" fill="#d8bf94"/></svg>
+            <svg viewBox="0 0 34 34" aria-hidden="true"><rect x="5" y="6" width="24" height="9" rx="1" fill="none" stroke="#4b4740" stroke-width="1.3"/><rect x="5" y="19" width="24" height="9" rx="1" fill="none" stroke="#4b4740" stroke-width="1.3"/><rect x="9.5" y="9" width="3" height="3" fill="#d8bf94"/><rect x="9.5" y="22" width="3" height="3" fill="#d8bf94"/></svg>
             <h3>Bare metal</h3><p>Certified micro-clusters</p>
           </div>
           <div class="card env">
-            <svg viewBox="0 0 34 34" aria-hidden="true"><path d="M10 24a6 6 0 010-12 8 8 0 0115.4 2.4A5.5 5.5 0 0124 24z" fill="none" stroke="#c4bbad" stroke-width="1.3"/><path d="M17 17v6" stroke="#d8bf94" stroke-width="2.4"/></svg>
+            <svg viewBox="0 0 34 34" aria-hidden="true"><path d="M10 24a6 6 0 010-12 8 8 0 0115.4 2.4A5.5 5.5 0 0124 24z" fill="none" stroke="#4b4740" stroke-width="1.3"/><path d="M17 17v6" stroke="#d8bf94" stroke-width="2.4"/></svg>
             <h3>Independent hosts</h3><p>Screened consumer GPUs</p>
           </div>
         </div>
