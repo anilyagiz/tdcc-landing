@@ -1,0 +1,63 @@
+/* Final layer on top of every page's own styles: a calmer, rounder, more
+   product-like finish. Loaded last so it wins over page rules. */
+
+:root { --radius: 16px; --radius-sm: 10px; --shadow: 0 1px 2px rgba(20, 18, 14, .04), 0 12px 32px -16px rgba(20, 18, 14, .14); }
+
+body { letter-spacing: -.005em; }
+.display, .h2, h1, h2 { letter-spacing: -.028em; }
+
+/* Navigation: sentence case, sans, quiet */
+.nav { background: rgba(255, 255, 255, .78) !important; backdrop-filter: saturate(180%) blur(18px); -webkit-backdrop-filter: saturate(180%) blur(18px); }
+.nav.scrolled { border-bottom-color: var(--line) !important; }
+.nav-links { gap: 4px !important; }
+.nav-links a { font-family: var(--sans) !important; font-size: 14px !important; letter-spacing: -.005em !important; text-transform: none !important; color: var(--body); padding: 8px 12px !important; border-radius: 999px; transition: color .2s ease, background .2s ease; }
+.nav-links a:hover { color: var(--text); background: rgba(20, 18, 14, .045); }
+.nav-links a[aria-current="page"] { color: var(--text); box-shadow: none !important; background: rgba(20, 18, 14, .06); }
+.nav-links a.acct { color: var(--text) !important; }
+.brand-name { letter-spacing: -.02em; }
+
+/* Buttons: pills in sentence case */
+.btn { font-family: var(--sans) !important; font-size: 14.5px !important; font-weight: 500; letter-spacing: -.005em !important; text-transform: none !important; border-radius: 999px !important; min-height: 46px; padding: 0 22px; border-color: rgba(20, 18, 14, .16); transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
+.btn:hover { transform: translateY(-1px); }
+.btn.solid { box-shadow: 0 6px 18px -8px rgba(20, 18, 14, .45); }
+.btn.solid:hover { background: #000; border-color: #000; color: #fff; }
+.btn.sm, .nav-cta { font-size: 13.5px !important; min-height: 36px !important; padding: 0 16px !important; }
+.nav-links .btn, .nav-links .nav-cta { color: #fff !important; background: var(--text) !important; border-color: var(--text) !important; margin-left: 10px !important; }
+.link, .p-go, .l-cta { font-family: var(--sans) !important; font-size: 14px !important; letter-spacing: -.005em !important; text-transform: none !important; font-weight: 500; }
+
+/* Badges */
+.pill { border-radius: 999px !important; padding-right: 14px !important; background: #fff; box-shadow: var(--shadow); }
+.pill b { border-radius: 999px !important; }
+.tag { border-radius: 999px !important; padding: 2px 8px !important; }
+
+/* Surfaces: rounded, softly lifted */
+.panel, .grid, .products, div.market, .listings, .notice, .stats, .summary, .timeline, .callout, .cta-band, figure.fig-box, .table-wrap,
+.code, .term, .codebox, .mock, .signin, .settings form, .c-box, .launch-note, .chip-stage, .stage, .join, .modal-box, .toolbar, .rows, .faq-card {
+  border-radius: var(--radius) !important; overflow: hidden;
+}
+.products, div.market, .timeline, .cta-band, .mock, .codebox, .signin, .c-box, .join, .modal-box, .panel { box-shadow: var(--shadow); }
+.stats { border: 1px solid var(--line) !important; }
+.callout { border-left-width: 1px !important; }
+.inp, select.inp, textarea.inp { border-radius: var(--radius-sm) !important; }
+.tabs, .seg, .chips button, .filters button { border-radius: 999px !important; overflow: hidden; }
+.tabs button, .seg button { border-radius: 999px !important; }
+.product { border-radius: 0; }
+.prose pre, .prose code { border-radius: 8px; }
+kbd { border-radius: 6px; }
+.toast { border-radius: 999px !important; }
+
+/* Footer wordmark: lighter touch */
+.wordmark { -webkit-text-stroke: 1px rgba(20, 18, 14, .12) !important; }
+
+/* Floating chips and small labels */
+.gpu-chip { border-radius: 999px !important; }
+.m-head .notice { border-radius: var(--radius) !important; }
+
+/* Mobile menu: full-width rows, no pills */
+@media (max-width: 1080px) {
+  .nav-links { background: rgba(255, 255, 255, .98) !important; box-shadow: 0 24px 40px -24px rgba(20, 18, 14, .25); }
+  .nav-links a { border-radius: 0 !important; padding: 14px 4px !important; font-size: 16px !important; }
+  .nav-links a:hover, .nav-links a[aria-current="page"] { background: transparent; }
+  .nav-links .btn, .nav-links .nav-cta { margin: 14px 0 0 !important; border-radius: 999px !important; min-height: 46px !important; justify-content: center; }
+}
+.menu-btn { border-radius: 999px !important; border-color: var(--line-2) !important; }
