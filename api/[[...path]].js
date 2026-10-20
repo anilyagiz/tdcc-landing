@@ -118,6 +118,8 @@ module.exports = async function handler(req, res) {
     if (!value || HOP_BY_HOP.has(name.toLowerCase())) continue;
     if (name.toLowerCase() === "authorization") continue;
     if (name.toLowerCase() === "x-proxy-key") continue;
+    // Never pass the visitor's cookies (site sessions) to the upstream.
+    if (name.toLowerCase() === "cookie") continue;
     headers[name] = value;
   }
 

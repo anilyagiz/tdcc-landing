@@ -121,6 +121,7 @@ test("host lists a GPU, renter requests it, host accepts, contacts are revealed"
   assert.equal((await host.call("PATCH", `/api/listings/${listing.id}`, { gpu_count: 0 })).status, 400);
   assert.equal((await renter.call("PATCH", `/api/listings/${listing.id}`, { price: 0.01 })).status, 404, "non-owner cannot edit");
 
+  assert.equal((await host.call("POST", `/api/rentals/${rental.id}/complete`, {})).status, 403, "host cannot end a rental early as completed");
   r = await renter.call("POST", `/api/rentals/${rental.id}/complete`, {});
   assert.equal(r.status, 200);
   assert.equal((await renter.call("POST", `/api/rentals/${rental.id}/cancel`, {})).status, 409);

@@ -16,3 +16,8 @@ CHANGELOG.md
 SOURCE-original-minimal.html
 scripts
 backups
+.dev.vars
+.dev.vars.*
+.env
+.env.*
+.gitignore

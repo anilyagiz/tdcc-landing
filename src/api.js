@@ -1361,7 +1361,9 @@ const TRANSITIONS = {
   accept: { by: "host", from: ["pending"], to: "accepted" },
   decline: { by: "host", from: ["pending"], to: "declined" },
   cancel: { by: "either", from: ["pending", "accepted", "awaiting_payment"], to: "cancelled" },
-  complete: { by: "either", from: ["accepted"], to: "completed" },
+  // Only the renter can end a rental early; otherwise it completes when the
+  // rented hours run out. A host who stops early cancels, which refunds.
+  complete: { by: "renter", from: ["accepted"], to: "completed" },
 };
 
 async function transitionRental(request, env, ctx, id, action) {
@@ -1375,6 +1377,7 @@ async function transitionRental(request, env, ctx, id, action) {
   const isRenter = r && r.renter_id === user.id;
   if (!r || (!isHost && !isRenter) || (isHost && r.status === "awaiting_payment")) throw new HttpError(404, "This request does not exist.");
   if (rule.by === "host" && !isHost) throw new HttpError(403, "Only the host can do that.");
+  if (rule.by === "renter" && !isRenter) throw new HttpError(403, "Only the renter can mark a rental finished. To stop early, cancel it.");
   if (!rule.from.includes(r.status)) throw new HttpError(409, `This request is already ${r.status}.`);
   const note = isHost ? text(body.note, "Note", { max: 1000, multiline: true }) : r.host_note;
 
@@ -1770,6 +1773,16 @@ async function stripeWebhook(request, env, ctx) {
   // Stripe retries deliveries; handle each event once.
   const fresh = await env.DB.prepare("INSERT INTO stripe_events (id, type, created_at) VALUES (?, ?, ?) ON CONFLICT(id) DO NOTHING").bind(event.id, event.type, now()).run();
   if (!fresh.meta.changes) return json(200, { ok: true, duplicate: true });
+  try {
+    return await handleStripeEvent(request, env, ctx, event);
+  } catch (err) {
+    // Forget the event so Stripe's retry is processed instead of ignored.
+    await env.DB.prepare("DELETE FROM stripe_events WHERE id = ?").bind(event.id).run();
+    throw err;
+  }
+}
+
+async function handleStripeEvent(request, env, ctx, event) {
   const obj = event.data && event.data.object || {};
   const t = now();
   if (event.type === "checkout.session.completed") {

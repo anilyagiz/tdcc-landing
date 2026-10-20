@@ -83,6 +83,18 @@ test("webhooks with a bad signature are rejected and duplicates ignored", async 
   assert.equal((await webhook(ctx.env, e)).body.duplicate, true);
 });
 
+test("a webhook that fails while processing is retried, not dropped", async () => {
+  const ctx = await setup();
+  const e = { id: "evt_retry", type: "account.updated", data: { object: { id: "acct_r", charges_enabled: true, payouts_enabled: true } } };
+  const prepare = ctx.env.DB.prepare.bind(ctx.env.DB);
+  ctx.env.DB.prepare = (sql) => { if (/^UPDATE users/.test(sql)) throw new Error("db down"); return prepare(sql); };
+  assert.equal((await webhook(ctx.env, e)).status, 500);
+  ctx.env.DB.prepare = prepare;
+  const again = await webhook(ctx.env, e);
+  assert.equal(again.status, 200);
+  assert.equal(again.body.duplicate, undefined, "the retry is processed");
+});
+
 async function readyHost(ctx) {
   await ctx.host.call("POST", "/api/me/payouts", {});
   await ctx.env.DB.prepare("UPDATE users SET payouts_enabled = 1 WHERE id = ?").bind(ctx.host.id).run();

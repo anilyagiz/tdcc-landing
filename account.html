@@ -298,7 +298,7 @@
             ${r.renter_email ? `<div class="reveal-box"><b>Renter contact</b><span><a href="mailto:${esc(r.renter_email)}">${esc(r.renter_email)}</a> — send them access details${r.payment_status === 'captured' ? '' : ' and agree on payment'}.</span>${r.ssh_key ? `<span>SSH key:</span><code>${esc(r.ssh_key)}</code><span><button class="btn sm" data-copy="${esc(r.ssh_key)}">Copy SSH key</button></span>` : ''}</div>` : ''}
             ${r.status === 'pending' ? `<div class="card-actions"><input class="inp" id="note-${esc(r.id)}" maxlength="1000" placeholder="Optional note to the renter, e.g. start time" />
               <button class="btn sm solid" data-do="accept" data-id="${esc(r.id)}">Accept</button><button class="btn sm" data-do="decline" data-id="${esc(r.id)}">Decline</button></div>` : ''}
-            ${r.status === 'accepted' ? `<div class="card-actions"><button class="btn sm" data-do="complete" data-id="${esc(r.id)}">Mark finished</button><button class="btn sm" data-do="cancel" data-id="${esc(r.id)}">Cancel rental</button></div>` : ''}
+            ${r.status === 'accepted' ? `<div class="card-actions"><button class="btn sm" data-do="cancel" data-id="${esc(r.id)}">Cancel rental</button></div>` : ''}
             ${extras(r)}
           </article>`).join('')}</div>`;
       }
