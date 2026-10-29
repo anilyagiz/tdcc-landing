@@ -1,9 +1,14 @@
 import { handleApi, scheduled, reportError } from "./api.js";
 import { handleGateway, isGatewayPath } from "./gateway.js";
+import { handleV1, isApiPath } from "./billing.js";
 
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+
+    if (isApiPath(url.pathname)) {
+      return handleV1(request, env, ctx);
+    }
 
     if (isGatewayPath(url.pathname)) {
       return handleGateway(request, env);
