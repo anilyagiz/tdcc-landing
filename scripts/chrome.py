@@ -148,12 +148,12 @@ def main():
     stale = []
     for page in named or PAGES:
         path = ROOT / page
-        html = path.read_text()
+        html = path.read_text(encoding="utf-8")
         out = render(page, html)
         if out != html:
             stale.append(page)
             if not check:
-                path.write_text(out)
+                path.write_text(out, encoding="utf-8", newline="\n")
     if check and stale:
         print("chrome out of date: " + ", ".join(stale) + " (run python3 scripts/chrome.py)")
         sys.exit(1)
