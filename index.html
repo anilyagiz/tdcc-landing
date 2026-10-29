@@ -127,7 +127,8 @@
     .menu-btn[aria-expanded="true"] span:last-child { transform: translateY(-3px) rotate(-45deg); }
 
     /* ---------- hero ---------- */
-    .hero { position: relative; padding: 150px 0 0; overflow: hidden; background-color: #f4ecdc; background-image: url("/assets/hero-landscape.jpg"); background-image: image-set(url("/assets/hero-landscape.webp") type("image/webp"), url("/assets/hero-landscape.jpg") type("image/jpeg")); background-size: cover; background-position: center bottom; background-repeat: no-repeat; }
+    .hero { position: relative; isolation: isolate; padding: 150px 0 0; overflow: hidden; background-color: #f4ecdc; }
+    .hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background-image: url("/assets/hero-landscape.jpg"); background-image: image-set(url("/assets/hero-landscape.webp") type("image/webp"), url("/assets/hero-landscape.jpg") type("image/jpeg")); background-size: cover; background-position: center bottom; background-repeat: no-repeat; animation: plate-in 1.4s cubic-bezier(.2, .7, .2, 1) both; }
     .hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 90px; background: linear-gradient(180deg, rgba(255, 255, 255, 0), #fff); pointer-events: none; }
     .hero-inner { position: relative; z-index: 1; text-align: center; display: grid; justify-items: center; }
     .hero .pill { display: inline-flex; align-items: center; gap: 10px; padding: 5px 14px 5px 5px; border-radius: 999px; background: rgba(255, 255, 255, .7); border: 1px solid rgba(255, 255, 255, .9); font-size: 14px; color: var(--body); margin-bottom: 26px; box-shadow: var(--shadow); }
@@ -172,10 +173,19 @@
     .dot.wait { color: var(--warn); }
 
     /* ---------- trust strip ---------- */
-    .trust { padding: 34px 0 10px; border-top: 1px solid var(--line); }
-    .trust-row { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 14px 44px; color: #7a8899; font-size: 15px; }
-    .trust-row b { color: var(--ink); font-weight: 600; font-size: 17px; letter-spacing: -.01em; }
-    .trust-row span.sep { width: 4px; height: 4px; border-radius: 50%; background: var(--line-2); }
+    .trust { padding: 30px 0 8px; border-top: 1px solid var(--line); display: grid; gap: 18px; }
+    .trust-head { display: flex; justify-content: center; }
+    .raise { display: inline-flex; align-items: center; gap: 10px; padding: 6px 14px 6px 6px; border-radius: 999px; border: 1px solid var(--line); background: #fff; box-shadow: var(--shadow); font-size: 14.5px; color: var(--body); }
+    .raise b { color: var(--ink); font-weight: 600; }
+    .raise .tag { background: var(--lime); color: var(--lime-ink); font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+    .marquee { position: relative; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+    .marquee-track { display: flex; width: max-content; animation: marquee 32s linear infinite; }
+    .marquee:hover .marquee-track { animation-play-state: paused; }
+    .marquee-set { display: flex; align-items: center; gap: 56px; padding-right: 56px; }
+    .eco { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 600; font-size: 19px; letter-spacing: -.02em; white-space: nowrap; }
+    .eco small { font-weight: 400; font-size: 13.5px; color: var(--muted); letter-spacing: 0; }
+    .eco i { width: 10px; height: 10px; border-radius: 50%; background: var(--c, var(--ink)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c, var(--ink)) 18%, transparent); }
+    @keyframes marquee { to { transform: translateX(-50%); } }
 
     /* ---------- statement + stats ---------- */
     .statement { text-align: center; padding-bottom: 40px; }
@@ -196,7 +206,7 @@
     .points .ic svg { width: 18px; height: 18px; fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .points h3 { font-size: 16px; }
     .points p { margin: 3px 0 0; font-size: 15px; color: var(--muted); }
-    .stage { position: relative; border-radius: 24px; padding: clamp(18px, 3vw, 34px); background: linear-gradient(160deg, #d6edff 0%, #eef7ff 45%, #f2fbe9 100%); border: 1px solid var(--line); overflow: hidden; }
+    .stage { position: relative; border-radius: 24px; padding: clamp(18px, 3vw, 34px); background: linear-gradient(160deg, #f6ecd9 0%, #fbf6ec 45%, #eef4e2 100%); border: 1px solid var(--line); overflow: hidden; }
 
     /* chat mock */
     .chat { display: grid; gap: 12px; padding: 18px; }
@@ -211,8 +221,13 @@
     .cost { justify-self: start; display: flex; gap: 10px; font-family: var(--mono); font-size: 12px; color: var(--muted); padding-left: 4px; }
     .cost b { color: var(--ink); font-weight: 500; }
     .composer { margin: 4px 18px 18px; height: 46px; border: 1px solid var(--line-2); border-radius: 14px; display: flex; align-items: center; padding: 0 6px 0 14px; color: var(--muted); font-size: 14px; }
-    .composer span { margin-left: auto; width: 34px; height: 34px; border-radius: 10px; background: var(--ink); display: grid; place-items: center; }
+    .composer .typed { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .composer.has-text .typed { color: var(--ink); }
+    .composer .send { position: relative; flex: none; margin-left: auto; width: 34px; height: 34px; border-radius: 10px; background: var(--ink); display: grid; place-items: center; }
     .composer svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    #chat-demo { padding-bottom: clamp(18px, 3vw, 34px); }
+    #chat-demo .chat { min-height: 262px; align-content: start; }
+    @media (min-width: 641px) { #chat-demo { padding-bottom: 128px; } }
     .float-card { position: absolute; right: 18px; bottom: 18px; width: 230px; padding: 14px; border-radius: 14px; background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow-lg); font-size: 13px; }
     .float-card .row { display: flex; justify-content: space-between; padding: 4px 0; color: var(--muted); }
     .float-card .row b { color: var(--ink); font-weight: 500; font-family: var(--mono); font-size: 12.5px; }
@@ -346,7 +361,7 @@
     .faq details p { margin: -6px 4px 22px; color: var(--body); max-width: 700px; }
 
     /* ---------- join ---------- */
-    .join { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 56px); align-items: center; border: 1px solid var(--line); border-radius: 28px; padding: clamp(26px, 5vw, 52px); background: linear-gradient(140deg, #f4faff, #fff 55%, #f6fdf0); }
+    .join { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 56px); align-items: center; border: 1px solid var(--line); border-radius: 28px; padding: clamp(26px, 5vw, 52px); background: linear-gradient(140deg, #fbf5ea, #fff 55%, #f2f6e8); }
     .join form { display: grid; gap: 12px; }
     .join label { font-size: 14px; font-weight: 500; color: var(--ink); }
     .join-row { display: flex; gap: 10px; }
@@ -371,9 +386,69 @@
     .legal a:hover { color: var(--ink); }
 
     /* ---------- reveal ---------- */
-    .reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
-    .reveal.in { opacity: 1; transform: none; }
-    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } }
+    .reveal { opacity: 0; transform: translateY(16px); filter: blur(6px); transition: opacity .7s cubic-bezier(.2, .7, .2, 1), transform .7s cubic-bezier(.2, .7, .2, 1), filter .7s ease; }
+    .reveal.in { opacity: 1; transform: none; filter: none; }
+
+    /* ---------- motion ---------- */
+    @keyframes plate-in { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
+    @keyframes blur-in { from { opacity: 0; filter: blur(10px); transform: translateY(16px); } to { opacity: 1; filter: none; transform: none; } }
+    @keyframes nav-in { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
+    @keyframes blink { 50% { opacity: 0; } }
+    @keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: none; } }
+    @keyframes ring { from { opacity: .9; transform: scale(.8); } to { opacity: 0; transform: scale(1.25); } }
+    @keyframes travel { from { top: -6px; opacity: 1; } to { top: 24px; opacity: 0; } }
+    @keyframes beat { 0%, 100% { box-shadow: 0 0 0 0 currentColor; } 50% { box-shadow: 0 0 0 4px transparent; } }
+    @keyframes cell-pop { from { transform: scale(.4); } 60% { transform: scale(1.12); } to { transform: none; } }
+    .intro { animation: blur-in .8s cubic-bezier(.2, .7, .2, 1) both; animation-delay: var(--d, 0s); }
+    .nav-inner { animation: nav-in .6s cubic-bezier(.2, .7, .2, 1) both; }
+    .pop { animation: pop .38s cubic-bezier(.2, .9, .3, 1.2) both; }
+    .caret { display: inline-block; width: 2px; height: 1.05em; margin-left: 1px; vertical-align: -2px; background: var(--ink); animation: blink 1s steps(1) infinite; }
+    .click { position: relative; }
+    .click::after { content: ""; position: absolute; inset: -5px; border-radius: inherit; border: 2px solid var(--blue); pointer-events: none; animation: ring .6s ease-out forwards; }
+    .chip.live::before, .dot.run::before, .dot.ok::before { animation: beat 2.2s ease-in-out infinite; }
+    .msg.bot.streaming::after { content: ""; display: inline-block; width: 7px; height: 7px; margin-left: 4px; border-radius: 50%; background: var(--muted); animation: blink .8s steps(1) infinite; }
+    .flow .node { transition: box-shadow .3s ease, opacity .3s ease, transform .3s ease; }
+    .flow.playing .node { opacity: .5; }
+    .flow.playing .node.lit, .flow.playing .node.done { opacity: 1; }
+    .flow .node.lit { box-shadow: 0 0 0 2px var(--ink), var(--shadow-lg); transform: translateY(-1px); }
+    .flow.playing .node.lose { opacity: .35; }
+    .wire::before { content: ""; position: absolute; left: -3px; top: -6px; width: 8px; height: 8px; border-radius: 50%; background: var(--blue); opacity: 0; }
+    .wire.go::before { animation: travel .55s ease-in forwards; }
+    .tl div { transition: opacity .35s ease; }
+    .tl.playing div { opacity: .3; }
+    .tl.playing div.on { opacity: 1; }
+    .tl div i { transition: border-color .3s ease, background .3s ease; }
+    .spark i { transform-origin: bottom; transition: transform .7s cubic-bezier(.2, .8, .2, 1), height .7s cubic-bezier(.2, .8, .2, 1); transition-delay: calc(var(--i, 0) * 45ms); }
+    .spark.pre i { transform: scaleY(0); }
+    #receipt .lrow { transition: opacity .3s ease; }
+    #receipt.playing .lrow { opacity: .25; }
+    #receipt.playing .lrow.on { opacity: 1; }
+    #receipt.playing .panel-h .chip { opacity: 0; }
+    #receipt .panel-h .chip { transition: opacity .3s ease; }
+    .topup span { position: relative; transition: border-color .2s ease, box-shadow .2s ease; }
+    #topup-go { position: relative; transition: background .2s ease; }
+    #topup-go.ok { background: var(--ok); }
+    .mosaic { display: grid; grid-template-columns: repeat(var(--cols, 32), 1fr); gap: 6px; max-width: 900px; margin: 40px auto 0; }
+    .mosaic span { aspect-ratio: 1; border-radius: 5px; background: var(--line); transition: background .5s ease; }
+    .mosaic span.on { background: var(--ink); }
+    .mosaic span.hot { background: var(--lime); animation: cell-pop .5s cubic-bezier(.2, .9, .3, 1.3); }
+    .mosaic span.dc { background: #cfd8e3; }
+    .swap { display: inline-block; transition: opacity .3s ease, filter .3s ease, transform .3s ease; }
+    .swap.out { opacity: 0; filter: blur(6px); transform: translateY(10px); }
+    #term .line { display: block; }
+    #term.typing .line { visibility: hidden; }
+    #term.typing .line.on { visibility: visible; animation: pop .25s ease both; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; filter: none; transition: none; }
+      .intro, .nav-inner, .hero::before, .pop, .marquee-track, .caret, .click::after, .mosaic span.hot,
+      .chip.live::before, .dot.run::before, .dot.ok::before { animation: none !important; }
+      .marquee { -webkit-mask-image: none; mask-image: none; }
+      .marquee-track { width: auto; justify-content: center; flex-wrap: wrap; }
+      .marquee-set[aria-hidden] { display: none; }
+      .marquee-set { flex-wrap: wrap; justify-content: center; padding: 0 var(--gutter); row-gap: 14px; }
+      html { scroll-behavior: auto; }
+    }
 
     /* ---------- responsive ---------- */
     @media (max-width: 1080px) {
@@ -400,7 +475,8 @@
       .foot-grid > div:first-child { grid-column: 1 / -1; }
     }
     @media (max-width: 640px) {
-      .hero { padding-top: 120px; background-image: image-set(url("/assets/hero-landscape-900.webp") type("image/webp"), url("/assets/hero-landscape.jpg") type("image/jpeg")); }
+      .hero { padding-top: 120px; }
+      .hero::before { background-image: image-set(url("/assets/hero-landscape-900.webp") type("image/webp"), url("/assets/hero-landscape.jpg") type("image/jpeg")); }
       .hero .pill { font-size: 12.5px; text-align: left; }
       .hero-window { margin-top: 44px; min-height: 0; }
       .win-main { padding: 16px; }
@@ -414,6 +490,7 @@
       .join-row { flex-direction: column; }
       .cta-band { margin: 0 12px; }
       .branch .label { display: none; }
+      .mosaic { --cols: 16; gap: 5px; }
       .faq summary { font-size: 16.5px; }
     }
   </style>
@@ -545,16 +622,16 @@
     <!-- ================= HERO ================= -->
     <section class="hero" aria-labelledby="hero-title">
       <div class="wrap hero-inner">
-        <a class="pill" href="/launch.html"><b>NEW</b>Rebrand live · Desktop GA Oct 20 · Marketplace Oct 31</a>
-        <h1 id="hero-title" class="display">Every GPU on Earth, working as one.</h1>
-        <p class="lede">Chat, an OpenAI-compatible API, a GPU marketplace and verified jobs in one account. Top up once and pay only for the tokens and work you use.</p>
-        <div class="hero-actions">
+        <a class="pill intro" style="--d:.05s" href="/launch.html"><b>NEW</b>Rebrand live · Desktop GA Oct 20 · Marketplace Oct 31</a>
+        <h1 id="hero-title" class="display intro" style="--d:.15s">Every GPU on Earth, working as one.</h1>
+        <p class="lede intro" style="--d:.28s">Chat, an OpenAI-compatible API, a GPU marketplace and verified jobs in one account. Top up once and pay only for the tokens and work you use.</p>
+        <div class="hero-actions intro" style="--d:.4s">
           <a class="btn dark" href="https://chat.decentralizedcompute.company/">Start with $5 <span class="arr">›</span></a>
           <a class="btn light" href="#developers">Read the API docs</a>
         </div>
-        <p class="hero-note">Pay as you go. No subscription, no card on file to start chatting.</p>
+        <p class="hero-note intro" style="--d:.5s">Pay as you go. No subscription, no card on file to start chatting.</p>
 
-        <div class="window hero-window" aria-hidden="true">
+        <div class="window hero-window intro" style="--d:.6s" id="hero-demo" aria-hidden="true">
           <aside class="win-side">
             <div class="brand"><svg><use href="#mark" /></svg><span>tdcc</span></div>
             <span class="side-item"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg>Chat</span>
@@ -566,14 +643,14 @@
             <span class="side-item"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>Billing</span>
             <div class="side-foot">
               <small>Balance</small>
-              <strong>$18.42</strong>
+              <strong data-bal>$18.42</strong>
               <div class="bar"><i style="width:62%"></i></div>
             </div>
           </aside>
           <div class="win-main">
             <div class="win-top">
               <h3>Jobs</h3>
-              <span class="chip">7 running</span>
+              <span class="chip" data-running>7 running</span>
               <span class="btn dark sm">New job</span>
             </div>
             <div class="win-tools">
@@ -589,13 +666,13 @@
               </div>
               <div class="job">
                 <div class="job-head"><span class="job-ico" style="background:#effbe3">FT</span><h4>LoRA fine-tune</h4></div>
-                <p>qwen2.5-7b on 1× 80GB in eu-central, step 1,840 of 3,000.</p>
-                <div class="meta"><span class="dot run">Running</span><span class="mono">$38.40 / $120</span></div>
+                <p>qwen2.5-7b on 1× 80GB in eu-central, step <span data-step>1,840</span> of 3,000.</p>
+                <div class="meta" data-job="ft"><span class="dot run">Running</span><span class="mono">$38.40 / $120</span></div>
               </div>
               <div class="job">
                 <div class="job-head"><span class="job-ico" style="background:#fff3e2">EM</span><h4>Embeddings</h4></div>
                 <p>bge-large over 82k documents. Host dropped, moved to another GPU.</p>
-                <div class="meta"><span class="dot wait">Requeued</span><span class="mono">$3.10</span></div>
+                <div class="meta" data-job="em"><span class="dot wait">Requeued</span><span class="mono">$3.10</span></div>
               </div>
               <div class="job">
                 <div class="job-head"><span class="job-ico" style="background:#f2ecff">TR</span><h4>Transcription</h4></div>
@@ -605,12 +682,12 @@
               <div class="job">
                 <div class="job-head"><span class="job-ico" style="background:#e6f1ff">EV</span><h4>Eval suite</h4></div>
                 <p>Reproducible scoring run against the held-out set before release.</p>
-                <div class="meta"><span class="dot run">Running</span><span class="mono">$4.02</span></div>
+                <div class="meta" data-job="ev"><span class="dot run">Running</span><span class="mono">$4.02</span></div>
               </div>
               <div class="job">
                 <div class="job-head"><span class="job-ico" style="background:#effbe3">CH</span><h4>Chat API</h4></div>
                 <p>tdcc-chat via the OpenAI-compatible gateway, streamed to your app.</p>
-                <div class="meta"><span class="dot ok">Live</span><span class="mono">1.2M tok</span></div>
+                <div class="meta" data-job="ch"><span class="dot ok">Live</span><span class="mono">1.2M tok</span></div>
               </div>
             </div>
           </div>
@@ -619,11 +696,27 @@
     </section>
 
     <!-- ================= TRUST ================= -->
-    <div class="trust">
-      <div class="wrap trust-row">
-        <span>Backed on</span><a href="https://x.com/stardotfun/status/2080051528732193280"><b>star.fun</b></a>
-        <span class="sep"></span><span>Building with <b>Avalanche</b> &amp; <b>Solana</b></span>
-        <span class="sep"></span><span>Open-source <b>Exact Core</b> silicon</span>
+    <div class="trust" aria-label="Backers and ecosystems">
+      <div class="trust-head wrap">
+        <a class="raise" href="https://x.com/stardotfun/status/2080051528732193280"><span class="tag">star.fun</span><span>Raised <b>$50K in 4 minutes</b></span></a>
+      </div>
+      <div class="marquee">
+        <div class="marquee-track">
+          <div class="marquee-set">
+            <span class="eco" style="--c:#9945ff"><i></i>Solana <small>settlement &amp; escrow</small></span>
+            <span class="eco" style="--c:#e84142"><i></i>Avalanche <small>coordination L1s</small></span>
+            <span class="eco" style="--c:#7d00ff"><i></i>Stellar <small>payments</small></span>
+            <span class="eco" style="--c:#0fa37f"><i></i>GenLayer <small>intelligent contracts</small></span>
+            <span class="eco" style="--c:#b9ff78"><i></i>Exact Core <small>open-source silicon</small></span>
+          </div>
+          <div class="marquee-set" aria-hidden="true">
+            <span class="eco" style="--c:#9945ff"><i></i>Solana <small>settlement &amp; escrow</small></span>
+            <span class="eco" style="--c:#e84142"><i></i>Avalanche <small>coordination L1s</small></span>
+            <span class="eco" style="--c:#7d00ff"><i></i>Stellar <small>payments</small></span>
+            <span class="eco" style="--c:#0fa37f"><i></i>GenLayer <small>intelligent contracts</small></span>
+            <span class="eco" style="--c:#b9ff78"><i></i>Exact Core <small>open-source silicon</small></span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -632,11 +725,12 @@
       <div class="wrap">
         <h2 class="display reveal">AI runs on compute scattered across thousands of operators.</h2>
         <p class="lede reveal" style="margin:20px auto 0">Data centers have capacity they cannot fill. AI teams have workloads they cannot place. TDCC is the grid between them.</p>
+        <div class="mosaic reveal" id="mosaic" aria-hidden="true"></div>
         <div class="stats">
-          <div class="stat reveal"><strong>80 tok/s</strong><span>Qwen 3.8 27B on two compact laptops, up from about 50.</span></div>
-          <div class="stat reveal"><strong>85.8 tok/s</strong><span>LFM2.5-230M on the Exact Core FPGA card, bit for bit.</span></div>
-          <div class="stat reveal"><strong>10</strong><span>Modern open models running with real weights on the card.</span></div>
-          <div class="stat reveal"><strong>$50K</strong><span>Raised on star.fun in about ten minutes, July 2026.</span></div>
+          <div class="stat reveal"><strong data-count="80" data-fmt="{n} tok/s">80 tok/s</strong><span>Qwen 3.8 27B on two compact laptops, up from about 50.</span></div>
+          <div class="stat reveal"><strong data-count="85.8" data-fmt="{n} tok/s">85.8 tok/s</strong><span>LFM2.5-230M on the Exact Core FPGA card, bit for bit.</span></div>
+          <div class="stat reveal"><strong data-count="10" data-fmt="{n}">10</strong><span>Modern open models running with real weights on the card.</span></div>
+          <div class="stat reveal"><strong data-count="50" data-fmt="${n}K">$50K</strong><span>Raised on star.fun in 4 minutes, July 2026.</span></div>
         </div>
       </div>
     </section>
@@ -655,21 +749,21 @@
           </ul>
           <a class="btn dark" href="https://chat.decentralizedcompute.company/">Open TDCC Chat <span class="arr">›</span></a>
         </div>
-        <div class="stage reveal" aria-hidden="true">
+        <div class="stage reveal" id="chat-demo" aria-hidden="true">
           <div class="window">
-            <div class="chat-top"><span class="model"><i></i>TDCC Chat</span><span class="bal">$4.9981</span></div>
+            <div class="chat-top"><span class="model"><i></i>TDCC Chat</span><span class="bal" data-bal>$4.9981</span></div>
             <div class="chat">
               <div class="msg user">Write a Python function that retries a request with exponential backoff.</div>
               <div class="msg bot">Here is a small helper using <code>time.sleep</code> that doubles the wait after each failure and gives up after five tries…</div>
               <div class="cost"><span>612 tokens</span><span>·</span><b>−$0.0019</b></div>
             </div>
-            <div class="composer">Message TDCC Chat…<span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+            <div class="composer"><span class="typed">Message TDCC Chat…</span><span class="send"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
           </div>
           <div class="float-card">
             <h4>sk-tdcc-…9f2a · today</h4>
-            <div class="row"><span>Requests</span><b>1,284</b></div>
-            <div class="row"><span>Tokens</span><b>2.41M</b></div>
-            <div class="row"><span>Spent</span><b>$3.62</b></div>
+            <div class="row"><span>Requests</span><b data-req>1,284</b></div>
+            <div class="row"><span>Tokens</span><b data-tok>2.41M</b></div>
+            <div class="row"><span>Spent</span><b data-spent>$3.62</b></div>
           </div>
         </div>
       </div>
@@ -686,7 +780,7 @@
             <a class="btn light" href="/litepaper.html">Read the litepaper <span class="arr">›</span></a>
           </div>
           <div class="stage reveal" aria-hidden="true">
-            <div class="window flow">
+            <div class="window flow" id="flow-demo">
               <div class="flow-top"><span class="chip live">Live</span><span class="mono" style="color:var(--muted)">job_8fq2c1</span></div>
               <div class="node"><span class="ni" style="background:#e6f1ff">01</span><div><small>Submit</small><strong>finetune.lora · qwen2.5-7b</strong></div><span class="chip">API</span></div>
               <div class="wire"></div>
@@ -731,7 +825,7 @@
           <div class="tile wide reveal">
             <h3>Verification &amp; receipts</h3>
             <p>Work that fails is never billed and never paid out.</p>
-            <div class="panel">
+            <div class="panel" id="receipt">
               <div class="panel-h">Receipt · job_8fq1za <span class="chip live">Accepted</span></div>
               <div class="lrow"><span>Workload</span><span class="v">inference.batch</span></div>
               <div class="lrow"><span>Items</span><span class="v">1,240 / 1,240 ✓</span></div>
@@ -744,8 +838,8 @@
             <p>Top up from $5. Usage is deducted as you go.</p>
             <div class="panel">
               <div class="panel-h">Add funds <small>USD</small></div>
-              <div class="topup"><span>$5</span><span class="on">$20</span><span>$100</span></div>
-              <span class="btn dark sm" style="width:100%;justify-content:center">Continue</span>
+              <div class="topup" id="topup"><span>$5</span><span class="on">$20</span><span>$100</span></div>
+              <span class="btn dark sm" id="topup-go" style="width:100%;justify-content:center">Continue</span>
             </div>
           </div>
           <div class="tile reveal">
@@ -759,7 +853,7 @@
           <div class="tile reveal">
             <h3>Reliability</h3>
             <p>Dropped hosts requeue to another GPU on their own.</p>
-            <div class="panel tl">
+            <div class="panel tl" id="tl">
               <div><i></i><span>Matched host</span><em>0.8s</em></div>
               <div><i></i><span>Runtime ready</span><em>12s</em></div>
               <div class="re"><i></i><span>Host lost · requeued</span><em>2.1s</em></div>
@@ -772,7 +866,7 @@
             <p>Tokens, requests and spend per key and per project.</p>
             <div class="panel">
               <div class="panel-h">Tokens · last 14 days <small class="chip live">+18%</small></div>
-              <div class="spark"><i style="height:30%"></i><i style="height:42%"></i><i style="height:38%"></i><i style="height:55%"></i><i style="height:48%"></i><i style="height:62%"></i><i style="height:58%"></i><i style="height:70%"></i><i style="height:66%"></i><i style="height:74%"></i><i style="height:69%"></i><i style="height:82%"></i><i style="height:88%"></i><i style="height:96%"></i></div>
+              <div class="spark" id="spark"><i style="height:30%"></i><i style="height:42%"></i><i style="height:38%"></i><i style="height:55%"></i><i style="height:48%"></i><i style="height:62%"></i><i style="height:58%"></i><i style="height:70%"></i><i style="height:66%"></i><i style="height:74%"></i><i style="height:69%"></i><i style="height:82%"></i><i style="height:88%"></i><i style="height:96%"></i></div>
             </div>
           </div>
           <div class="tile wide reveal">
@@ -790,7 +884,7 @@
 
     <!-- ================= CTA ================= -->
     <section class="cta-band reveal" aria-labelledby="cta-1">
-      <h2 class="display" id="cta-1">Your first job can ship this afternoon.</h2>
+      <h2 class="display" id="cta-1">Your first <span class="swap" data-words="job,fine-tune,batch,endpoint,eval">job</span> can ship this afternoon.</h2>
       <p class="lede">Load $5, create a key, and send one request. Scale to data centers when you need them.</p>
       <div class="hero-actions">
         <a class="btn dark" href="https://chat.decentralizedcompute.company/">Start with $5 <span class="arr">›</span></a>
@@ -820,7 +914,7 @@
           <div class="reveal" style="position:relative">
             <div class="term">
               <div class="term-top"><i></i><i></i><i></i><span>tdcc-exact demo</span><span class="tag">CHEATER CAUGHT</span></div>
-<pre><span class="d">1.</span> renter opens a yes/no oracle job, locks 2.00 USDC
+<pre id="term"><span class="d">1.</span> renter opens a yes/no oracle job, locks 2.00 USDC
 <span class="d">2.</span> provider A runs honestly; B skips layer 1
    A: NO 3c85c23e…
    B: NO 5013c640…  <span class="d">same answer, other fingerprint</span>
@@ -1111,5 +1205,6 @@ tdcc receipts show job_8fq1za --verify</pre>
   </script>
   <script src="/js/site.js"></script>
   <script src="/js/market.js"></script>
+  <script src="/js/home.js"></script>
 </body>
 </html>
