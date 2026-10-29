@@ -184,7 +184,11 @@
     .marquee-set { display: flex; align-items: center; gap: 56px; padding-right: 56px; }
     .eco { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 600; font-size: 19px; letter-spacing: -.02em; white-space: nowrap; }
     .eco small { font-weight: 400; font-size: 13.5px; color: var(--muted); letter-spacing: 0; }
-    .eco i { width: 10px; height: 10px; border-radius: 50%; background: var(--c, var(--ink)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c, var(--ink)) 18%, transparent); }
+    .eco img { height: 24px; width: auto; flex: none; }
+    .eco .eco-mark { width: 36px; height: 24px; color: var(--ink); flex: none; }
+    /* GenLayer's rule: clear space around the logo equal to the height of its mark. */
+    .eco-full { gap: 0; }
+    .eco-full img { height: 25px; margin: 0 25px; }
     @keyframes marquee { to { transform: translateX(-50%); } }
 
     /* ---------- statement + stats ---------- */
@@ -703,18 +707,18 @@
       <div class="marquee">
         <div class="marquee-track">
           <div class="marquee-set">
-            <span class="eco" style="--c:#9945ff"><i></i>Solana <small>settlement &amp; escrow</small></span>
-            <span class="eco" style="--c:#e84142"><i></i>Avalanche <small>coordination L1s</small></span>
-            <span class="eco" style="--c:#7d00ff"><i></i>Stellar <small>payments</small></span>
-            <span class="eco" style="--c:#0fa37f"><i></i>GenLayer <small>intelligent contracts</small></span>
-            <span class="eco" style="--c:#b9ff78"><i></i>Exact Core <small>open-source silicon</small></span>
+            <span class="eco"><img src="/assets/partners/solana.svg" alt="" width="24" height="24" />Solana <small>settlement &amp; escrow</small></span>
+            <span class="eco"><img src="/assets/partners/avalanche.svg" alt="" width="27" height="24" />Avalanche <small>coordination L1s</small></span>
+            <span class="eco"><img src="/assets/partners/stellar.svg" alt="" width="24" height="24" />Stellar <small>payments</small></span>
+            <span class="eco eco-full"><img src="/assets/partners/genlayer.svg" alt="GenLayer" width="105" height="25" /><small>intelligent contracts</small></span>
+            <span class="eco"><svg class="eco-mark" aria-hidden="true"><use href="#mark" /></svg>Exact Core <small>open-source silicon</small></span>
           </div>
           <div class="marquee-set" aria-hidden="true">
-            <span class="eco" style="--c:#9945ff"><i></i>Solana <small>settlement &amp; escrow</small></span>
-            <span class="eco" style="--c:#e84142"><i></i>Avalanche <small>coordination L1s</small></span>
-            <span class="eco" style="--c:#7d00ff"><i></i>Stellar <small>payments</small></span>
-            <span class="eco" style="--c:#0fa37f"><i></i>GenLayer <small>intelligent contracts</small></span>
-            <span class="eco" style="--c:#b9ff78"><i></i>Exact Core <small>open-source silicon</small></span>
+            <span class="eco"><img src="/assets/partners/solana.svg" alt="" width="24" height="24" />Solana <small>settlement &amp; escrow</small></span>
+            <span class="eco"><img src="/assets/partners/avalanche.svg" alt="" width="27" height="24" />Avalanche <small>coordination L1s</small></span>
+            <span class="eco"><img src="/assets/partners/stellar.svg" alt="" width="24" height="24" />Stellar <small>payments</small></span>
+            <span class="eco eco-full"><img src="/assets/partners/genlayer.svg" alt="GenLayer" width="105" height="25" /><small>intelligent contracts</small></span>
+            <span class="eco"><svg class="eco-mark" aria-hidden="true"><use href="#mark" /></svg>Exact Core <small>open-source silicon</small></span>
           </div>
         </div>
       </div>
