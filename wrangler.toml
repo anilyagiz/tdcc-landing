@@ -6,7 +6,7 @@ compatibility_date = "2025-07-21"
 directory = "."
 binding = "ASSETS"
 # The API must reach the Worker even though static files are served first.
-run_worker_first = ["/api/*"]
+run_worker_first = ["/api/*", "/v1/*"]
 
 # GPU marketplace storage. Create once with
 #   npx wrangler d1 create tdcc-market
@@ -15,7 +15,7 @@ run_worker_first = ["/api/*"]
 [[d1_databases]]
 binding = "DB"
 database_name = "tdcc-market"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "29f61381-4d0b-491e-9bcb-dedc3d012699"
 migrations_dir = "migrations"
 
 # Expires finished rentals and unanswered requests, cleans up old rows, and
@@ -40,5 +40,17 @@ SITE_URL = "https://decentralizedcompute.company"
 ADMIN_EMAILS = "anil@decentralizedcompute.company"
 # Marketplace fee on card payments, in basis points (1000 = 10%).
 PLATFORM_FEE_BPS = "1000"
+# Prepaid balance, USDC top-ups and the metered API (/v1, /chat.html).
+# See docs/billing-api.md. The provider stays private, so set these in the
+# dashboard (Settings > Variables and secrets) rather than here:
+#   SOLANA_TREASURY    wallet address that receives USDC (plain var)
+#   SOLANA_RPC_URL     secret, e.g. a Helius mainnet URL with its API key
+#   UPSTREAM_BASE_URL  secret, OpenAI-compatible provider base URL
+#   UPSTREAM_API_KEYS  secret, comma-separated provider keys
+#   UPSTREAM_MODEL     secret, provider model served as tdcc-chat
+#   UPSTREAM_PRICE_IN / UPSTREAM_PRICE_OUT  provider USD per 1M tokens
+# Without the prices the API refuses requests instead of serving for free.
+PRICE_MARKUP = "1.5"
+SOLANA_CLUSTER = "mainnet-beta"
 # Public Turnstile site key; only used when TURNSTILE_SECRET is set.
 # TURNSTILE_SITE_KEY = ""

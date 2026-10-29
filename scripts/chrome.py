@@ -17,6 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 NAV = [
+    ("/chat.html", "Chat"),
     ("/marketplace.html", "Marketplace"),
     ("/app.html", "App"),
     ("/exact-core.html", "Exact Core"),
@@ -44,6 +45,7 @@ PAGES = {
     "cask-q.html": ("/cask-q.html", EARLY),
     "two-laptops-80-tps.html": ("/cask-q.html", EARLY),
     "launch.html": (None, EARLY),
+    "chat.html": ("/chat.html", EARLY),
 }
 
 MARK = """<svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -74,7 +76,7 @@ FOOTER = """<footer>
         </div>
         <div>
           <h4>Product</h4>
-          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
+          <ul><li><a href="/chat.html">TDCC Chat</a></li><li><a href="/account.html#billing">Balance &amp; API keys</a></li><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
         </div>
         <div>
           <h4>Company</h4>
@@ -148,12 +150,12 @@ def main():
     stale = []
     for page in named or PAGES:
         path = ROOT / page
-        html = path.read_text()
+        html = path.read_text(encoding="utf-8")
         out = render(page, html)
         if out != html:
             stale.append(page)
             if not check:
-                path.write_text(out)
+                path.write_text(out, encoding="utf-8", newline="\n")
     if check and stale:
         print("chrome out of date: " + ", ".join(stale) + " (run python3 scripts/chrome.py)")
         sys.exit(1)

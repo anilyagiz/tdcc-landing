@@ -1,4 +1,4 @@
-const { Readable } = require("node:stream");
+import { Readable } from "node:stream";
 
 const UPSTREAM_BASE = "https://zenmux.ai";
 const ALLOWED_MODELS = new Set(["deepseek/deepseek-v4-flash-free"]);
@@ -62,9 +62,19 @@ function tryParseJson(buffer) {
   }
 }
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   const url = new URL(req.url, "https://decentralizedcompute.company");
   const cors = corsHeaders(req);
+
+  // Only the OpenAI / Anthropic surfaces belong to this gateway. Marketplace
+  // paths (/api/listings, /api/me, ...) live in the Cloudflare Worker.
+  const p = url.pathname;
+  const gateway = p === "/api/v1" || p.startsWith("/api/v1/") || p === "/api/anthropic" || p.startsWith("/api/anthropic/");
+  if (!gateway) {
+    res.writeHead(404, { ...cors, "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "The marketplace service is not available on this deployment yet." }));
+    return;
+  }
 
   if (req.method === "OPTIONS") {
     res.writeHead(204, cors);
@@ -134,4 +144,4 @@ module.exports = async function handler(req, res) {
 
   res.writeHead(upstream.status, responseHeaders);
   Readable.fromWeb(upstream.body).pipe(res);
-};
+}

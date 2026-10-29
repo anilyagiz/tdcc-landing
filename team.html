@@ -32,19 +32,32 @@
   <meta name="twitter:image" content="https://decentralizedcompute.company/assets/og-image.png" />
 
   <style>
-    .team-grid .card { display: flex; flex-direction: column; min-height: 100%; }
-    .team-grid .card .k { display: flex; justify-content: space-between; gap: 12px; }
-    .team-grid .card .role { margin-top: 10px; color: var(--sand); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
-    .team-grid .card .bio { margin-top: 18px; max-width: 52ch; }
-    .team-grid .card.pending h3 { color: var(--body); }
-    .team-grid .card.pending .role { color: var(--muted); }
-    .team-note { margin-top: 28px; max-width: 72ch; }
+    /* People cards: white rounded cards with an initial avatar */
+    .team-grid > .card { display: flex; flex-direction: column; min-height: 100%; background: #fff; box-shadow: var(--shadow); border-radius: 20px; transition: transform .15s ease, box-shadow .15s ease; }
+    .team-grid > .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .team-grid .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+    .avatar { display: grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(140deg, #fbf5ea, #eef4e6); border: 1px solid var(--line); color: var(--heading); font-family: var(--serif); font-size: 21px; font-weight: 700; letter-spacing: -.02em; position: relative; }
+    .avatar::after { content: ""; position: absolute; right: 1px; bottom: 1px; width: 12px; height: 12px; border-radius: 50%; background: var(--lime); border: 2px solid #fff; }
+    .pending .avatar { background: var(--panel); border-style: dashed; border-color: var(--line-2); color: var(--muted); }
+    .pending .avatar::after { display: none; }
+    .team-grid .card .k { display: flex; align-items: center; gap: 8px; margin: 0; padding: 0; border: 0; background: none; color: var(--muted); font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .team-grid .card .k .tag { vertical-align: 0; }
+    .team-grid .card h3 { font-family: var(--serif); font-size: 24px; font-weight: 700; color: var(--heading); letter-spacing: -.015em; }
+    .team-grid .card .role { margin-top: 4px; color: var(--muted); font-size: 14px; font-weight: 500; }
+    .team-grid .card .bio { margin-top: 16px; max-width: 52ch; color: var(--body); font-size: 15px; line-height: 1.65; }
+    .team-grid .card.pending h3 { color: var(--text); }
+    .team-note { margin-top: 24px; max-width: 72ch; }
+
+    /* Advisors */
     .advisors { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 48px; align-items: start; }
     .advisors .prose { max-width: 62ch; }
-    .advisor-slot { display: grid; gap: 14px; padding: clamp(22px, 2.6vw, 32px); border: 1px dashed var(--line-2); color: var(--muted); }
-    .advisor-slot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
-    .advisor-slot li { padding: 12px 14px; background: var(--bg); color: var(--body); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+    .advisor-slot { display: grid; gap: 14px; padding: clamp(22px, 2.6vw, 30px); border: 1px dashed var(--line-2); border-radius: 20px; background: var(--panel); color: var(--muted); }
+    .advisor-slot .slot-l { color: var(--text); font-size: 14px; font-weight: 600; }
+    .advisor-slot ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+    .advisor-slot li { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--body); font-size: 14px; font-weight: 500; box-shadow: var(--shadow); }
+    .advisor-slot li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 3px rgba(185, 255, 120, .35); }
     @media (max-width: 860px) { .advisors { grid-template-columns: 1fr; } }
+    @media (max-width: 420px) { .cta-band .actions .btn { width: 100%; } }
   </style>
 
   <script type="application/ld+json">
@@ -81,7 +94,6 @@
     ]
   }
   </script>
-  <link rel="stylesheet" href="/styles/refine.css" />
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -113,6 +125,7 @@
         <span class="brand-name">tdcc</span>
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
+        <a href="/chat.html">Chat</a>
         <a href="/marketplace.html">Marketplace</a>
         <a href="/app.html">App</a>
         <a href="/exact-core.html">Exact Core</a>
@@ -145,25 +158,25 @@
         </div>
         <div class="grid c2 team-grid">
           <article class="card">
-            <span class="k"><span>01</span></span>
+            <div class="top"><span class="avatar" aria-hidden="true">AY</span><span class="k"><span>01</span></span></div>
             <h3>Anil Yagiz</h3>
             <p class="role">Founder &amp; Developer</p>
             <p class="bio">Previously at EA, J.P. Morgan, and AWS. Research internships with Berkeley AI Safety, the ASU security lab, and the Clemson autonomous-vehicle security lab, with contributions to 30+ published papers.</p>
           </article>
           <article class="card">
-            <span class="k"><span>02</span></span>
+            <div class="top"><span class="avatar" aria-hidden="true">ZC</span><span class="k"><span>02</span></span></div>
             <h3>Zeynep Cengiz</h3>
             <p class="role">Operations &amp; Development</p>
             <p class="bio">Built her experience through internships across many companies, then secured seed funding from Shell for an earlier venture. She now manages operations and development at TDCC.</p>
           </article>
           <article class="card pending">
-            <span class="k"><span>03</span><span class="tag warn">Notice period</span></span>
+            <div class="top"><span class="avatar" aria-hidden="true">A</span><span class="k"><span>03</span><span class="tag warn">Notice period</span></span></div>
             <h3>Alpaslan</h3>
             <p class="role">Joining soon</p>
             <p class="bio">Recently resigned from a defense-sector role and is completing the formal notice period before the position at TDCC can be announced publicly. Full profile to follow.</p>
           </article>
           <article class="card pending">
-            <span class="k"><span>04 — 05</span><span class="tag">Onboarding</span></span>
+            <div class="top"><span class="avatar" aria-hidden="true">+2</span><span class="k"><span>04 — 05</span><span class="tag">Onboarding</span></span></div>
             <h3>Two new team members</h3>
             <p class="role">Onboarding</p>
             <p class="bio">Two recent hires are currently onboarding. Their profiles will be added here once they are fully on the team.</p>
@@ -171,7 +184,7 @@
           <!-- Template for additional team members — fill in with real, confirmed people only.
                First-name-only entries are fine for anyone under a confidentiality period (like Alpaslan above).
           <article class="card">
-            <span class="k"><span>06</span></span>
+            <div class="top"><span class="avatar" aria-hidden="true">N</span><span class="k"><span>06</span></span></div>
             <h3>Name</h3>
             <p class="role">Role</p>
             <p class="bio">One or two short sentences.</p>
@@ -196,7 +209,7 @@
             <p>Interested in advising TDCC? <a href="mailto:anil@decentralizedcompute.company?subject=TDCC%20Advisory">Reach out to the founder</a>.</p>
           </div>
           <div class="advisor-slot">
-            <p class="mono">Focus areas</p>
+            <p class="slot-l">Focus areas</p>
             <ul>
               <li>AI infrastructure</li>
               <li>Security</li>
@@ -206,7 +219,7 @@
           <!-- Template for advisor entries — add only advisors who have confirmed in writing that they can be named publicly.
           <div class="grid c2 team-grid">
             <article class="card">
-              <span class="k"><span>Advisor</span></span>
+              <div class="top"><span class="avatar" aria-hidden="true">N</span><span class="k"><span>Advisor</span></span></div>
               <h3>Name</h3>
               <p class="role">Advisor — area (e.g. AI infrastructure)</p>
               <p class="bio">One-line background.</p>
@@ -242,7 +255,7 @@
         </div>
         <div>
           <h4>Product</h4>
-          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
+          <ul><li><a href="/chat.html">TDCC Chat</a></li><li><a href="/account.html#billing">Balance &amp; API keys</a></li><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
         </div>
         <div>
           <h4>Company</h4>

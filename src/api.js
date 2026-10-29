@@ -17,6 +17,7 @@
 //   suspend accounts that users report.
 
 import { emailEnabled, sendEmail, siteUrl, templates } from "./email.js";
+import { billingOverview, createDeposit, checkDeposit, createKey, revokeKey, webChat, watchDeposits } from "./billing.js";
 
 const SESSION_COOKIE = "__Host-tdcc_sid";
 const SESSION_TTL = 30 * 24 * 3600;
@@ -1970,6 +1971,7 @@ export async function reportError(env, err, request) {
 export async function scheduled(env) {
   await housekeeping(env);
   await runPayouts(env);
+  await watchDeposits(env);
 }
 
 // ---------- router ----------
@@ -2001,12 +2003,18 @@ export async function handleApi(request, env, ctx) {
     }
 
     const seg = path.split("/").slice(2); // ["listings", ":id", ...]
-    const isId = (x) => /^(gpu|rnt|usr|rpt|dsp)_[A-Za-z0-9_-]{1,40}$/.test(x);
+    const isId = (x) => /^(gpu|rnt|usr|rpt|dsp|dep|key)_[A-Za-z0-9_-]{1,40}$/.test(x);
     const route = `${method} /${seg.map((x) => (isId(x) ? ":id" : x)).join("/")}`;
     const id = seg.find(isId);
 
     switch (route) {
       case "GET /health": return json(200, { ok: true });
+      case "GET /billing": return await billingOverview(request, env);
+      case "POST /billing/deposits": return await createDeposit(request, env);
+      case "POST /billing/deposits/:id/check": return await checkDeposit(request, env, id);
+      case "POST /billing/keys": return await createKey(request, env);
+      case "DELETE /billing/keys/:id": return await revokeKey(request, env, id);
+      case "POST /chat": return await webChat(request, env, ctx);
       case "GET /me": return await me(request, env);
       case "DELETE /me": return await deleteAccount(request, env);
       case "POST /me/password": return await changePassword(request, env);
@@ -2071,3 +2079,6 @@ export async function handleApi(request, env, ctx) {
     return json(500, { error: "Something went wrong on our side. Please try again." });
   }
 }
+
+// Shared with src/billing.js.
+export { HttpError, json, readJson, requireUser, limit, newId, randomToken, sha256, now };

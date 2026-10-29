@@ -26,85 +26,83 @@
     .page-head .display { max-width: 18ch; }
 
     /* hero diagram: full content width, scrolls inside its frame on phones */
-    .hero-fig { margin: clamp(40px, 5vw, 64px) 0 0; }
+    .hero-fig { margin: clamp(40px, 5vw, 64px) 0 0; box-shadow: var(--shadow-lg); }
     .hero-fig .scroll { overflow-x: auto; }
     .topology { width: 100%; height: auto; }
     .topology .guide { fill: none; stroke: var(--line-2); stroke-width: 1.2; }
-    .topology .dashed { fill: none; stroke: var(--sand); stroke-width: 1.4; stroke-dasharray: 4 6; }
-    .topology .device { fill: var(--bg); stroke: var(--line-2); stroke-width: 1; }
-    .topology .device-screen { fill: #f7f6f3; stroke: var(--line); stroke-width: 1; }
-    .topology .device-base { stroke: var(--line-2); stroke-width: 3; }
-    .topology .model { fill: rgba(216, 191, 148, .05); stroke: rgba(216, 191, 148, .45); stroke-width: 1; }
-    .topology .result { fill: var(--cream); }
-    .topology .node-title { fill: var(--text); font-family: var(--serif); font-size: 19px; }
+    .topology .dashed { fill: none; stroke: var(--blue); stroke-width: 1.4; stroke-dasharray: 4 6; }
+    .topology .device { fill: #fff; stroke: var(--line-2); stroke-width: 1; }
+    .topology .device-screen { fill: var(--bg-2); stroke: var(--line); stroke-width: 1; }
+    .topology .device-base { stroke: var(--line-2); stroke-width: 3; stroke-linecap: round; }
+    .topology .model { fill: rgba(47, 124, 246, .05); stroke: rgba(47, 124, 246, .35); stroke-width: 1; }
+    .topology .result { fill: var(--heading); }
+    .topology .node-title { fill: var(--heading); font-family: var(--serif); font-weight: 700; font-size: 19px; }
     .topology .node-copy { fill: var(--muted); font-family: var(--sans); font-size: 12px; }
-    .topology .mono { fill: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: .14em; }
-    .topology .mono.accent { fill: var(--sand); }
-    .topology .mono.ink { fill: #6b5a3c; }
+    .topology .mono { fill: var(--muted); font-family: var(--sans); font-size: 10.5px; font-weight: 600; letter-spacing: .08em; }
+    .topology .mono.accent { fill: var(--blue); }
+    .topology .mono.ink { fill: var(--lime); }
     .topology .screen-copy { fill: var(--body); font-family: var(--sans); font-size: 11px; }
-    .topology .result-label { fill: var(--ink); font-family: var(--serif); font-size: 19px; }
-    .topology .result-copy { fill: rgba(255, 255, 255, .62); font-family: var(--sans); font-size: 11px; }
-    .topology .spark { fill: var(--sand); }
+    .topology .result-label { fill: #fff; font-family: var(--serif); font-weight: 700; font-size: 19px; }
+    .topology .result-copy { fill: rgba(255, 255, 255, .7); font-family: var(--sans); font-size: 11px; }
+    .topology .spark { fill: var(--ok); }
     .chart-scroll { overflow-x: auto; }
     @media (max-width: 760px) { .topology { min-width: 640px; } }
     @media (max-width: 600px) {
-      svg.perf .axis, svg.perf .bar-sub { font-size: 22px; letter-spacing: .06em; }
+      svg.perf .axis, svg.perf .bar-sub { font-size: 22px; letter-spacing: .04em; }
       svg.perf .bar-label { font-size: 38px; }
       svg.perf .delta { font-size: 40px; }
       svg.perf .delta-sub { display: none; }
-      .page-meta { gap: 6px 10px; }
-      .page-meta span + span::before { margin-right: 10px; }
+      .page-meta { gap: 6px; }
     }
 
     /* key numbers */
     .stats { margin: 2em 0; }
-    .stats > div { padding: 22px 20px; }
+    .grid.stats > div { padding: 22px 20px; background: #fff; box-shadow: var(--shadow); }
     .stats .stat-n { font-size: clamp(36px, 4vw, 48px); font-variant-numeric: tabular-nums; }
-    .stats .stat-n.accent { color: var(--sand); }
+    .stats .stat-n.accent { color: var(--ok); }
     .stats .stat-l { margin-top: 10px; font-size: 13.5px; line-height: 1.5; }
 
     /* bar chart */
     .chart-intro { padding: 18px 20px 0; color: var(--body); font-size: 15px; line-height: 1.6; }
-    .chart-intro h3 { margin: 0 0 6px; color: var(--text); font-family: var(--serif); font-size: 22px; font-weight: 400; }
+    .chart-intro h3 { margin: 0 0 6px; color: var(--heading); font-family: var(--serif); font-size: 22px; font-weight: 700; }
     .perf { width: 100%; height: auto; }
     .perf .gridline { stroke: var(--line); stroke-width: 1; }
     .perf .baseline { stroke: var(--line-2); stroke-width: 1.2; }
-    .perf .bar-old { fill: #3b352c; }
-    .perf .bar-new { fill: var(--sand); }
-    .perf .axis { fill: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
-    .perf .bar-label { fill: var(--text); font-family: var(--serif); font-size: 22px; }
-    .perf .bar-sub { fill: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; }
-    .perf .delta { fill: var(--sand); font-family: var(--serif); font-size: 26px; }
-    .perf .delta-sub { fill: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: .14em; }
-    .perf .arrow { fill: none; stroke: var(--sand); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+    .perf .bar-old { fill: #c3cfdc; }
+    .perf .bar-new { fill: var(--heading); }
+    .perf .axis { fill: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+    .perf .bar-label { fill: var(--heading); font-family: var(--serif); font-weight: 700; font-size: 22px; }
+    .perf .bar-sub { fill: var(--muted); font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: .08em; }
+    .perf .delta { fill: var(--ok); font-family: var(--serif); font-weight: 700; font-size: 26px; }
+    .perf .delta-sub { fill: var(--muted); font-family: var(--sans); font-size: 10px; font-weight: 600; letter-spacing: .08em; }
+    .perf .arrow { fill: none; stroke: var(--ok); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
     .perf .arrow.dash { stroke-dasharray: 4 6; }
 
     /* the three principles */
-    .principles { margin: 2em 0; }
-    .principle { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 28px; align-items: start; padding: 26px 24px; }
-    .principle .k { display: block; color: var(--muted); font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; }
+    .principles { margin: 2em 0; gap: 12px; }
+    .grid.principles > .principle { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 28px; align-items: start; padding: 24px; background: #fff; box-shadow: var(--shadow); }
+    .principle .k { display: inline-flex; padding: 2px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--body); font-size: 12.5px; font-weight: 500; white-space: nowrap; }
     .principle svg { width: 100%; height: auto; margin-top: 18px; overflow: visible; }
-    .principle h3 { margin: 0; color: var(--text); font-family: var(--serif); font-size: 23px; font-weight: 400; line-height: 1.2; }
+    .principle h3 { margin: 0; color: var(--heading); font-family: var(--serif); font-size: 23px; font-weight: 700; line-height: 1.2; }
     .principle p { margin-top: 8px; color: var(--body); font-size: 15.5px; line-height: 1.65; }
     .diagram-line { fill: none; stroke: var(--line-2); stroke-width: 1.3; }
-    .diagram-active { fill: none; stroke: var(--sand); stroke-width: 1.6; }
-    .diagram-dot { fill: var(--sand); stroke: var(--bg); stroke-width: 1; }
-    .diagram-pale { fill: rgba(216, 191, 148, .06); stroke: var(--line-2); stroke-width: 1; }
-    .diagram-text { fill: var(--muted); font-family: var(--mono); font-size: 9px; letter-spacing: .12em; }
+    .diagram-active { fill: none; stroke: var(--blue); stroke-width: 1.6; }
+    .diagram-dot { fill: var(--heading); stroke: #fff; stroke-width: 1; }
+    .diagram-pale { fill: rgba(47, 124, 246, .06); stroke: var(--line-2); stroke-width: 1; }
+    .diagram-text { fill: var(--muted); font-family: var(--sans); font-size: 9px; font-weight: 600; letter-spacing: .08em; }
     @media (max-width: 600px) {
-      .principle { grid-template-columns: 1fr; gap: 6px; padding: 22px 20px; }
+      .grid.principles > .principle { grid-template-columns: 1fr; gap: 6px; padding: 20px 18px; }
       .principle svg { max-width: 260px; margin: 14px 0 12px; }
     }
 
-    .pull { margin: 2em 0 0; padding: clamp(28px, 4vw, 40px); border: 1px solid var(--line); background: var(--panel); }
+    .pull { margin: 2em 0 0; padding: clamp(24px, 4vw, 40px); border: 1px solid var(--line); border-radius: 22px; background: linear-gradient(140deg, #fbf5ea, #fff 65%); box-shadow: var(--shadow); }
     .pull .eyebrow { margin-bottom: 16px; }
-    .prose .pull blockquote { margin: 0; padding: 0 0 0 22px; font-size: clamp(22px, 2.4vw, 28px); line-height: 1.35; letter-spacing: -.01em; }
+    .prose .pull blockquote { margin: 0; padding: 0 0 0 22px; font-size: clamp(21px, 2.4vw, 28px); line-height: 1.35; letter-spacing: -.01em; }
 
     .next { padding: 0 0 clamp(72px, 9vw, 120px); }
     .next .h2 { scroll-margin-top: 96px; }
     .fig-label { margin: .6em 0 0 !important; }
   </style>
-  <link rel="stylesheet" href="/styles/refine.css" />
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -136,6 +134,7 @@
         <span class="brand-name">tdcc</span>
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
+        <a href="/chat.html">Chat</a>
         <a href="/marketplace.html">Marketplace</a>
         <a href="/app.html">App</a>
         <a href="/exact-core.html">Exact Core</a>
@@ -165,7 +164,7 @@
               <path class="dashed" d="M418 132 C465 132 468 172 501 199 M418 266 C465 266 468 226 501 199" />
 
               <g transform="translate(38 144)">
-                <rect class="model" x="0" y="0" width="148" height="110" rx="2" />
+                <rect class="model" x="0" y="0" width="148" height="110" rx="12" />
                 <text class="mono" x="18" y="30">REQUEST</text>
                 <text class="node-title" x="18" y="60">Prompt in</text>
                 <text class="node-copy" x="18" y="84">one model request</text>
@@ -173,22 +172,22 @@
               </g>
 
               <g transform="translate(222 72)">
-                <rect class="device" x="0" y="0" width="196" height="120" rx="2" />
-                <rect class="device-screen" x="19" y="19" width="158" height="65" rx="1" />
+                <rect class="device" x="0" y="0" width="196" height="120" rx="12" />
+                <rect class="device-screen" x="19" y="19" width="158" height="65" rx="6" />
                 <path class="device-base" d="M36 104 H160" />
                 <text class="mono accent" x="34" y="45">DEVICE A</text>
                 <text class="screen-copy" x="34" y="66">active work</text>
               </g>
               <g transform="translate(222 206)">
-                <rect class="device" x="0" y="0" width="196" height="120" rx="2" />
-                <rect class="device-screen" x="19" y="19" width="158" height="65" rx="1" />
+                <rect class="device" x="0" y="0" width="196" height="120" rx="12" />
+                <rect class="device-screen" x="19" y="19" width="158" height="65" rx="6" />
                 <path class="device-base" d="M36 104 H160" />
                 <text class="mono accent" x="34" y="45">DEVICE B</text>
                 <text class="screen-copy" x="34" y="66">active work</text>
               </g>
 
               <g transform="translate(501 134)">
-                <rect class="model" x="0" y="0" width="186" height="130" rx="2" />
+                <rect class="model" x="0" y="0" width="186" height="130" rx="12" />
                 <text class="mono accent" x="22" y="40">QWEN 3.8 27B</text>
                 <text class="node-title" x="22" y="74">One workload</text>
                 <text class="node-copy" x="22" y="98">coordinated path</text>
@@ -196,7 +195,7 @@
               </g>
 
               <g transform="translate(798 144)">
-                <rect class="result" x="0" y="0" width="124" height="110" rx="2" />
+                <rect class="result" x="0" y="0" width="124" height="110" rx="12" />
                 <text class="mono ink" x="18" y="30">RESULT</text>
                 <text class="result-label" x="18" y="60">One stream</text>
                 <text class="result-copy" x="18" y="84">tokens out</text>
@@ -367,7 +366,7 @@
         </div>
         <div>
           <h4>Product</h4>
-          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
+          <ul><li><a href="/chat.html">TDCC Chat</a></li><li><a href="/account.html#billing">Balance &amp; API keys</a></li><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
         </div>
         <div>
           <h4>Company</h4>

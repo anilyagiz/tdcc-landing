@@ -23,47 +23,57 @@
   <link rel="stylesheet" href="/styles/site.css" />
   <link rel="stylesheet" href="/styles/motion.css" />
   <style>
-    .launch-head { position: relative; padding: clamp(72px, 10vw, 140px) 0 clamp(48px, 6vw, 80px); border-bottom: 1px solid var(--line); overflow: hidden;
-      background: radial-gradient(ellipse 60% 90% at 85% 0%, rgba(216, 191, 148, .13), transparent 70%); }
+    /* Header: the shared landscape page-head, with the network canvas on top */
+    .launch-head .net-stage { z-index: 0; }
+    .launch-head .net-stage canvas { opacity: .45; }
     .launch-head .display { max-width: 14ch; }
-    .launch-head .display em { color: var(--sand); }
-    .launch-head .lede { margin-top: 28px; }
-    .launch-head .actions { margin-top: 36px; }
-    .net-stage canvas { opacity: .8; }
+    .launch-head .display em { font-style: normal; color: var(--heading); }
+    .launch-head .eyebrow::before { content: none; }
+    .launch-head .eyebrow { padding: 5px 14px 5px 12px; border: 1px solid rgba(255, 255, 255, .9); border-radius: 999px; background: rgba(255, 255, 255, .75); color: var(--body); box-shadow: var(--shadow); }
+    .launch-head .lede { margin-top: 24px; }
+    .launch-head .actions { margin-top: 32px; }
 
-    .timeline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
-    .milestone { position: relative; display: flex; flex-direction: column; gap: 14px; padding: clamp(26px, 3vw, 40px); background: var(--bg); }
-    .milestone::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--line-2); }
-    .milestone.now::before { background: linear-gradient(90deg, var(--ok), transparent); }
-    .milestone.next::before { background: linear-gradient(90deg, var(--sand), transparent); }
-    .milestone.soon::before { background: linear-gradient(90deg, rgba(216, 191, 148, .5), transparent); }
-    .m-when { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
-    .m-when b { color: var(--text); font-weight: 400; }
-    .m-day { font-family: var(--serif); font-size: clamp(56px, 6vw, 88px); line-height: .9; letter-spacing: -.03em; color: var(--cream); }
-    .m-day small { display: block; margin-top: 10px; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
-    .milestone h3 { margin-top: 8px; color: var(--text); font-family: var(--serif); font-size: clamp(24px, 2.3vw, 30px); line-height: 1.12; }
+    /* Three launches as rounded cards */
+    .timeline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .milestone { position: relative; display: flex; flex-direction: column; gap: 14px; padding: clamp(24px, 2.6vw, 32px); overflow: hidden; border: 1px solid var(--line); border-radius: 22px; background: #fff; box-shadow: var(--shadow); }
+    .milestone::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--line); }
+    .milestone.now::before { background: linear-gradient(90deg, var(--ok), #b9ff78); }
+    .milestone.next::before { background: linear-gradient(90deg, #2f7cf6, #9ad1ff); }
+    .milestone.soon::before { background: linear-gradient(90deg, #f59e0b, #fde2c3); }
+    .milestone.now { border-color: #c7f0d6; }
+    .milestone.next .tag { border-color: #d4e4fd; background: #eff6ff; color: #1d4ed8; }
+    .milestone.soon .tag { border-color: #fde2c3; background: #fff7ed; color: #b45309; }
+    .m-when { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted); font-size: 13.5px; font-weight: 500; }
+    .m-when b { font-weight: 500; }
+    .m-day { margin-top: 6px; font-family: var(--serif); font-weight: 700; font-size: clamp(56px, 6vw, 84px); line-height: .9; letter-spacing: -.03em; color: var(--heading); font-variant-numeric: tabular-nums; }
+    .m-day small { display: block; margin-top: 12px; color: var(--muted); font-family: var(--sans); font-size: 14px; font-weight: 500; letter-spacing: 0; }
+    .milestone h3 { margin-top: 6px; color: var(--text); font-size: clamp(20px, 1.9vw, 23px); font-weight: 600; line-height: 1.22; letter-spacing: -.02em; }
     .milestone p { color: var(--body); font-size: 15px; }
-    .milestone ul { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 8px; }
-    .milestone li { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 10px; color: var(--body); font-size: 14px; }
-    .milestone li::before { content: "→"; color: var(--sand); font-family: var(--mono); font-size: 12px; }
-    .milestone .link { margin-top: auto; padding-top: 12px; }
+    .milestone ul { list-style: none; margin: 2px 0 0; padding: 14px 16px; display: grid; gap: 8px; border-radius: 14px; background: var(--panel); }
+    .milestone li { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 10px; color: var(--body); font-size: 14px; }
+    .milestone li::before { content: ""; width: 6px; height: 6px; margin: 8px 0 0 4px; border-radius: 50%; background: var(--text); opacity: .55; }
+    .milestone .link { margin-top: auto; padding-top: 8px; }
     @media (max-width: 960px) { .timeline { grid-template-columns: 1fr; } }
 
-    .countdown { display: inline-grid; grid-auto-flow: column; gap: 1px; margin-top: 8px; background: var(--line); border: 1px solid var(--line); }
-    .countdown div { min-width: 64px; padding: 10px 12px; background: var(--panel); text-align: center; }
-    .countdown b { display: block; color: var(--text); font-family: var(--serif); font-size: 26px; font-weight: 400; line-height: 1; font-variant-numeric: tabular-nums; }
-    .countdown span { color: var(--muted); font-family: var(--mono); font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; }
+    .countdown { display: inline-grid; grid-auto-flow: column; gap: 8px; margin-top: 4px; justify-content: start; }
+    .countdown[hidden] { display: none; }
+    .countdown div { min-width: 68px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); text-align: center; }
+    .countdown b { display: block; color: var(--heading); font-family: var(--serif); font-size: 28px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+    .countdown span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; font-weight: 500; }
 
+    /* $COMPUTE */
     .token { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
-    .token .h2 em { color: var(--sand); }
-    .token-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
-    .token-list li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--line); color: var(--body); font-size: 15px; }
-    .token-list span { color: var(--sand); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; padding-top: 3px; }
-    .token-list b { display: block; color: var(--text); font-weight: 500; }
+    .token .h2 em { font-style: normal; color: var(--heading); }
+    .token-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+    .token-list li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 16px; align-items: start; padding: 18px 20px; border: 1px solid var(--line); border-radius: 18px; background: #fff; box-shadow: var(--shadow); color: var(--muted); font-size: 15px; }
+    .token-list span { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); color: var(--text); font-family: var(--mono); font-size: 12.5px; }
+    .token-list li:first-child span { background: var(--lime); border-color: var(--lime); color: var(--lime-ink); }
+    .token-list b { display: block; margin-bottom: 2px; color: var(--text); font-size: 16px; font-weight: 600; }
     .token .callout { margin-top: 24px; }
+    .token .callout a { text-decoration: underline; text-underline-offset: 3px; }
     @media (max-width: 860px) { .token { grid-template-columns: 1fr; } }
+    @media (max-width: 420px) { .countdown div { min-width: 0; padding: 10px; } }
   </style>
-  <link rel="stylesheet" href="/styles/refine.css" />
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -95,6 +105,7 @@
         <span class="brand-name">tdcc</span>
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
+        <a href="/chat.html">Chat</a>
         <a href="/marketplace.html">Marketplace</a>
         <a href="/app.html">App</a>
         <a href="/exact-core.html">Exact Core</a>
@@ -108,7 +119,7 @@
   <!-- /chrome:nav -->
 
   <main id="content">
-    <header class="launch-head">
+    <header class="page-head launch-head">
       <div class="net-stage" aria-hidden="true"><canvas data-network></canvas></div>
       <div class="wrap" style="position:relative">
         <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>Announcement</span></nav>
@@ -221,7 +232,7 @@
         </div>
         <div>
           <h4>Product</h4>
-          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
+          <ul><li><a href="/chat.html">TDCC Chat</a></li><li><a href="/account.html#billing">Balance &amp; API keys</a></li><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
         </div>
         <div>
           <h4>Company</h4>
