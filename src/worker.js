@@ -1,8 +1,13 @@
 import { handleApi, scheduled, reportError } from "./api.js";
+import { handleGateway, isGatewayPath } from "./gateway.js";
 
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+
+    if (isGatewayPath(url.pathname)) {
+      return handleGateway(request, env);
+    }
 
     if (url.pathname === "/api" || url.pathname.startsWith("/api/")) {
       return handleApi(request, env, ctx);
