@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="color-scheme" content="light" />
+  <title>Three launches in twelve days | TDCC</title>
+  <meta name="description" content="The TDCC rebrand is live today. The desktop apps become generally available on October 20, and the GPU marketplace opens to everyone on October 31." />
+  <link rel="canonical" href="https://decentralizedcompute.company/launch.html" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="The Decentralized Compute Company" />
+  <meta property="og:title" content="TDCC: three launches in twelve days" />
+  <meta property="og:description" content="Rebrand live today. Desktop apps GA on October 20. The GPU marketplace opens to everyone on October 31." />
+  <meta property="og:url" content="https://decentralizedcompute.company/launch.html" />
+  <meta property="og:image" content="https://decentralizedcompute.company/assets/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@computecompany" />
+  <meta name="twitter:title" content="TDCC: three launches in twelve days" />
+  <meta name="twitter:description" content="Rebrand live today. Desktop apps GA on October 20. The GPU marketplace opens to everyone on October 31." />
+  <meta name="twitter:image" content="https://decentralizedcompute.company/assets/og-image.png" />
+  <link rel="stylesheet" href="/styles/site.css" />
+  <link rel="stylesheet" href="/styles/motion.css" />
+  <style>
+    .launch-head { position: relative; padding: clamp(72px, 10vw, 140px) 0 clamp(48px, 6vw, 80px); border-bottom: 1px solid var(--line); overflow: hidden;
+      background: radial-gradient(ellipse 60% 90% at 85% 0%, rgba(216, 191, 148, .13), transparent 70%); }
+    .launch-head .display { max-width: 14ch; }
+    .launch-head .display em { color: var(--sand); }
+    .launch-head .lede { margin-top: 28px; }
+    .launch-head .actions { margin-top: 36px; }
+    .net-stage canvas { opacity: .8; }
+
+    .timeline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+    .milestone { position: relative; display: flex; flex-direction: column; gap: 14px; padding: clamp(26px, 3vw, 40px); background: var(--bg); }
+    .milestone::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--line-2); }
+    .milestone.now::before { background: linear-gradient(90deg, var(--ok), transparent); }
+    .milestone.next::before { background: linear-gradient(90deg, var(--sand), transparent); }
+    .milestone.soon::before { background: linear-gradient(90deg, rgba(216, 191, 148, .5), transparent); }
+    .m-when { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+    .m-when b { color: var(--text); font-weight: 400; }
+    .m-day { font-family: var(--serif); font-size: clamp(56px, 6vw, 88px); line-height: .9; letter-spacing: -.03em; color: var(--cream); }
+    .m-day small { display: block; margin-top: 10px; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+    .milestone h3 { margin-top: 8px; color: var(--text); font-family: var(--serif); font-size: clamp(24px, 2.3vw, 30px); line-height: 1.12; }
+    .milestone p { color: var(--body); font-size: 15px; }
+    .milestone ul { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 8px; }
+    .milestone li { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 10px; color: var(--body); font-size: 14px; }
+    .milestone li::before { content: "→"; color: var(--sand); font-family: var(--mono); font-size: 12px; }
+    .milestone .link { margin-top: auto; padding-top: 12px; }
+    @media (max-width: 960px) { .timeline { grid-template-columns: 1fr; } }
+
+    .countdown { display: inline-grid; grid-auto-flow: column; gap: 1px; margin-top: 8px; background: var(--line); border: 1px solid var(--line); }
+    .countdown div { min-width: 64px; padding: 10px 12px; background: var(--panel); text-align: center; }
+    .countdown b { display: block; color: var(--text); font-family: var(--serif); font-size: 26px; font-weight: 400; line-height: 1; font-variant-numeric: tabular-nums; }
+    .countdown span { color: var(--muted); font-family: var(--mono); font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; }
+
+    .token { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
+    .token .h2 em { color: var(--sand); }
+    .token-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+    .token-list li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--line); color: var(--body); font-size: 15px; }
+    .token-list span { color: var(--sand); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; padding-top: 3px; }
+    .token-list b { display: block; color: var(--text); font-weight: 500; }
+    .token .callout { margin-top: 24px; }
+    @media (max-width: 860px) { .token { grid-template-columns: 1fr; } }
+  </style>
+  <link rel="stylesheet" href="/styles/refine.css" />
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <!-- chrome:mark -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="0 0 120 80">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z" />
+        <g stroke-width="1.4" opacity=".85">
+          <path d="M62 14 V70" />
+          <path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" />
+          <path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" />
+          <path d="M38 26 Q62 31 86 26" /><path d="M31 39 Q62 45 93 39" /><path d="M29 54 Q62 60 95 54" />
+        </g>
+      </g>
+      <g fill="currentColor">
+        <rect x="59.5" y="26.5" width="5" height="5" /><rect x="45" y="39" width="5" height="5" /><rect x="74" y="39" width="5" height="5" />
+        <rect x="59.5" y="42" width="5" height="5" /><rect x="33" y="52" width="4.5" height="4.5" /><rect x="86.5" y="52" width="4.5" height="4.5" />
+        <rect x="59.5" y="57" width="5" height="5" /><rect x="47" y="27" width="4" height="4" /><rect x="73" y="27" width="4" height="4" />
+      </g>
+    </symbol>
+  </svg>
+  <!-- /chrome:mark -->
+  <!-- chrome:nav -->
+  <header class="nav" id="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="/" aria-label="The Decentralized Compute Company — home">
+        <svg aria-hidden="true"><use href="#mark" /></svg>
+        <span class="brand-name">tdcc</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
+        <a href="/marketplace.html">Marketplace</a>
+        <a href="/app.html">App</a>
+        <a href="/exact-core.html">Exact Core</a>
+        <a href="/cask-q.html">Research</a>
+        <a href="/team.html">Company</a>
+        <a class="btn solid sm nav-cta" href="/#join">Get early access</a>
+      </nav>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </header>
+  <!-- /chrome:nav -->
+
+  <main id="content">
+    <header class="launch-head">
+      <div class="net-stage" aria-hidden="true"><canvas data-network></canvas></div>
+      <div class="wrap" style="position:relative">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>Announcement</span></nav>
+        <p class="eyebrow"><span class="live-dot"></span>&nbsp; Announcement · October 19, 2026</p>
+        <h1 class="display">A new TDCC. Three launches in <em>twelve days.</em></h1>
+        <p class="lede">Today the rebrand is live. Tomorrow the TDCC desktop apps become generally available. On October 31 the GPU marketplace opens to everyone. One network, one account, and everything we have been building in public now ships.</p>
+        <div class="actions">
+          <a class="btn solid shine" href="/app.html#downloads">Get the desktop app</a>
+          <a class="btn" href="/marketplace.html">Preview the marketplace</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="section flush" aria-labelledby="timeline-title">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">The next twelve days</p>
+            <h2 class="h2" id="timeline-title">Three launches, one network.</h2>
+          </div>
+          <p class="lede">Each launch builds on the one before it: a single identity across the site, apps you can install and run every day, and a marketplace where anyone can rent compute or earn from their own GPU.</p>
+        </div>
+
+        <div class="timeline">
+          <article class="milestone now reveal">
+            <div class="m-when"><span>01 · Today</span><b class="tag ok">Live</b></div>
+            <div class="m-day">19<small>October · Monday</small></div>
+            <h3>The rebrand is live.</h3>
+            <p>One design system across every page of decentralizedcompute.company, from the home page to research and the marketplace.</p>
+            <ul>
+              <li>A single navigation and identity on every page</li>
+              <li>Exact Core, research, and the app rebuilt as product pages</li>
+              <li>Cleaner pages that work just as well on phones</li>
+            </ul>
+            <a class="link" href="/">See the new site →</a>
+          </article>
+
+          <article class="milestone next reveal">
+            <div class="m-when"><span>02 · Tomorrow</span><b class="tag">GA</b></div>
+            <div class="m-day">20<small>October · Tuesday</small></div>
+            <h3>Desktop apps go generally available.</h3>
+            <p>The TDCC desktop apps leave beta. Install them, connect your machine, and run the network from your own computer.</p>
+            <ul>
+              <li>Out of beta and ready for everyday use</li>
+              <li>The same account as the web console and CLI</li>
+              <li>Release checksums for every download</li>
+            </ul>
+            <a class="link" href="/app.html#downloads">Downloads →</a>
+          </article>
+
+          <article class="milestone soon reveal">
+            <div class="m-when"><span>03 · End of month</span><b class="tag">Open to all</b></div>
+            <div class="m-day">31<small>October · Saturday</small></div>
+            <h3>The GPU marketplace opens to everyone.</h3>
+            <p>Rent a GPU by the hour or list your own. Hosts set their price and accept the requests they want.</p>
+            <ul>
+              <li>Instant SSH and Jupyter machines in isolated containers</li>
+              <li>tdcc API rentals over the mesh, closed automatically when the hours end</li>
+              <li>Signed access grants, reviews, uptime, and card payments with host payouts</li>
+            </ul>
+            <div class="countdown" id="countdown" aria-label="Time until the marketplace opens" hidden>
+              <div><b data-cd="d">–</b><span>Days</span></div><div><b data-cd="h">–</b><span>Hours</span></div><div><b data-cd="m">–</b><span>Min</span></div>
+            </div>
+            <a class="link" href="/marketplace.html#hosts">List your GPU early →</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="compute" aria-labelledby="token-title">
+      <div class="wrap token">
+        <div class="reveal">
+          <p class="eyebrow">$COMPUTE</p>
+          <h2 class="h2" id="token-title">Every launch lands on the network <em>$COMPUTE</em> is built around.</h2>
+          <p class="lede" style="margin-top:22px">$COMPUTE is the token of The Decentralized Compute Company. The site, the desktop apps, and the marketplace are not separate products: they are three doors into the same compute network.</p>
+          <div class="callout"><b>Stay safe</b>The only official $COMPUTE contract address is the one posted by <a href="https://x.com/computecompany" target="_blank" rel="noreferrer" style="color:var(--sand)">@computecompany</a>. TDCC will never DM you first or ask for your seed phrase. Nothing on this page is financial advice or an offer of any kind.</div>
+        </div>
+        <ol class="token-list reveal">
+          <li><span>01</span><div><b>A brand built for scale</b>One identity for the company, the research, the chip, and the marketplace.</div></li>
+          <li><span>02</span><div><b>Apps people install</b>Desktop apps out of beta bring everyday machines onto the network.</div></li>
+          <li><span>03</span><div><b>A market anyone can use</b>Renters and hosts meet on October 31, with real GPUs, real rentals, and payouts.</div></li>
+          <li><span>04</span><div><b>Research underneath</b>CASK-Q and Exact Core make more hardware useful and every answer checkable.</div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Follow the launch">
+      <div class="wrap">
+        <div class="cta-band reveal">
+          <p class="eyebrow">Follow along</p>
+          <h2 class="h2">Twelve days. Three launches. Be there for each one.</h2>
+          <p>Every launch is announced first on X. Get the desktop app tomorrow, and list your GPU now so it is ready when the marketplace opens.</p>
+          <div class="actions">
+            <a class="btn solid" href="https://x.com/computecompany" target="_blank" rel="noreferrer">Follow @computecompany</a>
+            <a class="btn" href="/marketplace.html#hosts">List your GPU</a>
+            <a class="btn" href="/app.html#downloads">Desktop apps</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="/" aria-label="TDCC home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
+          <p class="about">A GPU marketplace, a job network that checks its own work, and Exact Core, an AI chip whose answers anyone can re-check.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul><li><a href="/team.html">Team</a></li><li><a href="/litepaper.html">Litepaper</a></li><li><a href="/cask-q.html">Research</a></li><li><a href="/two-laptops-80-tps.html">Engineering</a></li><li><a href="/facts.html">Facts</a></li></ul>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <ul><li><a href="https://x.com/computecompany" target="_blank" rel="noreferrer">X / @computecompany</a></li><li><a href="https://www.linkedin.com/in/anilyagiz/" target="_blank" rel="noreferrer">LinkedIn</a></li><li><a href="mailto:anil@decentralizedcompute.company">Email</a></li><li><a href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">GitHub</a></li><li><a href="/feed.xml">RSS</a></li></ul>
+        </div>
+      </div>
+      <div class="wordmark" aria-hidden="true">decentralized compute</div>
+      <div class="legal"><span>© 2026 The Decentralized Compute Company</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/facts.html">Facts</a></span></div>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script src="/js/market.js"></script>
+  <script src="/js/site.js"></script>
+  <script src="/js/motion.js"></script>
+  <script>
+    (() => {
+      // Countdown to the marketplace opening, the start of October 31 (UTC).
+      const end = Date.UTC(2026, 9, 31, 0, 0, 0);
+      const box = document.getElementById('countdown');
+      const out = (k, v) => { box.querySelector(`[data-cd="${k}"]`).textContent = String(v).padStart(2, '0'); };
+      const tick = () => {
+        const left = end - Date.now();
+        if (left <= 0) { box.hidden = true; return false; }
+        box.hidden = false;
+        out('d', Math.floor(left / 864e5)); out('h', Math.floor(left / 36e5) % 24); out('m', Math.floor(left / 6e4) % 60);
+        return true;
+      };
+      if (tick()) setInterval(tick, 30000);
+    })();
+  </script>
+</body>
+</html>

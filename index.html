@@ -96,8 +96,8 @@
     /* ---------- buttons ---------- */
     .btn { display: inline-flex; align-items: center; gap: 8px; height: 46px; padding: 0 22px; border-radius: 999px; font-weight: 500; font-size: 16px; white-space: nowrap; transition: transform .15s ease, background .15s ease, box-shadow .15s ease; }
     .btn:hover { transform: translateY(-1px); }
-    .btn.dark { background: var(--ink); color: #fff; box-shadow: 0 6px 18px -8px rgba(6, 18, 42, .6); }
-    .btn.dark:hover { background: #12244a; }
+    .btn.dark, .btn.solid { background: var(--ink); color: #fff; box-shadow: 0 6px 18px -8px rgba(6, 18, 42, .6); }
+    .btn.dark:hover, .btn.solid:hover { background: #12244a; }
     .btn.light { background: #fff; color: var(--ink); border: 1px solid var(--line-2); }
     .btn.light:hover { border-color: #b9c6d4; }
     .btn.sm { height: 36px; padding: 0 16px; font-size: 14px; }
@@ -109,20 +109,24 @@
     .chip.pilot { background: #eff6ff; border-color: #d4e4fd; color: #1d4ed8; }
     .chip.plan { background: #fff7ed; border-color: #fde2c3; color: #b45309; }
 
-    /* ---------- nav ---------- */
+    /* ---------- nav (shared chrome markup, see scripts/chrome.py) ---------- */
     .nav { position: fixed; top: 14px; left: 0; right: 0; z-index: 100; padding: 0 var(--gutter); }
-    .nav-inner { max-width: calc(var(--wrap) - 2 * var(--gutter)); margin: 0 auto; display: flex; align-items: center; gap: 18px; height: 60px; padding: 0 10px 0 20px; border-radius: 18px; background: rgba(255, 255, 255, .72); backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px); border: 1px solid rgba(255, 255, 255, .8); box-shadow: 0 4px 24px -10px rgba(6, 18, 42, .18); transition: background .2s ease; }
+    .nav-inner { position: relative; max-width: calc(var(--wrap) - 2 * var(--gutter)); margin: 0 auto; display: flex; align-items: center; gap: 18px; height: 60px; padding: 0 10px 0 20px; border-radius: 18px; background: rgba(255, 255, 255, .72); backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px); border: 1px solid rgba(255, 255, 255, .8); box-shadow: 0 4px 24px -10px rgba(6, 18, 42, .18); transition: background .2s ease; }
     .nav.scrolled .nav-inner { background: rgba(255, 255, 255, .92); border-color: var(--line); }
     .brand { display: flex; align-items: center; gap: 8px; color: var(--ink); font-weight: 700; font-size: 19px; letter-spacing: -.02em; }
     .brand svg { width: 34px; height: 23px; }
-    .nav-links { display: flex; align-items: center; gap: 4px; margin-left: 8px; }
+    .nav-links { flex: 1; display: flex; align-items: center; gap: 4px; margin-left: 8px; }
     .nav-links a { padding: 8px 12px; border-radius: 10px; font-size: 15px; white-space: nowrap; color: #42536a; transition: background .15s, color .15s; }
     .nav-links a:hover { background: rgba(6, 18, 42, .05); color: var(--ink); }
-    .nav-cta { display: flex; gap: 8px; margin-left: auto; }
+    .nav-links a[aria-current="page"], .nav-links a.acct { color: var(--ink); }
+    .nav-links a.acct { margin-left: auto; font-weight: 500; }
+    .nav-links .nav-cta { margin-left: auto; padding: 0 16px; color: #fff; }
+    .nav-links .nav-cta:hover { background: #12244a; color: #fff; }
+    .nav-links a.acct + .nav-cta { margin-left: 4px; }
     .menu-btn { display: none; margin-left: auto; width: 42px; height: 42px; border: 0; background: transparent; border-radius: 10px; cursor: pointer; }
     .menu-btn span { display: block; width: 18px; height: 2px; margin: 4px auto; background: var(--ink); border-radius: 2px; transition: transform .2s; }
-    .nav.open .menu-btn span:first-child { transform: translateY(3px) rotate(45deg); }
-    .nav.open .menu-btn span:last-child { transform: translateY(-3px) rotate(-45deg); }
+    .menu-btn[aria-expanded="true"] span:first-child { transform: translateY(3px) rotate(45deg); }
+    .menu-btn[aria-expanded="true"] span:last-child { transform: translateY(-3px) rotate(-45deg); }
 
     /* ---------- hero ---------- */
     .hero { position: relative; padding: 150px 0 0; background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 38%, #f3faff 62%, #fff 100%); overflow: hidden; }
@@ -358,15 +362,18 @@
     .link-btn { border: 0; background: none; padding: 0; font: 500 14px var(--sans); color: var(--ink); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; justify-self: start; }
     .join-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
 
-    /* ---------- footer ---------- */
-    footer { margin-top: clamp(72px, 10vw, 120px); border-top: 1px solid var(--line); background: var(--soft); }
-    .foot { display: grid; grid-template-columns: 1.6fr repeat(3, 1fr); gap: 32px; padding: 56px 0 40px; }
-    .foot p { font-size: 14.5px; color: var(--muted); max-width: 320px; margin: 14px 0 0; }
-    .foot h4 { margin: 0 0 12px; font-size: 13px; font-weight: 600; color: var(--ink); }
-    .foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14.5px; }
-    .foot ul a { color: var(--muted); }
-    .foot ul a:hover { color: var(--ink); }
-    .foot-bottom { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 20px 0 30px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--muted); }
+    /* ---------- footer (shared chrome markup) ---------- */
+    footer { margin-top: clamp(72px, 10vw, 120px); border-top: 1px solid var(--line); background: var(--soft); overflow: hidden; }
+    .foot-grid { display: grid; grid-template-columns: 1.6fr repeat(3, 1fr); gap: 32px; padding: 56px 0 32px; }
+    footer .brand .brand-name { font-size: 16px; }
+    footer .about { font-size: 14.5px; color: var(--muted); max-width: 320px; margin: 14px 0 0; }
+    footer h4 { margin: 0 0 12px; font-size: 13px; font-weight: 600; color: var(--ink); }
+    footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14.5px; }
+    footer ul a { color: var(--muted); }
+    footer ul a:hover { color: var(--ink); }
+    .wordmark { font-family: var(--serif); font-weight: 700; font-size: clamp(44px, 10.5vw, 140px); line-height: .9; letter-spacing: -.04em; color: transparent; -webkit-text-stroke: 1px var(--line-2); white-space: nowrap; margin: 8px 0 -8px; user-select: none; }
+    .legal { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 20px 0 30px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--muted); }
+    .legal a:hover { color: var(--ink); }
 
     /* ---------- reveal ---------- */
     .reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
@@ -375,16 +382,15 @@
 
     /* ---------- responsive ---------- */
     @media (max-width: 1080px) {
-      .nav-links a.hide-md { display: none; }
       .notes { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 960px) {
       .menu-btn { display: block; }
-      .nav-links, .nav-cta { display: none; }
-      .nav.open .nav-inner { flex-wrap: wrap; height: auto; padding-bottom: 14px; }
-      .nav.open .nav-links { display: grid; order: 3; width: 100%; margin: 4px 0 0; gap: 2px; }
-      .nav.open .nav-cta { display: flex; order: 4; width: 100%; margin: 6px 0 0; }
-      .nav.open .nav-links a.hide-md { display: block; }
+      .nav-links { display: none; }
+      .nav-links.open { display: grid; position: absolute; top: calc(100% + 8px); left: 0; right: 0; margin: 0; gap: 2px; padding: 10px; background: #fff; border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-lg); }
+      .nav-links.open a { padding: 12px 14px; font-size: 16px; }
+      .nav-links.open a.acct { margin-left: 0; }
+      .nav-links.open .nav-cta, .nav-links.open a.acct + .nav-cta { margin: 6px 0 0; height: 46px; justify-content: center; }
       .hero-window { grid-template-columns: 1fr; }
       .win-side { display: none; }
       .job-grid { grid-template-columns: repeat(2, 1fr); }
@@ -395,11 +401,12 @@
       .bento { grid-template-columns: repeat(2, 1fr); }
       .tile, .tile.wide { grid-column: span 1; }
       .steps, .mini-cards { grid-template-columns: 1fr; }
-      .foot { grid-template-columns: 1fr 1fr; }
-      .foot > div:first-child { grid-column: 1 / -1; }
+      .foot-grid { grid-template-columns: 1fr 1fr; }
+      .foot-grid > div:first-child { grid-column: 1 / -1; }
     }
     @media (max-width: 640px) {
       .hero { padding-top: 120px; }
+      .hero .pill { font-size: 12.5px; text-align: left; }
       .hero-window { margin-top: 44px; min-height: 0; }
       .win-main { padding: 16px; }
       .win-tools .fake-select { display: none; }
@@ -498,11 +505,12 @@
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
 
+  <!-- chrome:mark -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <symbol id="mark" viewBox="0 0 120 80">
-      <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z" />
-        <g stroke-width="1.5" opacity=".85">
+        <g stroke-width="1.4" opacity=".85">
           <path d="M62 14 V70" />
           <path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" />
           <path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" />
@@ -515,6 +523,10 @@
         <rect x="59.5" y="57" width="5" height="5" /><rect x="47" y="27" width="4" height="4" /><rect x="73" y="27" width="4" height="4" />
       </g>
     </symbol>
+  </svg>
+  <!-- /chrome:mark -->
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <symbol id="hills" viewBox="0 0 1440 400" preserveAspectRatio="none">
       <path d="M0 210 C 180 150 320 170 470 205 C 620 240 760 150 930 150 C 1100 150 1250 215 1440 180 V400 H0 Z" fill="#cfe9d2" />
       <path d="M0 260 C 160 215 300 235 430 262 C 600 297 720 225 880 230 C 1060 236 1220 290 1440 250 V400 H0 Z" fill="#b6deb9" />
@@ -522,28 +534,25 @@
     </symbol>
   </svg>
 
+  <!-- chrome:nav -->
   <header class="nav" id="nav">
-    <div class="nav-inner">
+    <div class="wrap nav-inner">
       <a class="brand" href="/" aria-label="The Decentralized Compute Company — home">
         <svg aria-hidden="true"><use href="#mark" /></svg>
-        <span>tdcc</span>
+        <span class="brand-name">tdcc</span>
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
-        <a href="#platform">Platform</a>
         <a href="/marketplace.html">Marketplace</a>
+        <a href="/app.html">App</a>
         <a href="/exact-core.html">Exact Core</a>
-        <a href="#developers">Developers</a>
-        <a href="#pricing">Pricing</a>
-        <a class="hide-md" href="/cask-q.html">Research</a>
-        <a class="hide-md" href="/team.html">Team</a>
+        <a href="/cask-q.html">Research</a>
+        <a href="/team.html">Company</a>
+        <a class="btn solid sm nav-cta" href="/#join">Get early access</a>
       </nav>
-      <div class="nav-cta">
-        <a class="btn light sm" href="https://chat.decentralizedcompute.company/">Open chat</a>
-        <a class="btn dark sm" href="https://chat.decentralizedcompute.company/#api">Get an API key <span class="arr">›</span></a>
-      </div>
       <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
     </div>
   </header>
+  <!-- /chrome:nav -->
 
   <main id="content">
     <!-- ================= HERO ================= -->
@@ -557,7 +566,7 @@
       </div>
 
       <div class="wrap hero-inner">
-        <a class="pill" href="/app.html#downloads"><b>NEW</b>TDCC Desktop 0.73.0-rc.1 beta</a>
+        <a class="pill" href="/launch.html"><b>NEW</b>Rebrand live · Desktop GA Oct 20 · Marketplace Oct 31</a>
         <h1 id="hero-title" class="display">Every GPU on Earth, working as one.</h1>
         <p class="lede">Chat, an OpenAI-compatible API, a GPU marketplace and verified jobs in one account. Top up once and pay only for the tokens and work you use.</p>
         <div class="hero-actions">
@@ -732,9 +741,9 @@
         <div class="bento">
           <div class="tile wide reveal">
             <h3>GPU marketplace</h3>
-            <p>Rent the box when you want control, or submit a job when you want the answer.</p>
-            <div class="panel">
-              <div class="panel-h">Available now <small>6 classes</small></div>
+            <p>Rent the box when you want control, or submit a job when you want the answer. <a href="/marketplace.html" style="color:var(--ink);font-weight:500">Open the marketplace ›</a></p>
+            <div class="panel" id="listings">
+              <div class="panel-h"><span id="market-src">Example listings</span> <small><a href="/marketplace.html#hosts">List your GPU ›</a></small></div>
               <div class="lrow"><div><b>Data-center node</b><small>80 GB · eu-central · ×8</small></div><span class="chip live">0.96</span></div>
               <div class="lrow"><div><b>Regional cluster</b><small>48 GB · ap-south · ×4</small></div><span class="chip live">0.89</span></div>
               <div class="lrow"><div><b>Independent host</b><small>24 GB consumer GPU · eu-west</small></div><span class="chip live">0.84</span></div>
@@ -867,7 +876,7 @@
             <div><b>REST API</b><p>Idempotency keys on creation, SSE per job.</p></div>
             <div><b>CLI</b><p>Submit from YAML, tail logs, verify receipts.</p></div>
             <div><b>SDKs</b><p>Python 3.10+ and TypeScript / Node 18+.</p></div>
-            <div><b>Desktop</b><p>0.73.0-rc.1 beta for Windows x64. Linux next.</p></div>
+            <div><b>Release</b><p>CLI 0.74.0 for Linux x64 and ARM64 with marketplace rentals. Windows desktop beta.</p></div>
           </div>
           <div class="hero-actions" style="justify-content:flex-start">
             <a class="btn dark" href="/app.html">Read the docs <span class="arr">›</span></a>
@@ -982,7 +991,7 @@ tdcc receipts show job_8fq1za --verify</pre>
           <a class="note reveal" href="/two-laptops-80-tps.html"><span class="chip">Engineering note</span><h3>Two compact laptops. One 27B model. 80 tokens per second.</h3><p>A ~50 tok/s run moved to 80 without touching the weights.</p><span class="more">Read the note ›</span></a>
           <a class="note reveal" href="/cask-q.html"><span class="chip">Paper</span><h3>CASK-Q: 25% lower attention error at 2-bit, same size.</h3><p>Our research on KV-cache quantization.</p><span class="more">Read the paper ›</span></a>
           <a class="note reveal" href="/exact-core.html"><span class="chip">Chip</span><h3>Exact Core: an AI chip whose answers anyone can re-check.</h3><p>Bit-exact silicon and an on-chain dispute game.</p><span class="more">Read more ›</span></a>
-          <a class="note reveal" href="/app.html#downloads"><span class="chip">Release</span><h3>TDCC Desktop 0.73.0-rc.1 for Windows x64.</h3><p>Console, jobs and receipts on your desktop.</p><span class="more">Download ›</span></a>
+          <a class="note reveal" href="/launch.html"><span class="chip">Launch</span><h3>A new TDCC. Three launches in twelve days.</h3><p>The rebrand, Desktop GA on Oct 20 and the marketplace on Oct 31.</p><span class="more">Read the launch post ›</span></a>
         </div>
       </div>
     </section>
@@ -1030,78 +1039,48 @@ tdcc receipts show job_8fq1za --verify</pre>
     </section>
   </main>
 
+  <!-- chrome:footer -->
   <footer>
     <div class="wrap">
-      <div class="foot">
+      <div class="foot-grid">
         <div>
-          <a class="brand" href="/"><svg aria-hidden="true"><use href="#mark" /></svg><span>tdcc</span></a>
-          <p>A GPU marketplace, a job network that checks its own work, and Exact Core, an AI chip whose answers anyone can re-check.</p>
+          <a class="brand" href="/" aria-label="TDCC home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
+          <p class="about">A GPU marketplace, a job network that checks its own work, and Exact Core, an AI chip whose answers anyone can re-check.</p>
         </div>
         <div>
           <h4>Product</h4>
-          <ul>
-            <li><a href="https://chat.decentralizedcompute.company/">TDCC Chat</a></li>
-            <li><a href="/marketplace.html">GPU marketplace</a></li>
-            <li><a href="/exact-core.html">Exact Core chip</a></li>
-            <li><a href="/app.html">TDCC App</a></li>
-            <li><a href="#workloads">Workloads</a></li>
-            <li><a href="#pricing">Pricing</a></li>
-          </ul>
+          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
         </div>
         <div>
           <h4>Company</h4>
-          <ul>
-            <li><a href="/team.html">Team</a></li>
-            <li><a href="/litepaper.html">Litepaper</a></li>
-            <li><a href="/cask-q.html">Research</a></li>
-            <li><a href="/two-laptops-80-tps.html">Engineering</a></li>
-            <li><a href="/facts.html">Facts</a></li>
-          </ul>
+          <ul><li><a href="/team.html">Team</a></li><li><a href="/litepaper.html">Litepaper</a></li><li><a href="/cask-q.html">Research</a></li><li><a href="/two-laptops-80-tps.html">Engineering</a></li><li><a href="/facts.html">Facts</a></li></ul>
         </div>
         <div>
           <h4>Connect</h4>
-          <ul>
-            <li><a href="https://x.com/computecompany">X / @computecompany</a></li>
-            <li><a href="https://www.linkedin.com/in/anilyagiz/">LinkedIn</a></li>
-            <li><a href="https://github.com/anilyagiz/tdcc-exact-core">GitHub</a></li>
-            <li><a href="mailto:anil@decentralizedcompute.company">Email</a></li>
-            <li><a href="/feed.xml">RSS</a></li>
-          </ul>
+          <ul><li><a href="https://x.com/computecompany" target="_blank" rel="noreferrer">X / @computecompany</a></li><li><a href="https://www.linkedin.com/in/anilyagiz/" target="_blank" rel="noreferrer">LinkedIn</a></li><li><a href="mailto:anil@decentralizedcompute.company">Email</a></li><li><a href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">GitHub</a></li><li><a href="/feed.xml">RSS</a></li></ul>
         </div>
       </div>
-      <div class="foot-bottom">
-        <span>© 2026 The Decentralized Compute Company</span>
-        <span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></span>
-      </div>
+      <div class="wordmark" aria-hidden="true">decentralized compute</div>
+      <div class="legal"><span>© 2026 The Decentralized Compute Company</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/facts.html">Facts</a></span></div>
     </div>
   </footer>
+  <!-- /chrome:footer -->
 
   <script>
-    /* nav */
-    const nav = document.getElementById('nav');
-    const menuBtn = document.getElementById('menu-btn');
-    const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 24);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    menuBtn.addEventListener('click', () => {
-      const open = nav.classList.toggle('open');
-      menuBtn.setAttribute('aria-expanded', String(open));
-    });
-    document.querySelectorAll('.nav-links a, .nav-cta a').forEach(a => a.addEventListener('click', () => {
-      nav.classList.remove('open');
-      menuBtn.setAttribute('aria-expanded', 'false');
-    }));
-
-    /* reveal on scroll */
-    const revealEls = document.querySelectorAll('.reveal');
-    if ('IntersectionObserver' in window) {
-      const io = new IntersectionObserver((entries) => {
-        for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-      }, { rootMargin: '0px 0px -8% 0px' });
-      revealEls.forEach(el => io.observe(el));
-    } else {
-      revealEls.forEach(el => el.classList.add('in'));
-    }
+    /* marketplace tile: real listings when the marketplace has any; the rows in the
+       markup stay as labelled examples otherwise. */
+    fetch('/api/listings?limit=12&sort=rep').then((r) => (r.ok ? r.json() : null)).then((d) => {
+      const live = (d && d.listings || []).sort((a, b) => b.online - a.online).slice(0, 3);
+      if (!live.length) return;
+      const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+      const panel = document.getElementById('listings');
+      panel.querySelectorAll('.lrow').forEach((el) => el.remove());
+      panel.insertAdjacentHTML('beforeend', live.map((l) =>
+        `<a class="lrow" href="/marketplace.html"><div><b>${esc(l.gpu_model)}${l.gpu_count > 1 ? ` ×${esc(l.gpu_count)}` : ''}</b>`
+        + `<small>${esc(l.vram_gb)} GB · ${esc(l.region_label)} · $${(l.price_cents / 100).toFixed(2)} / GPU-hour</small></div>`
+        + `<span class="chip${l.online ? ' live' : ''}">${l.online ? 'Online' : 'Listed'}</span></a>`).join(''));
+      document.getElementById('market-src').textContent = `${d.total} live listing${d.total === 1 ? '' : 's'}`;
+    }).catch(() => {});
 
     /* code tabs */
     const tabs = document.querySelectorAll('.tabs [role="tab"]');
@@ -1152,5 +1131,7 @@ tdcc receipts show job_8fq1za --verify</pre>
       document.getElementById('join').scrollIntoView();
     }
   </script>
+  <script src="/js/site.js"></script>
+  <script src="/js/market.js"></script>
 </body>
 </html>

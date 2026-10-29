@@ -4,3 +4,41 @@ compatibility_date = "2025-07-21"
 
 [assets]
 directory = "."
+binding = "ASSETS"
+# The API must reach the Worker even though static files are served first.
+run_worker_first = ["/api/*"]
+
+# GPU marketplace storage. Create once with
+#   npx wrangler d1 create tdcc-market
+# paste the printed database_id below, then apply migrations with
+#   npx wrangler d1 migrations apply tdcc-market --remote
+[[d1_databases]]
+binding = "DB"
+database_name = "tdcc-market"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+# Expires finished rentals and unanswered requests, cleans up old rows, and
+# pays hosts once the dispute window has passed.
+[triggers]
+crons = ["*/10 * * * *"]
+
+# Optional settings. Each feature turns on when its secret is set:
+#   npx wrangler secret put RESEND_API_KEY        # email (https://resend.com)
+#   npx wrangler secret put STRIPE_SECRET_KEY     # card payments + host payouts (Stripe Connect)
+#   npx wrangler secret put STRIPE_WEBHOOK_SECRET #   endpoint: https://<site>/api/stripe/webhook
+#   npx wrangler secret put MARKET_SIGNING_KEY    # signs tdcc access grants (npm run keygen)
+#   npx wrangler secret put TURNSTILE_SECRET      # robot check on sign-up (+ TURNSTILE_SITE_KEY below)
+#   npx wrangler secret put SENTRY_DSN            # error reports
+# Without email, password reset says it is unavailable and email
+# verification is not required. Without Stripe, host and renter settle
+# payment between themselves.
+[vars]
+EMAIL_FROM = "TDCC Marketplace <marketplace@decentralizedcompute.company>"
+SITE_URL = "https://decentralizedcompute.company"
+# Comma-separated; these accounts see /admin.html once their email is confirmed.
+ADMIN_EMAILS = "anil@decentralizedcompute.company"
+# Marketplace fee on card payments, in basis points (1000 = 10%).
+PLATFORM_FEE_BPS = "1000"
+# Public Turnstile site key; only used when TURNSTILE_SECRET is set.
+# TURNSTILE_SITE_KEY = ""

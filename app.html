@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#fbfbf9" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#ffffff" />
   <meta name="color-scheme" content="light" />
 
   <title>TDCC App | The compute console for AI teams</title>
@@ -16,6 +16,7 @@
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
+  <link rel="stylesheet" href="/styles/site.css" />
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="The Decentralized Compute Company" />
@@ -32,354 +33,265 @@
   <meta name="twitter:image" content="https://decentralizedcompute.company/assets/og-image.png" />
 
   <style>
-    :root {
-      --bg: #fbfbf9;
-      --text: #141414;
-      --muted: #7f7b78;
-      --line: #e6e4df;
-      --soft: #f3f2ee;
-      --accent: #b9ff78;
-      --accent-dark: #143a19;
-      --panel: #101a13;
-      --panel-2: #18251d;
-      --panel-line: rgba(185, 255, 120, .16);
-      --panel-text: #e9efe6;
-      --panel-muted: #9aa79b;
-      --sans: Arial, Helvetica, sans-serif;
-      --mono: "SFMono-Regular", ui-monospace, Menlo, Consolas, "Liberation Mono", monospace;
-      --wide: 1160px;
-      --nav-height: 68px;
+    [id] { scroll-margin-top: 124px; }
+    .ic, .lede code, .copy code, .note code, .dl-card p code, .cl-list code, .checks code {
+      padding: 1px 6px; border: 1px solid var(--line); background: var(--panel); color: var(--cream); font-family: var(--mono); font-size: .84em; overflow-wrap: anywhere;
     }
 
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    ::selection { background: rgba(185,255,120,.6); color: var(--accent-dark); }
-    [id] { scroll-margin-top: calc(var(--nav-height) + 28px); }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Georgia, "Times New Roman", serif;
-      line-height: 1.55;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-      overflow-x: hidden;
-    }
-    a { color: inherit; text-decoration-color: #a7a19b; text-underline-offset: 4px; }
-    a:hover { text-decoration-color: var(--text); }
-    :focus-visible { outline: 3px solid rgba(185,255,120,.78); outline-offset: 4px; border-radius: 4px; }
-    img { max-width: 100%; }
-    .skip-link { position: absolute; left: -9999px; top: 12px; z-index: 200; padding: 10px 14px; background: #fff; border: 1px solid var(--line); }
-    .skip-link:focus { left: 12px; }
-    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    /* ---------- page head / hero ---------- */
+    .app-head { padding-bottom: clamp(56px, 7vw, 96px); }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(40px, 5vw, 72px); align-items: center; }
+    .app-head .display { max-width: 11ch; font-size: clamp(44px, 5.6vw, 84px); }
+    .app-head .display em { display: block; color: var(--sand); }
+    .app-head .lede { max-width: 46ch; }
+    .app-head .actions { margin-top: 32px; }
+    .release-pill { display: inline-flex; align-items: center; gap: 12px; max-width: 100%; margin-bottom: 28px; padding: 6px 12px 6px 6px; border: 1px solid var(--line-2); background: rgba(255, 255, 255, .5); color: var(--body); font-family: var(--mono); font-size: 11px; letter-spacing: .06em; transition: border-color .2s ease; }
+    .release-pill:hover { border-color: var(--sand); }
+    .release-pill b { flex: none; padding: 3px 7px; background: var(--sand); color: var(--ink); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+    .hero-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 40px; border-top: 1px solid var(--line); }
+    .hero-meta div { padding: 16px 16px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
+    .hero-meta div + div { padding-left: 16px; border-left: 1px solid var(--line); }
+    .hero-meta strong { display: block; margin-bottom: 6px; color: var(--text); font-family: var(--mono); font-size: 10.5px; font-weight: 400; letter-spacing: .12em; text-transform: uppercase; }
 
-    /* ---------- shell ---------- */
-    .wrap { width: min(calc(100% - 40px), var(--wide)); margin: 0 auto; }
-    .narrow { width: min(calc(100% - 40px), 820px); margin: 0 auto; }
-    .top-rule {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 6px;
-      background: linear-gradient(90deg, rgba(185,255,120,.15), rgba(185,255,120,.72), rgba(185,255,120,.15));
-      backdrop-filter: blur(8px);
-    }
-    .top-rule::after {
-      content: ""; position: absolute; inset: 0; transform-origin: left;
-      transform: scaleX(var(--progress, 0)); background: rgba(20,58,25,.5);
-    }
-    .site-nav {
-      position: sticky; top: 6px; z-index: 90; min-height: var(--nav-height);
-      display: flex; align-items: center; gap: 26px;
-      padding: 0 3.5vw; background: rgba(251,251,249,.92);
-      border-bottom: 1px solid rgba(230,228,223,.65); backdrop-filter: blur(18px);
-      font-family: var(--sans); font-size: 13px;
-    }
-    .nav-brand { display: flex; align-items: center; gap: 9px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; text-decoration: none; color: #4a4744; }
-    .nav-brand .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(185,255,120,.22); }
-    .nav-links { display: flex; align-items: center; gap: 22px; margin-left: auto; }
-    .site-nav a { text-decoration: none; opacity: .82; transition: opacity 180ms ease; }
-    .site-nav a:hover { opacity: 1; }
-    .nav-links a.active { opacity: 1; font-weight: 700; color: var(--accent-dark); }
-    .nav-cta { padding: 8px 14px; border-radius: 999px; background: var(--accent); color: var(--accent-dark); font-weight: 700; opacity: 1 !important; }
-    .nav-ghost { padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; background: #fff; }
-    .nav-toggle { display: none; margin-left: auto; padding: 9px 13px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font: inherit; cursor: pointer; }
+    /* ---------- in-page navigation ---------- */
+    .subnav { position: sticky; top: 64px; z-index: 50; background: rgba(255, 255, 255, .92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+    .subnav-inner { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+    .subnav-inner::-webkit-scrollbar { display: none; }
+    .subnav a { flex: none; padding: 15px 12px; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; transition: color .2s ease, box-shadow .2s ease; }
+    .subnav a:first-child { padding-left: 0; }
+    .subnav a:hover, .subnav a.on { color: var(--text); }
+    .subnav a.on { box-shadow: inset 0 -1px 0 var(--sand); }
+    .subnav .progress { position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: var(--sand); opacity: .55; transform-origin: left; transform: scaleX(var(--progress, 0)); pointer-events: none; }
 
-    /* ---------- type ---------- */
-    h1, h2, h3, h4 { font-family: var(--sans); letter-spacing: -.03em; }
-    h2 { margin: 0 0 20px; font-size: clamp(28px, 4vw, 46px); font-weight: 400; line-height: 1.1; }
-    h3 { margin: 0 0 8px; font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
-    p { margin: 0 0 18px; font-size: 17px; }
-    .eyebrow { margin: 0 0 14px; color: var(--muted); font-family: var(--sans); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
-    .lead { font-size: clamp(18px, 2vw, 21px); color: #3b3936; }
-    .section { padding: 88px 0; }
-    .section + .section { border-top: 1px solid var(--line); }
-    .center { text-align: center; }
-    .center h2, .center .eyebrow { margin-left: auto; margin-right: auto; }
-    .center p { margin-left: auto; margin-right: auto; max-width: 620px; }
+    /* ---------- capacity strip ---------- */
+    .strip { padding: 26px 0; border-bottom: 1px solid var(--line); }
+    .strip-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; }
+    .strip .mono { color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { padding: 6px 11px; border: 1px solid var(--line-2); color: var(--text); font-family: var(--mono); font-size: 11px; letter-spacing: .04em; }
+    .chip.dim { border-color: var(--line); color: var(--muted); }
 
-    .button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font-family: var(--sans); font-size: 14px; text-decoration: none; cursor: pointer; transition: transform 160ms ease, border-color 160ms ease, background 160ms ease; }
-    .button:hover { transform: translateY(-1px); border-color: #c7c4be; }
-    .button.primary { background: var(--accent); color: var(--accent-dark); border-color: transparent; font-weight: 700; }
-    .button.dark { background: var(--accent-dark); color: #fff; border-color: transparent; }
-    .button.ghost-dark { background: transparent; color: var(--panel-text); border-color: rgba(233,239,230,.28); }
-    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
-
-    .tag { display: inline-flex; align-items: center; gap: 7px; padding: 5px 11px; border-radius: 999px; background: var(--soft); font-family: var(--sans); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #45423f; }
-    .tag.live { background: rgba(185,255,120,.42); color: var(--accent-dark); }
-    .tag.planned { background: #efece6; color: #6d6862; }
-
-    /* ---------- hero ---------- */
-    .hero { position: relative; padding: 66px 0 76px; overflow: hidden; }
-    .hero::before {
-      content: ""; position: absolute; inset: -180px -20vw auto -20vw; height: 720px; z-index: -1;
-      background:
-        radial-gradient(58% 62% at 78% 22%, rgba(185,255,120,.34), transparent 62%),
-        radial-gradient(46% 52% at 12% 8%, rgba(20,58,25,.07), transparent 60%);
-    }
-    .hero-grid { display: grid; grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); gap: 54px; align-items: center; }
-    .hero h1 { margin: 18px 0 22px; font-size: clamp(40px, 5.2vw, 64px); font-weight: 400; line-height: 1.02; }
-    .hero h1 span { display: block; color: #56534f; }
-    .hero .lead { max-width: 520px; margin-bottom: 26px; }
-    .hero-meta { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 28px; font-family: var(--sans); font-size: 13px; color: var(--muted); }
-    .hero-meta strong { display: block; color: var(--text); font-size: 15px; }
-    .release-pill { display: inline-flex; align-items: center; gap: 10px; padding: 7px 14px 7px 8px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-family: var(--sans); font-size: 13px; text-decoration: none; }
-    .release-pill .tag { padding: 4px 9px; }
-
-    /* ---------- app mockup ---------- */
-    .mock {
-      border: 1px solid var(--line); border-radius: 16px; background: #fff; overflow: hidden;
-      box-shadow: 0 34px 70px -42px rgba(20,32,22,.42), 0 2px 0 rgba(255,255,255,.6) inset;
-      font-family: var(--sans);
-    }
-    .mock-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: #f7f7f4; }
-    .mock-bar i { width: 9px; height: 9px; border-radius: 50%; background: #dcd9d3; }
-    .mock-url { margin-left: 8px; padding: 3px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font-size: 11px; color: #7b7772; }
-    .mock-body { display: grid; grid-template-columns: 148px 1fr; min-height: 340px; }
-    .mock-side { padding: 16px 12px; border-right: 1px solid var(--line); background: #fcfcfa; font-size: 12px; color: #6f6b66; }
-    .mock-side b { display: block; margin-bottom: 12px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #a29d97; }
-    .mock-side a, .mock-side span { display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 8px; text-decoration: none; }
-    .mock-side .on { background: rgba(185,255,120,.32); color: var(--accent-dark); font-weight: 700; }
-    .mock-side em { width: 6px; height: 6px; border-radius: 2px; background: #cfcbc4; font-style: normal; }
-    .mock-side .on em { background: var(--accent-dark); }
-    .mock-main { padding: 18px; }
+    /* ---------- console mockups ---------- */
+    .mock { min-width: 0; border: 1px solid var(--line-2); background: var(--panel); box-shadow: 0 40px 80px -48px rgba(0, 0, 0, .9); }
+    .mock-bar { display: flex; align-items: center; gap: 7px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--bg-2); }
+    .mock-bar i { flex: none; width: 7px; height: 7px; border: 1px solid var(--line-2); }
+    .mock-url { min-width: 0; margin-left: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-family: var(--mono); font-size: 11px; }
+    .mock-body { display: grid; grid-template-columns: 148px minmax(0, 1fr); min-height: 340px; }
+    .mock-body.single { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+    .mock-side { padding: 16px 10px; border-right: 1px solid var(--line); color: var(--muted); font-size: 12.5px; }
+    .mock-side b { display: block; margin: 0 0 8px 9px; color: #6f685d; font-family: var(--mono); font-size: 9.5px; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; }
+    .mock-side b.gap { margin-top: 18px; }
+    .mock-side span { display: flex; align-items: center; gap: 9px; padding: 7px 9px; }
+    .mock-side em { flex: none; width: 5px; height: 5px; background: var(--line-2); }
+    .mock-side .on { background: rgba(216, 191, 148, .07); box-shadow: inset 1px 0 0 var(--sand); color: var(--text); }
+    .mock-side .on em { background: var(--sand); }
+    .mock-main { min-width: 0; padding: 18px; }
     .mock-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-    .mock-head h4 { margin: 0; font-size: 15px; }
-    .mock-head span { font-size: 11px; color: #8b8781; }
-    .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
-    .tile { padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: #fcfcfa; }
-    .tile b { display: block; font-size: 17px; letter-spacing: -.02em; }
-    .tile span { font-size: 10px; color: #8b8781; }
-    .bars { display: flex; align-items: flex-end; gap: 5px; height: 74px; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: #fcfcfa; margin-bottom: 14px; }
-    .bars i { flex: 1; border-radius: 3px 3px 0 0; background: linear-gradient(180deg, var(--accent), rgba(185,255,120,.42)); }
-    .rows { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
-    .row { display: grid; grid-template-columns: 1.5fr 1fr .8fr; gap: 10px; padding: 9px 12px; font-size: 11px; align-items: center; }
-    .row + .row { border-top: 1px solid var(--line); }
-    .row.head { background: #f7f7f4; color: #8b8781; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
-    .row code { font-family: var(--mono); font-size: 10.5px; color: #4a4744; }
-    .pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; }
-    .pill.ok { background: rgba(185,255,120,.4); color: var(--accent-dark); }
-    .pill.run { background: #eef2f6; color: #35506b; }
-    .pill.wait { background: #f6f1e6; color: #6d5a2c; }
-    .pill i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
-    .pill.run i, .release-pill .tag.live { animation: pulse 1.8s ease-in-out infinite; }
-    @keyframes pulse { 50% { opacity: .55; } }
-    .bars i { transform-origin: bottom; animation: rise 900ms cubic-bezier(.2,.7,.2,1) backwards; }
+    .mock-head strong { min-width: 0; color: var(--text); font-family: var(--serif); font-size: 19px; font-weight: 400; overflow-wrap: anywhere; }
+    .mock-head > span:not(.pill) { flex: none; color: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+    .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin-bottom: 14px; border: 1px solid var(--line); background: var(--line); }
+    .tiles.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .tile { min-width: 0; padding: 10px 12px; background: var(--bg); }
+    .tile b { display: block; color: var(--text); font-family: var(--serif); font-size: 22px; font-weight: 400; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .tile span { display: block; margin-top: 2px; color: var(--muted); font-family: var(--mono); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; }
+    .bars { display: flex; align-items: flex-end; gap: 5px; height: 74px; margin-bottom: 14px; padding: 10px; border: 1px solid var(--line); background: var(--bg); }
+    .bars i { flex: 1; background: linear-gradient(180deg, var(--sand), rgba(216, 191, 148, .18)); transform-origin: bottom; animation: rise .9s cubic-bezier(.2, .7, .2, 1) backwards; }
     .bars i:nth-child(2n) { animation-delay: 90ms; }
     .bars i:nth-child(3n) { animation-delay: 180ms; }
     .bars i:nth-child(4n) { animation-delay: 260ms; }
     @keyframes rise { from { transform: scaleY(0); } }
+    .rows { border: 1px solid var(--line); background: var(--bg); }
+    .rows.mb { margin-bottom: 12px; }
+    .row { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.3fr) auto; gap: 10px; align-items: center; padding: 9px 12px; color: var(--body); font-size: 12px; }
+    .row + .row { border-top: 1px solid var(--line); }
+    .row.head { color: var(--muted); font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; }
+    .row code { min-width: 0; color: var(--cream); font-family: var(--mono); font-size: 11px; overflow-wrap: anywhere; }
+    .pill { display: inline-flex; align-items: center; gap: 6px; justify-self: end; padding: 2px 7px; border: 1px solid var(--line-2); color: var(--muted); font-family: var(--mono); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+    .pill i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+    .pill.ok { border-color: rgba(185, 217, 154, .35); color: var(--ok); }
+    .pill.run { border-color: rgba(216, 191, 148, .45); color: var(--sand); }
+    .pill.run i { animation: pulse 1.8s ease-in-out infinite; }
+    @keyframes pulse { 50% { opacity: .35; } }
+    .log { margin: 0; padding: 12px 14px; border: 1px solid var(--line); background: #f7f6f3; color: var(--body); font-family: var(--mono); font-size: 11px; line-height: 1.75; white-space: pre; overflow-x: auto; }
 
-    /* ---------- strips ---------- */
-    .strip { padding: 40px 0; border-top: 1px solid var(--line); }
-    .strip p { margin: 0 0 16px; color: var(--muted); font-family: var(--sans); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
-    .chips { display: flex; flex-wrap: wrap; gap: 9px; }
-    .chip { padding: 8px 13px; border-radius: 999px; background: var(--soft); font-family: var(--sans); font-size: 13px; color: #45423f; }
-    .chip.outline { background: #fff; border: 1px solid var(--line); }
+    /* ---------- overview ---------- */
+    .flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); }
+    .flow-step { position: relative; padding: clamp(22px, 2.4vw, 30px); }
+    .flow-step + .flow-step { border-left: 1px solid var(--line); }
+    .flow-step::after { content: "→"; position: absolute; top: clamp(22px, 2.4vw, 30px); right: clamp(22px, 2.4vw, 30px); color: var(--muted); font-family: var(--mono); font-size: 13px; }
+    .flow-step:last-child::after { content: none; }
+    .flow-step .n { color: var(--sand); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; }
+    .flow-step h3 { margin-top: 28px; color: var(--text); font-family: var(--serif); font-size: 26px; line-height: 1.1; }
+    .flow-step p { margin-top: 10px; color: var(--body); font-size: 15px; }
+    .sub-label { margin: clamp(48px, 6vw, 72px) 0 18px; color: var(--muted); }
 
-    /* ---------- dark panel ---------- */
-    .panel { padding: 62px 54px; border-radius: 26px; background: var(--panel); color: var(--panel-text); }
-    .panel h2, .panel h3 { color: #fff; }
-    .panel p { color: var(--panel-muted); }
-    .panel .eyebrow { color: rgba(185,255,120,.8); }
-    .panel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-top: 40px; }
-    .panel-card { padding: 22px; border: 1px solid var(--panel-line); border-radius: 16px; background: var(--panel-2); transition: transform 220ms ease, border-color 220ms ease; }
-    .panel-card:hover { transform: translateY(-3px); border-color: rgba(185,255,120,.4); }
-    .panel-card p { margin: 0; font-size: 15px; }
-    .panel-card h3 { font-size: 16px; margin-bottom: 8px; }
-    .panel-card .num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; margin-bottom: 14px; border-radius: 8px; background: rgba(185,255,120,.16); color: var(--accent); font-family: var(--sans); font-size: 12px; font-weight: 700; }
-
-    .flowmap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 40px; }
-    .node { position: relative; padding: 20px 18px; border: 1px solid var(--panel-line); border-radius: 16px; background: linear-gradient(180deg, rgba(185,255,120,.06), rgba(255,255,255,0)); transition: transform 220ms ease, border-color 220ms ease; }
-    .node:hover { transform: translateY(-3px); border-color: rgba(185,255,120,.4); }
-    .node b { display: block; margin-bottom: 6px; font-family: var(--sans); font-size: 14px; color: #fff; }
-    .node span { font-family: var(--sans); font-size: 13px; color: var(--panel-muted); }
-    .node::after { content: "→"; position: absolute; top: 50%; right: -13px; transform: translateY(-50%); color: rgba(185,255,120,.6); font-family: var(--sans); font-size: 15px; }
-    .node:last-child::after { display: none; }
-
-    /* ---------- feature rows ---------- */
-    .feature { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 56px; align-items: center; padding: 76px 0; }
-    .feature + .feature { border-top: 1px solid var(--line); }
-    .feature.flip .feature-copy { order: 2; }
-    .feature-copy h2 { font-size: clamp(26px, 3vw, 38px); }
-    .feature-copy p { color: #3b3936; }
-    .checks { margin: 22px 0 0; padding: 0; list-style: none; font-family: var(--sans); font-size: 15px; }
-    .checks li { position: relative; padding: 9px 0 9px 26px; border-top: 1px solid var(--line); color: #3b3936; }
-    .checks li::before { content: ""; position: absolute; left: 2px; top: 17px; width: 9px; height: 9px; border-radius: 3px; background: var(--accent); }
-
-    /* map mock */
-    .map-mock { border: 1px solid var(--line); border-radius: 18px; background: #fff; padding: 18px; box-shadow: 0 30px 60px -44px rgba(20,32,22,.4); }
-    .map-mock svg { display: block; width: 100%; height: auto; }
-    .map-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-family: var(--sans); font-size: 11px; color: #7b7772; }
-    .map-legend span { display: inline-flex; align-items: center; gap: 6px; }
-    .map-legend i { width: 8px; height: 8px; border-radius: 50%; }
-
-    /* receipt mock */
-    .receipt { border: 1px solid var(--line); border-radius: 18px; background: #fff; overflow: hidden; font-family: var(--sans); box-shadow: 0 30px 60px -44px rgba(20,32,22,.4); }
-    .receipt-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--line); background: #fcfcfa; font-size: 12px; color: #7b7772; }
-    .receipt-row { display: flex; justify-content: space-between; gap: 16px; padding: 12px 18px; font-size: 13px; }
-    .receipt-row + .receipt-row { border-top: 1px solid var(--line); }
-    .receipt-row span { color: #7b7772; }
-    .receipt-row code, .receipt-row b { font-family: var(--mono); font-size: 12.5px; color: #2c2a27; font-weight: 400; }
-    .receipt-foot { padding: 14px 18px; background: rgba(185,255,120,.22); font-size: 13px; color: var(--accent-dark); }
-
-    /* ---------- stats panel ---------- */
-    .stats-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 44px; align-items: center; }
-    .stat-list { display: grid; gap: 2px; margin-top: 30px; }
-    .stat-list div { display: flex; align-items: baseline; gap: 14px; padding: 14px 0; border-top: 1px solid var(--panel-line); }
-    .stat-list b { min-width: 128px; font-family: var(--sans); font-size: clamp(24px, 3vw, 32px); font-weight: 400; color: var(--accent); letter-spacing: -.03em; }
-    .stat-list span { font-family: var(--sans); font-size: 14px; color: var(--panel-muted); }
-    .dial { display: grid; place-items: center; }
-    .dial svg { width: min(100%, 300px); height: auto; }
-    .dial-caption { margin-top: 14px; font-family: var(--sans); font-size: 12px; color: var(--panel-muted); text-align: center; }
-
-    /* ---------- table view ---------- */
-    .table-mock { border: 1px solid var(--line); border-radius: 18px; background: #fff; overflow: hidden; font-family: var(--sans); box-shadow: 0 30px 60px -46px rgba(20,32,22,.4); }
-    .table-scroll { overflow-x: auto; }
-    table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13px; }
-    thead th { padding: 12px 16px; background: #f7f7f4; border-bottom: 1px solid var(--line); text-align: left; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #8b8781; font-weight: 600; }
-    tbody td { padding: 12px 16px; border-bottom: 1px solid var(--line); color: #3b3936; vertical-align: top; }
-    tbody tr:last-child td { border-bottom: 0; }
-    tbody tr { transition: background 150ms ease; }
-    tbody tr:hover td { background: #fafaf6; }
-    tbody td code { font-family: var(--mono); font-size: 12px; }
-    .spec-table td:first-child { width: 30%; font-weight: 600; color: var(--text); font-family: var(--sans); }
-
-    /* ---------- env + integrations ---------- */
-    .env-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 36px; }
-    .env { padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: #fff; text-align: center; transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease; }
-    .env:hover { transform: translateY(-3px); border-color: #cfcbc4; box-shadow: 0 20px 36px -28px rgba(20,32,22,.4); }
-    .env b { display: block; font-family: var(--sans); font-size: 15px; }
-    .env span { font-family: var(--sans); font-size: 13px; color: var(--muted); }
-    .env svg { display: block; margin: 0 auto 12px; }
-
-    .code-block { border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--panel); box-shadow: 0 30px 60px -46px rgba(20,32,22,.5); }
-    .code-tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 10px 12px; border-bottom: 1px solid var(--panel-line); background: var(--panel-2); }
-    .code-tabs button { padding: 7px 14px; border: 0; border-radius: 999px; background: transparent; color: var(--panel-muted); font-family: var(--sans); font-size: 13px; cursor: pointer; }
-    .code-tabs button[aria-selected="true"] { background: rgba(185,255,120,.16); color: var(--accent); font-weight: 700; }
-    .code-copy { margin-left: auto; padding: 7px 14px; border: 1px solid var(--panel-line) !important; border-radius: 999px; }
-    .code-copy:hover { color: var(--accent); border-color: rgba(185,255,120,.45) !important; }
-    .code-block pre { margin: 0; padding: 22px; overflow-x: auto; color: #dbe6d6; font-family: var(--mono); font-size: 13px; line-height: 1.65; }
-    .code-block pre .c { color: #7e8f7a; }
-    .code-block pre .k { color: var(--accent); }
-    .code-block pre .s { color: #d9c98a; }
-    .code-note { margin-top: 14px; font-family: var(--sans); font-size: 13px; color: var(--muted); }
-
-    /* ---------- timeline ---------- */
-    .timeline { display: grid; gap: 14px; margin-top: 34px; }
-    .phase { display: grid; grid-template-columns: 190px 1fr; gap: 20px; padding: 22px 24px; border: 1px solid var(--line); border-radius: 16px; background: #fff; transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease; }
-    .phase:hover { transform: translateY(-2px); border-color: #cfcbc4; box-shadow: 0 20px 36px -30px rgba(20,32,22,.4); }
-    .phase-when { font-family: var(--sans); font-size: 13px; color: var(--muted); }
-    .phase-when b { display: block; margin-bottom: 6px; font-size: 15px; color: var(--text); }
-    .phase p { margin: 8px 0 0; font-size: 16px; color: #3b3936; }
-
-    /* ---------- downloads + changelog ---------- */
-    .release-callout { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; margin: 30px 0 18px; padding: 18px 20px; border: 1px solid rgba(185,255,120,.45); border-radius: 14px; background: rgba(185,255,120,.2); font-family: var(--sans); }
-    .release-callout strong { color: var(--accent-dark); font-size: 14px; }
-    .release-callout span { color: #3b593d; font-size: 13px; }
-    .download-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
-    .download-card { display: flex; flex-direction: column; gap: 14px; padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: #fff; transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease; }
-    .download-card:hover { transform: translateY(-2px); border-color: #cfcbc4; box-shadow: 0 20px 36px -30px rgba(20,32,22,.4); }
-    .download-card.pending { background: #faf9f6; }
-    .download-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .download-head h3 { margin: 0; font-size: 19px; }
-    .download-card p { margin: 0; font-family: var(--sans); font-size: 14px; color: #5c5854; }
-    .download-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
-    .download-actions .button { min-height: 40px; padding: 0 14px; font-size: 13px; }
-    .download-meta { margin: 0; font-family: var(--mono); font-size: 11px; line-height: 1.55; color: #8b8781; }
-    .download-meta a { color: #4a4744; }
-    .download-note { margin: 18px 0 0; font-family: var(--sans); font-size: 13px; color: var(--muted); }
-    .changelog-entry { margin-top: 30px; padding: 28px; border: 1px solid var(--line); border-radius: 18px; background: #fff; }
-    .changelog-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-bottom: 14px; font-family: var(--sans); }
-    .changelog-head time { color: var(--muted); font-size: 13px; }
-    .changelog-entry h3 { margin-bottom: 20px; font-size: 24px; }
-    .changelog-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
-    .changelog-grid h4 { margin: 0 0 7px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-    .changelog-grid ul { margin: 0; padding: 0; list-style: none; font-family: var(--sans); font-size: 14px; color: #3b3936; }
-    .changelog-grid li { position: relative; padding: 6px 0 6px 18px; }
-    .changelog-grid li::before { content: "＋"; position: absolute; left: 0; top: 5px; color: var(--accent-dark); font-weight: 700; }
-    .changelog-grid .known li::before { content: "!"; }
-
-    /* ---------- faq + cta ---------- */
-    details { border-top: 1px solid var(--line); padding: 18px 0; }
-    details:last-of-type { border-bottom: 1px solid var(--line); }
-    summary { display: flex; align-items: center; justify-content: space-between; gap: 18px; cursor: pointer; font-family: var(--sans); font-size: 17px; font-weight: 600; list-style: none; }
-    summary::-webkit-details-marker { display: none; }
-    summary::after { content: "+"; flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--soft); color: #5c5854; font-size: 16px; font-weight: 400; transition: transform 220ms ease, background 220ms ease, color 220ms ease; }
-    details[open] summary::after { transform: rotate(45deg); background: var(--accent); color: var(--accent-dark); }
-    details p { margin: 14px 0 0; max-width: 640px; font-size: 16px; color: #3b3936; }
-
-    .cta-panel { position: relative; overflow: hidden; padding: 54px; border-radius: 26px; background: var(--accent); color: var(--accent-dark); text-align: center; }
-    .cta-panel::before { content: ""; position: absolute; inset: -60% -20% auto; height: 130%; background: radial-gradient(46% 58% at 50% 30%, rgba(255,255,255,.55), transparent 70%); pointer-events: none; }
-    .cta-panel > * { position: relative; }
-    .cta-panel h2 { color: var(--accent-dark); }
-    .cta-panel p { color: rgba(20,58,25,.82); }
-    .cta-panel .actions { justify-content: center; }
-    .cta-panel .button { border-color: rgba(20,58,25,.14); }
-
-    /* ---------- footer ---------- */
-    .site-footer { padding: 56px 0 40px; border-top: 1px solid var(--line); font-family: var(--sans); font-size: 13px; }
-    .footer-grid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 32px; }
-    .footer-grid h4 { margin: 0 0 14px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
-    .footer-grid ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; }
-    .footer-grid a { text-decoration: none; color: #4a4744; }
-    .footer-grid a:hover { text-decoration: underline; }
-    .footer-brand p { max-width: 280px; margin: 12px 0 0; font-family: var(--sans); font-size: 13px; color: var(--muted); }
-    .footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px; margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
-
-    .reveal { opacity: 0; transform: translateY(16px); transition: opacity 650ms ease, transform 650ms ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
+    /* ---------- figure: network map ---------- */
+    .map-scroll { overflow-x: auto; }
+    .map-scroll svg { width: 100%; min-width: 640px; height: auto; }
+    .map svg text { font-family: var(--mono); }
     .dash path { animation: flow 2.6s linear infinite; }
     @keyframes flow { to { stroke-dashoffset: -26; } }
+    .legend { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; }
+    .legend span { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--body); }
+    .legend i { width: 7px; height: 7px; border-radius: 50%; }
+    .legend .note { margin-left: auto; color: var(--muted); font-family: var(--sans); font-size: 13px; letter-spacing: 0; text-transform: none; }
+
+    /* ---------- feature rows ---------- */
+    .feature { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(40px, 5vw, 72px); align-items: center; padding: clamp(56px, 7vw, 96px) 0; }
+    .feature + .feature { border-top: 1px solid var(--line); }
+    .feature:first-child { padding-top: 0; }
+    .feature:last-child { padding-bottom: 0; }
+    .feature.flip > .copy { order: 2; }
+    .feature.top { align-items: start; }
+    .copy .h2 { font-size: clamp(30px, 3.3vw, 46px); max-width: 16ch; }
+    .copy > p:not(.eyebrow) { margin-top: 20px; max-width: 54ch; color: var(--body); font-size: 16.5px; }
+    .checks { margin: 28px 0 0; padding: 0; list-style: none; border-bottom: 1px solid var(--line); }
+    .checks li { position: relative; padding: 11px 0 11px 22px; border-top: 1px solid var(--line); color: var(--body); font-size: 15px; }
+    .checks li::before { content: ""; position: absolute; left: 1px; top: 20px; width: 6px; height: 6px; background: var(--sand); transform: rotate(45deg); }
+    .checks strong { color: var(--text); font-weight: 500; }
+    .checks .tag { margin-left: 6px; }
+
+    /* receipt */
+    .receipt { min-width: 0; border: 1px solid var(--line-2); background: var(--panel); box-shadow: 0 40px 80px -48px rgba(0, 0, 0, .9); }
+    .receipt-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line-2); color: var(--muted); font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; }
+    .receipt-row { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 16px; align-items: baseline; padding: 12px 18px; font-size: 13px; }
+    .receipt-row + .receipt-row { border-top: 1px solid var(--line); }
+    .receipt-row span { color: var(--muted); }
+    .receipt-row code, .receipt-row b { text-align: right; color: var(--cream); font-family: var(--mono); font-size: 12.5px; font-weight: 400; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+    .receipt-row b { font-family: var(--serif); font-size: 20px; }
+    .receipt-foot { padding: 14px 18px; border-top: 1px solid var(--line-2); background: rgba(216, 191, 148, .06); color: var(--sand); font-size: 13.5px; }
+
+    /* ---------- economics ---------- */
+    .econ { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(40px, 6vw, 96px); align-items: center; }
+    .econ .copy > p { max-width: 52ch; }
+    .stat-list { margin-top: 36px; border-bottom: 1px solid var(--line); }
+    .stat-list > div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 20px; align-items: baseline; padding: 18px 0; border-top: 1px solid var(--line); }
+    .stat-list .stat-n { font-size: clamp(36px, 3.6vw, 48px); font-variant-numeric: tabular-nums; }
+    .stat-list .stat-l { margin: 0; font-size: 15px; }
+    .dial { display: grid; justify-items: center; }
+    .dial svg { width: min(100%, 340px); height: auto; }
+    .dial svg text { font-family: var(--serif); }
+    .dial svg .t2 { font-family: var(--mono); letter-spacing: .1em; }
+    .dial-caption { margin-top: 18px; max-width: 34ch; color: var(--muted); font-size: 13.5px; text-align: center; }
+
+    /* ---------- tables ---------- */
+    table.wl { min-width: 760px; }
+    table.data code { color: var(--cream); font-family: var(--mono); font-size: 12px; }
+    table.data td:first-child { color: var(--text); }
+    table.spec th[scope="row"] { width: 26%; padding: 14px 16px; border-bottom: 1px solid var(--line); color: var(--text); font-family: var(--sans); font-size: 14px; font-weight: 500; letter-spacing: 0; text-transform: none; vertical-align: top; white-space: normal; }
+    table.spec td { padding: 14px 16px; }
+    table.spec tr:last-child th { border-bottom: 0; }
+    table.data tbody tr { transition: background .15s ease; }
+    table.data tbody tr:hover td, table.data tbody tr:hover th { background: rgba(20, 18, 14, .025); }
+
+    /* ---------- environments ---------- */
+    .env svg { width: 34px; height: 34px; margin-bottom: 22px; }
+    .env h3 { font-size: 22px; }
+    .env p { margin-top: 6px; }
+
+    /* ---------- code panels ---------- */
+    .codebox { min-width: 0; }
+    .ctabs { display: flex; align-items: stretch; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+    .ctabs::-webkit-scrollbar { display: none; }
+    .ctabs button { flex: none; padding: 13px 16px; border: 0; border-right: 1px solid var(--line); background: transparent; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; transition: color .2s ease, background .2s ease; }
+    .ctabs button:hover { color: var(--text); }
+    .ctabs button[aria-selected="true"] { background: var(--sand); color: var(--ink); }
+    .ctabs .code-copy { margin-left: auto; border-right: 0; border-left: 1px solid var(--line); color: var(--sand); }
+    .ctabs .code-copy:hover { color: var(--text); }
+    .codebox .code { min-height: 250px; background: #f7f6f3; }
+    #tools .codebox .code { min-height: 0; }
+    .note { margin-top: 14px; max-width: 64ch; color: var(--muted); font-size: 13.5px; }
+
+    /* ---------- release timeline ---------- */
+    .timeline { border-bottom: 1px solid var(--line); }
+    .phase { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 16px 48px; padding: clamp(24px, 3vw, 36px) 0; border-top: 1px solid var(--line); }
+    .phase-when b { display: block; color: var(--sand); font-family: var(--mono); font-size: 11px; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; }
+    .phase-when span { display: block; margin-top: 6px; color: var(--muted); font-size: 14px; }
+    .phase h3 { color: var(--text); font-family: var(--serif); font-size: clamp(24px, 2.4vw, 30px); line-height: 1.15; }
+    .phase p { margin-top: 10px; max-width: 68ch; color: var(--body); }
+    .phase.now .phase-when b::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 10px; background: var(--sand); transform: rotate(45deg); vertical-align: 1px; }
+
+    /* ---------- downloads ---------- */
+    .dl-callout { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 20px; margin-bottom: 24px; }
+    .dl-callout b:first-child { margin: 0; }
+    .dl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .dl-card { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+    .dl-card.wide { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 16px 48px; align-items: start; }
+    .dl-card.wide .dl-side { display: flex; flex-direction: column; gap: 16px; }
+    .dl-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 14px; }
+    .dl-head h3 { margin: 0; }
+    .dl-card p { margin: 0; color: var(--body); font-size: 15px; }
+    .dl-card .code { padding: 16px 18px; border: 1px solid var(--line); background: #f7f6f3; font-size: 12px; }
+    .dl-card .actions { gap: 8px; margin-top: auto; }
+    .dl-meta { color: var(--muted); font-family: var(--mono); font-size: 11px; line-height: 1.7; }
+    .dl-card .dl-meta { color: var(--muted); font-size: 11px; }
+    .dl-meta a { color: var(--sand); text-decoration: underline; text-decoration-color: rgba(216, 191, 148, .35); text-underline-offset: 3px; }
+    .dl-meta a:hover { text-decoration-color: var(--sand); }
+    .dl-card.pending h3 { color: var(--body); }
+
+    /* ---------- changelog ---------- */
+    .cl { border-bottom: 1px solid var(--line); }
+    .cl-entry { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 16px 48px; padding: clamp(28px, 3.4vw, 44px) 0; border-top: 1px solid var(--line); }
+    .cl-meta { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+    .cl-meta time { color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+    .cl-entry h3 { color: var(--text); font-family: var(--serif); font-size: clamp(26px, 2.6vw, 34px); line-height: 1.1; }
+    .cl-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; margin-top: 22px; }
+    .cl-grid h4 { margin: 0 0 8px; color: var(--muted); font-family: var(--mono); font-size: 10.5px; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; }
+    .cl-list { margin: 0; padding: 0; list-style: none; color: var(--body); font-size: 14.5px; }
+    .cl-list li { position: relative; padding: 6px 0 6px 18px; }
+    .cl-list li::before { content: "+"; position: absolute; left: 0; top: 6px; color: var(--sand); font-family: var(--mono); }
+    .cl-list.known li::before { content: "!"; color: var(--warn); }
+
+    /* ---------- faq ---------- */
+    .faq { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 32px clamp(40px, 6vw, 96px); align-items: start; }
+    .faq .h2 { max-width: 12ch; }
 
     @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .reveal { opacity: 1; transform: none; transition: none; }
-      .button, .panel-card, .node, .env, .phase { transition: none; }
-      .dash path, .bars i, .pill.run i, .release-pill .tag.live { animation: none !important; }
+      .bars i, .pill.run i, .dash path { animation: none !important; }
+      table.data tbody tr, .subnav a, .ctabs button { transition: none; }
     }
-    @media (max-width: 980px) {
-      .hero-grid, .feature, .stats-grid { grid-template-columns: 1fr; gap: 36px; }
-      .feature.flip .feature-copy { order: 0; }
-      .panel-grid, .flowmap, .env-grid, .changelog-grid { grid-template-columns: 1fr 1fr; }
-      .node::after { display: none; }
-      .panel { padding: 44px 28px; }
-      .footer-grid { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 1080px) {
+      .hero-grid, .feature, .econ, .faq { grid-template-columns: minmax(0, 1fr); }
+      .feature.flip > .copy { order: 0; }
+      .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .flow-step:nth-child(3) { border-left: 0; }
+      .flow-step:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .flow-step:nth-child(2)::after { content: none; }
+      .dial { justify-items: start; }
+      .dial-caption { text-align: left; }
+    }
+    @media (max-width: 860px) {
+      .phase, .cl-entry { grid-template-columns: minmax(0, 1fr); }
+      .cl-meta { flex-direction: row; align-items: center; }
+      .cl-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .dl-grid, .dl-card.wide { grid-template-columns: minmax(0, 1fr); }
     }
     @media (max-width: 720px) {
-      :root { --nav-height: 60px; }
-      .nav-links {
-        display: none; position: absolute; top: calc(100% + 1px); left: 0; right: 0;
-        flex-direction: column; align-items: flex-start; gap: 4px; margin: 0; padding: 14px 5vw 20px;
-        background: rgba(251,251,249,.98); border-bottom: 1px solid var(--line);
-      }
-      .nav-links.open { display: flex; }
-      .nav-links a { padding: 8px 0; }
-      .nav-toggle { display: block; }
-      .section { padding: 62px 0; }
-      .panel-grid, .flowmap, .env-grid, .tiles, .download-grid, .changelog-grid { grid-template-columns: 1fr; }
-      .phase { grid-template-columns: 1fr; gap: 8px; }
-      .cta-panel { padding: 34px 24px; }
-      .footer-grid { grid-template-columns: 1fr; }
-      .mock-body { grid-template-columns: 1fr; }
+      .mock-body { grid-template-columns: minmax(0, 1fr); }
       .mock-side { display: none; }
+      .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero-meta { grid-template-columns: minmax(0, 1fr); }
+      .hero-meta div, .hero-meta div + div { padding: 14px 0; border-left: 0; }
+      .hero-meta div + div { border-top: 1px solid var(--line); }
+      .stat-list > div { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+      .receipt-row { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+      .receipt-row code, .receipt-row b { text-align: left; }
+      .legend .note { margin-left: 0; }
+      .cl-grid { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+    }
+    @media (max-width: 600px) {
+      .flow { grid-template-columns: minmax(0, 1fr); }
+      .flow-step + .flow-step { border-left: 0; border-top: 1px solid var(--line); }
+      .flow-step::after { content: none; }
+      .flow-step h3 { margin-top: 14px; }
+      table.spec, table.spec tbody, table.spec tr, table.spec th[scope="row"], table.spec td { display: block; width: auto; }
+      table.spec th[scope="row"] { padding: 14px 16px 2px; border-bottom: 0; }
+      table.spec td { padding: 0 16px 14px; }
+      table.spec tr + tr { border-top: 1px solid var(--line); }
+      table.spec td { border-bottom: 0; }
+      .app-head .actions .btn { flex: 1 1 100%; }
+      .ctabs button { padding: 12px 10px; letter-spacing: .08em; }
+      .codebox .code { min-height: 0; }
     }
   </style>
 
@@ -395,9 +307,9 @@
         "applicationSubCategory": "AI compute console",
         "operatingSystem": "Web, macOS, Linux, Windows",
         "url": "https://decentralizedcompute.company/app.html",
-        "softwareVersion": "0.73.0-rc.1",
+        "softwareVersion": "0.74.0",
         "releaseNotes": "https://decentralizedcompute.company/app.html#changelog",
-        "downloadUrl": "https://github.com/anilyagiz/tdcc-mesh/releases/tag/v0.73.0-rc.1",
+        "downloadUrl": "https://github.com/anilyagiz/tdcc-mesh/releases/tag/v0.74.0",
         "description": "The TDCC App is the console, CLI, and API for submitting AI training, fine-tuning, inference, and evaluation jobs to a verified network of data centers and GPU hosts.",
         "publisher": { "@id": "https://decentralizedcompute.company/#organization" },
         "featureList": [
@@ -430,7 +342,7 @@
           {
             "@type": "Question",
             "name": "When is the TDCC App available?",
-            "acceptedAnswer": { "@type": "Answer", "text": "The web console is available in staged early access. The TDCC desktop beta is available for Windows x64 as version 0.73.0-rc.1; Linux packages are being enabled after the cross-platform smoke gate. Stable GA remains gated on signing and wider validation." }
+            "acceptedAnswer": { "@type": "Answer", "text": "The web console is available in staged early access. The tdcc CLI 0.73.0 is the first stable release, for Linux x64 and ARM64. The TDCC desktop beta is available for Windows x64 as version 0.73.0-rc.2. macOS and Windows CLI builds and Linux desktop packages follow." }
           }
         ]
       },
@@ -444,40 +356,63 @@
     ]
   }
   </script>
+  <link rel="stylesheet" href="/styles/refine.css" />
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
-  <div class="top-rule"></div>
-
-  <nav class="site-nav" aria-label="Primary navigation">
-    <a class="nav-brand" href="/"><span class="dot" aria-hidden="true"></span>TDCC</a>
-    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
-    <div class="nav-links" id="nav-links">
-      <a href="#overview">Overview</a>
-      <a href="#console">Console</a>
-      <a href="#capabilities">Capabilities</a>
-      <a href="#developers">Developers</a>
-      <a href="#specs">Specs</a>
-      <a href="#downloads">Downloads</a>
-      <a href="#changelog">Changelog</a>
-      <a href="#release">Release</a>
-      <a class="nav-ghost" href="/litepaper.html">Litepaper</a>
-      <a class="nav-cta" href="#access">Get early access</a>
+  <!-- chrome:mark -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="0 0 120 80">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z" />
+        <g stroke-width="1.4" opacity=".85">
+          <path d="M62 14 V70" />
+          <path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" />
+          <path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" />
+          <path d="M38 26 Q62 31 86 26" /><path d="M31 39 Q62 45 93 39" /><path d="M29 54 Q62 60 95 54" />
+        </g>
+      </g>
+      <g fill="currentColor">
+        <rect x="59.5" y="26.5" width="5" height="5" /><rect x="45" y="39" width="5" height="5" /><rect x="74" y="39" width="5" height="5" />
+        <rect x="59.5" y="42" width="5" height="5" /><rect x="33" y="52" width="4.5" height="4.5" /><rect x="86.5" y="52" width="4.5" height="4.5" />
+        <rect x="59.5" y="57" width="5" height="5" /><rect x="47" y="27" width="4" height="4" /><rect x="73" y="27" width="4" height="4" />
+      </g>
+    </symbol>
+  </svg>
+  <!-- /chrome:mark -->
+  <!-- chrome:nav -->
+  <header class="nav" id="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="/" aria-label="The Decentralized Compute Company — home">
+        <svg aria-hidden="true"><use href="#mark" /></svg>
+        <span class="brand-name">tdcc</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
+        <a href="/marketplace.html">Marketplace</a>
+        <a href="/app.html" aria-current="page">App</a>
+        <a href="/exact-core.html">Exact Core</a>
+        <a href="/cask-q.html">Research</a>
+        <a href="/team.html">Company</a>
+        <a class="btn solid sm nav-cta" href="/#join">Get early access</a>
+      </nav>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
     </div>
-  </nav>
+  </header>
+  <!-- /chrome:nav -->
 
   <main id="content">
     <!-- HERO -->
-    <section class="hero">
+    <header class="page-head app-head">
       <div class="wrap hero-grid">
         <div>
-          <a class="release-pill" href="#downloads"><span class="tag live">0.73.0-rc.1 · Desktop beta</span><span>Windows x64 installer available · Linux packages next</span></a>
-          <h1>Verified compute,<span>in one app.</span></h1>
-          <p class="lead">The TDCC App is the console, CLI, and API for the compute network. Submit a job, watch it run on matched hardware, verify the result, and pay only for work that is accepted.</p>
+          <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>TDCC App</span></nav>
+          <a class="release-pill" href="#downloads"><b>0.74.0 · Marketplace release</b><span>Rent out your GPUs · CLI for Linux x64 &amp; ARM64</span></a>
+          <h1 class="display">Verified compute, <em>in one app.</em></h1>
+          <p class="lede">The TDCC App is the console, CLI, and API for the compute network. Submit a job, watch it run on matched hardware, verify the result, and pay only for work that is accepted.</p>
           <div class="actions">
-            <a class="button primary" href="#downloads">Download the desktop app</a>
-            <a class="button primary" href="#access">Get early access</a>
-            <a class="button" href="#console">See the console</a>
+            <a class="btn solid" href="#downloads">Download the desktop app</a>
+            <a class="btn" href="#access">Get early access</a>
+            <a class="btn" href="#console">See the console</a>
           </div>
           <div class="hero-meta">
             <div><strong>Console + CLI + SDK</strong>One product surface</div>
@@ -489,7 +424,7 @@
         <div class="mock" role="img" aria-label="Preview of the TDCC App console showing job counters, throughput, and a job list">
           <div class="mock-bar"><i></i><i></i><i></i><span class="mock-url">app.decentralizedcompute.company/jobs</span></div>
           <div class="mock-body">
-            <aside class="mock-side">
+            <div class="mock-side">
               <b>Workspace</b>
               <span class="on"><em></em>Jobs</span>
               <span><em></em>Models</span>
@@ -497,16 +432,16 @@
               <span><em></em>Receipts</span>
               <span><em></em>Usage</span>
               <span><em></em>API keys</span>
-              <b style="margin-top:18px">Project</b>
+              <b class="gap">Project</b>
               <span><em></em>acme-research</span>
-            </aside>
+            </div>
             <div class="mock-main">
-              <div class="mock-head"><h4>Jobs</h4><span>Live · last 24h</span></div>
+              <div class="mock-head"><strong>Jobs</strong><span>Live · last 24h</span></div>
               <div class="tiles">
-                <div class="tile"><b>128</b><span>Accepted</span></div>
-                <div class="tile"><b>6</b><span>Running</span></div>
-                <div class="tile"><b>2</b><span>Requeued</span></div>
-                <div class="tile"><b>41</b><span>Hosts used</span></div>
+                <div class="tile"><b data-count>128</b><span>Accepted</span></div>
+                <div class="tile"><b data-count>6</b><span>Running</span></div>
+                <div class="tile"><b data-count>2</b><span>Requeued</span></div>
+                <div class="tile"><b data-count>41</b><span>Hosts used</span></div>
               </div>
               <div class="bars" aria-hidden="true">
                 <i style="height:38%"></i><i style="height:56%"></i><i style="height:44%"></i><i style="height:72%"></i>
@@ -524,159 +459,184 @@
           </div>
         </div>
       </div>
-    </section>
+    </header>
 
-    <!-- HARDWARE STRIP -->
-    <section class="strip">
-      <div class="wrap">
-        <p>Built to route across mixed capacity</p>
+    <nav class="subnav" aria-label="On this page">
+      <div class="wrap subnav-inner">
+        <a href="#overview">Overview</a>
+        <a href="#console">Console</a>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#workloads">Workloads</a>
+        <a href="#developers">Developers</a>
+        <a href="#specs">Specs</a>
+        <a href="#release">Release</a>
+        <a href="#downloads">Downloads</a>
+        <a href="#changelog">Changelog</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <span class="progress" aria-hidden="true"></span>
+    </nav>
+
+    <!-- CAPACITY STRIP -->
+    <div class="strip">
+      <div class="wrap strip-inner">
+        <p class="mono">Built to route across mixed capacity</p>
         <div class="chips">
-          <span class="chip outline">Data-center clusters</span>
-          <span class="chip outline">Certified micro-clusters</span>
-          <span class="chip outline">Independent GPU hosts</span>
-          <span class="chip">80GB-class accelerators</span>
-          <span class="chip">48GB-class accelerators</span>
-          <span class="chip">24GB consumer GPUs</span>
-          <span class="chip">CPU-side pre/post processing</span>
+          <span class="chip">Data-center clusters</span>
+          <span class="chip">Certified micro-clusters</span>
+          <span class="chip">Independent GPU hosts</span>
+          <span class="chip dim">80GB-class accelerators</span>
+          <span class="chip dim">48GB-class accelerators</span>
+          <span class="chip dim">24GB consumer GPUs</span>
+          <span class="chip dim">CPU-side pre/post processing</span>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- OVERVIEW / DARK PANEL -->
-    <section id="overview" class="section reveal">
+    <!-- OVERVIEW -->
+    <section id="overview" class="section flush">
       <div class="wrap">
-        <div class="panel">
-          <p class="eyebrow">What the app is</p>
-          <h2>One interface over a network of<br />machines you never have to manage.</h2>
-          <p style="max-width:640px">Underneath the app there are schedulers, secure runtimes, model compatibility checks, verification policies, reputation signals, and settlement. In the app there is a job, a state, and a receipt.</p>
-
-          <div class="flowmap">
-            <div class="node"><b>01 · Describe</b><span>Workload type, model, data, deadline, budget, acceptance rules.</span></div>
-            <div class="node"><b>02 · Match</b><span>The router picks capacity that fits memory, speed, price, and reliability.</span></div>
-            <div class="node"><b>03 · Run</b><span>Execution happens in an approved, isolated runtime with live telemetry.</span></div>
-            <div class="node"><b>04 · Verify</b><span>Output is checked against acceptance criteria before it is billed or paid.</span></div>
+        <div class="section-head reveal">
+          <div>
+            <p class="eyebrow">What the app is</p>
+            <h2 class="h2">One interface over a network of machines you never have to manage.</h2>
           </div>
+          <p class="lede">Underneath the app there are schedulers, secure runtimes, model compatibility checks, verification policies, reputation signals, and settlement. In the app there is a job, a state, and a receipt.</p>
+        </div>
 
-          <div class="panel-grid">
-            <article class="panel-card">
-              <span class="num">A</span>
-              <h3>For AI teams</h3>
-              <p>Run training, fine-tuning, inference, and evaluation without operating a fleet. One key, one project, one bill.</p>
-            </article>
-            <article class="panel-card">
-              <span class="num">B</span>
-              <h3>For data centers</h3>
-              <p>Turn idle capacity into recurring, screened demand. Publish hardware, availability, and price; earn on accepted work.</p>
-            </article>
-            <article class="panel-card">
-              <span class="num">C</span>
-              <h3>For agents and tools</h3>
-              <p>A machine-callable API so autonomous workflows can buy compute the same way a developer does.</p>
-            </article>
-          </div>
+        <ol class="flow reveal" style="list-style:none;margin:0;padding:0">
+          <li class="flow-step"><span class="n">01</span><h3>Describe</h3><p>Workload type, model, data, deadline, budget, acceptance rules.</p></li>
+          <li class="flow-step"><span class="n">02</span><h3>Match</h3><p>The router picks capacity that fits memory, speed, price, and reliability.</p></li>
+          <li class="flow-step"><span class="n">03</span><h3>Run</h3><p>Execution happens in an approved, isolated runtime with live telemetry.</p></li>
+          <li class="flow-step"><span class="n">04</span><h3>Verify</h3><p>Output is checked against acceptance criteria before it is billed or paid.</p></li>
+        </ol>
+
+        <p class="mono sub-label">Who it is for</p>
+        <div class="grid c3 reveal">
+          <article class="card">
+            <span class="k">A</span>
+            <h3>For AI teams</h3>
+            <p>Run training, fine-tuning, inference, and evaluation without operating a fleet. One key, one project, one bill.</p>
+          </article>
+          <article class="card">
+            <span class="k">B</span>
+            <h3>For data centers</h3>
+            <p>Turn idle capacity into recurring, screened demand. Publish hardware, availability, and price; earn on accepted work.</p>
+          </article>
+          <article class="card">
+            <span class="k">C</span>
+            <h3>For agents and tools</h3>
+            <p>A machine-callable API so autonomous workflows can buy compute the same way a developer does.</p>
+          </article>
         </div>
       </div>
     </section>
 
     <!-- CONSOLE -->
-    <section id="console" class="section center reveal">
+    <section id="console" class="section">
       <div class="wrap">
-        <p class="eyebrow">The console</p>
-        <h2>Every job, every host, one screen.</h2>
-        <p>The network view shows where work is running right now: which region, which hardware class, how far along, and what still needs to be verified.</p>
-        <div class="map-mock" style="margin-top:38px; text-align:left">
-          <svg viewBox="0 0 900 380" role="img" aria-label="Network map showing the TDCC router connecting a job queue to regional GPU hosts">
-            <defs>
-              <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#b9ff78" stop-opacity=".55" />
-                <stop offset="100%" stop-color="#b9ff78" stop-opacity="0" />
-              </radialGradient>
-            </defs>
-            <rect x="0" y="0" width="900" height="380" fill="#fcfcfa" rx="12" />
-            <g stroke="#e6e4df" stroke-width="1">
-              <path d="M0 60H900M0 130H900M0 200H900M0 270H900M0 340H900" />
-              <path d="M120 0V380M300 0V380M480 0V380M660 0V380M840 0V380" />
-            </g>
-            <circle cx="450" cy="190" r="120" fill="url(#glow)" />
-
-            <!-- links -->
-            <g fill="none" stroke="#143a19" stroke-opacity=".35" stroke-width="1.6" stroke-dasharray="6 7" class="dash">
-              <path d="M180 96 C300 96 340 175 430 188" />
-              <path d="M180 190 C280 190 340 190 430 190" />
-              <path d="M180 288 C300 288 340 205 430 194" />
-              <path d="M470 188 C570 150 620 108 726 100" />
-              <path d="M470 190 C580 190 640 190 726 190" />
-              <path d="M470 194 C570 232 620 274 726 284" />
-            </g>
-
-            <!-- job queue -->
-            <g font-family="Arial, Helvetica, sans-serif" font-size="12">
-              <rect x="40" y="74" width="140" height="44" rx="10" fill="#fff" stroke="#e6e4df" />
-              <text x="58" y="94" fill="#141414">inference.batch</text>
-              <text x="58" y="109" fill="#8b8781">1,240 items</text>
-
-              <rect x="40" y="168" width="140" height="44" rx="10" fill="#fff" stroke="#e6e4df" />
-              <text x="58" y="188" fill="#141414">finetune.lora</text>
-              <text x="58" y="203" fill="#8b8781">qwen2.5-7b</text>
-
-              <rect x="40" y="266" width="140" height="44" rx="10" fill="#fff" stroke="#e6e4df" />
-              <text x="58" y="286" fill="#141414">eval.suite</text>
-              <text x="58" y="301" fill="#8b8781">18 checks</text>
-
-              <!-- router -->
-              <rect x="368" y="150" width="164" height="80" rx="18" fill="#101a13" />
-              <text x="450" y="182" fill="#ffffff" text-anchor="middle" font-size="14">TDCC router</text>
-              <text x="450" y="201" fill="#9aa79b" text-anchor="middle" font-size="11">match · isolate · verify</text>
-              <circle cx="450" cy="218" r="4" fill="#b9ff78" />
-
-              <!-- hosts -->
-              <rect x="726" y="76" width="146" height="48" rx="10" fill="#fff" stroke="#e6e4df" />
-              <circle cx="744" cy="94" r="4" fill="#b9ff78" />
-              <text x="756" y="98" fill="#141414">eu-central · DC</text>
-              <text x="744" y="114" fill="#8b8781">8× 80GB · verified</text>
-
-              <rect x="726" y="166" width="146" height="48" rx="10" fill="#fff" stroke="#e6e4df" />
-              <circle cx="744" cy="184" r="4" fill="#3f79c8" />
-              <text x="756" y="188" fill="#141414">us-east · cluster</text>
-              <text x="744" y="204" fill="#8b8781">4× 48GB · running</text>
-
-              <rect x="726" y="260" width="146" height="48" rx="10" fill="#fff" stroke="#e6e4df" />
-              <circle cx="744" cy="278" r="4" fill="#c9a24a" />
-              <text x="756" y="282" fill="#141414">ap-south · hosts</text>
-              <text x="744" y="298" fill="#8b8781">22× 24GB · queued</text>
-            </g>
-          </svg>
-          <div class="map-legend">
-            <span><i style="background:#b9ff78"></i>Verified &amp; settled</span>
-            <span><i style="background:#3f79c8"></i>Running</span>
-            <span><i style="background:#c9a24a"></i>Queued / matching</span>
-            <span>Illustrative view of the console network map.</span>
+        <div class="section-head reveal">
+          <div>
+            <p class="eyebrow">The console</p>
+            <h2 class="h2">Every job, every host, one screen.</h2>
           </div>
+          <p class="lede">The network view shows where work is running right now: which region, which hardware class, how far along, and what still needs to be verified.</p>
         </div>
+        <figure class="fig-box map reveal" style="margin:0">
+          <div class="fig"><span>Console · network map</span><b>Illustrative</b></div>
+          <div class="map-scroll">
+            <svg viewBox="0 0 900 380" role="img" aria-label="Network map showing the TDCC router connecting a job queue to regional GPU hosts">
+              <defs>
+                <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#d8bf94" stop-opacity=".22" />
+                  <stop offset="100%" stop-color="#d8bf94" stop-opacity="0" />
+                </radialGradient>
+              </defs>
+              <g stroke="rgba(20,18,14,.06)" stroke-width="1">
+                <path d="M0 60H900M0 130H900M0 200H900M0 270H900M0 340H900" />
+                <path d="M120 0V380M300 0V380M480 0V380M660 0V380M840 0V380" />
+              </g>
+              <circle cx="450" cy="190" r="150" fill="url(#glow)" />
+
+              <!-- links -->
+              <g fill="none" stroke="#d8bf94" stroke-opacity=".5" stroke-width="1.2" stroke-dasharray="6 7" class="dash">
+                <path d="M180 96 C300 96 340 175 430 188" />
+                <path d="M180 190 C280 190 340 190 430 190" />
+                <path d="M180 288 C300 288 340 205 430 194" />
+                <path d="M470 188 C570 150 620 108 726 100" />
+                <path d="M470 190 C580 190 640 190 726 190" />
+                <path d="M470 194 C570 232 620 274 726 284" />
+              </g>
+
+              <g font-size="11">
+                <!-- job queue -->
+                <rect x="40" y="74" width="140" height="44" rx="1" fill="#ffffff" stroke="rgba(20,18,14,.18)" />
+                <text x="56" y="94" fill="#15130f">inference.batch</text>
+                <text x="56" y="109" fill="#8d8475">1,240 items</text>
+
+                <rect x="40" y="168" width="140" height="44" rx="1" fill="#ffffff" stroke="rgba(20,18,14,.18)" />
+                <text x="56" y="188" fill="#15130f">finetune.lora</text>
+                <text x="56" y="203" fill="#8d8475">qwen2.5-7b</text>
+
+                <rect x="40" y="266" width="140" height="44" rx="1" fill="#ffffff" stroke="rgba(20,18,14,.18)" />
+                <text x="56" y="286" fill="#15130f">eval.suite</text>
+                <text x="56" y="301" fill="#8d8475">18 checks</text>
+
+                <!-- router -->
+                <rect x="368" y="150" width="164" height="80" rx="1" fill="#15130f" stroke="#9a7a45" />
+                <text x="450" y="182" fill="#ffffff" text-anchor="middle" font-size="13">TDCC router</text>
+                <text x="450" y="201" fill="#c4bbad" text-anchor="middle" font-size="10">match · isolate · verify</text>
+                <rect x="446" y="214" width="8" height="8" fill="#d8bf94" transform="rotate(45 450 218)" />
+
+                <!-- hosts -->
+                <rect x="726" y="76" width="150" height="48" rx="1" fill="#ffffff" stroke="rgba(20,18,14,.18)" />
+                <circle cx="742" cy="94" r="3.5" fill="#b9d99a" />
+                <text x="752" y="98" fill="#15130f">eu-central · DC</text>
+                <text x="738" y="114" fill="#8d8475">8× 80GB · verified</text>
+
+                <rect x="726" y="166" width="150" height="48" rx="1" fill="#ffffff" stroke="rgba(20,18,14,.18)" />
+                <circle cx="742" cy="184" r="3.5" fill="#d8bf94" />
+                <text x="752" y="188" fill="#15130f">us-east · cluster</text>
+                <text x="738" y="204" fill="#8d8475">4× 48GB · running</text>
+
+                <rect x="726" y="260" width="150" height="48" rx="1" fill="#ffffff" stroke="rgba(20,18,14,.18)" />
+                <circle cx="742" cy="278" r="3.5" fill="#8d8475" />
+                <text x="752" y="282" fill="#15130f">ap-south · hosts</text>
+                <text x="738" y="298" fill="#8d8475">22× 24GB · queued</text>
+              </g>
+            </svg>
+          </div>
+          <figcaption class="legend">
+            <span><i style="background:var(--ok)"></i>Verified &amp; settled</span>
+            <span><i style="background:var(--sand)"></i>Running</span>
+            <span><i style="background:var(--muted)"></i>Queued / matching</span>
+            <span class="note">Illustrative view of the console network map.</span>
+          </figcaption>
+        </figure>
       </div>
     </section>
 
     <!-- CAPABILITIES -->
-    <section id="capabilities">
+    <section id="capabilities" class="section">
       <div class="wrap">
         <article class="feature reveal">
-          <div class="feature-copy">
-            <p class="eyebrow">Submit</p>
-            <h2>Describe the job. Not the machine.</h2>
+          <div class="copy">
+            <p class="eyebrow">01 · Submit</p>
+            <h2 class="h2">Describe the job. Not the machine.</h2>
             <p>You never browse a list of instances. You state what the workload needs and what you are willing to pay, and the router does the rest — including failover when a host drops mid-run.</p>
             <ul class="checks">
               <li>Workload templates for inference, embeddings, transcription, image generation, LoRA/QLoRA fine-tuning, evaluations, and synthetic data</li>
               <li>Constraints for VRAM, hardware class, region, deadline, and maximum spend</li>
               <li>Automatic requeue to another host if execution fails or stalls</li>
-              <li>Dry-run estimates before a job is committed <span class="tag planned">Planned</span></li>
+              <li>Dry-run estimates before a job is committed <span class="tag">Planned</span></li>
             </ul>
           </div>
           <div class="mock" role="img" aria-label="Job submission view with workload type, constraints, and cost estimate">
             <div class="mock-bar"><i></i><i></i><i></i><span class="mock-url">app.decentralizedcompute.company/jobs/new</span></div>
-            <div class="mock-body" style="grid-template-columns:1fr">
+            <div class="mock-body single">
               <div class="mock-main">
-                <div class="mock-head"><h4>New job</h4><span>Draft</span></div>
-                <div class="rows" style="margin-bottom:12px">
+                <div class="mock-head"><strong>New job</strong><span>Draft</span></div>
+                <div class="rows mb">
                   <div class="row head"><span>Field</span><span>Value</span><span>State</span></div>
                   <div class="row"><span>Workload</span><code>finetune.lora</code><span class="pill ok"><i></i>Valid</span></div>
                   <div class="row"><span>Base model</span><code>qwen2.5-7b</code><span class="pill ok"><i></i>Compatible</span></div>
@@ -684,7 +644,7 @@
                   <div class="row"><span>Deadline</span><code>4h</code><span class="pill run"><i></i>Feasible</span></div>
                   <div class="row"><span>Max spend</span><code>$120.00</code><span class="pill wait"><i></i>Estimate</span></div>
                 </div>
-                <div class="tiles" style="grid-template-columns:repeat(3,1fr)">
+                <div class="tiles c3">
                   <div class="tile"><b>41</b><span>Eligible hosts</span></div>
                   <div class="tile"><b>2×</b><span>Verification passes</span></div>
                   <div class="tile"><b>~2h 40m</b><span>Projected runtime</span></div>
@@ -695,29 +655,29 @@
         </article>
 
         <article class="feature flip reveal">
-          <div class="feature-copy">
-            <p class="eyebrow">Observe</p>
-            <h2>Watch work as it happens.</h2>
+          <div class="copy">
+            <p class="eyebrow">02 · Observe</p>
+            <h2 class="h2">Watch work as it happens.</h2>
             <p>Every job streams state. You see the stage it is in, the host class running it, throughput, retries, and logs — without SSH, without a bastion, without a separate monitoring stack.</p>
             <ul class="checks">
               <li>Live stages: matching, provisioning, running, verifying, settled</li>
               <li>Streaming logs and progress events over SSE, plus webhooks per project</li>
               <li>Per-job cost accrual against the budget you set</li>
-              <li>Alerts on stall, requeue, and verification failure <span class="tag planned">Planned</span></li>
+              <li>Alerts on stall, requeue, and verification failure <span class="tag">Planned</span></li>
             </ul>
           </div>
           <div class="mock" role="img" aria-label="Live job detail view with stage timeline and streaming log output">
             <div class="mock-bar"><i></i><i></i><i></i><span class="mock-url">app.decentralizedcompute.company/jobs/job_8fq2c1</span></div>
-            <div class="mock-body" style="grid-template-columns:1fr">
+            <div class="mock-body single">
               <div class="mock-main">
-                <div class="mock-head"><h4>job_8fq2c1 · finetune.lora</h4><span class="pill run"><i></i>Running</span></div>
-                <div class="rows" style="margin-bottom:12px">
+                <div class="mock-head"><strong>job_8fq2c1 · finetune.lora</strong><span class="pill run"><i></i>Running</span></div>
+                <div class="rows mb">
                   <div class="row"><span>Matched</span><code>eu-central · 1× 80GB</code><span class="pill ok"><i></i>Done</span></div>
                   <div class="row"><span>Provisioned</span><code>runtime img · sha 4c9a…</code><span class="pill ok"><i></i>Done</span></div>
                   <div class="row"><span>Training</span><code>step 1840 / 3000</code><span class="pill run"><i></i>61%</span></div>
                   <div class="row"><span>Verification</span><code>2 passes queued</code><span class="pill wait"><i></i>Pending</span></div>
                 </div>
-                <pre style="margin:0;padding:12px;border:1px solid var(--line);border-radius:10px;background:#101a13;color:#dbe6d6;font-family:var(--mono);font-size:11px;line-height:1.7;overflow-x:auto">14:02:11  loss 1.284  lr 1.4e-4  tok/s 5,910
+                <pre class="log">14:02:11  loss 1.284  lr 1.4e-4  tok/s 5,910
 14:02:38  loss 1.241  lr 1.4e-4  tok/s 6,042
 14:03:05  checkpoint written  adapter-1840.safetensors
 14:03:06  budget used $38.40 / $120.00</pre>
@@ -727,15 +687,15 @@
         </article>
 
         <article class="feature reveal">
-          <div class="feature-copy">
-            <p class="eyebrow">Verify &amp; settle</p>
-            <h2>A receipt for every accepted job.</h2>
+          <div class="copy">
+            <p class="eyebrow">03 · Verify &amp; settle</p>
+            <h2 class="h2">A receipt for every accepted job.</h2>
             <p>Verification is the product. Each completed job carries an acceptance record: what ran, where, against which criteria, and what was paid out. Work that fails the check is not billed to you and is not paid to the host.</p>
             <ul class="checks">
               <li>Acceptance criteria attached to the job, not negotiated after the fact</li>
               <li>Redundant or sampled verification passes depending on workload type</li>
               <li>Host reputation updated from verified outcomes, not from self-reporting</li>
-              <li>Optional on-chain settlement records via Avalanche or Solana integrations <span class="tag planned">Planned</span></li>
+              <li>Optional on-chain settlement records via Avalanche or Solana integrations <span class="tag">Planned</span></li>
             </ul>
           </div>
           <div class="receipt" role="img" aria-label="Job receipt showing acceptance criteria, host, verification result, and payout">
@@ -753,101 +713,103 @@
       </div>
     </section>
 
-    <!-- ECONOMICS PANEL -->
-    <section class="section reveal">
-      <div class="wrap">
-        <div class="panel">
-          <div class="stats-grid">
-            <div>
-              <p class="eyebrow">Why an app, not a marketplace</p>
-              <h2>Pay for accepted work.<br />Not for idle hours.</h2>
-              <p>Renting a machine transfers every risk to you: wrong hardware, a stalled run, a silent failure at hour six. The TDCC App moves that risk to the network. The unit you buy is a verified result.</p>
-              <div class="stat-list">
-                <div><b>$50K</b><span>Raised through star.fun in roughly 10 minutes, at an $8M campaign valuation, July 2026</span></div>
-                <div><b>4</b><span>Workload families in the pilot scope: training, fine-tuning, inference, evaluation</span></div>
-                <div><b>0</b><span>Machines you provision, patch, or babysit yourself</span></div>
-              </div>
-            </div>
-            <div class="dial">
-              <svg viewBox="0 0 220 220" role="img" aria-label="Diagram contrasting billable accepted work with unbilled failed work">
-                <circle cx="110" cy="110" r="86" fill="none" stroke="rgba(233,239,230,.14)" stroke-width="18" />
-                <circle cx="110" cy="110" r="86" fill="none" stroke="#b9ff78" stroke-width="18" stroke-linecap="round"
-                        stroke-dasharray="486 540" stroke-dashoffset="0" transform="rotate(-90 110 110)" />
-                <circle cx="110" cy="110" r="60" fill="none" stroke="rgba(233,239,230,.1)" stroke-width="10" />
-                <text x="110" y="104" text-anchor="middle" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="30">Accepted</text>
-                <text x="110" y="130" text-anchor="middle" fill="#9aa79b" font-family="Arial, Helvetica, sans-serif" font-size="13">= billable unit</text>
-              </svg>
-              <p class="dial-caption">Rejected and requeued work sits outside the billing ring by design.</p>
-            </div>
+    <!-- ECONOMICS -->
+    <section id="economics" class="section">
+      <div class="wrap econ reveal">
+        <div class="copy">
+          <p class="eyebrow">Why an app, not a marketplace</p>
+          <h2 class="h2">Pay for accepted work. Not for idle hours.</h2>
+          <p>Renting a machine transfers every risk to you: wrong hardware, a stalled run, a silent failure at hour six. The TDCC App moves that risk to the network. The unit you buy is a verified result.</p>
+          <div class="stat-list">
+            <div><span class="stat-n">$50K</span><p class="stat-l">Raised through star.fun in roughly 10 minutes, at an $8M campaign valuation, July 2026</p></div>
+            <div><span class="stat-n">4</span><p class="stat-l">Workload families in the pilot scope: training, fine-tuning, inference, evaluation</p></div>
+            <div><span class="stat-n">0</span><p class="stat-l">Machines you provision, patch, or babysit yourself</p></div>
           </div>
+        </div>
+        <div class="dial">
+          <svg viewBox="0 0 220 220" role="img" aria-label="Diagram contrasting billable accepted work with unbilled failed work">
+            <circle cx="110" cy="110" r="86" fill="none" stroke="rgba(20,18,14,.1)" stroke-width="14" />
+            <circle cx="110" cy="110" r="86" fill="none" stroke="#d8bf94" stroke-width="14"
+                    stroke-dasharray="486 540" stroke-dashoffset="0" transform="rotate(-90 110 110)" />
+            <circle cx="110" cy="110" r="62" fill="none" stroke="rgba(20,18,14,.1)" stroke-width="1" />
+            <text x="110" y="110" text-anchor="middle" fill="#15130f" font-size="28">Accepted</text>
+            <text class="t2" x="110" y="132" text-anchor="middle" fill="#8d8475" font-size="9.5">= BILLABLE UNIT</text>
+          </svg>
+          <p class="dial-caption">Rejected and requeued work sits outside the billing ring by design.</p>
         </div>
       </div>
     </section>
 
     <!-- WORKLOADS TABLE -->
-    <section class="section reveal">
+    <section id="workloads" class="section">
       <div class="wrap">
-        <p class="eyebrow">Workload catalogue</p>
-        <h2>What you can run on day one.</h2>
-        <p class="lead" style="max-width:640px">Each workload type carries its own acceptance rules, so verification means something different for a transcription batch than it does for a fine-tune.</p>
-        <div class="table-mock" style="margin-top:34px">
-          <div class="table-scroll">
-            <table>
-              <thead>
-                <tr><th scope="col">Workload</th><th scope="col">API type</th><th scope="col">Typical hardware</th><th scope="col">Acceptance basis</th><th scope="col">Status</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>Batch inference</td><td><code>inference.batch</code></td><td>24–80GB</td><td>Schema validity + redundant sampling</td><td><span class="tag live">Pilot</span></td></tr>
-                <tr><td>Open-model hosting</td><td><code>inference.endpoint</code></td><td>48–80GB</td><td>Health checks + latency SLO</td><td><span class="tag live">Pilot</span></td></tr>
-                <tr><td>Embeddings</td><td><code>embeddings</code></td><td>24GB+</td><td>Deterministic re-computation on a sample</td><td><span class="tag live">Pilot</span></td></tr>
-                <tr><td>Audio transcription</td><td><code>transcribe</code></td><td>24GB+</td><td>Sampled re-run + agreement threshold</td><td><span class="tag live">Pilot</span></td></tr>
-                <tr><td>Image generation</td><td><code>image.generate</code></td><td>24–48GB</td><td>Output integrity + policy checks</td><td><span class="tag live">Pilot</span></td></tr>
-                <tr><td>LoRA / QLoRA fine-tuning</td><td><code>finetune.lora</code></td><td>48–80GB</td><td>Eval delta on a held-out set</td><td><span class="tag live">Pilot</span></td></tr>
-                <tr><td>Evaluations</td><td><code>eval.suite</code></td><td>24GB+</td><td>Reproducible scoring run</td><td><span class="tag live">Pilot</span></td></tr>
-                <tr><td>Synthetic data</td><td><code>synth.generate</code></td><td>24GB+</td><td>Schema + duplication checks</td><td><span class="tag live">Pilot</span></td></tr>
-                <tr><td>Agent workloads</td><td><code>agent.run</code></td><td>Mixed</td><td>Step traces + budget ceilings</td><td><span class="tag planned">Planned</span></td></tr>
-                <tr><td>Full pre-training</td><td><code>train.full</code></td><td>Multi-node clusters</td><td>Checkpoint continuity + eval gates</td><td><span class="tag planned">Planned</span></td></tr>
-              </tbody>
-            </table>
+        <div class="section-head reveal">
+          <div>
+            <p class="eyebrow">Workload catalogue</p>
+            <h2 class="h2">What you can run on day one.</h2>
           </div>
+          <p class="lede">Each workload type carries its own acceptance rules, so verification means something different for a transcription batch than it does for a fine-tune.</p>
+        </div>
+        <div class="table-wrap reveal">
+          <table class="data wl">
+            <thead>
+              <tr><th scope="col">Workload</th><th scope="col">API type</th><th scope="col">Typical hardware</th><th scope="col">Acceptance basis</th><th scope="col">Status</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Batch inference</td><td><code>inference.batch</code></td><td>24–80GB</td><td>Schema validity + redundant sampling</td><td><span class="tag ok">Pilot</span></td></tr>
+              <tr><td>Open-model hosting</td><td><code>inference.endpoint</code></td><td>48–80GB</td><td>Health checks + latency SLO</td><td><span class="tag ok">Pilot</span></td></tr>
+              <tr><td>Embeddings</td><td><code>embeddings</code></td><td>24GB+</td><td>Deterministic re-computation on a sample</td><td><span class="tag ok">Pilot</span></td></tr>
+              <tr><td>Audio transcription</td><td><code>transcribe</code></td><td>24GB+</td><td>Sampled re-run + agreement threshold</td><td><span class="tag ok">Pilot</span></td></tr>
+              <tr><td>Image generation</td><td><code>image.generate</code></td><td>24–48GB</td><td>Output integrity + policy checks</td><td><span class="tag ok">Pilot</span></td></tr>
+              <tr><td>LoRA / QLoRA fine-tuning</td><td><code>finetune.lora</code></td><td>48–80GB</td><td>Eval delta on a held-out set</td><td><span class="tag ok">Pilot</span></td></tr>
+              <tr><td>Evaluations</td><td><code>eval.suite</code></td><td>24GB+</td><td>Reproducible scoring run</td><td><span class="tag ok">Pilot</span></td></tr>
+              <tr><td>Synthetic data</td><td><code>synth.generate</code></td><td>24GB+</td><td>Schema + duplication checks</td><td><span class="tag ok">Pilot</span></td></tr>
+              <tr><td>Agent workloads</td><td><code>agent.run</code></td><td>Mixed</td><td>Step traces + budget ceilings</td><td><span class="tag">Planned</span></td></tr>
+              <tr><td>Full pre-training</td><td><code>train.full</code></td><td>Multi-node clusters</td><td>Checkpoint continuity + eval gates</td><td><span class="tag">Planned</span></td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
 
     <!-- ENVIRONMENTS -->
-    <section class="section center reveal">
+    <section id="environments" class="section">
       <div class="wrap">
-        <p class="eyebrow">Bring your own environment</p>
-        <h2>Your runtime, our routing.</h2>
-        <p>Jobs execute inside approved, isolated runtimes. Supply a container, pick a maintained base image, or point at an open-weight model and let the app assemble the environment.</p>
-        <div class="env-grid">
-          <div class="env">
-            <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect x="3" y="11" width="28" height="18" rx="4" fill="none" stroke="#143a19" stroke-width="1.6"/><path d="M9 11V7h16v4" fill="none" stroke="#143a19" stroke-width="1.6"/><path d="M11 20h12" stroke="#b9ff78" stroke-width="3"/></svg>
-            <b>Containers</b><span>OCI images with pinned digests</span>
+        <div class="section-head reveal">
+          <div>
+            <p class="eyebrow">Bring your own environment</p>
+            <h2 class="h2">Your runtime, our routing.</h2>
           </div>
-          <div class="env">
-            <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 4l11 6v14l-11 6-11-6V10z" fill="none" stroke="#143a19" stroke-width="1.6"/><circle cx="17" cy="17" r="4" fill="#b9ff78"/></svg>
-            <b>Orchestrated clusters</b><span>Data-center capacity pools</span>
+          <p class="lede">Jobs execute inside approved, isolated runtimes. Supply a container, pick a maintained base image, or point at an open-weight model and let the app assemble the environment.</p>
+        </div>
+        <div class="grid c4 reveal">
+          <div class="card env">
+            <svg viewBox="0 0 34 34" aria-hidden="true"><rect x="3" y="11" width="28" height="18" rx="1" fill="none" stroke="#4b4740" stroke-width="1.3"/><path d="M9 11V7h16v4" fill="none" stroke="#4b4740" stroke-width="1.3"/><path d="M11 20h12" stroke="#d8bf94" stroke-width="2.4"/></svg>
+            <h3>Containers</h3><p>OCI images with pinned digests</p>
           </div>
-          <div class="env">
-            <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect x="5" y="6" width="24" height="9" rx="2.5" fill="none" stroke="#143a19" stroke-width="1.6"/><rect x="5" y="19" width="24" height="9" rx="2.5" fill="none" stroke="#143a19" stroke-width="1.6"/><circle cx="11" cy="10.5" r="1.8" fill="#b9ff78"/><circle cx="11" cy="23.5" r="1.8" fill="#b9ff78"/></svg>
-            <b>Bare metal</b><span>Certified micro-clusters</span>
+          <div class="card env">
+            <svg viewBox="0 0 34 34" aria-hidden="true"><path d="M17 4l11 6v14l-11 6-11-6V10z" fill="none" stroke="#4b4740" stroke-width="1.3"/><rect x="14" y="14" width="6" height="6" fill="#d8bf94" transform="rotate(45 17 17)"/></svg>
+            <h3>Orchestrated clusters</h3><p>Data-center capacity pools</p>
           </div>
-          <div class="env">
-            <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M10 24a6 6 0 010-12 8 8 0 0115.4 2.4A5.5 5.5 0 0124 24z" fill="none" stroke="#143a19" stroke-width="1.6"/><path d="M17 17v6" stroke="#b9ff78" stroke-width="3"/></svg>
-            <b>Independent hosts</b><span>Screened consumer GPUs</span>
+          <div class="card env">
+            <svg viewBox="0 0 34 34" aria-hidden="true"><rect x="5" y="6" width="24" height="9" rx="1" fill="none" stroke="#4b4740" stroke-width="1.3"/><rect x="5" y="19" width="24" height="9" rx="1" fill="none" stroke="#4b4740" stroke-width="1.3"/><rect x="9.5" y="9" width="3" height="3" fill="#d8bf94"/><rect x="9.5" y="22" width="3" height="3" fill="#d8bf94"/></svg>
+            <h3>Bare metal</h3><p>Certified micro-clusters</p>
+          </div>
+          <div class="card env">
+            <svg viewBox="0 0 34 34" aria-hidden="true"><path d="M10 24a6 6 0 010-12 8 8 0 0115.4 2.4A5.5 5.5 0 0124 24z" fill="none" stroke="#4b4740" stroke-width="1.3"/><path d="M17 17v6" stroke="#d8bf94" stroke-width="2.4"/></svg>
+            <h3>Independent hosts</h3><p>Screened consumer GPUs</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- DEVELOPERS -->
-    <section id="developers" class="section reveal">
+    <section id="developers" class="section">
       <div class="wrap">
-        <div class="feature" style="padding:0; border:0">
-          <div class="feature-copy">
+        <div class="feature top reveal">
+          <div class="copy">
             <p class="eyebrow">Developer surface</p>
-            <h2>Four ways in. One job model.</h2>
+            <h2 class="h2">Four ways in. One job model.</h2>
             <p>The console, the CLI, the SDKs, and the REST API all speak the same object: a job with constraints, a state machine, and a receipt. Whatever you automate in one, you can inspect in another.</p>
             <ul class="checks">
               <li><strong>REST API</strong> — create, inspect, cancel, and stream jobs</li>
@@ -856,16 +818,16 @@
               <li><strong>Events</strong> — SSE streams and per-project webhooks</li>
             </ul>
           </div>
-          <div>
-            <div class="code-block">
-              <div class="code-tabs" role="tablist" aria-label="Code examples">
+          <div class="codebox">
+            <div class="panel">
+              <div class="ctabs" role="tablist" aria-label="Code examples">
                 <button type="button" role="tab" id="tab-curl" aria-controls="panel-curl" aria-selected="true">cURL</button>
-                <button type="button" role="tab" id="tab-py" aria-controls="panel-py" aria-selected="false">Python</button>
-                <button type="button" role="tab" id="tab-ts" aria-controls="panel-ts" aria-selected="false">TypeScript</button>
-                <button type="button" role="tab" id="tab-cli" aria-controls="panel-cli" aria-selected="false">CLI</button>
+                <button type="button" role="tab" id="tab-py" aria-controls="panel-py" aria-selected="false" tabindex="-1">Python</button>
+                <button type="button" role="tab" id="tab-ts" aria-controls="panel-ts" aria-selected="false" tabindex="-1">TypeScript</button>
+                <button type="button" role="tab" id="tab-cli" aria-controls="panel-cli" aria-selected="false" tabindex="-1">CLI</button>
                 <button type="button" class="code-copy" id="code-copy" aria-label="Copy the visible code sample">Copy</button>
               </div>
-              <pre id="panel-curl" role="tabpanel" aria-labelledby="tab-curl"><span class="c"># submit a batch inference job</span>
+              <pre class="code" id="panel-curl" role="tabpanel" aria-labelledby="tab-curl" tabindex="0"><span class="c"># submit a batch inference job</span>
 curl https://api.decentralizedcompute.company/v1/jobs \
   -H <span class="s">"Authorization: Bearer $TDCC_API_KEY"</span> \
   -H <span class="s">"Content-Type: application/json"</span> \
@@ -876,7 +838,7 @@ curl https://api.decentralizedcompute.company/v1/jobs \
     <span class="k">"accept"</span>: { "min_verifications": 2 },
     <span class="k">"budget"</span>: { "max_usd": 40 }
   }'</pre>
-              <pre id="panel-py" role="tabpanel" aria-labelledby="tab-py" hidden><span class="c">from</span> tdcc <span class="c">import</span> Client
+              <pre class="code" id="panel-py" role="tabpanel" aria-labelledby="tab-py" tabindex="0" hidden><span class="k">from</span> tdcc <span class="k">import</span> Client
 
 client = Client(api_key=os.environ[<span class="s">"TDCC_API_KEY"</span>])
 
@@ -890,21 +852,21 @@ job = client.jobs.create(
 
 client.jobs.wait(job.id)
 print(job.receipt.status, job.artifacts[0].uri)</pre>
-              <pre id="panel-ts" role="tabpanel" aria-labelledby="tab-ts" hidden><span class="c">import</span> { TDCC } <span class="c">from</span> <span class="s">"@tdcc/sdk"</span>;
+              <pre class="code" id="panel-ts" role="tabpanel" aria-labelledby="tab-ts" tabindex="0" hidden><span class="k">import</span> { TDCC } <span class="k">from</span> <span class="s">"@tdcc/sdk"</span>;
 
-<span class="c">const</span> tdcc = <span class="c">new</span> TDCC({ apiKey: process.env.TDCC_API_KEY });
+<span class="k">const</span> tdcc = <span class="k">new</span> TDCC({ apiKey: process.env.TDCC_API_KEY });
 
-<span class="c">const</span> job = <span class="c">await</span> tdcc.jobs.create({
+<span class="k">const</span> job = <span class="k">await</span> tdcc.jobs.create({
   type: <span class="s">"embeddings"</span>,
   model: <span class="s">"bge-large-en-v1.5"</span>,
   inputs: docs.map((d) => d.text),
   accept: { minVerifications: 2 },
 });
 
-<span class="c">for await</span> (<span class="c">const</span> ev <span class="c">of</span> tdcc.jobs.stream(job.id)) {
+<span class="k">for await</span> (<span class="k">const</span> ev <span class="k">of</span> tdcc.jobs.stream(job.id)) {
   console.log(ev.stage, ev.progress);
 }</pre>
-              <pre id="panel-cli" role="tabpanel" aria-labelledby="tab-cli" hidden><span class="c"># authenticate once per machine</span>
+              <pre class="code" id="panel-cli" role="tabpanel" aria-labelledby="tab-cli" tabindex="0" hidden><span class="c"># authenticate once per machine</span>
 tdcc login
 
 <span class="c"># submit and follow</span>
@@ -915,19 +877,19 @@ tdcc jobs logs job_8fq2c1 --follow
 tdcc hosts list --region eu-central --min-vram 48
 tdcc receipts show job_8fq1za --verify</pre>
             </div>
-            <p class="code-note">Preview interfaces from the early-access build. Request shapes may change before the API is declared stable.</p>
+            <p class="note">Preview interfaces from the early-access build. Request shapes may change before the API is declared stable.</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- TOOLS -->
-    <section id="tools" class="section reveal">
+    <section id="tools" class="section">
       <div class="wrap">
-        <div class="feature" style="padding:0; border:0">
-          <div class="feature-copy">
+        <div class="feature top flip reveal">
+          <div class="copy">
             <p class="eyebrow">Use in your tools</p>
-            <h2>Plug the API into the agents you already run.</h2>
+            <h2 class="h2">Plug the API into the agents you already run.</h2>
             <p>One gateway endpoint, OpenAI- and Anthropic-compatible, so Claude Code, Codex, OpenCode, and anything that speaks either protocol can point at the same URL. Credentials are resolved server-side and never appear in your tool configuration.</p>
             <ul class="checks">
               <li><strong>One endpoint</strong> — <code>decentralizedcompute.company/api</code> speaks both protocols</li>
@@ -935,23 +897,23 @@ tdcc receipts show job_8fq1za --verify</pre>
               <li><strong>Streaming</strong> — token-by-token responses work out of the box</li>
             </ul>
           </div>
-          <div>
-            <div class="code-block">
-              <div class="code-tabs" role="tablist" aria-label="Tool configuration">
+          <div class="codebox">
+            <div class="panel">
+              <div class="ctabs" role="tablist" aria-label="Tool configuration">
                 <button type="button" role="tab" id="tab-cc" aria-controls="panel-cc" aria-selected="true">Claude Code</button>
-                <button type="button" role="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="false">Codex</button>
-                <button type="button" role="tab" id="tab-oc" aria-controls="panel-oc" aria-selected="false">OpenCode</button>
+                <button type="button" role="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="false" tabindex="-1">Codex</button>
+                <button type="button" role="tab" id="tab-oc" aria-controls="panel-oc" aria-selected="false" tabindex="-1">OpenCode</button>
                 <button type="button" class="code-copy" id="code-copy-tools" aria-label="Copy the visible code sample">Copy</button>
               </div>
-              <pre id="panel-cc" role="tabpanel" aria-labelledby="tab-cc"><span class="c"># shell profile (~/.zshrc or equivalent)</span>
-<span class="c">export</span> ANTHROPIC_BASE_URL=<span class="s">"https://decentralizedcompute.company/api/anthropic"</span>
-<span class="c">export</span> ANTHROPIC_API_KEY=<span class="s">"$TDCC_API_KEY"</span>
-<span class="c">export</span> ANTHROPIC_MODEL=<span class="s">"deepseek/deepseek-v4-flash-free"</span></pre>
-              <pre id="panel-codex" role="tabpanel" aria-labelledby="tab-codex" hidden><span class="c"># ~/.codex/config.toml</span>
+              <pre class="code" id="panel-cc" role="tabpanel" aria-labelledby="tab-cc" tabindex="0"><span class="c"># shell profile (~/.zshrc or equivalent)</span>
+<span class="k">export</span> ANTHROPIC_BASE_URL=<span class="s">"https://decentralizedcompute.company/api/anthropic"</span>
+<span class="k">export</span> ANTHROPIC_API_KEY=<span class="s">"$TDCC_API_KEY"</span>
+<span class="k">export</span> ANTHROPIC_MODEL=<span class="s">"deepseek/deepseek-v4-flash-free"</span></pre>
+              <pre class="code" id="panel-codex" role="tabpanel" aria-labelledby="tab-codex" tabindex="0" hidden><span class="c"># ~/.codex/config.toml</span>
 [model_providers.tdcc]
 base_url = <span class="s">"https://decentralizedcompute.company/api/v1"</span>
 env_key = <span class="s">"TDCC_API_KEY"</span></pre>
-              <pre id="panel-oc" role="tabpanel" aria-labelledby="tab-oc" hidden><span class="c">// opencode.json</span>
+              <pre class="code" id="panel-oc" role="tabpanel" aria-labelledby="tab-oc" tabindex="0" hidden><span class="c">// opencode.json</span>
 {
   <span class="k">"provider"</span>: {
     <span class="k">"tdcc"</span>: {
@@ -961,78 +923,84 @@ env_key = <span class="s">"TDCC_API_KEY"</span></pre>
   }
 }</pre>
             </div>
-            <p class="code-note">Set <code>TDCC_API_KEY</code> to your project key. The gateway resolves the upstream model credential server-side, so no secret appears in your tool configuration.</p>
+            <p class="note">Set <code>TDCC_API_KEY</code> to your project key. The gateway resolves the upstream model credential server-side, so no secret appears in your tool configuration.</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- SPECS -->
-    <section id="specs" class="section reveal">
+    <section id="specs" class="section">
       <div class="wrap">
-        <p class="eyebrow">App specifications</p>
-        <h2>The details, in full.</h2>
-        <p class="lead" style="max-width:640px">Everything below describes the current early-access scope. Items marked <span class="tag planned">Planned</span> are on the release path and are not available yet.</p>
-        <div class="table-mock" style="margin-top:34px">
-          <div class="table-scroll">
-            <table class="spec-table">
-              <tbody>
-                <tr><td>Product name</td><td>TDCC App — console, CLI, SDKs, and job API for The Decentralized Compute Company network</td></tr>
-                <tr><td>Version</td><td>0.73.0-rc.1 desktop beta; staged early access alongside the pilot network</td></tr>
-                <tr><td>Console</td><td>Responsive web app; current Chromium, Firefox, and Safari; desktop-first layout with a mobile job view</td></tr>
-                <tr><td>CLI</td><td><code>tdcc</code> for macOS (Intel/Apple silicon), Linux x86-64 and arm64, and Windows via WSL2</td></tr>
-                <tr><td>SDKs</td><td>Python 3.10+ and TypeScript / Node 18+; both wrap the same REST surface</td></tr>
-                <tr><td>API</td><td>REST over HTTPS, JSON payloads, cursor pagination, idempotency keys on job creation</td></tr>
-                <tr><td>Events</td><td>Server-sent events per job; per-project webhooks with signed payloads</td></tr>
-                <tr><td>Authentication</td><td>Project-scoped API keys with rotation; console sign-in per organization. SSO and SCIM <span class="tag planned">Planned</span></td></tr>
-                <tr><td>Roles</td><td>Owner, admin, developer, read-only; keys inherit project scope, never organization scope</td></tr>
-                <tr><td>Isolation</td><td>Jobs run in approved, isolated runtimes on screened hosts; images are pinned by digest</td></tr>
-                <tr><td>Data handling</td><td>Encrypted transport; artifacts scoped to the submitting project; customer job data is not used to train TDCC models</td></tr>
-                <tr><td>Verification</td><td>Per-workload acceptance criteria, redundant or sampled passes, reputation updated from verified outcomes</td></tr>
-                <tr><td>Failure policy</td><td>Stalled or failed executions are requeued to another host; unaccepted work is neither billed nor paid out</td></tr>
-                <tr><td>Billing unit</td><td>Accepted job. Usage metering, budget ceilings per job, and per-project spend reports</td></tr>
-                <tr><td>Settlement</td><td>Off-chain payouts at launch; optional on-chain settlement records via Avalanche and Solana integrations <span class="tag planned">Planned</span></td></tr>
-                <tr><td>Regions</td><td>Routing across connected data centers and host regions; explicit region pinning <span class="tag planned">Planned</span></td></tr>
-                <tr><td>Quotas</td><td>Per-cohort concurrency and spend limits during early access; raised on request</td></tr>
-                <tr><td>Observability</td><td>Live stage timeline, streaming logs, per-job cost accrual, exportable receipts</td></tr>
-                <tr><td>Support</td><td>Direct founder contact during early access; documented escalation path at general availability</td></tr>
-              </tbody>
-            </table>
+        <div class="section-head reveal">
+          <div>
+            <p class="eyebrow">App specifications</p>
+            <h2 class="h2">The details, in full.</h2>
           </div>
+          <p class="lede">Everything below describes the current early-access scope. Items marked <span class="tag">Planned</span> are on the release path and are not available yet.</p>
+        </div>
+        <div class="table-wrap reveal">
+          <table class="data spec">
+            <tbody>
+              <tr><th scope="row">Product name</th><td>TDCC App — console, CLI, SDKs, and job API for The Decentralized Compute Company network</td></tr>
+              <tr><th scope="row">Version</th><td>CLI 0.73.0 stable (Linux x64, ARM64); desktop 0.73.0-rc.2 beta (Windows x64)</td></tr>
+              <tr><th scope="row">Console</th><td>Responsive web app; current Chromium, Firefox, and Safari; desktop-first layout with a mobile job view</td></tr>
+              <tr><th scope="row">CLI</th><td><code>tdcc</code> for macOS (Intel/Apple silicon), Linux x86-64 and arm64, and Windows via WSL2</td></tr>
+              <tr><th scope="row">SDKs</th><td>Python 3.10+ and TypeScript / Node 18+; both wrap the same REST surface</td></tr>
+              <tr><th scope="row">API</th><td>REST over HTTPS, JSON payloads, cursor pagination, idempotency keys on job creation</td></tr>
+              <tr><th scope="row">Events</th><td>Server-sent events per job; per-project webhooks with signed payloads</td></tr>
+              <tr><th scope="row">Authentication</th><td>Project-scoped API keys with rotation; console sign-in per organization. SSO and SCIM <span class="tag">Planned</span></td></tr>
+              <tr><th scope="row">Roles</th><td>Owner, admin, developer, read-only; keys inherit project scope, never organization scope</td></tr>
+              <tr><th scope="row">Isolation</th><td>Jobs run in approved, isolated runtimes on screened hosts; images are pinned by digest</td></tr>
+              <tr><th scope="row">Data handling</th><td>Encrypted transport; artifacts scoped to the submitting project; customer job data is not used to train TDCC models</td></tr>
+              <tr><th scope="row">Verification</th><td>Per-workload acceptance criteria, redundant or sampled passes, reputation updated from verified outcomes</td></tr>
+              <tr><th scope="row">Failure policy</th><td>Stalled or failed executions are requeued to another host; unaccepted work is neither billed nor paid out</td></tr>
+              <tr><th scope="row">Billing unit</th><td>Accepted job. Usage metering, budget ceilings per job, and per-project spend reports</td></tr>
+              <tr><th scope="row">Settlement</th><td>Off-chain payouts at launch; optional on-chain settlement records via Avalanche and Solana integrations <span class="tag">Planned</span></td></tr>
+              <tr><th scope="row">Regions</th><td>Routing across connected data centers and host regions; explicit region pinning <span class="tag">Planned</span></td></tr>
+              <tr><th scope="row">Quotas</th><td>Per-cohort concurrency and spend limits during early access; raised on request</td></tr>
+              <tr><th scope="row">Observability</th><td>Live stage timeline, streaming logs, per-job cost accrual, exportable receipts</td></tr>
+              <tr><th scope="row">Support</th><td>Direct founder contact during early access; documented escalation path at general availability</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
 
     <!-- RELEASE -->
-    <section id="release" class="section reveal">
+    <section id="release" class="section">
       <div class="wrap">
-        <p class="eyebrow">Release plan</p>
-        <h2>How the app reaches you.</h2>
-        <p class="lead" style="max-width:640px">The app ships in cohorts so that routing, verification, and settlement are proven on real workloads before the network widens.</p>
-        <div class="timeline">
+        <div class="section-head reveal">
+          <div>
+            <p class="eyebrow">Release plan</p>
+            <h2 class="h2">How the app reaches you.</h2>
+          </div>
+          <p class="lede">The app ships in cohorts so that routing, verification, and settlement are proven on real workloads before the network widens.</p>
+        </div>
+        <div class="timeline reveal">
           <article class="phase">
-            <div class="phase-when"><b>Cohort 0</b>Now · closed</div>
+            <div class="phase-when"><b>Cohort 0</b><span>Now · closed</span></div>
             <div>
               <h3>Design partners</h3>
               <p>A small set of AI teams and host operators run real jobs against the console and API. Workload schemas, acceptance criteria, and host requirements are hardened against their feedback.</p>
             </div>
           </article>
-          <article class="phase">
-            <div class="phase-when"><b>Cohort 1</b>Early access</div>
+          <article class="phase now">
+            <div class="phase-when"><b>Cohort 1</b><span>Early access</span></div>
             <div>
               <h3>Pilot network</h3>
-              <p>Console, CLI, Python and TypeScript SDKs, and the job API become available to accepted early-access teams. The 0.73.0-rc.1 Windows desktop beta is now available; inference, embeddings, transcription, image generation, evaluations, and LoRA fine-tuning remain in scope with measured service levels.</p>
+              <p>Console, CLI, Python and TypeScript SDKs, and the job API become available to accepted early-access teams. The 0.74.0 CLI is out with GPU marketplace rentals and the Windows desktop beta is available; inference, embeddings, transcription, image generation, evaluations, and LoRA fine-tuning remain in scope with measured service levels.</p>
             </div>
           </article>
           <article class="phase">
-            <div class="phase-when"><b>Cohort 2</b>Capacity expansion</div>
+            <div class="phase-when"><b>Cohort 2</b><span>Capacity expansion</span></div>
             <div>
               <h3>Wider capacity, richer routing</h3>
               <p>Additional data centers and qualified GPU operators are onboarded. Region pinning, reputation-weighted routing, alerting, and dry-run cost estimates land in the app.</p>
             </div>
           </article>
           <article class="phase">
-            <div class="phase-when"><b>General availability</b>Production</div>
+            <div class="phase-when"><b>General availability</b><span>Production</span></div>
             <div>
               <h3>Open sign-up</h3>
               <p>Stable API versioning, organization SSO, automated settlement, agent workloads, multi-node training, and enterprise controls for sustained production use.</p>
@@ -1043,274 +1011,317 @@ env_key = <span class="s">"TDCC_API_KEY"</span></pre>
     </section>
 
     <!-- DOWNLOADS -->
-    <section id="downloads" class="section reveal">
+    <section id="downloads" class="section">
       <div class="wrap">
-        <p class="eyebrow">Desktop beta</p>
-        <h2>Install TDCC on your machine.</h2>
-        <p class="lead" style="max-width:640px">The Tauri desktop shell opens the TDCC console in a native window and supervises the local <code>tdcc</code> runtime. Download the installer for your platform, then verify its checksum before installing.</p>
-        <div class="release-callout">
-          <strong>0.73.0-rc.1 · Release candidate</strong>
-          <span>Windows x64 artifacts are available for beta testing. Linux packages are being enabled after the cross-platform smoke gate.</span>
+        <div class="section-head reveal">
+          <div>
+            <p class="eyebrow">Downloads</p>
+            <h2 class="h2">Install TDCC on your machine.</h2>
+          </div>
+          <p class="lede">The Tauri desktop shell opens the TDCC console in a native window and supervises the local <code>tdcc</code> runtime. Download the installer for your platform, then verify its checksum before installing.</p>
         </div>
-        <div class="download-grid">
-          <article class="download-card">
-            <div class="download-head"><h3>Windows x64</h3><span class="tag live">Available</span></div>
+        <div class="callout dl-callout reveal">
+          <b>0.74.0 · Marketplace release</b>
+          <span>The tdcc CLI is stable for Linux x64 and ARM64. The Windows x64 desktop app is a beta (0.73.0-rc.2). macOS and Windows CLI builds follow.</span>
+        </div>
+        <div class="grid dl-grid reveal">
+          <article class="card dl-card wide">
+            <div class="dl-side">
+              <div class="dl-head"><h3>Linux x64 &amp; ARM64 · CLI</h3><span class="tag ok">Stable 0.74.0</span></div>
+              <p>One command installs <code>tdcc</code>, checks the archive's SHA-256, and prepares the runtime. Then download a model and start serving, or link the machine to your marketplace listing.</p>
+              <div class="actions">
+                <a class="btn sm solid" href="https://github.com/anilyagiz/tdcc-mesh/releases/tag/v0.74.0">View release</a>
+                <a class="btn sm" href="/marketplace.html#hosts">List this GPU</a>
+              </div>
+              <p class="dl-meta"><a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.74.0/tdcc-x86_64-unknown-linux-gnu.tar.gz.sha256">Archive SHA-256</a> · CPU backend</p>
+            </div>
+            <pre class="code">curl -fsSL https://raw.githubusercontent.com/anilyagiz/tdcc-mesh/v0.74.0/install.sh | bash
+tdcc setup --no-service
+tdcc market link &lt;token&gt;   <span class="c"># optional: rent out this GPU</span></pre>
+          </article>
+          <article class="card dl-card">
+            <div class="dl-head"><h3>Windows x64 · Desktop</h3><span class="tag warn">Beta 0.73.0-rc.2</span></div>
             <p>Choose MSI for managed deployment or the EXE for a per-user install without admin access. Both packages include the desktop shell and its supervised runtime.</p>
-            <div class="download-actions">
-              <a class="button primary" href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.1/tdcc-desktop-0.73.0-rc.1-x86_64-pc-windows-msvc-setup.exe">Download EXE</a>
-              <a class="button" href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.1/tdcc-desktop-0.73.0-rc.1-x86_64-pc-windows-msvc.msi">Download MSI</a>
+            <div class="actions">
+              <a class="btn sm solid" href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.2/tdcc-desktop-0.73.0-rc.2-x86_64-pc-windows-msvc-setup.exe">Download EXE</a>
+              <a class="btn sm" href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.2/tdcc-desktop-0.73.0-rc.2-x86_64-pc-windows-msvc.msi">Download MSI</a>
             </div>
-            <p class="download-meta"><a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.1/tdcc-desktop-0.73.0-rc.1-x86_64-pc-windows-msvc-setup.exe.sha256">EXE SHA-256</a> · <a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.1/tdcc-desktop-0.73.0-rc.1-x86_64-pc-windows-msvc.msi.sha256">MSI SHA-256</a> · <a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.1/tdcc-desktop-0.73.0-rc.1-x86_64-pc-windows-msvc-licenses.zip">License notices</a></p>
+            <p class="dl-meta"><a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.2/tdcc-desktop-0.73.0-rc.2-x86_64-pc-windows-msvc-setup.exe.sha256">EXE SHA-256</a> · <a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.2/tdcc-desktop-0.73.0-rc.2-x86_64-pc-windows-msvc.msi.sha256">MSI SHA-256</a> · <a href="https://github.com/anilyagiz/tdcc-mesh/releases/download/v0.73.0-rc.1/tdcc-desktop-0.73.0-rc.1-x86_64-pc-windows-msvc-licenses.zip">License notices</a></p>
           </article>
-          <article class="download-card pending">
-            <div class="download-head"><h3>Linux x64</h3><span class="tag planned">Next</span></div>
+          <article class="card dl-card pending">
+            <div class="dl-head"><h3>Linux x64 · Desktop</h3><span class="tag">Next</span></div>
             <p>AppImage and Debian packages are built in the Linux release lane and will be enabled once the cross-platform smoke gate is green.</p>
-            <div class="download-actions">
-              <a class="button" href="https://github.com/anilyagiz/tdcc-mesh/releases/tag/v0.73.0-rc.1">View release page</a>
+            <div class="actions">
+              <a class="btn sm" href="https://github.com/anilyagiz/tdcc-mesh/releases">All releases</a>
             </div>
-            <p class="download-meta">AppImage · .deb · glibc floor declared per build host</p>
+            <p class="dl-meta">AppImage · .deb · glibc floor declared per build host</p>
           </article>
         </div>
-        <p class="download-note">Release assets are hosted on GitHub rather than copied into this static site, keeping the landing page deployable on common static hosts. This release candidate is unsigned; Windows SmartScreen may warn until Authenticode signing is added. The Tauri updater is not enabled yet, so use the next versioned release for upgrades.</p>
+        <p class="note reveal" style="margin-top:20px">Release assets are hosted on GitHub rather than copied into this static site, keeping the landing page deployable on common static hosts. Builds are not code-signed yet; Windows SmartScreen may warn until Authenticode signing is added. The Tauri updater is not enabled yet, so use the next versioned release for upgrades.</p>
       </div>
     </section>
 
     <!-- CHANGELOG -->
-    <section id="changelog" class="section reveal">
-      <div class="narrow">
-        <p class="eyebrow">Changelog</p>
-        <h2>What changed in 0.73.0-rc.1.</h2>
-        <p class="lead">The first Tauri desktop beta packages the console and the <code>tdcc</code> runtime together for a guided install.</p>
-        <article class="changelog-entry">
-          <div class="changelog-head"><span class="tag live">0.73.0-rc.1</span><time datetime="2026-08-26">26 August 2026</time></div>
-          <h3>Desktop beta release</h3>
-          <div class="changelog-grid">
-            <div>
-              <h4>Added</h4>
-              <ul>
-                <li>Tauri desktop shell with a native window and supervised runtime lifecycle</li>
-                <li>Loopback bridge for management API and streaming OpenAI-compatible traffic</li>
-                <li>Windows x64 MSI and NSIS installers with release checksums</li>
-              </ul>
-            </div>
-            <div>
-              <h4>Fixed</h4>
-              <ul>
-                <li>Single-model auto routing now selects the local model deterministically</li>
-                <li>Request IDs and routing receipts can be copied from the console</li>
-                <li>Installer exit-code handling protects the sidecar marker on upgrade</li>
-              </ul>
-            </div>
-            <div>
-              <h4>Known</h4>
-              <ul class="known">
-                <li>Linux AppImage and Debian packages are not enabled in this candidate</li>
-                <li>Installers are unsigned until Authenticode code signing is configured</li>
-                <li>The Tauri updater is disabled; install the next versioned release manually</li>
-              </ul>
-            </div>
+    <section id="changelog" class="section">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div>
+            <p class="eyebrow">Changelog</p>
+            <h2 class="h2">What changed in 0.74.0.</h2>
           </div>
-        </article>
+          <p class="lede">Rent out your machine on the GPU marketplace: its models over the mesh, or the machine itself as isolated containers.</p>
+        </div>
+        <div class="cl reveal">
+          <article class="cl-entry">
+            <div class="cl-meta"><span class="tag ok">0.74.0</span><time datetime="2026-10-18">18 October 2026</time></div>
+            <div>
+              <h3>Marketplace release</h3>
+              <div class="cl-grid">
+                <div>
+                  <h4>Added</h4>
+                  <ul class="cl-list">
+                    <li><code>tdcc market machines on</code>: each accepted SSH or Jupyter rental gets its own isolated container with the rented GPUs, removed when the rental ends</li>
+                    <li><code>tdcc market api-rentals on</code>: accepted renters use your models over the mesh for exactly the rented hours</li>
+                    <li>Signed rental grants, per-renter fair-use limits, and usage reports</li>
+                    <li>Memory, CPU, and disk limits per rental; Jupyter over HTTPS</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Security</h4>
+                  <ul class="cl-list">
+                    <li>Nodes under an owner-only trust policy no longer tell refused peers about the mesh</li>
+                    <li>Renters see only the machine they rented</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="cl-entry">
+            <div class="cl-meta"><span class="tag">0.73.0</span><time datetime="2026-10-17">17 October 2026</time></div>
+            <div>
+              <h3>First stable release</h3>
+              <div class="cl-grid">
+                <div>
+                  <h4>Added</h4>
+                  <ul class="cl-list">
+                    <li><code>tdcc market link</code> keeps your marketplace listing online while <code>tdcc serve</code> runs</li>
+                    <li>The stable installer channel: no <code>--pre-release</code> flag needed</li>
+                    <li>Linux x64 and ARM64 CLI archives and native runtimes with SHA-256 sidecars</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Fixed</h4>
+                  <ul class="cl-list">
+                    <li>Installer and packaging test suites match the public, token-free install path</li>
+                    <li>Passive/client runtimes report ready, so the desktop app reaches Running</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Known</h4>
+                  <ul class="cl-list known">
+                    <li>macOS and Windows CLI archives are not published for this tag yet</li>
+                    <li>Builds are not code-signed or attested</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="cl-entry">
+            <div class="cl-meta"><span class="tag">0.73.0-rc.1</span><time datetime="2026-08-26">26 August 2026</time></div>
+            <div>
+              <h3>Desktop beta release</h3>
+              <div class="cl-grid">
+                <div>
+                  <h4>Added</h4>
+                  <ul class="cl-list">
+                    <li>Tauri desktop shell with a native window and supervised runtime lifecycle</li>
+                    <li>Loopback bridge for management API and streaming OpenAI-compatible traffic</li>
+                    <li>Windows x64 MSI and NSIS installers with release checksums</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Fixed</h4>
+                  <ul class="cl-list">
+                    <li>Single-model auto routing now selects the local model deterministically</li>
+                    <li>Request IDs and routing receipts can be copied from the console</li>
+                    <li>Installer exit-code handling protects the sidecar marker on upgrade</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Known</h4>
+                  <ul class="cl-list known">
+                    <li>Linux AppImage and Debian packages are not enabled in this candidate</li>
+                    <li>Installers are unsigned until Authenticode code signing is configured</li>
+                    <li>The Tauri updater is disabled; install the next versioned release manually</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
       </div>
     </section>
 
     <!-- FAQ -->
-    <section id="faq" class="section reveal">
-      <div class="narrow">
-        <p class="eyebrow">App FAQ</p>
-        <h2>Straight answers.</h2>
-        <details><summary>Is the TDCC App available today?</summary><p>The web console is rolling out in staged early-access cohorts, and the 0.73.0-rc.1 desktop beta is available for Windows x64. Linux installers follow the cross-platform smoke gate. Request access below if you want to join the pilot network.</p></details>
-        <details><summary>Do I have to choose a GPU?</summary><p>No. You describe the workload, its constraints, and your budget. The router picks capacity that fits. If you do need specific hardware, you can constrain the class, memory, or region and the router will only match hosts that satisfy it.</p></details>
-        <details><summary>What happens if a host fails mid-job?</summary><p>The job is requeued to another eligible host. You are not billed for the failed attempt, and the failed host is not paid for it.</p></details>
-        <details><summary>How is verification different per workload?</summary><p>Deterministic workloads such as embeddings can be re-computed on a sample and compared exactly. Generative workloads rely on schema checks, redundant passes, and agreement thresholds. Fine-tunes are judged on evaluation deltas against a held-out set. The criteria travel with the job.</p></details>
-        <details><summary>Is my data used to train anything?</summary><p>No. Job inputs and artifacts are scoped to the submitting project and are not used to train TDCC models.</p></details>
-        <details><summary>Do I need crypto to use the app?</summary><p>No. The compute layer is chain-agnostic and the app works with ordinary accounts and billing. On-chain settlement records through Avalanche and Solana are an optional integration path, not a requirement.</p></details>
-        <details><summary>Can I provide capacity instead of consuming it?</summary><p>Yes. Data centers, micro-cluster operators, and independent GPU owners can register hardware, availability, and pricing, then earn on accepted work. Host onboarding is reviewed manually during early access.</p></details>
+    <section id="faq" class="section">
+      <div class="wrap faq">
+        <div class="reveal">
+          <p class="eyebrow">App FAQ</p>
+          <h2 class="h2">Straight answers.</h2>
+        </div>
+        <div class="reveal">
+          <details><summary>Is the TDCC App available today?</summary><p>The web console is rolling out in staged early-access cohorts, the tdcc CLI 0.73.0 is available as a stable release for Linux x64 and ARM64, and the 0.73.0-rc.2 desktop beta is available for Windows x64. macOS and Windows CLI builds follow. Request access below if you want to join the pilot network.</p></details>
+          <details><summary>Do I have to choose a GPU?</summary><p>No. You describe the workload, its constraints, and your budget. The router picks capacity that fits. If you do need specific hardware, you can constrain the class, memory, or region and the router will only match hosts that satisfy it.</p></details>
+          <details><summary>What happens if a host fails mid-job?</summary><p>The job is requeued to another eligible host. You are not billed for the failed attempt, and the failed host is not paid for it.</p></details>
+          <details><summary>How is verification different per workload?</summary><p>Deterministic workloads such as embeddings can be re-computed on a sample and compared exactly. Generative workloads rely on schema checks, redundant passes, and agreement thresholds. Fine-tunes are judged on evaluation deltas against a held-out set. The criteria travel with the job.</p></details>
+          <details><summary>Is my data used to train anything?</summary><p>No. Job inputs and artifacts are scoped to the submitting project and are not used to train TDCC models.</p></details>
+          <details><summary>Do I need crypto to use the app?</summary><p>No. The compute layer is chain-agnostic and the app works with ordinary accounts and billing. On-chain settlement records through Avalanche and Solana are an optional integration path, not a requirement.</p></details>
+          <details><summary>Can I provide capacity instead of consuming it?</summary><p>Yes. Data centers, micro-cluster operators, and independent GPU owners can register hardware, availability, and pricing, then earn on accepted work. Host onboarding is reviewed manually during early access.</p></details>
+        </div>
       </div>
     </section>
 
     <!-- CTA -->
-    <section id="access" class="section reveal">
+    <section id="access" class="section">
       <div class="wrap">
-        <div class="cta-panel">
-          <p class="eyebrow" style="color:rgba(20,58,25,.7)">Early access</p>
-          <h2>Start running everything.</h2>
+        <div class="cta-band reveal">
+          <p class="eyebrow">Early access</p>
+          <h2 class="h2">Start running everything.</h2>
           <p>Tell us what you want to run — inference volume, a fine-tune, an evaluation suite — or what capacity you can contribute. Early-access cohorts are reviewed by hand.</p>
-          <div class="actions" style="margin-top:22px">
-            <a class="button dark" href="mailto:anil@decentralizedcompute.company?subject=TDCC%20App%20early%20access&amp;body=What%20we%20want%20to%20run%3A%0AVolume%20or%20model%3A%0ATimeline%3A">Request app access</a>
-            <a class="button" href="/#join">Enter an access code</a>
-            <a class="button" href="/litepaper.html">Read the litepaper</a>
+          <div class="actions">
+            <a class="btn solid" href="mailto:anil@decentralizedcompute.company?subject=TDCC%20App%20early%20access&amp;body=What%20we%20want%20to%20run%3A%0AVolume%20or%20model%3A%0ATimeline%3A">Request app access</a>
+            <a class="btn" href="/#join">Enter an access code</a>
+            <a class="btn" href="/litepaper.html">Read the litepaper</a>
           </div>
         </div>
       </div>
     </section>
-
-    <!-- FOOTER -->
-    <footer class="site-footer">
-      <div class="wrap">
-        <div class="footer-grid">
-          <div class="footer-brand">
-            <a class="nav-brand" href="/"><span class="dot" aria-hidden="true"></span>The Decentralized Compute Company</a>
-            <p>A verified AI compute layer connecting teams to data centers and GPUs.</p>
-          </div>
-          <div>
-            <h4>App</h4>
-            <ul>
-              <li><a href="#overview">Overview</a></li>
-              <li><a href="#console">Console</a></li>
-              <li><a href="#capabilities">Capabilities</a></li>
-              <li><a href="#developers">Developers</a></li>
-              <li><a href="#specs">Specifications</a></li>
-              <li><a href="#downloads">Downloads</a></li>
-              <li><a href="#changelog">Changelog</a></li>
-              <li><a href="#release">Release plan</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4>Company</h4>
-            <ul>
-              <li><a href="/">Home</a></li>
-              <li><a href="/team.html">Team</a></li>
-              <li><a href="/litepaper.html">Litepaper</a></li>
-              <li><a href="/facts.html">Facts</a></li>
-              <li><a href="mailto:anil@decentralizedcompute.company">Contact</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4>Resources</h4>
-            <ul>
-              <li><a href="/#workloads">Workloads</a></li>
-              <li><a href="/#ecosystem">Ecosystem fit</a></li>
-              <li><a href="https://x.com/computecompany" target="_blank" rel="noreferrer">X / Twitter</a></li>
-              <li><a href="/privacy.html">Privacy</a></li>
-              <li><a href="/terms.html">Terms</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <span>© 2026 The Decentralized Compute Company</span>
-          <span>anil@decentralizedcompute.company</span>
-        </div>
-      </div>
-    </footer>
   </main>
 
+  <!-- chrome:footer -->
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="/" aria-label="TDCC home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
+          <p class="about">A GPU marketplace, a job network that checks its own work, and Exact Core, an AI chip whose answers anyone can re-check.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul><li><a href="/team.html">Team</a></li><li><a href="/litepaper.html">Litepaper</a></li><li><a href="/cask-q.html">Research</a></li><li><a href="/two-laptops-80-tps.html">Engineering</a></li><li><a href="/facts.html">Facts</a></li></ul>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <ul><li><a href="https://x.com/computecompany" target="_blank" rel="noreferrer">X / @computecompany</a></li><li><a href="https://www.linkedin.com/in/anilyagiz/" target="_blank" rel="noreferrer">LinkedIn</a></li><li><a href="mailto:anil@decentralizedcompute.company">Email</a></li><li><a href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">GitHub</a></li><li><a href="/feed.xml">RSS</a></li></ul>
+        </div>
+      </div>
+      <div class="wordmark" aria-hidden="true">decentralized compute</div>
+      <div class="legal"><span>© 2026 The Decentralized Compute Company</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/facts.html">Facts</a></span></div>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+
   <script>
-    // reveal on scroll
-    const revealItems = document.querySelectorAll('.reveal');
-    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.08 });
-      revealItems.forEach((item) => observer.observe(item));
-    } else {
-      revealItems.forEach((item) => item.classList.add('visible'));
-    }
+    (() => {
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // mobile navigation
-    const navToggle = document.querySelector('.nav-toggle');
-    const navLinks = document.querySelector('#nav-links');
-    navToggle.addEventListener('click', () => {
-      const open = navLinks.classList.toggle('open');
-      navToggle.setAttribute('aria-expanded', String(open));
-    });
-    navLinks.addEventListener('click', (event) => {
-      if (event.target.tagName === 'A') {
-        navLinks.classList.remove('open');
-        navToggle.setAttribute('aria-expanded', 'false');
-      }
-    });
-
-    // code tabs (scoped per code block)
-    document.querySelectorAll('.code-block').forEach((block) => {
-      const tabs = Array.from(block.querySelectorAll('.code-tabs [role="tab"]'));
-      const selectTab = (tab) => {
-        tabs.forEach((item) => {
-          const selected = item === tab;
-          item.setAttribute('aria-selected', String(selected));
-          document.getElementById(item.getAttribute('aria-controls')).hidden = !selected;
-        });
-      };
-      tabs.forEach((tab, index) => {
-        tab.addEventListener('click', () => selectTab(tab));
-        tab.addEventListener('keydown', (event) => {
-          if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
-          event.preventDefault();
-          const next = tabs[(index + (event.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
-          next.focus();
-          selectTab(next);
-        });
-      });
-    });
-
-    // copy visible code sample (scoped per code block)
-    document.querySelectorAll('.code-copy').forEach((copyButton) => {
-      copyButton.addEventListener('click', async () => {
-        const block = copyButton.closest('.code-block');
-        const visible = block.querySelector('pre:not([hidden])');
-        try {
-          await navigator.clipboard.writeText(visible.textContent.trim());
-          copyButton.textContent = 'Copied ✓';
-        } catch (error) {
-          copyButton.textContent = 'Select & copy';
-        }
-        setTimeout(() => { copyButton.textContent = 'Copy'; }, 1800);
-      });
-    });
-
-    // reading progress in the top rule
-    let progressQueued = false;
-    const updateProgress = () => {
-      progressQueued = false;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      document.documentElement.style.setProperty('--progress', max > 0 ? (window.scrollY / max).toFixed(4) : 0);
-    };
-    window.addEventListener('scroll', () => {
-      if (!progressQueued) { progressQueued = true; requestAnimationFrame(updateProgress); }
-    }, { passive: true });
-    updateProgress();
-
-    // highlight the nav link for the section in view
-    const navAnchors = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
-    const sectionsById = navAnchors
-      .map((anchor) => document.querySelector(anchor.hash))
-      .filter(Boolean);
-    if ('IntersectionObserver' in window && sectionsById.length) {
-      const setActive = (id) => {
-        navAnchors.forEach((anchor) => {
-          const active = anchor.hash === `#${id}`;
-          anchor.classList.toggle('active', active);
-          if (active) anchor.setAttribute('aria-current', 'true');
-          else anchor.removeAttribute('aria-current');
-        });
-      };
-      const sectionObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => { if (entry.isIntersecting) setActive(entry.target.id); });
-      }, { rootMargin: '-30% 0px -60% 0px' });
-      sectionsById.forEach((section) => sectionObserver.observe(section));
-    }
-
-    // count up the hero console tiles once they are on screen
-    const heroTiles = Array.from(document.querySelectorAll('.hero .tile b'));
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      heroTiles.forEach((tile) => {
-        const target = parseInt(tile.textContent, 10);
-        if (!Number.isFinite(target)) return;
-        const started = performance.now();
-        const duration = 900;
-        const tick = (now) => {
-          const t = Math.min(1, (now - started) / duration);
-          tile.textContent = Math.round(target * (1 - Math.pow(1 - t, 3)));
-          if (t < 1) requestAnimationFrame(tick);
+      // code tabs (scoped per code block)
+      document.querySelectorAll('.codebox').forEach((block) => {
+        const tabs = Array.from(block.querySelectorAll('.ctabs [role="tab"]'));
+        const selectTab = (tab) => {
+          tabs.forEach((item) => {
+            const selected = item === tab;
+            item.setAttribute('aria-selected', String(selected));
+            item.tabIndex = selected ? 0 : -1;
+            document.getElementById(item.getAttribute('aria-controls')).hidden = !selected;
+          });
         };
-        requestAnimationFrame(tick);
+        tabs.forEach((tab, index) => {
+          tab.addEventListener('click', () => selectTab(tab));
+          tab.addEventListener('keydown', (event) => {
+            if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+            event.preventDefault();
+            const next = tabs[(index + (event.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+            next.focus();
+            selectTab(next);
+          });
+        });
+
+        // copy the visible code sample
+        const copyButton = block.querySelector('.code-copy');
+        if (!copyButton) return;
+        copyButton.addEventListener('click', async () => {
+          const visible = block.querySelector('pre[role="tabpanel"]:not([hidden])');
+          try {
+            await navigator.clipboard.writeText(visible.textContent.trim());
+            copyButton.textContent = 'Copied ✓';
+          } catch (error) {
+            copyButton.textContent = 'Select & copy';
+          }
+          setTimeout(() => { copyButton.textContent = 'Copy'; }, 1800);
+        });
       });
-    }
+
+      // reading progress along the in-page navigation
+      const subnav = document.querySelector('.subnav');
+      let progressQueued = false;
+      const updateProgress = () => {
+        progressQueued = false;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        if (subnav) subnav.style.setProperty('--progress', max > 0 ? (window.scrollY / max).toFixed(4) : 0);
+      };
+      window.addEventListener('scroll', () => {
+        if (!progressQueued) { progressQueued = true; requestAnimationFrame(updateProgress); }
+      }, { passive: true });
+      updateProgress();
+
+      // highlight the in-page link for the section in view
+      const strip = document.querySelector('.subnav-inner');
+      const anchors = Array.from(document.querySelectorAll('.subnav a[href^="#"]'));
+      const sections = anchors.map((a) => document.getElementById(a.hash.slice(1))).filter(Boolean);
+      if ('IntersectionObserver' in window && sections.length) {
+        const setActive = (id) => {
+          anchors.forEach((a) => {
+            const active = a.hash === '#' + id;
+            a.classList.toggle('on', active);
+            if (active) {
+              a.setAttribute('aria-current', 'location');
+              if (strip && strip.scrollWidth > strip.clientWidth) {
+                strip.scrollTo({ left: Math.max(0, a.offsetLeft - 24), behavior: reduced ? 'auto' : 'smooth' });
+              }
+            } else {
+              a.removeAttribute('aria-current');
+            }
+          });
+        };
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => { if (entry.isIntersecting) setActive(entry.target.id); });
+        }, { rootMargin: '-30% 0px -60% 0px' });
+        sections.forEach((s) => observer.observe(s));
+      }
+
+      // count up the hero console tiles
+      if (!reduced) {
+        document.querySelectorAll('.app-head .tile b[data-count]').forEach((tile) => {
+          const target = parseInt(tile.textContent, 10);
+          if (!Number.isFinite(target)) return;
+          const started = performance.now();
+          const duration = 900;
+          const tick = (now) => {
+            const t = Math.min(1, (now - started) / duration);
+            tile.textContent = Math.round(target * (1 - Math.pow(1 - t, 3)));
+            if (t < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        });
+      }
+    })();
   </script>
+  <script src="/js/market.js"></script>
+  <script src="/js/site.js"></script>
 </body>
 </html>
