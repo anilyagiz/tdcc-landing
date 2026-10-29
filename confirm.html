@@ -11,15 +11,15 @@
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/styles/site.css" />
   <style>
-    .c-wrap { min-height: calc(100vh - 220px); display: grid; place-items: center; padding-top: 56px; padding-bottom: 56px; }
-    .c-box { position: relative; width: 100%; max-width: 480px; display: grid; gap: 16px; padding: 40px 36px 36px; border: 1px solid var(--line-2); background: radial-gradient(ellipse 80% 70% at 100% 0%, rgba(216,191,148,.1), transparent 70%), var(--panel); box-shadow: 0 40px 90px -50px rgba(216,191,148,.3); }
-    .c-box::before { content: ""; position: absolute; left: -1px; right: -1px; top: -1px; height: 2px; background: linear-gradient(90deg, var(--sand), transparent); }
+    .c-wrap { min-height: calc(100vh - 220px); display: grid; place-items: center; padding-top: clamp(128px, 14vw, 160px); padding-bottom: 72px; }
+    .c-box { position: relative; width: 100%; max-width: 480px; display: grid; gap: 16px; padding: 40px 36px 36px; border: 1px solid var(--line); border-radius: 24px; background: radial-gradient(ellipse 80% 70% at 100% 0%, rgba(185,255,120,.16), transparent 70%), #fff; box-shadow: var(--shadow-lg); }
     .c-box .actions { margin-top: 8px; }
     .c-box .inp { margin-top: 4px; }
-    .c-box h1 { font-family: var(--serif); font-size: clamp(30px, 3.4vw, 38px); line-height: 1.1; letter-spacing: -.01em; }
+    .c-box h1 { font-family: var(--serif); font-weight: 700; color: var(--heading); font-size: clamp(30px, 3.4vw, 38px); line-height: 1.1; letter-spacing: -.02em; }
     .c-box p { color: var(--body); }
+    .c-box > p.mono { color: var(--muted); font-family: var(--sans); font-size: 14px; letter-spacing: 0; }
+    @media (max-width: 520px) { .c-box { padding: 30px 22px 24px; } }
   </style>
-  <link rel="stylesheet" href="/styles/refine.css" />
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>

@@ -11,16 +11,19 @@
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/styles/site.css" />
   <style>
-    .facts { display: grid; grid-template-columns: 1fr; border-top: 1px solid var(--line); }
-    .fact { display: grid; grid-template-columns: minmax(0, 280px) minmax(0, 1fr); gap: 16px 48px; padding: 28px 0; border-bottom: 1px solid var(--line); }
-    .fact dt { color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; padding-top: 6px; }
-    .fact dd { margin: 0; color: var(--text); font-family: var(--serif); font-size: clamp(20px, 2vw, 26px); line-height: 1.35; max-width: 34em; }
-    .fact dd a { color: var(--sand); }
-    .fact dd a:hover { text-decoration: underline; text-underline-offset: 3px; }
-    .fact dd small { display: block; margin-top: 10px; color: var(--body); font-family: var(--sans); font-size: 15px; line-height: 1.6; }
-    @media (max-width: 760px) { .fact { grid-template-columns: 1fr; gap: 8px; } }
+    /* Fact sheet: one rounded card, a row per fact */
+    .facts { display: grid; grid-template-columns: 1fr; margin: 0; max-width: 1040px; border: 1px solid var(--line); border-radius: 22px; background: #fff; box-shadow: var(--shadow); overflow: hidden; }
+    .fact { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 12px 40px; padding: clamp(20px, 2.6vw, 28px) clamp(20px, 3vw, 36px); border-bottom: 1px solid var(--line); }
+    .fact:last-child { border-bottom: 0; }
+    .fact:nth-child(even) { background: #fbfcfd; }
+    .fact dt { display: flex; align-items: flex-start; gap: 10px; padding-top: 5px; color: var(--muted); font-size: 14px; font-weight: 500; line-height: 1.4; }
+    .fact dt::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: 5px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 3px rgba(185, 255, 120, .35); }
+    .fact dd { margin: 0; color: var(--heading); font-family: var(--serif); font-weight: 600; font-size: clamp(19px, 1.9vw, 23px); line-height: 1.4; max-width: 34em; overflow-wrap: anywhere; }
+    .fact dd a { color: var(--text); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 4px; }
+    .fact dd a:hover { text-decoration-color: var(--text); }
+    .fact dd small { display: block; margin-top: 10px; color: var(--body); font-family: var(--sans); font-weight: 400; font-size: 15px; line-height: 1.6; }
+    @media (max-width: 760px) { .fact { grid-template-columns: 1fr; gap: 6px; } .fact dt { padding-top: 0; } }
   </style>
-  <link rel="stylesheet" href="/styles/refine.css" />
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>

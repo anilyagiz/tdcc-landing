@@ -10,13 +10,21 @@
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/styles/site.css" />
   <style>
-    .nf { position: relative; display: grid; align-items: center; min-height: calc(100vh - 64px); padding: 96px 0; overflow: hidden; }
-    .nf-code { position: absolute; right: -2vw; bottom: -6vw; font-family: var(--serif); font-size: clamp(200px, 38vw, 560px); line-height: .8; letter-spacing: -.05em; color: transparent; -webkit-text-stroke: 1px rgba(216, 191, 148, .22); user-select: none; pointer-events: none; }
-    .nf .lede { margin-top: 24px; }
-    .nf .actions { margin-top: 36px; }
-    .nf-links { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 48px; }
+    /* Not found: centered card over the home page landscape */
+    .nf { position: relative; isolation: isolate; display: grid; place-items: center; min-height: 100vh; min-height: 100svh; padding: 128px 0 clamp(96px, 14vw, 180px); overflow: hidden; background: var(--warm); text-align: center; }
+    .nf::before { content: ""; position: absolute; inset: 0; z-index: -2; background-image: linear-gradient(180deg, rgba(244, 236, 220, .2) 0%, rgba(255, 255, 255, .1) 60%, #fff 100%), url("/assets/hero-landscape.jpg"); background-image: linear-gradient(180deg, rgba(244, 236, 220, .2) 0%, rgba(255, 255, 255, .1) 60%, #fff 100%), image-set(url("/assets/hero-landscape.webp") type("image/webp"), url("/assets/hero-landscape.jpg") type("image/jpeg")); background-size: cover; background-position: center 75%; }
+    .nf-code { position: absolute; left: 50%; top: 52%; z-index: -1; transform: translate(-50%, -50%); font-family: var(--serif); font-weight: 700; font-size: clamp(180px, 34vw, 480px); line-height: .8; letter-spacing: -.05em; color: rgba(255, 255, 255, .34); user-select: none; pointer-events: none; white-space: nowrap; }
+    .nf-card { max-width: 640px; margin: 0 auto; padding: clamp(28px, 5vw, 48px) clamp(20px, 5vw, 48px); border: 1px solid rgba(255, 255, 255, .9); border-radius: 28px; background: rgba(255, 255, 255, .78); backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px); box-shadow: var(--shadow-lg); }
+    .nf .eyebrow { justify-content: center; padding: 4px 12px 4px 10px; border-radius: 999px; background: #fff; border: 1px solid var(--line); color: var(--text); }
+    .nf .display { font-size: clamp(36px, 6vw, 64px); }
+    .nf .lede { margin: 20px auto 0; color: #34475c; }
+    .nf .actions { justify-content: center; margin-top: 30px; }
+    .nf-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line); }
+    .nf-links .link { padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 14px; }
+    .nf-links .link:hover { border-color: var(--line-2); color: var(--text); }
+    .nf + footer { margin-top: 0; }
+    @media (max-width: 480px) { .nf .actions .btn { width: 100%; } }
   </style>
-  <link rel="stylesheet" href="/styles/refine.css" />
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -63,6 +71,7 @@
   <main id="content" class="nf">
     <div class="nf-code" aria-hidden="true">404</div>
     <div class="wrap">
+      <div class="nf-card">
       <p class="eyebrow">Error 404</p>
       <h1 class="display">This page is not<br />on the grid.</h1>
       <p class="lede">The address may be mistyped, or the page has moved. Everything that exists is one click away from here.</p>
@@ -75,6 +84,7 @@
         <a class="link" href="/app.html">App →</a>
         <a class="link" href="/litepaper.html">Litepaper →</a>
         <a class="link" href="/cask-q.html">Research →</a>
+      </div>
       </div>
     </div>
   </main>

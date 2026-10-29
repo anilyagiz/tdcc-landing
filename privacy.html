@@ -10,7 +10,16 @@
   <link rel="canonical" href="https://decentralizedcompute.company/privacy.html" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/styles/site.css" />
-  <link rel="stylesheet" href="/styles/refine.css" />
+  <style>
+    /* Legal reading: contents in a soft rounded card, comfortable measure */
+    .toc { padding: 18px 18px 14px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); }
+    .toc a { border-radius: 0 8px 8px 0; }
+    .prose { max-width: 68ch; }
+    .prose > .callout:first-child { margin-bottom: 2.2em; box-shadow: var(--shadow); }
+    .prose h2 { font-family: var(--serif); font-weight: 700; color: var(--heading); }
+    .prose a { overflow-wrap: anywhere; }
+    @media (max-width: 960px) { .toc { display: flex; flex-wrap: wrap; gap: 8px; } .toc b { flex-basis: 100%; margin-bottom: 4px; } .toc a { padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 13.5px; } .toc a:hover { border-color: var(--line-2); } }
+  </style>
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>

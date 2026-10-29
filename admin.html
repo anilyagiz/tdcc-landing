@@ -10,23 +10,25 @@
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/styles/site.css" />
   <style>
-    .ad { padding-top: clamp(48px, 7vw, 88px); padding-bottom: 96px; display: grid; gap: 48px; }
-    .ad h1 { font-family: var(--serif); font-size: clamp(38px, 5vw, 64px); line-height: 1.05; letter-spacing: -.02em; }
-    .ad h2 { font-family: var(--serif); font-size: 28px; margin-bottom: 14px; }
-    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); border: 1px solid var(--line); }
-    .stats div { padding: 20px 22px; border-right: 1px solid var(--line); background: var(--panel); }
-    .stats b { display: block; font-family: var(--serif); font-size: 36px; font-weight: 400; line-height: 1.1; font-variant-numeric: tabular-nums; }
-    .stats span { color: var(--muted); font-size: 13px; }
+    .ad { padding-top: clamp(128px, 14vw, 160px); padding-bottom: 96px; display: grid; gap: 48px; }
+    .ad h1 { font-family: var(--serif); font-weight: 700; color: var(--heading); font-size: clamp(36px, 5vw, 60px); line-height: 1.05; letter-spacing: -.02em; }
+    .ad h2 { color: var(--text); font-size: 24px; font-weight: 600; letter-spacing: -.025em; margin-bottom: 14px; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: 12px; }
+    .stats div { padding: 20px 22px; border: 1px solid var(--line); border-radius: 18px; background: #fff; box-shadow: var(--shadow); }
+    .stats b { display: block; font-family: var(--serif); font-size: 36px; font-weight: 700; color: var(--heading); line-height: 1.1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+    .stats span { color: var(--muted); font-size: 13.5px; }
     .tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
-    .tbl th { text-align: left; color: var(--muted); font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; font-weight: 400; padding: 10px; border-bottom: 1px solid var(--line); }
-    .tbl td { padding: 12px 10px; border-bottom: 1px solid var(--line); color: var(--body); vertical-align: top; overflow-wrap: anywhere; }
-    .tbl td b { color: var(--text); font-weight: 500; }
+    .tbl th { text-align: left; color: var(--muted); font-size: 13px; font-weight: 500; padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--panel); white-space: nowrap; }
+    .tbl td { padding: 12px 14px; border-bottom: 1px solid var(--line); color: var(--body); vertical-align: top; overflow-wrap: anywhere; }
+    .tbl tr:last-child td { border-bottom: 0; }
+    .tbl td b { color: var(--text); font-weight: 600; }
     .tbl .acts { display: flex; flex-wrap: wrap; gap: 6px; }
-    .scroll { overflow-x: auto; border: 1px solid var(--line); }
-    .empty { padding: 24px; color: var(--muted); text-align: center; }
+    .scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 18px; background: #fff; box-shadow: var(--shadow); }
+    .empty { padding: 24px; color: var(--muted); text-align: center; border: 1px dashed var(--line-2); border-radius: 18px; background: var(--panel); }
+    .scroll .empty { border: 0; border-radius: 0; background: none; }
     .muted { color: var(--muted); font-size: 12.5px; }
+    #body > p.mono { color: var(--muted); font-family: var(--sans); font-size: 14px; letter-spacing: 0; }
   </style>
-  <link rel="stylesheet" href="/styles/refine.css" />
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
