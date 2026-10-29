@@ -15,7 +15,7 @@ run_worker_first = ["/api/*"]
 [[d1_databases]]
 binding = "DB"
 database_name = "tdcc-market"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "29f61381-4d0b-491e-9bcb-dedc3d012699"
 migrations_dir = "migrations"
 
 # Expires finished rentals and unanswered requests, cleans up old rows, and
