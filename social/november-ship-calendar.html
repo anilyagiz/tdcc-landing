@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>TDCC November Ship Calendar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  /* Social card, 1600x900. Same system as the October calendar. Render with
+     `node social/render-calendar.mjs`. */
+  :root {
+    --bg: #f8f6f1; --ink: #141210; --muted: #6f6a62; --line: #1d1a16; --accent: #8c6a3e;
+    --sans: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { width: 1600px; height: 900px; background: var(--bg); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  .card { position: relative; width: 1600px; height: 900px; padding: 50px 80px 0; }
+
+  .top { display: flex; align-items: center; justify-content: space-between; padding-bottom: 22px; border-bottom: 1.5px solid var(--line); font-family: var(--mono); font-size: 18px; letter-spacing: .1em; }
+  .top .left { display: flex; align-items: center; gap: 14px; }
+  .top .left svg { width: 52px; height: 35px; color: var(--accent); }
+  .top .right { color: var(--muted); }
+
+  .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 48px; margin-top: 34px; }
+  .kicker { font-family: var(--mono); font-size: 17px; letter-spacing: .12em; color: var(--muted); }
+  h1 { margin: 16px 0 0; white-space: nowrap; font-size: 74px; line-height: .98; font-weight: 800; letter-spacing: -.045em; }
+  h1 .acc { color: var(--accent); }
+  .mark { flex: none; text-align: right; }
+  .mark svg { width: 160px; height: 107px; color: var(--accent); margin: 0 0 18px auto; }
+  .mark span { white-space: nowrap; font-family: var(--mono); font-size: 14px; letter-spacing: .1em; color: var(--muted); }
+
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 34px; }
+  .drop { position: relative; height: 186px; padding: 20px 22px; border: 1.5px solid var(--line); background: var(--bg); overflow: hidden; }
+  .drop .d { font-family: var(--mono); font-size: 38px; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
+  .drop .n { position: absolute; top: 22px; right: 22px; font-family: var(--mono); font-size: 14px; color: var(--muted); }
+  .drop .k { margin-top: 12px; font-family: var(--mono); font-size: 14px; letter-spacing: .12em; color: var(--muted); }
+  .drop h3 { margin: 6px 0 0; font-size: 29px; line-height: 1.1; font-weight: 600; letter-spacing: -.02em; }
+  .drop.today { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .badge { position: absolute; top: 18px; right: 20px; padding: 6px 10px; font-family: var(--mono); font-size: 13px; letter-spacing: .1em; }
+  .today .badge { background: var(--accent); color: #fff; }
+  .today .badge::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 8px; border-radius: 50%; background: #fff; vertical-align: 1px; }
+  .drop.finale { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .finale .k { color: #c9a56c; }
+  .finale .badge { border: 1.5px solid #c9a56c; color: #c9a56c; }
+  .drop.tba { border-style: dashed; border-width: 1.5px; }
+  .tba .d { color: var(--muted); }
+  .tba .sq { position: absolute; top: 22px; right: 22px; width: 17px; height: 17px; background: #5c5852; }
+  .arr { font-weight: 500; }
+
+  .foot { position: absolute; left: 80px; right: 80px; bottom: 56px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 18px; }
+  .foot .l { color: var(--muted); }
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="0 0 120 80">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z" />
+        <g stroke-width="1.4" opacity=".85">
+          <path d="M62 14 V70" />
+          <path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" />
+          <path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" />
+          <path d="M38 26 Q62 31 86 26" /><path d="M31 39 Q62 45 93 39" /><path d="M29 54 Q62 60 95 54" />
+        </g>
+      </g>
+      <g fill="currentColor">
+        <rect x="59.5" y="26.5" width="5" height="5" /><rect x="45" y="39" width="5" height="5" /><rect x="74" y="39" width="5" height="5" />
+        <rect x="59.5" y="42" width="5" height="5" /><rect x="33" y="52" width="4.5" height="4.5" /><rect x="86.5" y="52" width="4.5" height="4.5" />
+        <rect x="59.5" y="57" width="5" height="5" /><rect x="47" y="27" width="4" height="4" /><rect x="73" y="27" width="4" height="4" />
+      </g>
+    </symbol>
+  </svg>
+
+  <div class="card">
+    <div class="top">
+      <div class="left"><svg aria-hidden="true"><use href="#mark" /></svg><span>TDCC / NOVEMBER SHIP CALENDAR</span></div>
+      <div class="right">OCT 29 &rarr; NOV 30 &middot; 2026</div>
+    </div>
+
+    <div class="head">
+      <div>
+        <div class="kicker">ROADMAP &middot; FREE TODAY &middot; PAY PER TOKEN FROM NOV 02</div>
+        <h1>7 drops. 5 weeks.<br />Free today. Then <span class="acc">almost free</span>.</h1>
+      </div>
+      <div class="mark">
+        <svg aria-hidden="true"><use href="#mark" /></svg>
+        <span>ONE NETWORK &middot; JUST SHIPPING</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="drop today">
+        <div class="d">10.29</div><span class="badge">TODAY</span>
+        <div class="k">THU &middot; FREE</div>
+        <h3>Uncensored models, free. No login.</h3>
+      </div>
+      <div class="drop">
+        <div class="d">11.02</div><span class="n">02</span>
+        <div class="k">MON &middot; PAID INFERENCE</div>
+        <h3>A little more than free: pay per token</h3>
+      </div>
+      <div class="drop">
+        <div class="d">11.10</div><span class="n">03</span>
+        <div class="k">TUE &middot; DEVELOPERS</div>
+        <h3>Drop-in for Claude Code <span class="arr">&amp;</span> OpenAI SDKs</h3>
+      </div>
+      <div class="drop">
+        <div class="d">11.13</div><span class="n">04</span>
+        <div class="k">FRI &middot; SPEED</div>
+        <h3>Speculative decoding: up to 5&times; faster tokens</h3>
+      </div>
+      <div class="drop">
+        <div class="d">11.17</div><span class="n">05</span>
+        <div class="k">TUE &middot; MODELS</div>
+        <h3>70+ open model families, one key</h3>
+      </div>
+      <div class="drop">
+        <div class="d">11.24</div><span class="n">06</span>
+        <div class="k">TUE &middot; MIXTURE OF AGENTS</div>
+        <h3>Many models <span class="arr">&rarr;</span> one better answer</h3>
+      </div>
+      <div class="drop finale">
+        <div class="d">11.30</div><span class="badge">FINALE</span>
+        <div class="k">MON &middot; EARN</div>
+        <h3>Your GPU serves tokens <span class="arr">&rarr;</span> you earn USDC</h3>
+      </div>
+      <div class="drop tba">
+        <div class="d">??.??</div><span class="sq"></span>
+        <div class="k">TBA &middot; CLASSIFIED</div>
+        <h3>And a few things nobody is expecting.</h3>
+      </div>
+    </div>
+
+    <div class="foot">
+      <span class="l">decentralizedcompute.company</span>
+      <span>We don&rsquo;t just talk. We compute. &rarr;</span>
+    </div>
+  </div>
+</body>
+</html>
