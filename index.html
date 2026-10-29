@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0c0b09" />
-  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#a9d8ff" />
+  <meta name="color-scheme" content="light" />
 
   <title>The Decentralized Compute Company | The Grid for AI Compute</title>
   <meta name="description" content="TDCC is an AI inference and compute network. One API routes training, fine-tuning, and inference across data centers and independent GPUs, and verifies every result before anyone is paid." />
@@ -35,525 +35,384 @@
   <meta name="twitter:description" content="One API for inference, fine-tuning, and training across every available GPU. Verified before it is paid." />
   <meta name="twitter:image" content="https://decentralizedcompute.company/assets/og-image.png" />
 
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet" />
+
   <style>
     :root {
-      --bg: #0c0b09;
-      --bg-2: #12100d;
-      --panel: #16140f;
-      --line: rgba(236, 224, 202, .1);
-      --line-2: rgba(236, 224, 202, .18);
-      --text: #efe8dc;
-      --body: #c4bbad;
-      --muted: #8d8475;
-      --sand: #d8bf94;
-      --sand-2: #b89a6a;
-      --sand-glow: rgba(216, 191, 148, .14);
-      --cream: #f5eee4;
-      --ink: #1a1611;
-      --ok: #b9d99a;
-      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-      --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-      --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
-      --wrap: 1240px;
-      --gutter: clamp(16px, 4vw, 48px);
+      --bg: #ffffff;
+      --soft: #f5f8fb;
+      --card: #ffffff;
+      --ink: #06122a;
+      --heading: #0e2e47;
+      --body: #334457;
+      --muted: #66768a;
+      --line: #e3e9f0;
+      --line-2: #d3dce6;
+      --lime: #b9ff78;
+      --lime-ink: #143a19;
+      --blue: #2f7cf6;
+      --ok: #16a34a;
+      --warn: #d97706;
+      --sky-1: #a9d8ff;
+      --sky-2: #d9efff;
+      --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      --wrap: 1200px;
+      --gutter: clamp(16px, 4vw, 40px);
+      --shadow: 0 1px 2px rgba(6, 18, 42, .04), 0 8px 24px -12px rgba(6, 18, 42, .12);
+      --shadow-lg: 0 2px 6px rgba(6, 18, 42, .04), 0 30px 60px -24px rgba(6, 18, 42, .22);
     }
 
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-      font-size: 16px;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-      overflow-x: hidden;
+      margin: 0; background: var(--bg); color: var(--body);
+      font-family: var(--sans); font-size: 16px; line-height: 1.6;
+      -webkit-font-smoothing: antialiased; overflow-x: hidden;
     }
     a { color: inherit; text-decoration: none; }
-    img, svg, canvas { display: block; max-width: 100%; }
-    ::selection { background: var(--sand); color: var(--ink); }
-    :focus-visible { outline: 2px solid var(--sand); outline-offset: 4px; border-radius: 2px; }
-    .skip-link { position: absolute; left: -9999px; top: 12px; z-index: 200; padding: 10px 14px; background: var(--cream); color: var(--ink); }
+    img, svg { display: block; max-width: 100%; }
+    ::selection { background: var(--lime); color: var(--lime-ink); }
+    :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 6px; }
+    .skip-link { position: absolute; left: -9999px; top: 12px; z-index: 200; padding: 10px 14px; background: var(--ink); color: #fff; border-radius: 8px; }
     .skip-link:focus { left: 12px; }
-    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
     .wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
+    .mono { font-family: var(--mono); }
 
-    /* ---------- type primitives ---------- */
-    .mono { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
-    .eyebrow { display: flex; align-items: center; gap: 10px; margin: 0 0 22px; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
-    h1, h2, h3 { margin: 0; font-weight: 400; }
-    .display { font-family: var(--serif); font-size: clamp(44px, 7.4vw, 104px); line-height: .98; letter-spacing: -.025em; }
-    .display em, .h2 em { font-style: italic; color: inherit; }
-    .h2 { font-family: var(--serif); font-size: clamp(34px, 4.6vw, 64px); line-height: 1.04; letter-spacing: -.02em; max-width: 16ch; }
-    .h3 { font-size: 19px; font-weight: 500; letter-spacing: -.01em; }
-    .lede { max-width: 58ch; color: var(--body); font-size: clamp(17px, 1.5vw, 20px); line-height: 1.55; }
-    p { margin: 0; }
+    /* ---------- type ---------- */
+    .display { font-family: var(--serif); font-weight: 700; color: var(--heading); letter-spacing: -.015em; line-height: 1.04; margin: 0; }
+    h2.title { font-size: clamp(30px, 4vw, 44px); font-weight: 600; color: var(--ink); letter-spacing: -.025em; line-height: 1.12; margin: 0; }
+    h3 { color: var(--ink); font-weight: 600; letter-spacing: -.01em; margin: 0; }
+    .lede { font-size: clamp(17px, 1.6vw, 20px); color: var(--body); max-width: 640px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--muted); margin: 0 0 14px; }
+    .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 3px rgba(185, 255, 120, .35); }
+    .section { padding: clamp(72px, 10vw, 128px) 0; }
+    .section-head { text-align: center; display: grid; justify-items: center; gap: 14px; margin-bottom: clamp(36px, 5vw, 56px); }
+    .section-head .lede { margin: 0; }
 
     /* ---------- buttons ---------- */
-    .btn { display: inline-flex; align-items: center; gap: 10px; min-height: 46px; padding: 0 20px; border: 1px solid var(--line-2); font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--text); background: transparent; cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease; }
-    .btn:hover { border-color: var(--sand); color: var(--sand); }
-    .btn.solid { background: var(--cream); border-color: var(--cream); color: var(--ink); }
-    .btn.solid:hover { background: var(--sand); border-color: var(--sand); color: var(--ink); }
-    .btn .arr { transition: transform .2s ease; }
-    .btn:hover .arr { transform: translateX(3px); }
-    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
-    .link { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--sand); }
-    .link:hover { color: var(--text); }
+    .btn { display: inline-flex; align-items: center; gap: 8px; height: 46px; padding: 0 22px; border-radius: 999px; font-weight: 500; font-size: 16px; white-space: nowrap; transition: transform .15s ease, background .15s ease, box-shadow .15s ease; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.dark { background: var(--ink); color: #fff; box-shadow: 0 6px 18px -8px rgba(6, 18, 42, .6); }
+    .btn.dark:hover { background: #12244a; }
+    .btn.light { background: #fff; color: var(--ink); border: 1px solid var(--line-2); }
+    .btn.light:hover { border-color: #b9c6d4; }
+    .btn.sm { height: 36px; padding: 0 16px; font-size: 14px; }
+    .btn .arr { transition: transform .15s ease; }
+    .btn:hover .arr { transform: translateX(2px); }
+    .chip { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 500; background: var(--soft); border: 1px solid var(--line); color: var(--body); white-space: nowrap; }
+    .chip.live { background: #ecfdf3; border-color: #c7f0d6; color: #11733a; }
+    .chip.live::before, .dot::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .chip.pilot { background: #eff6ff; border-color: #d4e4fd; color: #1d4ed8; }
+    .chip.plan { background: #fff7ed; border-color: #fde2c3; color: #b45309; }
 
     /* ---------- nav ---------- */
-    .nav { position: fixed; inset: 0 0 auto 0; z-index: 100; transition: background .3s ease, border-color .3s ease; border-bottom: 1px solid transparent; }
-    .nav.scrolled { background: rgba(12, 11, 9, .82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom-color: var(--line); }
-    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 24px; }
-    .brand { display: inline-flex; align-items: center; gap: 12px; color: var(--cream); }
-    .brand svg { width: 42px; height: 28px; color: var(--sand); }
-    .brand-name { font-family: var(--serif); font-size: 21px; letter-spacing: -.01em; }
-    .brand-name small { display: none; }
-    .nav-links { display: flex; align-items: center; gap: 4px; }
-    .nav-links a { white-space: nowrap; padding: 8px 9px; color: var(--body); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; transition: color .2s ease; }
-    .nav-links a::before { content: "[ "; color: var(--muted); opacity: 0; transition: opacity .2s ease; }
-    .nav-links a::after { content: " ]"; color: var(--muted); opacity: 0; transition: opacity .2s ease; }
-    .nav-links a:hover { color: var(--text); }
-    .nav-links a:hover::before, .nav-links a:hover::after { opacity: 1; }
-    .nav-cta { min-height: 38px; padding: 0 14px; font-size: 11px; }
-    .menu-btn { display: none; width: 42px; height: 42px; border: 1px solid var(--line-2); background: transparent; color: var(--text); cursor: pointer; }
-    .menu-btn span { display: block; width: 16px; height: 1px; margin: 4px auto; background: currentColor; }
+    .nav { position: fixed; top: 14px; left: 0; right: 0; z-index: 100; padding: 0 var(--gutter); }
+    .nav-inner { max-width: calc(var(--wrap) - 2 * var(--gutter)); margin: 0 auto; display: flex; align-items: center; gap: 18px; height: 60px; padding: 0 10px 0 20px; border-radius: 18px; background: rgba(255, 255, 255, .72); backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px); border: 1px solid rgba(255, 255, 255, .8); box-shadow: 0 4px 24px -10px rgba(6, 18, 42, .18); transition: background .2s ease; }
+    .nav.scrolled .nav-inner { background: rgba(255, 255, 255, .92); border-color: var(--line); }
+    .brand { display: flex; align-items: center; gap: 8px; color: var(--ink); font-weight: 700; font-size: 19px; letter-spacing: -.02em; }
+    .brand svg { width: 34px; height: 23px; }
+    .nav-links { display: flex; align-items: center; gap: 4px; margin-left: 8px; }
+    .nav-links a { padding: 8px 12px; border-radius: 10px; font-size: 15px; white-space: nowrap; color: #42536a; transition: background .15s, color .15s; }
+    .nav-links a:hover { background: rgba(6, 18, 42, .05); color: var(--ink); }
+    .nav-cta { display: flex; gap: 8px; margin-left: auto; }
+    .menu-btn { display: none; margin-left: auto; width: 42px; height: 42px; border: 0; background: transparent; border-radius: 10px; cursor: pointer; }
+    .menu-btn span { display: block; width: 18px; height: 2px; margin: 4px auto; background: var(--ink); border-radius: 2px; transition: transform .2s; }
+    .nav.open .menu-btn span:first-child { transform: translateY(3px) rotate(45deg); }
+    .nav.open .menu-btn span:last-child { transform: translateY(-3px) rotate(-45deg); }
 
     /* ---------- hero ---------- */
-    .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; justify-content: flex-end; padding: 120px 0 0; overflow: hidden; background:
-      radial-gradient(ellipse 70% 55% at 50% 38%, rgba(216, 191, 148, .09), transparent 70%),
-      linear-gradient(180deg, #0c0b09 0%, #110f0b 60%, #0c0b09 100%); }
-    .hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .hero-grid { position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 96px 96px; mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, transparent 30%, #000 100%); opacity: .35; }
-    .hero-content { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 48px; align-items: end; padding-bottom: 56px; }
-    .hero-content .display { max-width: 10ch; }
-    .hero-content .display em { display: block; }
-    .hero-side { display: grid; gap: 26px; padding-bottom: 8px; }
-    .hero-side .lede { font-size: 18px; }
-    .pill { display: inline-flex; align-items: center; gap: 10px; width: fit-content; padding: 6px 12px 6px 6px; border: 1px solid var(--line-2); background: rgba(12, 11, 9, .5); backdrop-filter: blur(8px); font-family: var(--mono); font-size: 11px; letter-spacing: .08em; color: var(--body); transition: border-color .2s ease; }
-    .pill:hover { border-color: var(--sand); }
-    .pill b { padding: 3px 7px; background: var(--sand); color: var(--ink); font-weight: 600; letter-spacing: .12em; }
-    .hero-top { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 34px; }
-    .terminal { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid var(--line); background: rgba(12, 11, 9, .6); font-family: var(--mono); font-size: 13px; color: var(--body); }
-    .terminal .p { color: var(--sand); }
-    .terminal .caret { display: inline-block; width: 8px; height: 15px; margin-left: 2px; vertical-align: -2px; background: var(--sand); animation: blink 1s steps(1) infinite; }
-    @keyframes blink { 50% { opacity: 0; } }
-    .hero-foot { position: relative; z-index: 2; border-top: 1px solid var(--line); background: rgba(12, 11, 9, .55); backdrop-filter: blur(10px); }
-    .backers { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; padding-top: 18px; padding-bottom: 18px; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
-    .backers a { color: var(--body); }
-    .backers a:hover { color: var(--sand); }
-    .backers .sep { color: var(--line-2); }
-    .star { display: inline-flex; align-items: center; gap: 8px; color: var(--text) !important; }
-    .star svg { width: 14px; height: 14px; color: var(--sand); }
+    .hero { position: relative; padding: 150px 0 0; background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 38%, #f3faff 62%, #fff 100%); overflow: hidden; }
+    .hero-scene { position: absolute; left: 0; right: 0; top: 330px; height: 520px; pointer-events: none; }
+    .hero-scene svg { width: 100%; height: 100%; }
+    .cloud { position: absolute; background: #fff; border-radius: 999px; filter: blur(18px); opacity: .9; }
+    .hero-inner { position: relative; text-align: center; display: grid; justify-items: center; }
+    .hero .pill { display: inline-flex; align-items: center; gap: 10px; padding: 5px 14px 5px 5px; border-radius: 999px; background: rgba(255, 255, 255, .7); border: 1px solid rgba(255, 255, 255, .9); font-size: 14px; color: var(--body); margin-bottom: 26px; box-shadow: var(--shadow); }
+    .hero .pill b { background: var(--ink); color: #fff; font-size: 11px; font-weight: 600; letter-spacing: .04em; padding: 3px 9px; border-radius: 999px; }
+    .hero h1 { font-size: clamp(42px, 7.2vw, 80px); max-width: 900px; }
+    .hero .lede { margin: 22px auto 30px; text-align: center; color: #34475c; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .hero-note { margin: 16px 0 0; font-size: 14px; color: #52657a; }
 
-    /* ---------- sections ---------- */
-    section.block { position: relative; padding: clamp(88px, 12vw, 160px) 0; border-top: 1px solid var(--line); }
-    .head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 64px; align-items: end; margin-bottom: clamp(48px, 6vw, 80px); }
-    .head .lede { justify-self: end; }
-    .fig { display: flex; justify-content: space-between; gap: 16px; padding: 12px 16px; border-bottom: 1px solid var(--line); color: var(--muted); font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; }
-    .fig b { color: var(--sand); font-weight: 500; }
+    /* app window mock */
+    .window { background: #fff; border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-lg); overflow: hidden; text-align: left; }
+    .hero-window { position: relative; margin: 64px auto 0; max-width: 1080px; display: grid; grid-template-columns: 210px 1fr; min-height: 470px; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: 0; }
+    .win-side { background: var(--soft); border-right: 1px solid var(--line); padding: 16px 12px; display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+    .win-side .brand { font-size: 16px; padding: 4px 8px 14px; }
+    .win-side .brand svg { width: 28px; height: 19px; }
+    .side-item { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 9px; color: #4b5c71; }
+    .side-item svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .side-item.on { background: #fff; color: var(--ink); font-weight: 500; box-shadow: var(--shadow); }
+    .side-foot { margin-top: auto; padding: 12px; border-radius: 12px; background: #fff; border: 1px solid var(--line); }
+    .side-foot small { display: block; color: var(--muted); font-size: 12px; }
+    .side-foot strong { font-size: 20px; color: var(--ink); letter-spacing: -.02em; }
+    .bar { height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; margin-top: 8px; }
+    .bar i { display: block; height: 100%; background: var(--ink); border-radius: inherit; }
+    .win-main { padding: 22px 26px; min-width: 0; }
+    .win-top { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .win-top h3 { font-size: 22px; letter-spacing: -.02em; }
+    .win-top .btn { margin-left: auto; }
+    .win-tools { display: flex; gap: 10px; margin-bottom: 16px; }
+    .fake-input { flex: 1; height: 36px; border: 1px solid var(--line); border-radius: 10px; display: flex; align-items: center; gap: 8px; padding: 0 12px; color: var(--muted); font-size: 14px; }
+    .fake-input svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; }
+    .fake-select { height: 36px; border: 1px solid var(--line); border-radius: 10px; padding: 0 12px; display: flex; align-items: center; font-size: 14px; color: var(--body); white-space: nowrap; }
+    .job-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .job { border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 8px; align-content: start; background: #fff; }
+    .job-head { display: flex; align-items: center; gap: 8px; }
+    .job-ico { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; font-size: 13px; font-weight: 700; color: var(--ink); }
+    .job h4 { margin: 0; font-size: 15px; color: var(--ink); font-weight: 600; }
+    .job p { margin: 0; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+    .job .meta { display: flex; align-items: center; justify-content: space-between; font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+    .dot { display: inline-flex; align-items: center; gap: 6px; }
+    .dot.ok { color: var(--ok); }
+    .dot.run { color: var(--blue); }
+    .dot.wait { color: var(--warn); }
 
-    /* stats */
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-    .stat { padding: 34px 28px 30px; }
-    .stat + .stat { border-left: 1px solid var(--line); }
-    .stat .n { font-family: var(--serif); font-size: clamp(40px, 4.6vw, 64px); line-height: 1; letter-spacing: -.02em; color: var(--cream); }
-    .stat .n sup { font-size: .38em; color: var(--sand); vertical-align: top; margin-left: 4px; font-family: var(--mono); letter-spacing: .06em; }
-    .stat p { margin-top: 14px; max-width: 30ch; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    /* ---------- trust strip ---------- */
+    .trust { padding: 34px 0 10px; border-top: 1px solid var(--line); }
+    .trust-row { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 14px 44px; color: #7a8899; font-size: 15px; }
+    .trust-row b { color: var(--ink); font-weight: 600; font-size: 17px; letter-spacing: -.01em; }
+    .trust-row span.sep { width: 4px; height: 4px; border-radius: 50%; background: var(--line-2); }
 
-    /* thesis */
-    .thesis { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0; border: 1px solid var(--line); }
-    .thesis-col { padding: clamp(28px, 4vw, 52px); }
-    .thesis-col + .thesis-col { border-left: 1px solid var(--line); background: linear-gradient(180deg, var(--sand-glow), transparent 60%); }
-    .thesis-col .mono { color: var(--muted); }
-    .thesis-col h3 { margin: 18px 0 18px; font-family: var(--serif); font-size: clamp(26px, 2.6vw, 36px); line-height: 1.1; }
-    .thesis-col ul { list-style: none; margin: 0; padding: 0; }
-    .thesis-col li { display: grid; grid-template-columns: 24px 1fr; gap: 8px; padding: 14px 0; border-top: 1px solid var(--line); color: var(--body); font-size: 15px; }
-    .thesis-col li::before { content: "—"; color: var(--muted); }
-    .thesis-col + .thesis-col li::before { content: "+"; color: var(--sand); }
+    /* ---------- statement + stats ---------- */
+    .statement { text-align: center; padding-bottom: 40px; }
+    .statement .display { font-size: clamp(32px, 5vw, 54px); max-width: 860px; margin: 0 auto; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 52px; }
+    .stat { background: var(--soft); border: 1px solid var(--line); border-radius: 18px; padding: 24px; text-align: left; }
+    .stat strong { display: block; font-family: var(--serif); font-size: clamp(34px, 4vw, 46px); color: var(--heading); line-height: 1; letter-spacing: -.02em; }
+    .stat span { display: block; margin-top: 12px; font-size: 14.5px; color: var(--body); }
 
-    /* layers */
-    .layers { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 28px; border: 1px solid var(--line); }
-    .layer { position: relative; padding: 28px; min-height: 230px; }
-    .layer + .layer { border-left: 1px solid var(--line); }
-    .layer .mono { color: var(--muted); }
-    .layer h3 { margin: 16px 0 10px; font-size: 18px; font-weight: 500; line-height: 1.3; }
-    .layer p { color: var(--body); font-size: 14.5px; }
-    .layer a { color: var(--sand); border-bottom: 1px solid rgba(216,191,148,.35); }
-    .layer.us { background: var(--cream); color: var(--ink); }
-    .layer.us .mono { color: #7d6a4c; }
-    .layer.us p { color: #4b4337; }
-    .layers-note { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 32px; padding: 18px 0 0; color: var(--muted); font-size: 14px; }
+    /* ---------- feature split ---------- */
+    .split { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(32px, 6vw, 72px); align-items: center; }
+    .split.rev { grid-template-columns: .95fr 1.05fr; }
+    .split.rev .split-copy { order: 2; }
+    .split-copy .lede { margin: 16px 0 28px; }
+    .points { display: grid; gap: 18px; margin: 0 0 30px; padding: 0; list-style: none; }
+    .points li { display: grid; grid-template-columns: 36px 1fr; gap: 14px; }
+    .points .ic { width: 36px; height: 36px; border-radius: 10px; background: var(--soft); border: 1px solid var(--line); display: grid; place-items: center; }
+    .points .ic svg { width: 18px; height: 18px; fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .points h3 { font-size: 16px; }
+    .points p { margin: 3px 0 0; font-size: 15px; color: var(--muted); }
+    .stage { position: relative; border-radius: 24px; padding: clamp(18px, 3vw, 34px); background: linear-gradient(160deg, #d6edff 0%, #eef7ff 45%, #f2fbe9 100%); border: 1px solid var(--line); overflow: hidden; }
 
-    /* stack (platform) */
-    .stack { border-top: 1px solid var(--line); }
-    .stack-row { display: grid; grid-template-columns: 90px minmax(0, 1fr) minmax(0, 1.15fr); gap: 0 48px; padding: clamp(40px, 5vw, 64px) 0; border-bottom: 1px solid var(--line); }
-    .stack-num { font-family: var(--mono); font-size: 13px; color: var(--sand); letter-spacing: .1em; }
-    .stack-copy h3 { font-family: var(--serif); font-size: clamp(30px, 3.2vw, 44px); line-height: 1.05; letter-spacing: -.015em; }
-    .stack-copy > p { margin: 18px 0 26px; color: var(--body); max-width: 46ch; }
-    .specs { list-style: none; margin: 0 0 28px; padding: 0; }
-    .specs li { display: grid; grid-template-columns: 44px 1fr; padding: 12px 0; border-top: 1px solid var(--line); color: var(--body); font-size: 14.5px; }
-    .specs li span { font-family: var(--mono); font-size: 11px; color: var(--muted); padding-top: 3px; }
-    .tag { display: inline-block; margin-left: 8px; padding: 1px 6px; border: 1px solid var(--line-2); color: var(--muted); font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; vertical-align: 2px; }
-    .tag.live { border-color: rgba(185, 217, 154, .4); color: var(--ok); }
-    .panel { align-self: start; border: 1px solid var(--line); background: var(--panel); overflow: hidden; }
-    .code { margin: 0; padding: 20px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; line-height: 1.75; color: var(--body); white-space: pre; }
-    .code .c { color: #6f685d; }
-    .code .k { color: var(--sand); }
-    .code .s { color: #c9d6b2; }
-    .rows { display: grid; }
-    .rows div { display: grid; grid-template-columns: 130px 1fr auto; gap: 16px; align-items: center; padding: 12px 20px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; color: var(--body); }
-    .rows div:first-child { border-top: 0; }
-    .rows .k { color: var(--muted); }
-    .rows .ok { color: var(--ok); }
-    .rows .warn { color: var(--sand); }
-    .bar { height: 4px; background: var(--line); position: relative; overflow: hidden; }
-    .bar i { position: absolute; inset: 0 auto 0 0; width: 61%; background: var(--sand); animation: grow 6s ease-in-out infinite alternate; }
-    @keyframes grow { from { width: 34%; } to { width: 88%; } }
+    /* chat mock */
+    .chat { display: grid; gap: 12px; padding: 18px; }
+    .chat-top { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--line); font-size: 14px; }
+    .chat-top .model { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--ink); }
+    .chat-top .model i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+    .bal { font-family: var(--mono); font-size: 13px; color: var(--ink); background: var(--soft); border: 1px solid var(--line); padding: 3px 10px; border-radius: 999px; }
+    .msg { max-width: 86%; padding: 11px 14px; border-radius: 16px; font-size: 14.5px; line-height: 1.55; }
+    .msg.user { justify-self: end; background: var(--ink); color: #fff; border-bottom-right-radius: 6px; }
+    .msg.bot { background: var(--soft); border: 1px solid var(--line); color: var(--body); border-bottom-left-radius: 6px; }
+    .msg.bot code { font-family: var(--mono); font-size: 12.5px; background: #fff; border: 1px solid var(--line); padding: 1px 6px; border-radius: 6px; }
+    .cost { justify-self: start; display: flex; gap: 10px; font-family: var(--mono); font-size: 12px; color: var(--muted); padding-left: 4px; }
+    .cost b { color: var(--ink); font-weight: 500; }
+    .composer { margin: 4px 18px 18px; height: 46px; border: 1px solid var(--line-2); border-radius: 14px; display: flex; align-items: center; padding: 0 6px 0 14px; color: var(--muted); font-size: 14px; }
+    .composer span { margin-left: auto; width: 34px; height: 34px; border-radius: 10px; background: var(--ink); display: grid; place-items: center; }
+    .composer svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .float-card { position: absolute; right: 18px; bottom: 18px; width: 230px; padding: 14px; border-radius: 14px; background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow-lg); font-size: 13px; }
+    .float-card .row { display: flex; justify-content: space-between; padding: 4px 0; color: var(--muted); }
+    .float-card .row b { color: var(--ink); font-weight: 500; font-family: var(--mono); font-size: 12.5px; }
+    .float-card h4 { margin: 0 0 6px; font-size: 13px; color: var(--ink); }
 
-    /* pipeline */
-    .pipeline { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); }
-    .pipeline::before { content: ""; position: absolute; left: 0; right: 0; top: 74px; height: 1px; background: var(--line-2); }
-    .pipeline::after { content: ""; position: absolute; top: 71px; left: 0; width: 80px; height: 7px; background: linear-gradient(90deg, transparent, var(--sand)); animation: travel 5s linear infinite; }
-    @keyframes travel { from { left: -80px; } to { left: 100%; } }
-    .step { position: relative; padding: 28px 26px 34px; }
-    .step + .step { border-left: 1px solid var(--line); }
-    .step .mono { color: var(--muted); }
-    .step .dot { position: relative; z-index: 1; width: 13px; height: 13px; margin: 22px 0 26px; background: var(--bg); border: 1px solid var(--sand); transform: rotate(45deg); }
-    .step h3 { font-size: 20px; font-weight: 500; margin-bottom: 10px; }
-    .step p { color: var(--body); font-size: 14.5px; }
-    .quote-line { margin-top: clamp(56px, 7vw, 96px); font-family: var(--serif); font-size: clamp(30px, 4vw, 56px); line-height: 1.1; letter-spacing: -.015em; max-width: 22ch; }
-    .quote-line em { color: inherit; }
+    /* flow builder mock */
+    .flow { position: relative; padding: 26px 18px 30px; background-image: radial-gradient(circle, #d4dde7 1px, transparent 1.2px); background-size: 18px 18px; display: grid; justify-items: center; gap: 0; }
+    .flow-top { display: flex; gap: 8px; justify-self: stretch; justify-content: space-between; align-items: center; margin-bottom: 18px; font-size: 13px; }
+    .node { width: min(320px, 100%); background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; display: grid; grid-template-columns: 34px 1fr auto; gap: 12px; align-items: center; box-shadow: var(--shadow); }
+    .node .ni { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--ink); }
+    .node small { display: block; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+    .node strong { font-size: 14.5px; color: var(--ink); font-weight: 600; }
+    .wire { width: 2px; height: 26px; background: var(--line-2); position: relative; }
+    .wire::after { content: ""; position: absolute; left: -3px; bottom: -2px; width: 8px; height: 8px; border-right: 2px solid var(--line-2); border-bottom: 2px solid var(--line-2); transform: rotate(45deg); }
+    .branch { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: min(480px, 100%); position: relative; padding-top: 26px; }
+    .branch::before { content: ""; position: absolute; top: 0; left: 25%; right: 25%; height: 14px; border: 2px solid var(--line-2); border-bottom: 0; border-radius: 12px 12px 0 0; }
+    .branch .label { position: absolute; top: 2px; font-size: 11px; padding: 1px 8px; border-radius: 999px; background: #fff; border: 1px solid var(--line); color: var(--muted); }
+    .branch .label.l { left: calc(25% - 40px); }
+    .branch .label.r { right: calc(25% - 40px); }
+    .branch .node { width: 100%; grid-template-columns: 30px 1fr; }
+    .branch .node .ni { width: 30px; height: 30px; }
+    .mini-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 28px; }
+    .mini { border: 1px solid var(--line); border-radius: 18px; padding: 22px; background: #fff; }
+    .mini h3 { font-size: 16.5px; margin-bottom: 6px; }
+    .mini p { margin: 0; font-size: 15px; color: var(--muted); }
 
-    /* developers */
-    .dev { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 48px; }
-    .dev-list { list-style: none; margin: 30px 0 34px; padding: 0; }
-    .dev-list li { display: grid; grid-template-columns: 120px 1fr; gap: 16px; padding: 14px 0; border-top: 1px solid var(--line); font-size: 14.5px; color: var(--body); }
-    .dev-list li b { font-family: var(--mono); font-size: 11.5px; font-weight: 400; letter-spacing: .1em; text-transform: uppercase; color: var(--text); padding-top: 2px; }
-    .tabs { display: flex; border-bottom: 1px solid var(--line); overflow-x: auto; }
-    .tabs button { flex: none; padding: 13px 18px; border: 0; border-right: 1px solid var(--line); background: transparent; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
-    .tabs button[aria-selected="true"] { color: var(--ink); background: var(--sand); }
-    .tabs .spacer { flex: 1; }
-    .tab-pane[hidden] { display: none; }
-    .tools { margin-top: 24px; }
-    .tools .fig { border-top: 0; }
+    /* ---------- bento ---------- */
+    .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+    .tile { grid-column: span 2; border: 1px solid var(--line); border-radius: 22px; background: var(--soft); padding: 22px; display: flex; flex-direction: column; gap: 6px; min-height: 330px; overflow: hidden; }
+    .tile.wide { grid-column: span 3; }
+    .tile h3 { font-size: 17px; }
+    .tile > p { margin: 0 0 14px; font-size: 15px; color: var(--muted); }
+    .panel { margin-top: auto; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px; font-size: 13.5px; box-shadow: var(--shadow); }
+    .panel-h { display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--ink); margin-bottom: 10px; font-size: 13.5px; }
+    .panel-h small { font-weight: 400; color: var(--muted); font-size: 12px; }
+    .lrow { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+    .lrow:first-of-type { border-top: 0; }
+    .lrow b { color: var(--ink); font-weight: 500; }
+    .lrow small { display: block; color: var(--muted); font-size: 12px; }
+    .lrow .v { font-family: var(--mono); font-size: 12.5px; color: var(--ink); }
+    .tl { display: grid; gap: 7px; }
+    .tl div { display: grid; grid-template-columns: 16px 1fr auto; gap: 10px; align-items: center; font-size: 13px; }
+    .tl i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--ok); background: #ecfdf3; }
+    .tl .re i { border-color: var(--warn); background: #fff7ed; }
+    .tl .re span { color: var(--warn); font-weight: 500; }
+    .tl em { font-style: normal; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+    .code-panel { background: #0b1628; border-color: #1b2a44; color: #cbd6e6; font-family: var(--mono); font-size: 12.5px; line-height: 1.75; white-space: pre; overflow: hidden; }
+    .code-panel .k { color: #9ad1ff; } .code-panel .s { color: #c6f59b; } .code-panel .c { color: #6c7f99; }
+    .spark { display: flex; align-items: flex-end; gap: 5px; height: 76px; margin: 8px 0 10px; }
+    .spark i { flex: 1; background: linear-gradient(180deg, #2f7cf6, #8fbaff); border-radius: 4px 4px 1px 1px; opacity: .85; }
+    .topup { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 6px 0 12px; }
+    .topup span { text-align: center; padding: 9px 0; border: 1px solid var(--line); border-radius: 10px; font-weight: 600; color: var(--ink); font-size: 14px; }
+    .topup span.on { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink) inset; }
 
-    /* audiences */
-    .aud { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); }
-    .aud article { padding: clamp(26px, 3vw, 40px); display: flex; flex-direction: column; gap: 14px; }
-    .aud article + article { border-left: 1px solid var(--line); }
-    .aud .letter { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line-2); font-family: var(--serif); font-size: 20px; color: var(--sand); }
-    .aud h3 { font-family: var(--serif); font-size: 28px; line-height: 1.1; margin-top: 18px; }
-    .aud p { color: var(--body); font-size: 15px; }
-    .hw { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
-    .chip { padding: 7px 12px; border: 1px solid var(--line); font-family: var(--mono); font-size: 11.5px; color: var(--body); letter-spacing: .04em; }
+    /* ---------- CTA band ---------- */
+    .cta-band { position: relative; margin: 0 var(--gutter); border-radius: 28px; overflow: hidden; background: linear-gradient(180deg, var(--sky-1), #e6f4ff 70%, #f6fbff); text-align: center; padding: clamp(64px, 9vw, 110px) 24px clamp(150px, 16vw, 210px); }
+    .cta-band svg.hills { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 46%; }
+    .cta-band .display { font-size: clamp(32px, 5vw, 56px); position: relative; }
+    .cta-band .lede { margin: 18px auto 28px; position: relative; }
+    .cta-band .hero-actions { position: relative; }
 
-    /* benchmark */
-    .bench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border: 1px solid var(--line); }
-    .bench-copy { padding: clamp(28px, 4vw, 56px); display: flex; flex-direction: column; gap: 22px; }
-    .bench-copy h3 { font-family: var(--serif); font-size: clamp(30px, 3.4vw, 48px); line-height: 1.05; letter-spacing: -.015em; }
-    .bench-copy p { color: var(--body); }
-    .bench-viz { border-left: 1px solid var(--line); background: var(--panel); display: flex; flex-direction: column; }
-    .bars { flex: 1; display: grid; gap: 26px; align-content: center; padding: 36px clamp(24px, 3vw, 44px); }
-    .bars .row { display: grid; gap: 10px; }
-    .bars .lbl { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11.5px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
-    .bars .lbl b { font-family: var(--serif); font-size: 34px; font-weight: 400; letter-spacing: -.02em; color: var(--text); text-transform: none; }
-    .bars .track { height: 44px; border: 1px solid var(--line); position: relative; overflow: hidden; }
-    .bars .fill { position: absolute; inset: 0 auto 0 0; width: 0; transition: width 1.6s cubic-bezier(.2, .7, .1, 1); background: repeating-linear-gradient(90deg, var(--line-2) 0 2px, transparent 2px 6px); }
-    .bars .fill.hot { background: repeating-linear-gradient(90deg, var(--sand) 0 2px, transparent 2px 6px); }
-    .in .bars .fill { width: var(--w); }
-    .bench-foot { padding: 14px clamp(24px, 3vw, 44px); border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; }
+    /* ---------- exact core ---------- */
+    .dark-card { background: #07111f; color: #c7d3e3; border-radius: 28px; padding: clamp(28px, 5vw, 56px); display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 56px); align-items: center; position: relative; overflow: hidden; }
+    .dark-card::before { content: ""; position: absolute; inset: auto -20% -60% 30%; height: 120%; background: radial-gradient(closest-side, rgba(185, 255, 120, .14), transparent); pointer-events: none; }
+    .dark-card .eyebrow { color: #8fa3bd; }
+    .dark-card h2.title { color: #fff; }
+    .dark-card .lede { color: #a9b8cc; margin: 16px 0 26px; }
+    .dark-card .btn.light { background: transparent; color: #fff; border-color: #2a3b56; }
+    .dark-card .btn.lime { background: var(--lime); color: var(--lime-ink); }
+    .ec-steps { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 0 0 28px; }
+    .ec-steps div { border: 1px solid #1c2c45; border-radius: 14px; padding: 14px; background: rgba(255, 255, 255, .02); }
+    .ec-steps b { display: block; color: #fff; font-size: 14.5px; margin-bottom: 3px; }
+    .ec-steps span { font-size: 13.5px; color: #93a4ba; }
+    .term { position: relative; background: #0b1a2e; border: 1px solid #1c2c45; border-radius: 16px; overflow: hidden; font-family: var(--mono); font-size: 12.5px; line-height: 1.8; }
+    .term-top { display: flex; align-items: center; gap: 7px; padding: 11px 14px; border-bottom: 1px solid #1c2c45; color: #7f93ad; font-size: 12px; }
+    .term-top i { width: 10px; height: 10px; border-radius: 50%; background: #263852; }
+    .term-top .tag { margin-left: auto; color: #fca5a5; background: rgba(248, 113, 113, .12); padding: 1px 8px; border-radius: 999px; font-size: 11px; }
+    .term pre { margin: 0; padding: 16px 18px; white-space: pre-wrap; color: #c7d3e3; }
+    .term .g { color: #b9ff78; } .term .r { color: #fca5a5; } .term .d { color: #6b809c; }
+    .ec-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+    .ec-metrics div { border: 1px solid #1c2c45; border-radius: 12px; padding: 12px; }
+    .ec-metrics strong { display: block; color: #fff; font-size: 20px; letter-spacing: -.02em; }
+    .ec-metrics span { font-size: 12px; color: #8396ae; }
+    .honest { position: relative; margin: 14px 0 0; font-size: 12.5px; color: #7f93ad; }
 
-    /* catalogue */
-    .table-wrap { border: 1px solid var(--line); overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; min-width: 720px; }
-    th, td { padding: 15px 20px; text-align: left; border-bottom: 1px solid var(--line); font-size: 14.5px; }
-    th { color: var(--muted); font-family: var(--mono); font-size: 10.5px; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; }
-    td { color: var(--body); }
-    td:first-child { color: var(--text); }
-    td code { font-family: var(--mono); font-size: 12.5px; color: var(--sand); }
+    /* ---------- developers ---------- */
+    .tabs { display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #0f1d33; border: 1px solid #1c2c45; margin: 10px 10px 0; width: max-content; max-width: calc(100% - 20px); overflow-x: auto; }
+    .tabs button { border: 0; background: transparent; color: #8fa3bd; font: 500 13px var(--sans); padding: 7px 12px; border-radius: 9px; cursor: pointer; }
+    .tabs button[aria-selected="true"] { background: #1d2f4d; color: #fff; }
+    .dev-win { background: #0b1628; border: 1px solid #1b2a44; border-radius: 20px; box-shadow: var(--shadow-lg); overflow: hidden; }
+    .dev-win pre { margin: 0; padding: 18px 20px 22px; font: 13px/1.75 var(--mono); color: #cbd6e6; overflow-x: auto; min-height: 290px; }
+    .dev-win pre[hidden] { display: none; }
+    .dev-win .k { color: #9ad1ff; } .dev-win .s { color: #c6f59b; } .dev-win .c { color: #6c7f99; }
+    .dev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+    .dev-grid div { border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+    .dev-grid b { color: var(--ink); font-size: 15px; }
+    .dev-grid p { margin: 3px 0 0; font-size: 14px; color: var(--muted); }
+
+    /* ---------- table ---------- */
+    .table-wrap { border: 1px solid var(--line); border-radius: 20px; overflow-x: auto; background: #fff; box-shadow: var(--shadow); }
+    table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 720px; }
+    th { text-align: left; font-weight: 500; font-size: 13px; color: var(--muted); padding: 14px 18px; background: var(--soft); border-bottom: 1px solid var(--line); }
+    td { padding: 14px 18px; border-bottom: 1px solid var(--line); color: var(--body); }
     tr:last-child td { border-bottom: 0; }
-    tbody tr { transition: background .2s ease; }
-    tbody tr:hover { background: rgba(236, 224, 202, .03); }
+    td:first-child { color: var(--ink); font-weight: 500; }
+    td code { font-family: var(--mono); font-size: 12.5px; background: var(--soft); border: 1px solid var(--line); padding: 2px 7px; border-radius: 6px; color: var(--ink); }
 
-    /* rails / web3 */
-    .rails { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0; border: 1px solid var(--line); }
-    .rail { padding: clamp(28px, 4vw, 48px); }
-    .rail + .rail { border-left: 1px solid var(--line); }
-    .rail h3 { font-family: var(--serif); font-size: 34px; margin: 16px 0 14px; }
-    .rail p { color: var(--body); font-size: 15px; }
-    .rail .mono { color: var(--muted); }
-    .layer-map { margin-top: 28px; display: grid; border: 1px solid var(--line); }
-    .layer-map div { display: grid; grid-template-columns: 200px 1fr auto; gap: 24px; align-items: center; padding: 16px 22px; border-top: 1px solid var(--line); font-size: 14.5px; color: var(--body); }
-    .layer-map div:first-child { border-top: 0; }
-    .layer-map b { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; font-weight: 400; text-transform: uppercase; color: var(--text); }
-    .layer-map i { font-style: normal; font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--sand); }
+    /* ---------- pricing steps ---------- */
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; counter-reset: s; }
+    .step { border: 1px solid var(--line); border-radius: 22px; padding: 26px; background: #fff; position: relative; }
+    .step::before { counter-increment: s; content: "0" counter(s); font-family: var(--mono); font-size: 13px; color: var(--muted); }
+    .step h3 { font-size: 19px; margin: 18px 0 8px; }
+    .step p { margin: 0; font-size: 15px; color: var(--muted); }
+    .step .big { font-family: var(--serif); font-weight: 700; color: var(--heading); font-size: 44px; letter-spacing: -.02em; line-height: 1; margin-top: 18px; }
+    .price-note { text-align: center; margin: 22px 0 0; font-size: 14px; color: var(--muted); }
 
-    /* manifesto (light) */
-    .light { background: var(--cream); color: var(--ink); border-top: 0 !important; }
-    .light .eyebrow { color: #7d6a4c; }
-    .manifesto { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 64px; align-items: start; }
-    .manifesto .h2 { max-width: 18ch; }
-    
-    .manifesto-body { display: grid; gap: 18px; margin-top: 36px; max-width: 60ch; color: #4b4337; font-size: 18px; }
-    .logo-card { aspect-ratio: 1; border: 1px solid rgba(26, 22, 17, .12); background: #fbf6ef; display: grid; place-items: center; position: relative; }
-    .logo-card img { width: 78%; height: auto; mix-blend-mode: multiply; }
-    .logo-card .mono { position: absolute; left: 16px; right: 16px; display: flex; justify-content: space-between; color: #8b7a62; font-size: 10px; }
-    .logo-card .mono.t { top: 14px; }
-    .logo-card .mono.b { bottom: 14px; }
-    .principles { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: clamp(56px, 7vw, 96px); border-top: 1px solid rgba(26, 22, 17, .14); }
-    .principles article { padding: 26px 24px 0 0; }
-    .principles article + article { padding-left: 24px; border-left: 1px solid rgba(26, 22, 17, .14); }
-    .principles .mono { color: #8b7a62; }
-    .principles h3 { margin: 14px 0 8px; font-size: 18px; font-weight: 600; }
-    .principles p { color: #4b4337; font-size: 15px; }
+    /* ---------- notes ---------- */
+    .notes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .note { border: 1px solid var(--line); border-radius: 20px; padding: 22px; display: flex; flex-direction: column; gap: 10px; background: #fff; transition: transform .15s, box-shadow .15s; }
+    .note:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .note h3 { font-size: 16.5px; line-height: 1.35; }
+    .note p { margin: 0; font-size: 14.5px; color: var(--muted); }
+    .note .more { margin-top: auto; font-size: 14px; color: var(--ink); font-weight: 500; }
 
-    /* team */
-    .team { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: end; }
-    .team .lede { margin: 22px 0 30px; }
+    /* ---------- FAQ ---------- */
+    .faq { max-width: 820px; margin: 0 auto; border-top: 1px solid var(--line); }
+    .faq details { border-bottom: 1px solid var(--line); }
+    .faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 22px 4px; font-size: 18px; font-weight: 500; color: var(--ink); }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: "+"; font-size: 24px; font-weight: 300; color: var(--muted); transition: transform .2s; flex: none; }
+    .faq details[open] summary::after { transform: rotate(45deg); }
+    .faq details p { margin: -6px 4px 22px; color: var(--body); max-width: 700px; }
 
-    /* faq */
-    .faq-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 64px; }
-    details { border-top: 1px solid var(--line); }
-    details:last-child { border-bottom: 1px solid var(--line); }
-    summary { display: flex; justify-content: space-between; gap: 24px; padding: 22px 0; cursor: pointer; list-style: none; font-size: 18px; }
-    summary::-webkit-details-marker { display: none; }
-    summary::after { content: "+"; font-family: var(--mono); color: var(--sand); transition: transform .2s ease; }
-    details[open] summary::after { transform: rotate(45deg); }
-    details p { padding: 0 0 24px; max-width: 64ch; color: var(--body); }
+    /* ---------- join ---------- */
+    .join { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 56px); align-items: center; border: 1px solid var(--line); border-radius: 28px; padding: clamp(26px, 5vw, 52px); background: linear-gradient(140deg, #f4faff, #fff 55%, #f6fdf0); }
+    .join form { display: grid; gap: 12px; }
+    .join label { font-size: 14px; font-weight: 500; color: var(--ink); }
+    .join-row { display: flex; gap: 10px; }
+    .join input { flex: 1; min-width: 0; height: 46px; border: 1px solid var(--line-2); border-radius: 999px; padding: 0 18px; font: 15px var(--sans); color: var(--ink); background: #fff; }
+    .join input:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+    .join .msg-box { font-size: 14.5px; padding: 12px 14px; border-radius: 14px; background: #ecfdf3; color: #11733a; border: 1px solid #c7f0d6; }
+    .join .msg-box.error { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+    .link-btn { border: 0; background: none; padding: 0; font: 500 14px var(--sans); color: var(--ink); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; justify-self: start; }
+    .join-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
 
-    /* join */
-    .join { position: relative; overflow: hidden; border: 1px solid var(--line-2); background: radial-gradient(ellipse 60% 80% at 85% 20%, rgba(216, 191, 148, .16), transparent 70%), var(--bg-2); padding: clamp(32px, 6vw, 80px); }
-    .join .display { font-size: clamp(40px, 6vw, 84px); max-width: 14ch; }
-    .join .lede { margin: 24px 0 0; }
-    .early-access-form { display: flex; flex-wrap: wrap; gap: 10px; margin: 34px 0 12px; max-width: 620px; }
-    .early-access-form input { flex: 1 1 240px; min-height: 48px; padding: 0 16px; border: 1px solid var(--line-2); background: rgba(12, 11, 9, .7); color: var(--text); font-family: var(--mono); font-size: 13px; letter-spacing: .08em; }
-    .early-access-form input::placeholder { color: var(--muted); }
-    .early-access-form input:focus { outline: none; border-color: var(--sand); }
-    .early-access-message { max-width: 620px; margin: 6px 0 0; padding: 14px 16px; border: 1px solid rgba(216, 191, 148, .3); background: rgba(216, 191, 148, .06); color: var(--text); font-size: 14px; }
-    .early-access-message.error { border-color: rgba(220, 130, 110, .45); background: rgba(220, 130, 110, .07); color: #f0c4b8; }
-    .join-foot { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 34px; padding-top: 28px; border-top: 1px solid var(--line); color: var(--body); font-size: 15px; }
-    .join-foot p { flex: 1 1 320px; }
-    .join-foot a.inline { color: var(--sand); border-bottom: 1px solid rgba(216,191,148,.35); }
-    .ghost-btn { min-height: 40px; padding: 0 14px; font-size: 11px; }
+    /* ---------- footer ---------- */
+    footer { margin-top: clamp(72px, 10vw, 120px); border-top: 1px solid var(--line); background: var(--soft); }
+    .foot { display: grid; grid-template-columns: 1.6fr repeat(3, 1fr); gap: 32px; padding: 56px 0 40px; }
+    .foot p { font-size: 14.5px; color: var(--muted); max-width: 320px; margin: 14px 0 0; }
+    .foot h4 { margin: 0 0 12px; font-size: 13px; font-weight: 600; color: var(--ink); }
+    .foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14.5px; }
+    .foot ul a { color: var(--muted); }
+    .foot ul a:hover { color: var(--ink); }
+    .foot-bottom { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 20px 0 30px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--muted); }
 
-    /* footer */
-    footer { padding: 72px 0 32px; border-top: 1px solid var(--line); }
-    .foot-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); gap: 32px; }
-    .foot-grid h4 { margin: 0 0 14px; color: var(--muted); font-family: var(--mono); font-size: 10.5px; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; }
-    .foot-grid ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-    .foot-grid a { color: var(--body); font-size: 14.5px; }
-    .foot-grid a:hover { color: var(--sand); }
-    .foot-grid .about { color: var(--muted); font-size: 14px; max-width: 34ch; margin-top: 18px; }
-    .wordmark { margin-top: 72px; font-family: var(--serif); font-size: clamp(34px, 7.6vw, 108px); line-height: .95; letter-spacing: -.035em; color: transparent; -webkit-text-stroke: 1px rgba(216, 191, 148, .32); white-space: nowrap; overflow: hidden; }
-    .legal { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 28px; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
-
-    /* reveal */
-    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .8s ease, transform .8s cubic-bezier(.2, .7, .1, 1); }
+    /* ---------- reveal ---------- */
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
     .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } }
 
-
-    /* ---------- premium layer ---------- */
-    .latest { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--line); }
-    .latest li + li { border-left: 1px solid var(--line); }
-    .latest a { display: block; height: 100%; padding: 18px 20px 20px 0; color: var(--body); font-size: 14px; line-height: 1.45; transition: color .2s ease; }
-    .latest li + li a { padding-left: 20px; }
-    .latest a:hover { color: var(--text); }
-    .latest span { display: block; margin-bottom: 6px; color: var(--muted); font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; }
-    @media (max-width: 860px) {
-      .latest { grid-template-columns: 1fr 1fr; }
-      .latest li:nth-child(3) { border-left: 0; }
-      .latest li:nth-child(n+3) { border-top: 1px solid var(--line); }
-      .latest li:nth-child(odd) a { padding-left: 0; }
-    }
-    .hero-vignette { position: absolute; inset: 0; pointer-events: none; z-index: 1; background: linear-gradient(180deg, rgba(12,11,9,0) 0%, rgba(12,11,9,0) 42%, rgba(12,11,9,.7) 74%, rgba(12,11,9,.92) 100%); }
-    .title-in .ln { display: block; overflow: hidden; padding-bottom: .16em; margin-bottom: -.16em; }
-    .title-in .ln > span { display: block; transform: translateY(110%); animation: rise 1.1s cubic-bezier(.16, 1, .3, 1) .15s forwards; }
-    .title-in .ln:nth-child(2) > span { animation-delay: .27s; }
-    .title-in .ln:nth-child(3) > span { animation-delay: .39s; }
-    .title-in .ln:nth-child(4) > span { animation-delay: .51s; }
-    @keyframes rise { to { transform: none; } }
-    .fade-in { opacity: 0; animation: fade 1s ease var(--d, 0s) forwards; }
-    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-
-
-
-    .panel { box-shadow: 0 30px 60px -40px rgba(0,0,0,.7); }
-
-    @media (prefers-reduced-motion: reduce) {
-      .title-in .ln > span, .fade-in { animation: none; transform: none; opacity: 1; }
-    }
-
-
-    /* ---------- exact core (chip) ---------- */
-    .chip-sec { background: radial-gradient(ellipse 50% 60% at 75% 35%, rgba(216,191,148,.12), transparent 70%), var(--bg); overflow: hidden; }
-    .chip-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: center; }
-    .chip-hero .pill { margin-bottom: 28px; }
-    .chip-h { max-width: 15ch; margin-bottom: 26px; }
-    .chip-stage { position: relative; aspect-ratio: 1; perspective: 1400px; display: grid; place-items: center; }
-    .chip-tilt { position: relative; width: 82%; aspect-ratio: 1; transform-style: preserve-3d; transform: rotateX(var(--rx, 52deg)) rotateZ(var(--rz, -38deg)); transition: transform .5s cubic-bezier(.2, .7, .1, 1); }
-    .chip-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-    .chip-shadow { position: absolute; inset: 6%; transform: translateZ(-60px); background: rgba(0,0,0,.75); filter: blur(30px); border-radius: 20px; }
-    .chip-lid { position: absolute; left: 27.5%; top: 27.5%; width: 45%; aspect-ratio: 1; transform: translateZ(var(--lift, 90px)); transition: transform .8s cubic-bezier(.2, .7, .1, 1); filter: drop-shadow(0 30px 30px rgba(0,0,0,.55)); }
-    .chip-lid svg { width: 100%; height: 100%; }
-    .chip-stage:hover .chip-lid { --lift: 140px; }
-    .lid-t { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; fill: #2a2117; font-weight: 600; }
-    .lid-s { font-family: var(--mono); font-size: 7px; letter-spacing: .16em; fill: #4a3b28; }
-    .chip-lbl { font-family: var(--mono); font-size: 7px; letter-spacing: .14em; fill: rgba(216,191,148,.75); }
-    .traces-live path { stroke-dasharray: 14 400; stroke-dashoffset: 14; animation: flow 3.6s linear infinite; animation-delay: var(--dl); filter: drop-shadow(0 0 3px #f3dfb8); }
-    @keyframes flow { to { stroke-dashoffset: -400; } }
-    .mm-glow { animation: mm 2.4s ease-in-out infinite; }
-    @keyframes mm { 0%, 100% { opacity: .15; } 50% { opacity: 1; } }
-    .log-rows rect { animation: log 2s steps(1) infinite; }
-    .log-rows rect:nth-child(2n) { animation-delay: .5s; }
-    .log-rows rect:nth-child(3n) { animation-delay: 1s; }
-    @keyframes log { 50% { opacity: .25; } }
-    .seq-run { animation: seq 1.8s steps(6) infinite; }
-    @keyframes seq { to { transform: translateX(96px); } }
-    .chip-caption { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-
-    .chip-blocks { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: clamp(48px, 6vw, 80px); border: 1px solid var(--line); }
-    .chip-blocks article { padding: 24px; }
-    .chip-blocks article + article { border-left: 1px solid var(--line); }
-    .chip-blocks .mono { color: var(--sand); margin-bottom: 10px; }
-    .chip-blocks p:not(.mono) { color: var(--body); font-size: 14.5px; }
-    .chip-blocks .hl .mono { color: var(--ok); }
-    .chip-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 48px; margin-top: clamp(56px, 7vw, 96px); align-items: start; }
-    .exact-steps { list-style: none; margin: 0; padding: 0; counter-reset: s; }
-    .exact-steps li { counter-increment: s; display: grid; grid-template-columns: 44px 90px 1fr; gap: 12px; padding: 16px 0; border-top: 1px solid var(--line); color: var(--body); font-size: 15px; }
-    .exact-steps li::before { content: "0" counter(s); font-family: var(--mono); font-size: 11px; color: var(--muted); padding-top: 3px; }
-    .exact-steps b { font-family: var(--serif); font-size: 21px; font-weight: 400; color: var(--text); line-height: 1.1; }
-    .prog { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; font-family: var(--mono); letter-spacing: .04em; word-break: break-all; }
-    .prog code { color: var(--sand); }
-    .chip-results { margin-top: clamp(48px, 6vw, 80px); border: 1px solid var(--line); }
-    .res { display: grid; grid-template-columns: repeat(4, 1fr); }
-    .res > div { padding: 28px 24px; }
-    .res > div + div { border-left: 1px solid var(--line); }
-    .res .n { font-family: var(--serif); font-size: clamp(40px, 4.4vw, 60px); line-height: 1; color: var(--cream); letter-spacing: -.02em; }
-    .res .u { margin-left: 6px; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--sand); text-transform: uppercase; }
-    .res p { margin-top: 12px; color: var(--muted); font-size: 13.5px; }
-    .honest { padding: 16px 24px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; }
-    .honest b { color: var(--body); font-weight: 500; }
-
-    /* ---------- marketplace ---------- */
-    .market { border: 1px solid var(--line); background: var(--bg-2); }
-    .market-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
-    .seg { display: inline-flex; border: 1px solid var(--line-2); }
-    .seg button, .filters button { border: 0; background: transparent; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 9px 14px; cursor: pointer; transition: color .2s ease, background .2s ease; }
-    .seg button[aria-selected="true"] { background: var(--cream); color: var(--ink); }
-    .filters { display: flex; flex-wrap: wrap; gap: 4px; }
-    .filters button { border: 1px solid var(--line); padding: 7px 11px; }
-    .filters button.on { color: var(--sand); border-color: var(--sand); }
-    .filters button:hover, .seg button:hover { color: var(--text); }
-    .market-note { margin-left: auto; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-    .listings { display: grid; grid-template-columns: repeat(3, 1fr); }
-    .listing { display: flex; flex-direction: column; gap: 10px; padding: 22px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); transition: background .25s ease, opacity .3s ease; }
-    .listing:nth-child(3n) { border-right: 0; }
-    .listing:hover { background: rgba(236,224,202,.035); }
-    .listing[hidden] { display: none; }
-    .l-top { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-    .l-av { display: inline-flex; align-items: center; gap: 6px; color: var(--ok); }
-    .l-av i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-    .l-av.soon { color: var(--sand); }
-    .listing h3 { font-family: var(--serif); font-size: 24px; line-height: 1.15; margin-top: 6px; }
-    .l-spec { color: var(--body); font-size: 14px; font-family: var(--mono); font-size: 12px; }
-    .l-rep { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; margin-top: 4px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-    .l-rep b { color: var(--text); font-weight: 400; }
-    .meter { height: 3px; background: var(--line); position: relative; }
-    .meter i { position: absolute; inset: 0 auto 0 0; background: var(--sand); }
-    .l-foot { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); }
-    .price::before { content: attr(data-rent); font-size: 13.5px; color: var(--text); }
-    .market.job .price::before { content: attr(data-job); }
-    .l-cta { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--sand); }
-    .listing.exact { background: linear-gradient(160deg, rgba(216,191,148,.12), transparent 60%); }
-    .listing.exact .meter i { background: var(--ok); }
-    .market-sides { display: grid; grid-template-columns: 1fr 1fr; margin-top: 28px; border: 1px solid var(--line); }
-    .market-sides article { padding: clamp(26px, 3.4vw, 44px); display: flex; flex-direction: column; }
-    .market-sides article + article { border-left: 1px solid var(--line); }
-    .market-sides .mono { color: var(--muted); }
-    .market-sides h3 { font-family: var(--serif); font-size: clamp(26px, 2.6vw, 34px); margin: 14px 0 12px; line-height: 1.1; }
-    .market-sides p:not(.mono) { color: var(--body); font-size: 15px; }
-
-    @media (prefers-reduced-motion: reduce) {
-      .traces-live path, .mm-glow, .log-rows rect, .seq-run { animation: none; }
-    }
+    /* ---------- responsive ---------- */
     @media (max-width: 1080px) {
-      .chip-hero, .chip-grid { grid-template-columns: minmax(0, 1fr); }
-      .chip-stage { max-width: 560px; width: 100%; margin: 0 auto; }
-      .listings { grid-template-columns: 1fr 1fr; }
-      .listing:nth-child(3n) { border-right: 1px solid var(--line); }
-      .listing:nth-child(2n) { border-right: 0; }
+      .nav-links a.hide-md { display: none; }
+      .notes { grid-template-columns: repeat(2, 1fr); }
     }
-    @media (max-width: 860px) {
-      .chip-blocks, .res { grid-template-columns: 1fr 1fr; }
-      .chip-blocks article:nth-child(3), .res > div:nth-child(3) { border-left: 0; }
-      .chip-blocks article:nth-child(n+3), .res > div:nth-child(n+3) { border-top: 1px solid var(--line); }
-      .market-sides { grid-template-columns: 1fr; }
-      .market-sides article + article { border-left: 0; border-top: 1px solid var(--line); }
-      .market-note { margin-left: 0; }
-    }
-    @media (max-width: 560px) {
-      .listings { grid-template-columns: 1fr; }
-      .listing, .listing:nth-child(3n) { border-right: 0; }
-      .exact-steps li { grid-template-columns: 36px 1fr; }
-      .exact-steps li span { grid-column: 2; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .reveal { opacity: 1; transform: none; transition: none; }
-      .pipeline::after, .bar i, .terminal .caret { animation: none; }
-      .bars .fill { transition: none; }
-    }
-
-    @media (max-width: 1080px) {
-      .nav-links { display: none; position: absolute; top: 68px; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 8px var(--gutter) 20px; background: rgba(12, 11, 9, .97); border-bottom: 1px solid var(--line); }
-      .nav-links.open { display: flex; }
-      .nav-links a { padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
-      .nav-links a::before, .nav-links a::after { display: none; }
-      .nav-links .nav-cta { margin-top: 14px; justify-content: center; border-bottom: 1px solid var(--cream); }
+    @media (max-width: 960px) {
       .menu-btn { display: block; }
-      .stack-row { grid-template-columns: minmax(0, 1fr); gap: 20px; }
-      .dev, .faq-grid, .manifesto, .team { grid-template-columns: minmax(0, 1fr); }
-      .logo-card { max-width: 420px; }
+      .nav-links, .nav-cta { display: none; }
+      .nav.open .nav-inner { flex-wrap: wrap; height: auto; padding-bottom: 14px; }
+      .nav.open .nav-links { display: grid; order: 3; width: 100%; margin: 4px 0 0; gap: 2px; }
+      .nav.open .nav-cta { display: flex; order: 4; width: 100%; margin: 6px 0 0; }
+      .nav.open .nav-links a.hide-md { display: block; }
+      .hero-window { grid-template-columns: 1fr; }
+      .win-side { display: none; }
+      .job-grid { grid-template-columns: repeat(2, 1fr); }
+      .job-grid .job:nth-child(n+5) { display: none; }
+      .split, .split.rev, .dark-card, .join { grid-template-columns: 1fr; }
+      .split.rev .split-copy { order: 0; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .bento { grid-template-columns: repeat(2, 1fr); }
+      .tile, .tile.wide { grid-column: span 1; }
+      .steps, .mini-cards { grid-template-columns: 1fr; }
+      .foot { grid-template-columns: 1fr 1fr; }
+      .foot > div:first-child { grid-column: 1 / -1; }
     }
-    @media (max-width: 860px) {
-      .hero-content, .head, .thesis, .bench, .rails { grid-template-columns: minmax(0, 1fr); }
-      .head .lede { justify-self: start; }
-      .hero-content { gap: 28px; padding-bottom: 36px; }
-      .stats { grid-template-columns: 1fr 1fr; }
-      .stat:nth-child(3) { border-left: 0; }
-      .stat:nth-child(n+3) { border-top: 1px solid var(--line); }
-      .thesis-col + .thesis-col, .bench-viz, .rail + .rail { border-left: 0; border-top: 1px solid var(--line); }
-      .layers, .aud { grid-template-columns: 1fr; }
-      .layer + .layer, .aud article + article { border-left: 0; border-top: 1px solid var(--line); }
-      .layer { min-height: 0; }
-      .pipeline { grid-template-columns: 1fr 1fr; }
-      .pipeline::before, .pipeline::after { display: none; }
-      .step:nth-child(3) { border-left: 0; }
-      .step:nth-child(n+3) { border-top: 1px solid var(--line); }
-      .principles { grid-template-columns: 1fr 1fr; }
-      .principles article { padding: 24px 16px 24px 0; }
-      .principles article + article { padding-left: 0; border-left: 0; }
-      .principles article:nth-child(even) { padding-left: 16px; border-left: 1px solid rgba(26, 22, 17, .14); }
-      .principles article:nth-child(n+3) { border-top: 1px solid rgba(26, 22, 17, .14); }
-      .layer-map div { grid-template-columns: 1fr; gap: 6px; }
-      .foot-grid { grid-template-columns: 1fr 1fr; }
-      .foot-grid > div:first-child { grid-column: 1 / -1; }
-      .rows div { grid-template-columns: 96px 1fr auto; padding: 12px 16px; }
-    }
-    @media (max-width: 520px) {
-      .stats { grid-template-columns: 1fr; }
-      .stat + .stat { border-left: 0; border-top: 1px solid var(--line); }
-      .pipeline { grid-template-columns: 1fr; }
-      .step + .step { border-left: 0; border-top: 1px solid var(--line); }
-      .principles { grid-template-columns: 1fr; }
-      .principles article, .principles article:nth-child(even) { padding: 22px 0; border-left: 0; }
-      .principles article + article { border-top: 1px solid rgba(26, 22, 17, .14); }
-      .dev-list li { grid-template-columns: 1fr; gap: 4px; }
-      .terminal { font-size: 12px; }
-      .hero-top .pill:nth-child(2) { display: none; }
+    @media (max-width: 640px) {
+      .hero { padding-top: 120px; }
+      .hero-window { margin-top: 44px; min-height: 0; }
+      .win-main { padding: 16px; }
+      .win-tools .fake-select { display: none; }
+      .job-grid { grid-template-columns: 1fr; }
+      .job-grid .job:nth-child(n+3) { display: none; }
+      .bento, .notes, .dev-grid, .ec-steps { grid-template-columns: 1fr; }
+      .tile { min-height: 0; }
+      .float-card { position: static; width: auto; margin: 0 18px 18px; }
+      .ec-metrics { grid-template-columns: 1fr 1fr 1fr; }
+      .join-row { flex-direction: column; }
+      .cta-band { margin: 0 12px; }
+      .branch .label { display: none; }
+      .faq summary { font-size: 16.5px; }
     }
   </style>
 
@@ -641,9 +500,9 @@
 
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <symbol id="mark" viewBox="0 0 120 80">
-      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z" />
-        <g stroke-width="1.4" opacity=".85">
+        <g stroke-width="1.5" opacity=".85">
           <path d="M62 14 V70" />
           <path d="M62 14 C49 22 46 46 48 70" /><path d="M62 14 C75 22 78 46 76 70" />
           <path d="M62 14 C40 20 33 44 35 70" /><path d="M62 14 C84 20 91 44 89 70" />
@@ -656,25 +515,32 @@
         <rect x="59.5" y="57" width="5" height="5" /><rect x="47" y="27" width="4" height="4" /><rect x="73" y="27" width="4" height="4" />
       </g>
     </symbol>
+    <symbol id="hills" viewBox="0 0 1440 400" preserveAspectRatio="none">
+      <path d="M0 210 C 180 150 320 170 470 205 C 620 240 760 150 930 150 C 1100 150 1250 215 1440 180 V400 H0 Z" fill="#cfe9d2" />
+      <path d="M0 260 C 160 215 300 235 430 262 C 600 297 720 225 880 230 C 1060 236 1220 290 1440 250 V400 H0 Z" fill="#b6deb9" />
+      <path d="M0 315 C 200 280 360 300 520 318 C 700 338 860 290 1020 296 C 1180 302 1300 330 1440 318 V400 H0 Z" fill="#9fd3a4" />
+    </symbol>
   </svg>
 
   <header class="nav" id="nav">
-    <div class="wrap nav-inner">
+    <div class="nav-inner">
       <a class="brand" href="/" aria-label="The Decentralized Compute Company — home">
         <svg aria-hidden="true"><use href="#mark" /></svg>
-        <span class="brand-name">tdcc</span>
+        <span>tdcc</span>
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
-        <a href="/exact-core.html">Exact Core</a>
-        <a href="/marketplace.html">Marketplace</a>
         <a href="#platform">Platform</a>
+        <a href="/marketplace.html">Marketplace</a>
+        <a href="/exact-core.html">Exact Core</a>
         <a href="#developers">Developers</a>
-                <a href="/app.html">App</a>
-        <a href="/team.html">Team</a>
-        <a href="/litepaper.html">Litepaper</a>
-        <a href="/cask-q.html">Research</a>
-        <a class="btn solid nav-cta" href="#join">Get early access</a>
+        <a href="#pricing">Pricing</a>
+        <a class="hide-md" href="/cask-q.html">Research</a>
+        <a class="hide-md" href="/team.html">Team</a>
       </nav>
+      <div class="nav-cta">
+        <a class="btn light sm" href="https://chat.decentralizedcompute.company/">Open chat</a>
+        <a class="btn dark sm" href="https://chat.decentralizedcompute.company/#api">Get an API key <span class="arr">›</span></a>
+      </div>
       <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
     </div>
   </header>
@@ -682,518 +548,351 @@
   <main id="content">
     <!-- ================= HERO ================= -->
     <section class="hero" aria-labelledby="hero-title">
-      <canvas class="hero-canvas" id="globe" aria-hidden="true"></canvas>
-      <div class="hero-vignette" aria-hidden="true"></div>
-      <div class="hero-grid" aria-hidden="true"></div>
-
-      <div class="wrap">
-        <div class="hero-top fade-in" style="--d:.2s">
-          <a class="pill" href="/app.html#downloads"><b>NEW</b>TDCC Desktop 0.73.0-rc.1 beta</a>
-          <a class="pill" href="/exact-core.html"><b>CHIP</b>Announcing TDCC Exact Core</a>
-        </div>
+      <div class="hero-scene" aria-hidden="true">
+        <div class="cloud" style="left:4%;top:20px;width:260px;height:70px"></div>
+        <div class="cloud" style="left:14%;top:60px;width:180px;height:50px;opacity:.7"></div>
+        <div class="cloud" style="right:6%;top:0;width:300px;height:80px"></div>
+        <div class="cloud" style="right:20%;top:70px;width:160px;height:44px;opacity:.7"></div>
+        <svg><use href="#hills" /></svg>
       </div>
 
-      <div class="wrap hero-content">
-        <div>
-          <p class="eyebrow fade-in" style="--d:.1s">AI inference &amp; compute network</p>
-          <h1 id="hero-title" class="display title-in"><span class="ln"><span>Every GPU</span></span><span class="ln"><span>on Earth,</span></span><span class="ln"><span>working</span></span><span class="ln"><span><em>as one.</em></span></span></h1>
+      <div class="wrap hero-inner">
+        <a class="pill" href="/app.html#downloads"><b>NEW</b>TDCC Desktop 0.73.0-rc.1 beta</a>
+        <h1 id="hero-title" class="display">Every GPU on Earth, working as one.</h1>
+        <p class="lede">Chat, an OpenAI-compatible API, a GPU marketplace and verified jobs in one account. Top up once and pay only for the tokens and work you use.</p>
+        <div class="hero-actions">
+          <a class="btn dark" href="https://chat.decentralizedcompute.company/">Start with $5 <span class="arr">›</span></a>
+          <a class="btn light" href="#developers">Read the API docs</a>
         </div>
-        <div class="hero-side fade-in" style="--d:.9s">
-          <p class="lede">TDCC connects AI teams to GPUs in data centers, regional clusters, and people's homes. You send a job through one API. We pick the hardware, run it, and check the result before anyone is paid.</p>
-          <div class="actions">
-            <a class="btn solid" href="#join">Get early access <span class="arr">→</span></a>
-            <a class="btn" href="/app.html">Explore the app</a>
+        <p class="hero-note">Pay as you go. No subscription, no card on file to start chatting.</p>
+
+        <div class="window hero-window" aria-hidden="true">
+          <aside class="win-side">
+            <div class="brand"><svg><use href="#mark" /></svg><span>tdcc</span></div>
+            <span class="side-item"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg>Chat</span>
+            <span class="side-item on"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h5"/></svg>Jobs</span>
+            <span class="side-item"><svg viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>API keys</span>
+            <span class="side-item"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M7 7V5h10v2"/></svg>Marketplace</span>
+            <span class="side-item"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>Usage</span>
+            <span class="side-item"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg>Receipts</span>
+            <span class="side-item"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>Billing</span>
+            <div class="side-foot">
+              <small>Balance</small>
+              <strong>$18.42</strong>
+              <div class="bar"><i style="width:62%"></i></div>
+            </div>
+          </aside>
+          <div class="win-main">
+            <div class="win-top">
+              <h3>Jobs</h3>
+              <span class="chip">7 running</span>
+              <span class="btn dark sm">New job</span>
+            </div>
+            <div class="win-tools">
+              <span class="fake-input"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Search jobs</span>
+              <span class="fake-select">All workloads ▾</span>
+              <span class="fake-select">Last 24h ▾</span>
+            </div>
+            <div class="job-grid">
+              <div class="job">
+                <div class="job-head"><span class="job-ico" style="background:#e6f1ff">IB</span><h4>Batch inference</h4></div>
+                <p>1,240 prompts on llama-3.1-8b, checked by two verification passes.</p>
+                <div class="meta"><span class="dot ok">Accepted</span><span class="mono">$27.94</span></div>
+              </div>
+              <div class="job">
+                <div class="job-head"><span class="job-ico" style="background:#effbe3">FT</span><h4>LoRA fine-tune</h4></div>
+                <p>qwen2.5-7b on 1× 80GB in eu-central, step 1,840 of 3,000.</p>
+                <div class="meta"><span class="dot run">Running</span><span class="mono">$38.40 / $120</span></div>
+              </div>
+              <div class="job">
+                <div class="job-head"><span class="job-ico" style="background:#fff3e2">EM</span><h4>Embeddings</h4></div>
+                <p>bge-large over 82k documents. Host dropped, moved to another GPU.</p>
+                <div class="meta"><span class="dot wait">Requeued</span><span class="mono">$3.10</span></div>
+              </div>
+              <div class="job">
+                <div class="job-head"><span class="job-ico" style="background:#f2ecff">TR</span><h4>Transcription</h4></div>
+                <p>340 hours of audio, sampled re-runs above the agreement threshold.</p>
+                <div class="meta"><span class="dot ok">Accepted</span><span class="mono">$12.66</span></div>
+              </div>
+              <div class="job">
+                <div class="job-head"><span class="job-ico" style="background:#e6f1ff">EV</span><h4>Eval suite</h4></div>
+                <p>Reproducible scoring run against the held-out set before release.</p>
+                <div class="meta"><span class="dot run">Running</span><span class="mono">$4.02</span></div>
+              </div>
+              <div class="job">
+                <div class="job-head"><span class="job-ico" style="background:#effbe3">CH</span><h4>Chat API</h4></div>
+                <p>tdcc-chat via the OpenAI-compatible gateway, streamed to your app.</p>
+                <div class="meta"><span class="dot ok">Live</span><span class="mono">1.2M tok</span></div>
+              </div>
+            </div>
           </div>
-          <div class="terminal" aria-label="Example command"><span class="p">$</span><span id="typed">tdcc jobs submit ./job.yaml --watch</span><span class="caret" aria-hidden="true"></span></div>
-        </div>
-      </div>
-
-      <div class="hero-foot">
-        <div class="wrap backers">
-          <span>Backed by</span>
-          <a class="star" href="https://x.com/stardotfun/status/2080051528732193280" target="_blank" rel="noreferrer">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.5l2.6 7.9H23l-6.8 4.9 2.6 7.9L12 17.3l-6.8 4.9 2.6-7.9L1 9.4h8.4z"/></svg>
-            star.fun
-          </a>
-          <span class="sep">/</span>
-          <span>$50K raised in ~10 minutes</span>
-          <span class="sep">/</span>
-          <span>Building with Avalanche &amp; Solana</span>
         </div>
       </div>
     </section>
 
-    <!-- ================= LATEST ================= -->
-    <div class="wrap">
-      <ul class="latest" aria-label="Latest from TDCC">
-        <li><a href="/exact-core.html"><span>Chip</span>Exact Core: an AI chip whose answers anyone can re-check</a></li>
-        <li><a href="/app.html#downloads"><span>Release</span>Desktop 0.73.0-rc.1 for Windows x64</a></li>
-        <li><a href="/cask-q.html"><span>Paper</span>CASK-Q: 25% lower attention error at 2-bit, same size</a></li>
-        <li><a href="https://x.com/stardotfun/status/2080051528732193280" target="_blank" rel="noreferrer"><span>Funding</span>$50K raised on star.fun in about 10 minutes</a></li>
-      </ul>
+    <!-- ================= TRUST ================= -->
+    <div class="trust">
+      <div class="wrap trust-row">
+        <span>Backed on</span><a href="https://x.com/stardotfun/status/2080051528732193280"><b>star.fun</b></a>
+        <span class="sep"></span><span>Building with <b>Avalanche</b> &amp; <b>Solana</b></span>
+        <span class="sep"></span><span>Open-source <b>Exact Core</b> silicon</span>
+      </div>
     </div>
 
-    <!-- ================= STATS ================= -->
-    <section class="wrap" aria-label="TDCC at a glance" style="padding-top:clamp(64px,8vw,112px)">
-      <div class="stats reveal">
-        <div class="stat"><div class="n">80<sup>TOK/S</sup></div><p>Qwen 3.8 27B on two compact laptops, up from about 50 tok/s with the same weights.</p></div>
-        <div class="stat"><div class="n">85.8<sup>TOK/S</sup></div><p>LFM2.5-230M decoding on the Exact Core FPGA card, bit for bit with the simulator.</p></div>
-        <div class="stat"><div class="n">10<sup>MODELS</sup></div><p>Modern open models running with real weights on the Exact Core card.</p></div>
-        <div class="stat"><div class="n">$50K<sup>RAISED</sup></div><p>On star.fun in about ten minutes, at an $8M campaign valuation, July 2026.</p></div>
+    <!-- ================= STATEMENT ================= -->
+    <section class="section statement">
+      <div class="wrap">
+        <h2 class="display reveal">AI runs on compute scattered across thousands of operators.</h2>
+        <p class="lede reveal" style="margin:20px auto 0">Data centers have capacity they cannot fill. AI teams have workloads they cannot place. TDCC is the grid between them.</p>
+        <div class="stats">
+          <div class="stat reveal"><strong>80 tok/s</strong><span>Qwen 3.8 27B on two compact laptops, up from about 50.</span></div>
+          <div class="stat reveal"><strong>85.8 tok/s</strong><span>LFM2.5-230M on the Exact Core FPGA card, bit for bit.</span></div>
+          <div class="stat reveal"><strong>10</strong><span>Modern open models running with real weights on the card.</span></div>
+          <div class="stat reveal"><strong>$50K</strong><span>Raised on star.fun in about ten minutes, July 2026.</span></div>
+        </div>
       </div>
     </section>
 
-    <!-- ================= EXACT CORE (chip) ================= -->
-    <section class="block chip-sec" id="exact-core" aria-labelledby="chip-title">
+    <!-- ================= CHAT + API ================= -->
+    <section class="section" id="platform" style="padding-top:0">
+      <div class="wrap split">
+        <div class="split-copy reveal">
+          <p class="eyebrow">TDCC Chat &amp; API</p>
+          <h2 class="title">One balance for chat and every API call.</h2>
+          <p class="lede">Talk to TDCC Chat in the browser, or point the tools you already use at our OpenAI-compatible endpoint. Both draw from the same prepaid balance, token by token.</p>
+          <ul class="points">
+            <li><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span><div><h3>Top up from $5</h3><p>Add funds once. Every message and request is deducted from what you loaded.</p></div></li>
+            <li><span class="ic"><svg viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg></span><div><h3>Your own API keys</h3><p>Create a key per project, set a rate limit, revoke it any time.</p></div></li>
+            <li><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg></span><div><h3>Usage you can read</h3><p>Tokens and cost per key, per request, with nothing billed after your balance runs out.</p></div></li>
+          </ul>
+          <a class="btn dark" href="https://chat.decentralizedcompute.company/">Open TDCC Chat <span class="arr">›</span></a>
+        </div>
+        <div class="stage reveal" aria-hidden="true">
+          <div class="window">
+            <div class="chat-top"><span class="model"><i></i>TDCC Chat</span><span class="bal">$4.9981</span></div>
+            <div class="chat">
+              <div class="msg user">Write a Python function that retries a request with exponential backoff.</div>
+              <div class="msg bot">Here is a small helper using <code>time.sleep</code> that doubles the wait after each failure and gives up after five tries…</div>
+              <div class="cost"><span>612 tokens</span><span>·</span><b>−$0.0019</b></div>
+            </div>
+            <div class="composer">Message TDCC Chat…<span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+          </div>
+          <div class="float-card">
+            <h4>sk-tdcc-…9f2a · today</h4>
+            <div class="row"><span>Requests</span><b>1,284</b></div>
+            <div class="row"><span>Tokens</span><b>2.41M</b></div>
+            <div class="row"><span>Spent</span><b>$3.62</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= HOW IT WORKS ================= -->
+    <section class="section" style="padding-top:0" id="how">
       <div class="wrap">
-        <div class="chip-hero">
-          <div class="reveal">
-            <a class="pill" href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer"><b>SILICON</b>Announcing TDCC Exact Core · open source</a>
-            <h2 id="chip-title" class="h2 chip-h">An AI chip whose every answer anyone can re-check.</h2>
+        <div class="split rev">
+          <div class="split-copy reveal">
+            <p class="eyebrow">How a job runs</p>
+            <h2 class="title">Describe the workload, not the machine.</h2>
+            <p class="lede">Send a job through the API, CLI, SDK or console. TDCC matches it to hardware that fits, runs it in an isolated runtime, and checks the result before anyone is paid.</p>
+            <a class="btn light" href="/litepaper.html">Read the litepaper <span class="arr">›</span></a>
+          </div>
+          <div class="stage reveal" aria-hidden="true">
+            <div class="window flow">
+              <div class="flow-top"><span class="chip live">Live</span><span class="mono" style="color:var(--muted)">job_8fq2c1</span></div>
+              <div class="node"><span class="ni" style="background:#e6f1ff">01</span><div><small>Submit</small><strong>finetune.lora · qwen2.5-7b</strong></div><span class="chip">API</span></div>
+              <div class="wire"></div>
+              <div class="node"><span class="ni" style="background:#effbe3">02</span><div><small>Match</small><strong>1× 80GB · eu-central</strong></div><span class="chip">0.96</span></div>
+              <div class="wire"></div>
+              <div class="node"><span class="ni" style="background:#fff3e2">03</span><div><small>Run</small><strong>Isolated runtime · sha 4c9a…</strong></div><span class="chip pilot">step 1840</span></div>
+              <div class="branch">
+                <span class="label l">passes</span><span class="label r">fails</span>
+                <div class="node"><span class="ni" style="background:#ecfdf3">✓</span><div><small>Verify</small><strong>Accept &amp; bill</strong></div></div>
+                <div class="node"><span class="ni" style="background:#fef2f2">↻</span><div><small>Requeue</small><strong>Never billed</strong></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mini-cards">
+          <div class="mini reveal"><h3>Failures move, not bill.</h3><p>A stalled or dropped host sends the job to another GPU automatically. You never pay for broken runs.</p></div>
+          <div class="mini reveal"><h3>Acceptance up front.</h3><p>Criteria are attached to the job before it starts: schema checks, redundant passes, eval deltas.</p></div>
+          <div class="mini reveal"><h3>A receipt for every job.</h3><p>What ran, where, against which criteria, and what was paid, kept with the job.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= BENTO ================= -->
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <p class="eyebrow">The platform</p>
+          <h2 class="title">Everything you need to run AI work at scale.</h2>
+          <p class="lede">Schedulers, isolated runtimes, verification, reputation and payouts sit underneath. What you see is a job, its state and a receipt.</p>
+        </div>
+        <div class="bento">
+          <div class="tile wide reveal">
+            <h3>GPU marketplace</h3>
+            <p>Rent the box when you want control, or submit a job when you want the answer.</p>
+            <div class="panel">
+              <div class="panel-h">Available now <small>6 classes</small></div>
+              <div class="lrow"><div><b>Data-center node</b><small>80 GB · eu-central · ×8</small></div><span class="chip live">0.96</span></div>
+              <div class="lrow"><div><b>Regional cluster</b><small>48 GB · ap-south · ×4</small></div><span class="chip live">0.89</span></div>
+              <div class="lrow"><div><b>Independent host</b><small>24 GB consumer GPU · eu-west</small></div><span class="chip live">0.84</span></div>
+            </div>
+          </div>
+          <div class="tile wide reveal">
+            <h3>Verification &amp; receipts</h3>
+            <p>Work that fails is never billed and never paid out.</p>
+            <div class="panel">
+              <div class="panel-h">Receipt · job_8fq1za <span class="chip live">Accepted</span></div>
+              <div class="lrow"><span>Workload</span><span class="v">inference.batch</span></div>
+              <div class="lrow"><span>Items</span><span class="v">1,240 / 1,240 ✓</span></div>
+              <div class="lrow"><span>Criteria</span><span class="v">schema ∧ 2/2 passes ✓</span></div>
+              <div class="lrow"><span>Charged</span><span class="v">$27.94</span></div>
+            </div>
+          </div>
+          <div class="tile reveal">
+            <h3>Prepaid balance</h3>
+            <p>Top up from $5. Usage is deducted as you go.</p>
+            <div class="panel">
+              <div class="panel-h">Add funds <small>USD</small></div>
+              <div class="topup"><span>$5</span><span class="on">$20</span><span>$100</span></div>
+              <span class="btn dark sm" style="width:100%;justify-content:center">Continue</span>
+            </div>
+          </div>
+          <div class="tile reveal">
+            <h3>Drop-in gateway</h3>
+            <p>OpenAI- and Anthropic-compatible. Change one URL.</p>
+            <div class="panel code-panel"><span class="c"># any OpenAI client</span>
+<span class="k">base_url</span>=<span class="s">"…/v1"</span>
+<span class="k">api_key</span>=<span class="s">"sk-tdcc-…"</span>
+<span class="k">model</span>=<span class="s">"tdcc-chat"</span></div>
+          </div>
+          <div class="tile reveal">
+            <h3>Reliability</h3>
+            <p>Dropped hosts requeue to another GPU on their own.</p>
+            <div class="panel tl">
+              <div><i></i><span>Matched host</span><em>0.8s</em></div>
+              <div><i></i><span>Runtime ready</span><em>12s</em></div>
+              <div class="re"><i></i><span>Host lost · requeued</span><em>2.1s</em></div>
+              <div><i></i><span>Resumed checkpoint</span><em>4.0s</em></div>
+              <div><i></i><span>Verified</span><em>0.3s</em></div>
+            </div>
+          </div>
+          <div class="tile wide reveal">
+            <h3>Usage analytics</h3>
+            <p>Tokens, requests and spend per key and per project.</p>
+            <div class="panel">
+              <div class="panel-h">Tokens · last 14 days <small class="chip live">+18%</small></div>
+              <div class="spark"><i style="height:30%"></i><i style="height:42%"></i><i style="height:38%"></i><i style="height:55%"></i><i style="height:48%"></i><i style="height:62%"></i><i style="height:58%"></i><i style="height:70%"></i><i style="height:66%"></i><i style="height:74%"></i><i style="height:69%"></i><i style="height:82%"></i><i style="height:88%"></i><i style="height:96%"></i></div>
+            </div>
+          </div>
+          <div class="tile wide reveal">
+            <h3>Settlement on Solana &amp; Avalanche</h3>
+            <p>No wallet needed to use TDCC. Chains handle neutral coordination and paying a global supply side.</p>
+            <div class="panel">
+              <div class="lrow"><div><b>Compute</b><small>Data centers, micro-clusters, independent hosts</small></div><span class="chip">Off-chain</span></div>
+              <div class="lrow"><div><b>Settlement</b><small>Optional public records for teams that want them</small></div><span class="chip pilot">Avalanche · Solana</span></div>
+              <div class="lrow"><div><b>Interface</b><small>REST, CLI, SDKs, desktop app, gateway</small></div><span class="chip">Web2-native</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CTA ================= -->
+    <section class="cta-band reveal" aria-labelledby="cta-1">
+      <h2 class="display" id="cta-1">Your first job can ship this afternoon.</h2>
+      <p class="lede">Load $5, create a key, and send one request. Scale to data centers when you need them.</p>
+      <div class="hero-actions">
+        <a class="btn dark" href="https://chat.decentralizedcompute.company/">Start with $5 <span class="arr">›</span></a>
+        <a class="btn light" href="/marketplace.html">Browse GPUs</a>
+      </div>
+      <svg class="hills" aria-hidden="true"><use href="#hills" /></svg>
+    </section>
+
+    <!-- ================= EXACT CORE ================= -->
+    <section class="section" id="exact-core">
+      <div class="wrap">
+        <div class="dark-card">
+          <div class="reveal" style="position:relative">
+            <p class="eyebrow">Silicon · open source</p>
+            <h2 class="title">An AI chip whose every answer anyone can re-check.</h2>
             <p class="lede">Exact Core is TDCC's own accelerator, built on the open-source openTPU design. The card produces the same bits as its simulator, so any laptop can replay a job and find the first instruction a dishonest run got wrong.</p>
-            <div class="actions" style="margin-top:30px">
-              <a class="btn solid" href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">View on GitHub <span class="arr">→</span></a>
-              <a class="btn" href="/exact-core.html">Read the announcement</a>
+            <div class="ec-steps">
+              <div><b>Rent</b><span>A renter opens a job on Solana; USDC waits in escrow.</span></div>
+              <div><b>Run</b><span>A provider runs it on Exact Core and posts the fingerprint.</span></div>
+              <div><b>Check</b><span>Any verifier re-runs it on a laptop. A mismatch opens a challenge.</span></div>
+              <div><b>Settle</b><span>80% to the host, 20% to TDCC. A cheater loses its stake.</span></div>
             </div>
-            <div class="terminal" style="margin-top:22px;max-width:460px"><span class="p">$</span><span>pip install -e . &amp;&amp; tdcc-exact demo</span></div>
-          </div>
-
-          <div class="chip-stage reveal" id="chip-stage" aria-label="Illustration of the TDCC Exact Core chip">
-            <div class="chip-tilt" id="chip-tilt">
-              <div class="chip-shadow"></div>
-              <svg class="chip-svg" viewBox="0 0 400 400" role="img" aria-labelledby="chip-svg-title">
-                <title id="chip-svg-title">TDCC Exact Core package with matrix unit, vector unit, trace log, and sequencer</title>
-                <defs>
-                  <linearGradient id="sub" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a241b"/><stop offset="1" stop-color="#15120d"/></linearGradient>
-                  <linearGradient id="die" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a3024"/><stop offset=".5" stop-color="#1d1913"/><stop offset="1" stop-color="#2c251b"/></linearGradient>
-                  <linearGradient id="lid" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3e3c4"/><stop offset=".45" stop-color="#cfb184"/><stop offset="1" stop-color="#8f7348"/></linearGradient>
-                  <pattern id="cells" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="none"/><rect x="1" y="1" width="6" height="6" fill="rgba(216,191,148,.16)"/></pattern>
-                  <pattern id="lines" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="1" fill="rgba(216,191,148,.22)"/></pattern>
-                </defs>
-                <!-- substrate -->
-                <rect x="20" y="20" width="360" height="360" rx="18" fill="url(#sub)" stroke="rgba(216,191,148,.35)"/>
-                <g fill="#c9ab7c" opacity=".85">
-                  <g id="pins-top"><rect x="44" y="24" width="6" height="10" rx="1"/><rect x="62" y="24" width="6" height="10" rx="1"/><rect x="80" y="24" width="6" height="10" rx="1"/><rect x="98" y="24" width="6" height="10" rx="1"/><rect x="116" y="24" width="6" height="10" rx="1"/><rect x="134" y="24" width="6" height="10" rx="1"/><rect x="152" y="24" width="6" height="10" rx="1"/><rect x="170" y="24" width="6" height="10" rx="1"/><rect x="188" y="24" width="6" height="10" rx="1"/><rect x="206" y="24" width="6" height="10" rx="1"/><rect x="224" y="24" width="6" height="10" rx="1"/><rect x="242" y="24" width="6" height="10" rx="1"/><rect x="260" y="24" width="6" height="10" rx="1"/><rect x="278" y="24" width="6" height="10" rx="1"/><rect x="296" y="24" width="6" height="10" rx="1"/><rect x="314" y="24" width="6" height="10" rx="1"/><rect x="332" y="24" width="6" height="10" rx="1"/><rect x="350" y="24" width="6" height="10" rx="1"/></g>
-                  <use href="#pins-top" transform="translate(0 342)"/>
-                  <use href="#pins-top" transform="rotate(90 200 200)"/>
-                  <use href="#pins-top" transform="rotate(-90 200 200)"/>
-                </g>
-                <!-- traces from die to pins -->
-                <g class="traces" fill="none" stroke="rgba(216,191,148,.28)" stroke-width="1">
-                  <path d="M120 120 L60 60 L60 34"/><path d="M280 120 L340 60 L340 34"/><path d="M120 280 L60 340 L60 366"/><path d="M280 280 L340 340 L340 366"/>
-                  <path d="M150 110 V34"/><path d="M200 110 V34"/><path d="M250 110 V34"/>
-                  <path d="M150 290 V366"/><path d="M200 290 V366"/><path d="M250 290 V366"/>
-                  <path d="M110 150 H34"/><path d="M110 200 H34"/><path d="M110 250 H34"/>
-                  <path d="M290 150 H366"/><path d="M290 200 H366"/><path d="M290 250 H366"/>
-                </g>
-                <g class="traces-live" fill="none" stroke="#f3dfb8" stroke-width="1.6" stroke-linecap="round">
-                  <path d="M200 110 V34" style="--dl:0s"/><path d="M110 200 H34" style="--dl:.7s"/><path d="M290 250 H366" style="--dl:1.3s"/><path d="M250 290 V366" style="--dl:1.9s"/><path d="M120 120 L60 60 L60 34" style="--dl:2.4s"/><path d="M280 280 L340 340 L340 366" style="--dl:3s"/>
-                </g>
-                <!-- die -->
-                <rect x="104" y="104" width="192" height="192" rx="6" fill="url(#die)" stroke="rgba(243,223,184,.55)"/>
-                <!-- matrix unit -->
-                <rect x="116" y="116" width="104" height="104" rx="3" fill="url(#cells)" stroke="rgba(216,191,148,.45)"/>
-                <rect class="mm-glow" x="116" y="116" width="104" height="104" rx="3" fill="rgba(243,223,184,.12)"/>
-                <text x="120" y="232" class="chip-lbl">MATRIX · INT8</text>
-                <!-- vector unit -->
-                <rect x="228" y="116" width="56" height="64" rx="3" fill="url(#lines)" stroke="rgba(216,191,148,.45)"/>
-                <text x="231" y="190" class="chip-lbl">VECTOR</text>
-                <!-- trace log -->
-                <rect x="228" y="196" width="56" height="88" rx="3" fill="rgba(185,217,154,.08)" stroke="rgba(185,217,154,.55)"/>
-                <g class="log-rows" fill="rgba(185,217,154,.7)"><rect x="234" y="204" width="44" height="2"/><rect x="234" y="211" width="36" height="2"/><rect x="234" y="218" width="40" height="2"/><rect x="234" y="225" width="30" height="2"/><rect x="234" y="232" width="44" height="2"/><rect x="234" y="239" width="26" height="2"/><rect x="234" y="246" width="38" height="2"/><rect x="234" y="253" width="42" height="2"/></g>
-                <text x="231" y="278" class="chip-lbl" fill="rgba(185,217,154,.9)">TRACE</text>
-                <!-- sequencer + dma -->
-                <rect x="116" y="240" width="104" height="44" rx="3" fill="none" stroke="rgba(216,191,148,.45)"/>
-                <g fill="rgba(216,191,148,.5)"><rect x="124" y="250" width="10" height="10"/><rect x="140" y="250" width="10" height="10"/><rect x="156" y="250" width="10" height="10"/><rect x="172" y="250" width="10" height="10"/><rect x="188" y="250" width="10" height="10"/><rect x="204" y="250" width="10" height="10"/></g>
-                <rect class="seq-run" x="124" y="250" width="10" height="10" fill="#f3dfb8"/>
-                <text x="120" y="278" class="chip-lbl">SEQ · DMA</text>
-              </svg>
-              <!-- lid / heat spreader, lifted -->
-              <div class="chip-lid">
-                <svg viewBox="0 0 180 180" aria-hidden="true">
-                  <rect x="1" y="1" width="178" height="178" rx="8" fill="url(#lid)" />
-                  <g transform="translate(46 38) scale(.74)" fill="none" stroke="#3a2e1f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity=".8">
-                    <path d="M9 70 H111 A15 15 0 0 0 95 47 A33 33 0 0 0 29 47 A17 17 0 0 0 9 70 Z"/>
-                    <path d="M62 14 V70 M62 14 C49 22 46 46 48 70 M62 14 C75 22 78 46 76 70 M38 26 Q62 31 86 26 M31 39 Q62 45 93 39 M29 54 Q62 60 95 54" stroke-width="1.4"/>
-                  </g>
-                  <text x="90" y="128" text-anchor="middle" class="lid-t">TDCC EXACT CORE</text>
-                  <text x="90" y="144" text-anchor="middle" class="lid-s">OPENTPU · BIT-EXACT</text>
-                  <text x="90" y="160" text-anchor="middle" class="lid-s">XC7K480T · EC-01</text>
-                </svg>
-              </div>
+            <div class="hero-actions" style="justify-content:flex-start">
+              <a class="btn lime" href="/exact-core.html">Read the announcement <span class="arr">›</span></a>
+              <a class="btn light" href="https://github.com/anilyagiz/tdcc-exact-core">View on GitHub</a>
             </div>
-            <div class="chip-caption"><span>Exact Core, exploded</span><span>Illustration</span></div>
           </div>
-        </div>
-
-        <div class="chip-blocks reveal">
-          <article><p class="mono">Matrix unit</p><p>The heavy LLM math in 8-bit numbers, in a fixed order.</p></article>
-          <article><p class="mono">Vector unit</p><p>Softmax and norms with fixed rounding, so the bits never drift.</p></article>
-          <article class="hl"><p class="mono">Trace log</p><p>Records every step, so a dispute points to the one step that differs.</p></article>
-          <article><p class="mono">Sequencer + DMA</p><p>One instruction per cycle; every data movement is an instruction.</p></article>
-        </div>
-
-        <div class="chip-grid">
-          <div class="reveal" id="exact-flow">
-            <p class="eyebrow">How TDCC Exact works</p>
-            <ol class="exact-steps">
-              <li><b>Rent</b><span>A renter opens a job on Solana; the USDC waits in escrow.</span></li>
-              <li><b>Run</b><span>A provider runs it on Exact Core and posts the answer's fingerprint.</span></li>
-              <li><b>Check</b><span>Any verifier re-runs it on a laptop. A mismatch opens a challenge.</span></li>
-              <li><b>Settle</b><span>Honest providers get paid: 80% to the host, 20% to TDCC. A cheater loses its stake; the renter is refunded and the verifier takes a share.</span></li>
-            </ol>
-            <p class="prog">Solana program <code>HzpKeqHLg7Mmjh1JmGymef7Z7hf3JXhaagp6UgTSH24A</code></p>
-          </div>
-          <div class="panel reveal">
-            <div class="fig"><span>tdcc-exact demo</span><b>CHEATER CAUGHT</b></div>
-<pre class="code"><span class="c">1. renter opens a yes/no oracle job, locks 2.00 USDC</span>
-<span class="c">2. provider A runs honestly; B skips layer 1</span>
-   A: NO  <span class="k">3c85c23e…</span>
-   B: NO  <span class="k">5013c640…</span>  <span class="c">same answer, other fingerprint</span>
-<span class="c">3. a verifier re-runs the job on this laptop</span>
-   A: match    → <span class="s">accept</span>
-   B: MISMATCH → <span class="k">challenge</span>
-<span class="c">4. bisecting B's trace</span>
-   first fault: <span class="k">step 659</span>, slice 0, pc 11
-<span class="c">5. settlement</span>
-   final: {'A': <span class="s">'Settled'</span>, 'B': <span class="k">'Slashed'</span>}</pre>
-          </div>
-        </div>
-
-        <div class="chip-results reveal">
-          <div class="fig"><span>Measured on the card · Kintex-7 xc7k480t, two DDR3 channels</span><b>Same tokens as the simulator, bit for bit</b></div>
-          <div class="res">
-            <div><span class="n">85.8</span><span class="u">tok/s</span><p>LFM2.5-230M, 4-bit · device decode</p></div>
-            <div><span class="n">31.3</span><span class="u">tok/s</span><p>Qwen3-0.6B, 4-bit · device decode</p></div>
-            <div><span class="n">24.5</span><span class="u">tok/s</span><p>Qwen3.5-0.8B, 4-bit · device decode</p></div>
-            <div><span class="n">10</span><span class="u">models</span><p>Modern models running with real weights on the card</p></div>
-          </div>
-          <p class="honest"><b>Honest status.</b> The Exact layer (trace log, fingerprint, dispute) runs on the bit-exact simulator today. The trace log in hardware and its speed on the card are not built or measured yet.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= THESIS ================= -->
-    <section class="block" id="thesis" aria-labelledby="thesis-title" style="border-top:0">
-      <div class="wrap">
-        <div class="head reveal">
-          <div>
-            <p class="eyebrow">Why this exists</p>
-            <h2 id="thesis-title" class="h2">AI runs on compute that is scattered across thousands of operators.</h2>
-          </div>
-          <p class="lede">Demand for AI compute compounds every year, while supply sits fragmented across thousands of operators that no single team can reach. Data centers have capacity they cannot fill; AI teams have workloads they cannot place. TDCC is the grid between them.</p>
-        </div>
-
-        <div class="thesis reveal">
-          <div class="thesis-col">
-            <p class="mono">Today · renting machines</p>
-            <h3>You buy hours and inherit every risk.</h3>
-            <ul>
-              <li>Pick hardware, drivers, regions, and images yourself</li>
-              <li>A stalled run at hour six is still billed</li>
-              <li>Silent failures look exactly like success</li>
-              <li>Capacity is locked to whichever cloud you chose</li>
-            </ul>
-          </div>
-          <div class="thesis-col">
-            <p class="mono" style="color:var(--sand)">TDCC · receiving work</p>
-            <h3>You buy accepted results. The network carries the risk.</h3>
-            <ul>
-              <li>Describe the workload, not the machine</li>
-              <li>Failed or stalled jobs requeue automatically to another host</li>
-              <li>Every result is checked against acceptance criteria</li>
-              <li>One API reaches data centers and independent GPUs alike</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="layers reveal" aria-labelledby="layers-title">
-          <h3 id="layers-title" class="sr-only">Where TDCC fits</h3>
-          <article class="layer">
-            <p class="mono">01 / Research layer</p>
-            <h3>Exa makes web knowledge easier to ask for.</h3>
-            <p><a href="https://exa.ai/" target="_blank" rel="noreferrer">Exa</a> lets you describe a question and receive organized information from the web. It changed how a research request begins.</p>
-          </article>
-          <article class="layer">
-            <p class="mono">02 / Capacity layer</p>
-            <h3>Vast makes GPU capacity easier to rent.</h3>
-            <p><a href="https://vast.ai/" target="_blank" rel="noreferrer">Vast</a> exposes a broad GPU marketplace where you find and rent an instance. It changed how a compute rental begins.</p>
-          </article>
-          <article class="layer us">
-            <p class="mono">03 / Work layer</p>
-            <h3>TDCC is built for the accepted outcome.</h3>
-            <p>A job is matched to suitable capacity and evaluated against its acceptance criteria. Settlement follows only after useful work is accepted.</p>
-          </article>
-        </div>
-        <div class="layers-note reveal"><span>Different layers, not a head-to-head benchmark.</span><a class="link" href="/litepaper.html">Read the litepaper →</a></div>
-      </div>
-    </section>
-
-    <!-- ================= PLATFORM ================= -->
-    <section class="block" id="platform" aria-labelledby="platform-title">
-      <div class="wrap">
-        <div class="head reveal">
-          <div>
-            <p class="eyebrow">The platform</p>
-            <h2 id="platform-title" class="h2">Inference, fine-tuning, training, verification.</h2>
-          </div>
-          <p class="lede">Underneath are schedulers, isolated runtimes, compatibility checks, verification, reputation, and payouts. What your team sees is a job, its state, and a receipt.</p>
-        </div>
-
-        <div class="stack">
-          <article class="stack-row reveal">
-            <div class="stack-num">01</div>
-            <div class="stack-copy">
-              <h3>Inference <span class="tag live">Live</span></h3>
-              <p>Serve open-weight models and batch jobs through one OpenAI- and Anthropic-compatible gateway. Point the tools you already use at a single URL.</p>
-              <ul class="specs">
-                <li><span>1.1</span>Batch inference and dedicated open-model endpoints</li>
-                <li><span>1.2</span>Drop-in gateway for Claude Code, Codex, and OpenCode</li>
-                <li><span>1.3</span>Streaming responses; upstream credentials resolved server-side</li>
-              </ul>
-              <a class="link" href="#developers">Use the gateway →</a>
+          <div class="reveal" style="position:relative">
+            <div class="term">
+              <div class="term-top"><i></i><i></i><i></i><span>tdcc-exact demo</span><span class="tag">CHEATER CAUGHT</span></div>
+<pre><span class="d">1.</span> renter opens a yes/no oracle job, locks 2.00 USDC
+<span class="d">2.</span> provider A runs honestly; B skips layer 1
+   A: NO 3c85c23e…
+   B: NO 5013c640…  <span class="d">same answer, other fingerprint</span>
+<span class="d">3.</span> a verifier re-runs the job on this laptop
+   A: <span class="g">match → accept</span>
+   B: <span class="r">MISMATCH → challenge</span>
+<span class="d">4.</span> bisecting B's trace
+   first fault: step <span class="r">659</span>, slice 0, pc 11
+<span class="d">5.</span> settlement
+   final: {'A': <span class="g">'Settled'</span>, 'B': <span class="r">'Slashed'</span>}</pre>
             </div>
-            <div class="panel">
-              <div class="fig"><span>Gateway</span><b>OPENAI · ANTHROPIC</b></div>
-<pre class="code"><span class="c"># point any compatible tool at TDCC</span>
-<span class="k">export</span> ANTHROPIC_BASE_URL=<span class="s">"https://decentralizedcompute.company/api/anthropic"</span>
-<span class="k">export</span> ANTHROPIC_API_KEY=<span class="s">"$TDCC_API_KEY"</span>
-
-<span class="c"># or the OpenAI-compatible surface</span>
-base_url = <span class="s">"https://decentralizedcompute.company/api/v1"</span></pre>
+            <div class="ec-metrics">
+              <div><strong>85.8</strong><span>tok/s LFM2.5-230M</span></div>
+              <div><strong>31.3</strong><span>tok/s Qwen3-0.6B</span></div>
+              <div><strong>24.5</strong><span>tok/s Qwen3.5-0.8B</span></div>
             </div>
-          </article>
-
-          <article class="stack-row reveal">
-            <div class="stack-num">02</div>
-            <div class="stack-copy">
-              <h3>Fine-tuning <span class="tag">Pilot</span></h3>
-              <p>LoRA and QLoRA runs matched to hardware that fits the model, memory, deadline, and budget. If a host drops mid-run, the job moves to another one.</p>
-              <ul class="specs">
-                <li><span>2.1</span>Constraints for VRAM, region, deadline, and max spend</li>
-                <li><span>2.2</span>Dry-run estimates before a job is committed</li>
-                <li><span>2.3</span>Accepted on eval delta against a held-out set</li>
-              </ul>
-              <a class="link" href="/app.html">See the console →</a>
-            </div>
-            <div class="panel">
-              <div class="fig"><span>job_8fq2c1 · finetune.lora</span><b>RUNNING</b></div>
-              <div class="rows">
-                <div><span class="k">Matched</span><span>eu-central · 1× 80GB</span><span class="ok">done</span></div>
-                <div><span class="k">Provisioned</span><span>runtime · sha 4c9a…</span><span class="ok">done</span></div>
-                <div><span class="k">Training</span><span><span class="bar"><i></i></span></span><span class="warn">step 1840</span></div>
-                <div><span class="k">Verification</span><span>2 passes queued</span><span>pending</span></div>
-                <div><span class="k">Budget</span><span>$38.40 / $120.00</span><span>32%</span></div>
-              </div>
-            </div>
-          </article>
-
-          <article class="stack-row reveal">
-            <div class="stack-num">03</div>
-            <div class="stack-copy">
-              <h3>Training &amp; evaluation <span class="tag">Planned</span></h3>
-              <p>Reproducible evaluation suites today; multi-node training on data-center clusters next, with checkpoint continuity and eval gates.</p>
-              <ul class="specs">
-                <li><span>3.1</span>Reproducible scoring runs for any model</li>
-                <li><span>3.2</span>Synthetic data generation with schema and duplication checks</li>
-                <li><span>3.3</span>Full pre-training on multi-node clusters</li>
-              </ul>
-              <a class="link" href="#workloads">Workload catalogue →</a>
-            </div>
-            <div class="panel">
-              <div class="fig"><span>Live stream</span><b>SSE</b></div>
-<pre class="code"><span class="c">14:02:11</span>  loss 1.284  lr 1.4e-4  tok/s <span class="k">5,910</span>
-<span class="c">14:02:38</span>  loss 1.241  lr 1.4e-4  tok/s <span class="k">6,042</span>
-<span class="c">14:03:05</span>  checkpoint written  <span class="s">adapter-1840.safetensors</span>
-<span class="c">14:03:06</span>  budget used $38.40 / $120.00</pre>
-            </div>
-          </article>
-
-          <article class="stack-row reveal">
-            <div class="stack-num">04</div>
-            <div class="stack-copy">
-              <h3>Verification &amp; settlement</h3>
-              <p>Verification is the product. Every completed job carries a receipt: what ran, where, against which criteria, and what was paid. Work that fails is never billed and never paid out.</p>
-              <ul class="specs">
-                <li><span>4.1</span>Acceptance criteria attached to the job up front</li>
-                <li><span>4.2</span>Redundant or sampled verification passes per workload</li>
-                <li><span>4.3</span>Host reputation built from verified outcomes, not self-reports</li>
-              </ul>
-              <a class="link" href="#rails">How settlement works →</a>
-            </div>
-            <div class="panel">
-              <div class="fig"><span>Receipt · job_8fq1za</span><b>ACCEPTED</b></div>
-              <div class="rows">
-                <div><span class="k">Workload</span><span>inference.batch · llama-3.1-8b</span><span></span></div>
-                <div><span class="k">Items</span><span>1,240 / 1,240</span><span class="ok">✓</span></div>
-                <div><span class="k">Criteria</span><span>schema_valid ∧ 2/2 passes</span><span class="ok">✓</span></div>
-                <div><span class="k">Charged</span><span>$27.94</span><span></span></div>
-                <div><span class="k">Host payout</span><span>$23.75</span><span class="warn">settled</span></div>
-              </div>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= MARKETPLACE ================= -->
-    <section class="block" id="marketplace" aria-labelledby="market-title">
-      <div class="wrap">
-        <div class="head reveal">
-          <div>
-            <p class="eyebrow">GPU marketplace</p>
-            <h2 id="market-title" class="h2">Rent the machine, or pay for the result.</h2>
-          </div>
-          <p class="lede">Every GPU on the network is also listed in the TDCC marketplace. Rent raw capacity when you want the box. Submit a job when you want the answer. Same hosts, same reputation, one account.</p>
-        </div>
-
-        <div class="market reveal">
-          <div class="market-bar">
-            <div class="seg" role="tablist" aria-label="Marketplace mode">
-              <button type="button" role="tab" aria-selected="true" data-mode="rent">Rent a GPU</button>
-              <button type="button" role="tab" aria-selected="false" data-mode="job">Submit a job</button>
-            </div>
-            <div class="filters" aria-label="Hardware filter">
-              <button type="button" class="on" data-f="all">All</button>
-              <button type="button" data-f="80">80GB</button>
-              <button type="button" data-f="48">48GB</button>
-              <button type="button" data-f="24">24GB</button>
-              <button type="button" data-f="exact">Exact Core</button>
-            </div>
-            <a class="link market-note" href="/marketplace.html" style="color:var(--sand)">Open the full marketplace →</a>
-          </div>
-
-          <div class="listings" id="listings">
-            <article class="listing" data-f="80"><div class="l-top"><span class="l-class">80GB class</span><span class="l-av"><i></i>Available</span></div><h3>Data-center node</h3><p class="l-spec">80 GB VRAM · eu-central · ×8</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:96%"></i></span><b>0.96</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
-            <article class="listing" data-f="80"><div class="l-top"><span class="l-class">80GB class</span><span class="l-av"><i></i>Available</span></div><h3>Certified micro-cluster</h3><p class="l-spec">80 GB VRAM · us-east · ×2</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:92%"></i></span><b>0.92</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
-            <article class="listing" data-f="48"><div class="l-top"><span class="l-class">48GB class</span><span class="l-av"><i></i>Available</span></div><h3>Regional cluster</h3><p class="l-spec">48 GB VRAM · ap-south · ×4</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:89%"></i></span><b>0.89</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
-            <article class="listing" data-f="24"><div class="l-top"><span class="l-class">24GB class</span><span class="l-av"><i></i>Available</span></div><h3>Independent host</h3><p class="l-spec">24 GB consumer GPU · eu-west · ×1</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:84%"></i></span><b>0.84</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
-            <article class="listing exact" data-f="exact"><div class="l-top"><span class="l-class">Exact Core</span><span class="l-av soon"><i></i>Coming</span></div><h3>Exact Core card</h3><p class="l-spec">Kintex-7 PCIe · bit-exact · re-checkable</p><div class="l-rep"><span>Verification</span><span class="meter"><i style="width:100%"></i></span><b>exact</b></div><div class="l-foot"><span class="price" data-rent="USDC escrow on Solana" data-job="USDC escrow on Solana"></span><span class="l-cta">Learn →</span></div></article>
-            <article class="listing" data-f="24"><div class="l-top"><span class="l-class">24GB class</span><span class="l-av"><i></i>Available</span></div><h3>Two-laptop pair</h3><p class="l-spec">Coordinated · 27B-class decode · ×2</p><div class="l-rep"><span>Reputation</span><span class="meter"><i style="width:81%"></i></span><b>0.81</b></div><div class="l-foot"><span class="price" data-rent="Rent by the hour" data-job="Pay per accepted job"></span><span class="l-cta">Select →</span></div></article>
-          </div>
-        </div>
-
-        <div class="market-sides reveal">
-          <article>
-            <p class="mono">For buyers</p>
-            <h3>One account, two ways to buy.</h3>
-            <p>Rent a box for full control, or hand over a job and pay only when the result is accepted. Reputation comes from verified outcomes, not self-reports.</p>
-          </article>
-          <article>
-            <p class="mono">For hosts</p>
-            <h3>List once. Earn both ways.</h3>
-            <p>Publish hardware, availability, and price. Your GPU earns from rentals and from routed jobs, whether it sits in a data center or under your desk.</p>
-            <a class="link" href="/marketplace.html#hosts" style="margin-top:16px">List your GPU →</a>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= NETWORK / HOW ================= -->
-    <section class="block" id="network" aria-labelledby="network-title">
-      <div class="wrap">
-        <div class="head reveal">
-          <div>
-            <p class="eyebrow">How it works</p>
-            <h2 id="network-title" class="h2">What happens after you submit a job.</h2>
-          </div>
-          <p class="lede">GPUs are not interchangeable. TDCC matches every job with hardware that fits its model, memory, speed, price, and reliability needs, then checks that the work was actually done.</p>
-        </div>
-
-        <div class="pipeline reveal">
-          <article class="step"><p class="mono">01 / Submit</p><div class="dot"></div><h3>Submit</h3><p>Send a training, fine-tuning, or inference job through the API, CLI, SDK, or console.</p></article>
-          <article class="step"><p class="mono">02 / Match</p><div class="dot"></div><h3>Match</h3><p>The router finds a data center or GPU that fits memory, speed, price, and reliability.</p></article>
-          <article class="step"><p class="mono">03 / Run</p><div class="dot"></div><h3>Run</h3><p>The job executes in an approved, isolated runtime with live telemetry and automatic requeue.</p></article>
-          <article class="step"><p class="mono">04 / Verify</p><div class="dot"></div><h3>Verify</h3><p>The result is checked before it is billed. Hosts are paid only for accepted work.</p></article>
-        </div>
-
-        <p class="quote-line reveal">AI teams bring the models. TDCC brings the compute.</p>
-      </div>
-    </section>
-
-    <!-- ================= AUDIENCES ================= -->
-    <section class="block" id="sides" aria-labelledby="sides-title">
-      <div class="wrap">
-        <div class="head reveal">
-          <div>
-            <p class="eyebrow">Who it is for</p>
-            <h2 id="sides-title" class="h2">Teams that need GPUs, and people who own them.</h2>
-          </div>
-          <p class="lede">Companies get compute. Data centers get demand. GPU owners get paid for useful work. Agents get a machine-callable way to buy all of it.</p>
-        </div>
-        <div class="aud reveal">
-          <article><div class="letter">A</div><h3>For AI teams</h3><p>Run training, fine-tuning, inference, and evaluation without operating a fleet. One key, one project, one bill.</p></article>
-          <article><div class="letter">B</div><h3>For data centers &amp; GPU owners</h3><p>Turn idle capacity into recurring, screened demand. Publish hardware, availability, and price; earn on accepted work.</p></article>
-          <article><div class="letter">C</div><h3>For agents &amp; tools</h3><p>A machine-callable API so autonomous workflows can buy compute exactly the way a developer does.</p></article>
-        </div>
-        <div class="hw reveal" aria-label="Capacity the router spans">
-          <span class="chip">Data-center clusters</span><span class="chip">Certified micro-clusters</span><span class="chip">Independent GPU hosts</span><span class="chip">80GB-class accelerators</span><span class="chip">48GB-class accelerators</span><span class="chip">24GB consumer GPUs</span><span class="chip">CPU pre/post-processing</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= BENCHMARK ================= -->
-    <section class="block" id="research" aria-labelledby="research-title">
-      <div class="wrap">
-        <div class="bench reveal" id="bench">
-          <div class="bench-copy">
-            <p class="eyebrow" style="margin:0">Engineering note · September 2026</p>
-            <h3 id="research-title">Two compact laptops. One 27B model. 80 tokens per second.</h3>
-            <p>We paired two small machines for a Qwen 3.8 27B workload and moved a ~50 tok/s run to 80 tok/s, a 60% gain, without touching the weights or the intended output. The work was in the path around generation: coordinating handoffs, cutting idle time, keeping one stream moving.</p>
-            <p>Most of what we do is this kind of work: getting more out of hardware that already exists.</p>
-            <a class="link" href="/two-laptops-80-tps.html">Read the engineering note →</a>
-          </div>
-          <div class="bench-viz">
-            <div class="fig"><span>Observed throughput</span><b>+60%</b></div>
-            <div class="bars">
-              <div class="row"><div class="lbl"><span>Unoptimized path</span><b>~50</b></div><div class="track"><div class="fill" style="--w:62.5%"></div></div></div>
-              <div class="row"><div class="lbl"><span>With TDCC coordination</span><b>80</b></div><div class="track"><div class="fill hot" style="--w:100%"></div></div></div>
-            </div>
-            <p class="bench-foot">Internal benchmark. Results vary with hardware, context length, sampling, and thermals.</p>
+            <p class="honest">Honest status: the Exact layer (trace log, fingerprint, dispute) runs on the bit-exact simulator today. The trace log in hardware is not built or measured yet.</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ================= DEVELOPERS ================= -->
-    <section class="block" id="developers" aria-labelledby="dev-title">
-      <div class="wrap dev">
-        <div class="reveal">
+    <section class="section" id="developers" style="padding-top:0">
+      <div class="wrap split">
+        <div class="split-copy reveal">
           <p class="eyebrow">Developers</p>
-          <h2 id="dev-title" class="h2">API, CLI, SDKs, and a desktop app.</h2>
-          <ul class="dev-list">
-            <li><b>REST API</b><span>Create, inspect, cancel, and stream jobs. Idempotency keys on creation.</span></li>
-            <li><b>CLI</b><span>Submit from YAML, tail logs, verify receipts.</span></li>
-            <li><b>SDKs</b><span>Python 3.10+ and TypeScript / Node 18+.</span></li>
-            <li><b>Events</b><span>Server-sent events per job and signed per-project webhooks.</span></li>
-            <li><b>Desktop</b><span>0.73.0-rc.1 beta for Windows x64. Linux next.</span></li>
-          </ul>
-          <div class="actions">
-            <a class="btn solid" href="/app.html#downloads">Download desktop beta <span class="arr">→</span></a>
-            <a class="btn" href="/app.html">Read the docs</a>
+          <h2 class="title">API, CLI, SDKs and a desktop app.</h2>
+          <p class="lede">Create, inspect, cancel and stream jobs from the tools you already use. Chat completions work with any OpenAI client today.</p>
+          <div class="dev-grid">
+            <div><b>REST API</b><p>Idempotency keys on creation, SSE per job.</p></div>
+            <div><b>CLI</b><p>Submit from YAML, tail logs, verify receipts.</p></div>
+            <div><b>SDKs</b><p>Python 3.10+ and TypeScript / Node 18+.</p></div>
+            <div><b>Desktop</b><p>0.73.0-rc.1 beta for Windows x64. Linux next.</p></div>
+          </div>
+          <div class="hero-actions" style="justify-content:flex-start">
+            <a class="btn dark" href="/app.html">Read the docs <span class="arr">›</span></a>
+            <a class="btn light" href="/app.html#downloads">Download desktop beta</a>
           </div>
         </div>
-
-        <div class="reveal">
-          <div class="panel">
-            <div class="tabs" role="tablist" aria-label="Code examples">
-              <button role="tab" aria-selected="true" aria-controls="t-curl" id="tb-curl">cURL</button>
-              <button role="tab" aria-selected="false" aria-controls="t-py" id="tb-py" tabindex="-1">Python</button>
-              <button role="tab" aria-selected="false" aria-controls="t-ts" id="tb-ts" tabindex="-1">TypeScript</button>
-              <button role="tab" aria-selected="false" aria-controls="t-cli" id="tb-cli" tabindex="-1">CLI</button>
-            </div>
-<pre class="code tab-pane" id="t-curl" role="tabpanel" aria-labelledby="tb-curl"><span class="c"># submit a batch inference job</span>
-curl https://api.decentralizedcompute.company/v1/jobs \
+        <div class="dev-win reveal">
+          <div class="tabs" role="tablist" aria-label="Code examples">
+            <button role="tab" aria-selected="true" aria-controls="code-chat" id="tab-chat">Chat API</button>
+            <button role="tab" aria-selected="false" aria-controls="code-py" id="tab-py">Python</button>
+            <button role="tab" aria-selected="false" aria-controls="code-ts" id="tab-ts">TypeScript</button>
+            <button role="tab" aria-selected="false" aria-controls="code-cli" id="tab-cli">CLI</button>
+          </div>
+<pre id="code-chat" role="tabpanel" aria-labelledby="tab-chat"><span class="c"># OpenAI-compatible, billed from your balance</span>
+curl https://chat.decentralizedcompute.company/v1/chat/completions \
   -H <span class="s">"Authorization: Bearer $TDCC_API_KEY"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
   -d <span class="s">'{
-    "type": "inference.batch",
-    "model": "llama-3.1-8b-instruct",
-    "input_uri": "s3://acme-eval/prompts.jsonl",
-    "accept": { "min_verifications": 2 },
-    "budget": { "max_usd": 40 }
+    "model": "tdcc-chat",
+    "stream": true,
+    "messages": [
+      { "role": "user", "content": "Hello, TDCC" }
+    ]
   }'</span></pre>
-<pre class="code tab-pane" id="t-py" role="tabpanel" aria-labelledby="tb-py" hidden><span class="k">from</span> tdcc <span class="k">import</span> Client
-
+<pre id="code-py" role="tabpanel" aria-labelledby="tab-py" hidden><span class="k">from</span> tdcc <span class="k">import</span> Client
 client = Client(api_key=os.environ[<span class="s">"TDCC_API_KEY"</span>])
 job = client.jobs.create(
     type=<span class="s">"finetune.lora"</span>,
@@ -1203,7 +902,7 @@ job = client.jobs.create(
 )
 client.jobs.wait(job.id)
 print(job.receipt.status)</pre>
-<pre class="code tab-pane" id="t-ts" role="tabpanel" aria-labelledby="tb-ts" hidden><span class="k">import</span> { TDCC } <span class="k">from</span> <span class="s">"@tdcc/sdk"</span>;
+<pre id="code-ts" role="tabpanel" aria-labelledby="tab-ts" hidden><span class="k">import</span> { TDCC } <span class="k">from</span> <span class="s">"@tdcc/sdk"</span>;
 
 <span class="k">const</span> tdcc = <span class="k">new</span> TDCC({ apiKey: process.env.TDCC_API_KEY });
 <span class="k">const</span> job = <span class="k">await</span> tdcc.jobs.create({
@@ -1212,7 +911,7 @@ print(job.receipt.status)</pre>
   accept: { minVerifications: 2 },
 });
 <span class="k">for await</span> (<span class="k">const</span> ev <span class="k">of</span> tdcc.jobs.stream(job.id)) console.log(ev.stage);</pre>
-<pre class="code tab-pane" id="t-cli" role="tabpanel" aria-labelledby="tb-cli" hidden><span class="c"># authenticate once per machine</span>
+<pre id="code-cli" role="tabpanel" aria-labelledby="tab-cli" hidden><span class="c"># authenticate once per machine</span>
 tdcc login
 
 <span class="c"># submit and follow</span>
@@ -1222,154 +921,110 @@ tdcc jobs logs job_8fq2c1 --follow
 <span class="c"># inspect capacity and proof of work</span>
 tdcc hosts list --region eu-central --min-vram 48
 tdcc receipts show job_8fq1za --verify</pre>
-          </div>
-          <p class="layers-note" style="padding-top:14px">Preview interfaces from the early-access build. Request shapes may change before the API is declared stable.</p>
         </div>
       </div>
     </section>
 
     <!-- ================= WORKLOADS ================= -->
-    <section class="block" id="workloads" aria-labelledby="workloads-title">
+    <section class="section" id="workloads" style="padding-top:0">
       <div class="wrap">
-        <div class="head reveal">
-          <div>
-            <p class="eyebrow">Workload catalogue</p>
-            <h2 id="workloads-title" class="h2">What runs today, and what comes next.</h2>
-          </div>
-          <p class="lede">Each workload has its own acceptance rules, because verification means something different for a transcription batch than for a fine-tune. Start with one job or scale across data centers.</p>
+        <div class="section-head reveal">
+          <p class="eyebrow">Workload catalogue</p>
+          <h2 class="title">What runs today, and what comes next.</h2>
+          <p class="lede">Each workload has its own acceptance rules, because verification means something different for a transcription batch than for a fine-tune.</p>
         </div>
         <div class="table-wrap reveal">
           <table>
             <thead><tr><th>Workload</th><th>API type</th><th>Typical hardware</th><th>Acceptance basis</th><th>Status</th></tr></thead>
             <tbody>
-              <tr><td>Batch inference</td><td><code>inference.batch</code></td><td>24–80GB</td><td>Schema validity + redundant sampling</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>Open-model hosting</td><td><code>inference.endpoint</code></td><td>48–80GB</td><td>Health checks + latency SLO</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>Embeddings</td><td><code>embeddings</code></td><td>24GB+</td><td>Deterministic re-computation on a sample</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>Audio transcription</td><td><code>transcribe</code></td><td>24GB+</td><td>Sampled re-run + agreement threshold</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>Image generation</td><td><code>image.generate</code></td><td>24–48GB</td><td>Output integrity + policy checks</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>LoRA / QLoRA fine-tuning</td><td><code>finetune.lora</code></td><td>48–80GB</td><td>Eval delta on a held-out set</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>Evaluations</td><td><code>eval.suite</code></td><td>24GB+</td><td>Reproducible scoring run</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>Synthetic data</td><td><code>synth.generate</code></td><td>24GB+</td><td>Schema + duplication checks</td><td><span class="tag live">Pilot</span></td></tr>
-              <tr><td>Agent workloads</td><td><code>agent.run</code></td><td>Mixed</td><td>Step traces + budget ceilings</td><td><span class="tag">Planned</span></td></tr>
-              <tr><td>Full pre-training</td><td><code>train.full</code></td><td>Multi-node clusters</td><td>Checkpoint continuity + eval gates</td><td><span class="tag">Planned</span></td></tr>
+              <tr><td>Chat completions</td><td><code>tdcc-chat</code></td><td>Managed</td><td>Per-token metering</td><td><span class="chip live">Live</span></td></tr>
+              <tr><td>Batch inference</td><td><code>inference.batch</code></td><td>24–80GB</td><td>Schema validity + redundant sampling</td><td><span class="chip pilot">Pilot</span></td></tr>
+              <tr><td>Open-model hosting</td><td><code>inference.endpoint</code></td><td>48–80GB</td><td>Health checks + latency SLO</td><td><span class="chip pilot">Pilot</span></td></tr>
+              <tr><td>Embeddings</td><td><code>embeddings</code></td><td>24GB+</td><td>Deterministic re-computation on a sample</td><td><span class="chip pilot">Pilot</span></td></tr>
+              <tr><td>Audio transcription</td><td><code>transcribe</code></td><td>24GB+</td><td>Sampled re-run + agreement threshold</td><td><span class="chip pilot">Pilot</span></td></tr>
+              <tr><td>Image generation</td><td><code>image.generate</code></td><td>24–48GB</td><td>Output integrity + policy checks</td><td><span class="chip pilot">Pilot</span></td></tr>
+              <tr><td>LoRA / QLoRA fine-tuning</td><td><code>finetune.lora</code></td><td>48–80GB</td><td>Eval delta on a held-out set</td><td><span class="chip pilot">Pilot</span></td></tr>
+              <tr><td>Evaluations</td><td><code>eval.suite</code></td><td>24GB+</td><td>Reproducible scoring run</td><td><span class="chip pilot">Pilot</span></td></tr>
+              <tr><td>Synthetic data</td><td><code>synth.generate</code></td><td>24GB+</td><td>Schema + duplication checks</td><td><span class="chip pilot">Pilot</span></td></tr>
+              <tr><td>Agent workloads</td><td><code>agent.run</code></td><td>Mixed</td><td>Step traces + budget ceilings</td><td><span class="chip plan">Planned</span></td></tr>
+              <tr><td>Full pre-training</td><td><code>train.full</code></td><td>Multi-node clusters</td><td>Checkpoint continuity + eval gates</td><td><span class="chip plan">Planned</span></td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- ================= ONCHAIN RAILS ================= -->
-    <section class="block" id="rails" aria-labelledby="rails-title">
+    <!-- ================= PRICING ================= -->
+    <section class="section" id="pricing" style="padding-top:0">
       <div class="wrap">
-        <div class="head reveal">
-          <div>
-            <p class="eyebrow">Onchain</p>
-            <h2 id="rails-title" class="h2">Settlement on Solana and Avalanche. No wallet needed to use it.</h2>
-          </div>
-          <p class="lede">Workloads run in approved compute environments, not on a blockchain. You use TDCC with an API key, like any AI provider. Chains do what they are good at: neutral coordination, auditable settlement, and paying a global supply side.</p>
+        <div class="section-head reveal">
+          <p class="eyebrow">Pricing</p>
+          <h2 class="title">Pay as you go. Nothing more.</h2>
+          <p class="lede">No plans and no seats. Load a balance and spend it on chat, API tokens and jobs.</p>
         </div>
-
-        <div class="layer-map reveal" aria-label="Where each layer lives">
-          <div><b>Compute</b><span>GPUs in data centers, micro-clusters, and independent hosts. Off-chain, isolated runtimes.</span><i>Chain-agnostic</i></div>
-          <div><b>Verification</b><span>Acceptance criteria, redundant passes, reputation from verified outcomes.</span><i>TDCC protocol</i></div>
-          <div><b>Settlement</b><span>Off-chain payouts at launch; optional public settlement records for teams that want them.</span><i>Avalanche · Solana</i></div>
-          <div><b>Interface</b><span>REST, CLI, SDKs, desktop app, and an OpenAI/Anthropic-compatible gateway.</span><i>Web2-native</i></div>
+        <div class="steps">
+          <div class="step reveal"><div class="big">$5+</div><h3>Top up your balance</h3><p>Add $5 or more by card. Funds sit in your TDCC account until you use them.</p></div>
+          <div class="step reveal"><div class="big">1 key</div><h3>Use chat and the API</h3><p>Create keys for your apps or chat in the browser. Same balance, same models.</p></div>
+          <div class="step reveal"><div class="big">Per token</div><h3>Pay only for usage</h3><p>Input and output tokens are deducted per request. Requests stop when the balance is empty.</p></div>
         </div>
-
-        <div class="rails reveal" style="margin-top:28px">
-          <article class="rail">
-            <p class="mono">Coordination layer</p>
-            <h3>Avalanche</h3>
-            <p>A natural home for verifiable coordination, policy-aware execution, and customizable infrastructure. Avalanche L1s can hold auditable workload state, provider coordination, and deployments that need explicit control over rules and participants.</p>
-          </article>
-          <article class="rail">
-            <p class="mono">Throughput layer</p>
-            <h3>Solana</h3>
-            <p>A natural home for high-throughput experiences around AI: fast agent actions, frequent job events, low-friction payments, and developer-facing applications that need responsive execution at scale.</p>
-          </article>
-        </div>
-        <p class="layers-note reveal">Two integration paths around the same compute service.</p>
+        <p class="price-note">Per-model token rates are listed in the console. Jobs are charged only after the result is accepted.</p>
       </div>
     </section>
 
-    <!-- ================= MANIFESTO (light) ================= -->
-    <section class="block light" id="mission" aria-labelledby="mission-title">
+    <!-- ================= NOTES ================= -->
+    <section class="section" style="padding-top:0">
       <div class="wrap">
-        <div class="manifesto">
-          <div class="reveal">
-            <p class="eyebrow">Mission</p>
-            <h2 id="mission-title" class="h2">AI needs more compute than any single cloud can supply.</h2>
-            <div class="manifesto-body">
-              <p>AI teams need more GPUs to train and run models. Data centers have the capacity, but finding the right hardware and managing it is hard. Capacity sits idle while jobs wait.</p>
-              <p>TDCC connects both sides. Our mark is a cloud with a lattice inside it: one surface on top, many independent machines underneath, each paid for the work it completes.</p>
-            </div>
-          </div>
-          <div class="logo-card reveal" aria-label="TDCC logo">
-            <span class="mono t"><span>TDCC</span><span>Mark 01</span></span>
-            <img src="/assets/tdcc-logo.png" alt="TDCC logo: a cloud with a lattice dome of connected compute nodes" width="358" height="358" loading="lazy" />
-            <span class="mono b"><span>One surface</span><span>Many machines</span></span>
-          </div>
+        <div class="section-head reveal">
+          <p class="eyebrow">From the lab</p>
+          <h2 class="title">Getting more out of hardware that already exists.</h2>
         </div>
-        <div class="principles reveal">
-          <article><p class="mono">01</p><h3>One simple API</h3><p>Send your AI job once. TDCC handles the infrastructure.</p></article>
-          <article><p class="mono">02</p><h3>Use every GPU</h3><p>Connect data centers and independent operators to real demand.</p></article>
-          <article><p class="mono">03</p><h3>Verify the result</h3><p>Every completed job is checked before it is accepted.</p></article>
-          <article><p class="mono">04</p><h3>Built for AI</h3><p>Train, fine-tune, evaluate, and run models in one place.</p></article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= TEAM ================= -->
-    <section class="block" id="team" aria-labelledby="team-title" style="border-top:0">
-      <div class="wrap team">
-        <div class="reveal">
-          <p class="eyebrow">Team</p>
-          <h2 id="team-title" class="h2">A small team that writes the code and racks the hardware.</h2>
-          <p class="lede">TDCC is built by a small team, and we are hiring. Meet the founder, the operations lead, advisors, and the people joining next.</p>
-        </div>
-        <div class="actions reveal" style="justify-content:flex-start">
-          <a class="btn solid" href="/team.html">Meet the team <span class="arr">→</span></a>
-          <a class="btn" href="mailto:anil@decentralizedcompute.company?subject=Joining%20the%20TDCC%20team">We're hiring</a>
+        <div class="notes">
+          <a class="note reveal" href="/two-laptops-80-tps.html"><span class="chip">Engineering note</span><h3>Two compact laptops. One 27B model. 80 tokens per second.</h3><p>A ~50 tok/s run moved to 80 without touching the weights.</p><span class="more">Read the note ›</span></a>
+          <a class="note reveal" href="/cask-q.html"><span class="chip">Paper</span><h3>CASK-Q: 25% lower attention error at 2-bit, same size.</h3><p>Our research on KV-cache quantization.</p><span class="more">Read the paper ›</span></a>
+          <a class="note reveal" href="/exact-core.html"><span class="chip">Chip</span><h3>Exact Core: an AI chip whose answers anyone can re-check.</h3><p>Bit-exact silicon and an on-chain dispute game.</p><span class="more">Read more ›</span></a>
+          <a class="note reveal" href="/app.html#downloads"><span class="chip">Release</span><h3>TDCC Desktop 0.73.0-rc.1 for Windows x64.</h3><p>Console, jobs and receipts on your desktop.</p><span class="more">Download ›</span></a>
         </div>
       </div>
     </section>
 
     <!-- ================= FAQ ================= -->
-    <section class="block" id="faq" aria-labelledby="faq-title">
-      <div class="wrap faq-grid">
-        <div class="reveal">
-          <p class="eyebrow">FAQ</p>
-          <h2 id="faq-title" class="h2">Questions we get often.</h2>
-        </div>
-        <div class="reveal">
-          <details><summary>What is TDCC?</summary><p>An AI inference and compute network that connects AI teams with data centers and GPUs for training, fine-tuning, and inference through one API, with every result checked.</p></details>
-          <details><summary>Do I need to manage a GPU?</summary><p>No. Send your job through the API. TDCC handles matching, execution, failover, and verification.</p></details>
+    <section class="section" id="faq" style="padding-top:0">
+      <div class="wrap">
+        <div class="section-head reveal"><h2 class="title">Questions, answered</h2></div>
+        <div class="faq reveal">
+          <details open><summary>What is TDCC?</summary><p>An AI inference and compute network that connects AI teams with data centers and GPUs for training, fine-tuning and inference through one API, with every result checked.</p></details>
+          <details><summary>How does billing work?</summary><p>You top up your account with $5 or more. Chat messages and API requests are then deducted from that balance per token, and jobs are charged once their result is accepted. When the balance runs out, requests stop until you add funds.</p></details>
+          <details><summary>Can I use my own tools with the API?</summary><p>Yes. The chat endpoint is OpenAI-compatible, so any OpenAI client, Claude Code, Codex or OpenCode can point at TDCC by changing the base URL and key.</p></details>
+          <details><summary>Do I need to manage a GPU?</summary><p>No. Send your job through the API. TDCC handles matching, execution, failover and verification.</p></details>
           <details><summary>Do I need a wallet or crypto?</summary><p>No. You use TDCC with an API key like any AI provider. Payouts are off-chain at launch; optional on-chain settlement records via Avalanche and Solana are planned for teams that want public, auditable records.</p></details>
-          <details><summary>Can data centers and GPU owners join?</summary><p>Yes. Data centers and GPU operators can provide capacity and earn from accepted AI jobs.</p></details>
+          <details><summary>Can data centers and GPU owners join?</summary><p>Yes. Data centers and GPU operators can list capacity and earn from rentals and accepted AI jobs.</p></details>
           <details><summary>What makes TDCC different?</summary><p>We sell verified AI work, not raw GPU hours. Failed work is never billed and never paid out.</p></details>
-          <details><summary>How does TDCC fit Avalanche and Solana?</summary><p>TDCC stays chain-agnostic at the compute layer. Avalanche fits verifiable coordination and customizable infrastructure, while Solana fits high-throughput developer, agent, and micro-workflow experiences. They are complementary integration paths, not competing compute backends.</p></details>
         </div>
       </div>
     </section>
 
     <!-- ================= JOIN ================= -->
-    <section class="block" id="join" aria-labelledby="join-title" style="border-top:0;padding-top:0">
+    <section class="section" id="join" style="padding-top:0">
       <div class="wrap">
         <div class="join reveal">
-          <h2 id="join-title" class="display">Get early access.</h2>
-          <p class="lede">Enter your early believer code to check access to the first TDCC cohort.</p>
-          <form id="early-access-form" class="early-access-form">
-            <label class="sr-only" for="early-access-code">Early access code</label>
-            <input id="early-access-code" name="code" type="text" autocomplete="off" autocapitalize="characters" placeholder="ENTER YOUR ACCESS CODE" required />
-            <button class="btn solid" type="submit">Check access <span class="arr">→</span></button>
-          </form>
-          <button id="copy-invite-link" class="btn ghost-btn" type="button">Copy invite link</button>
-          <p id="early-access-message" class="early-access-message" role="status" aria-live="polite" hidden></p>
-          <div class="join-foot">
-            <p>We are also looking for AI companies, data centers, GPU operators, ecosystem partners, and <a class="inline" href="/team.html">new teammates</a>.</p>
-            <a class="btn" href="mailto:anil@decentralizedcompute.company?subject=TDCC%20Early%20Network">Contact the founder</a>
-            <a class="btn" href="/litepaper.html">Read the litepaper</a>
+          <div>
+            <p class="eyebrow">Early network</p>
+            <h2 class="title">Get early access.</h2>
+            <p class="lede" style="margin:14px 0 0">Enter your early believer code to check access to the first TDCC cohort. We are also looking for AI companies, data centers, GPU operators and <a href="/team.html" style="text-decoration:underline;text-underline-offset:3px">new teammates</a>.</p>
+            <div class="join-links">
+              <a class="btn light sm" href="mailto:anil@decentralizedcompute.company?subject=TDCC%20Early%20Network">Contact the founder</a>
+              <a class="btn light sm" href="/litepaper.html">Read the litepaper</a>
+            </div>
           </div>
+          <form id="early-access-form" novalidate>
+            <label for="early-access-code">Early access code</label>
+            <div class="join-row">
+              <input id="early-access-code" name="code" autocomplete="off" placeholder="e.g. TDCC…" />
+              <button class="btn dark" type="submit" style="border:0;cursor:pointer">Check access <span class="arr">›</span></button>
+            </div>
+            <button class="link-btn" type="button" id="copy-invite-link">Copy invite link</button>
+            <p class="msg-box" id="early-access-message" role="status" hidden></p>
+          </form>
         </div>
       </div>
     </section>
@@ -1377,303 +1032,86 @@ tdcc receipts show job_8fq1za --verify</pre>
 
   <footer>
     <div class="wrap">
-      <div class="foot-grid">
+      <div class="foot">
         <div>
-          <a class="brand" href="/" aria-label="TDCC home"><svg aria-hidden="true"><use href="#mark" /></svg><span class="brand-name">The Decentralized Compute Company</span></a>
-          <p class="about">A GPU marketplace, a job network that checks its own work, and Exact Core, an AI chip whose answers anyone can re-check.</p>
+          <a class="brand" href="/"><svg aria-hidden="true"><use href="#mark" /></svg><span>tdcc</span></a>
+          <p>A GPU marketplace, a job network that checks its own work, and Exact Core, an AI chip whose answers anyone can re-check.</p>
         </div>
         <div>
           <h4>Product</h4>
-          <ul><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="#developers">Developers</a></li><li><a href="#workloads">Workloads</a></li></ul>
+          <ul>
+            <li><a href="https://chat.decentralizedcompute.company/">TDCC Chat</a></li>
+            <li><a href="/marketplace.html">GPU marketplace</a></li>
+            <li><a href="/exact-core.html">Exact Core chip</a></li>
+            <li><a href="/app.html">TDCC App</a></li>
+            <li><a href="#workloads">Workloads</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+          </ul>
         </div>
         <div>
           <h4>Company</h4>
-          <ul><li><a href="/team.html">Team</a></li><li><a href="/litepaper.html">Litepaper</a></li><li><a href="/cask-q.html">Research</a></li><li><a href="/two-laptops-80-tps.html">Engineering</a></li><li><a href="/facts.html">Facts</a></li></ul>
+          <ul>
+            <li><a href="/team.html">Team</a></li>
+            <li><a href="/litepaper.html">Litepaper</a></li>
+            <li><a href="/cask-q.html">Research</a></li>
+            <li><a href="/two-laptops-80-tps.html">Engineering</a></li>
+            <li><a href="/facts.html">Facts</a></li>
+          </ul>
         </div>
         <div>
           <h4>Connect</h4>
-          <ul><li><a href="https://x.com/computecompany" target="_blank" rel="noreferrer">X / @computecompany</a></li><li><a href="https://www.linkedin.com/in/anilyagiz/" target="_blank" rel="noreferrer">LinkedIn</a></li><li><a href="mailto:anil@decentralizedcompute.company">Email</a></li><li><a href="https://github.com/anilyagiz/tdcc-exact-core" target="_blank" rel="noreferrer">GitHub</a></li><li><a href="/feed.xml">RSS</a></li></ul>
+          <ul>
+            <li><a href="https://x.com/computecompany">X / @computecompany</a></li>
+            <li><a href="https://www.linkedin.com/in/anilyagiz/">LinkedIn</a></li>
+            <li><a href="https://github.com/anilyagiz/tdcc-exact-core">GitHub</a></li>
+            <li><a href="mailto:anil@decentralizedcompute.company">Email</a></li>
+            <li><a href="/feed.xml">RSS</a></li>
+          </ul>
         </div>
       </div>
-      <div class="wordmark" aria-hidden="true">decentralized compute</div>
-      <div class="legal"><span>© 2026 The Decentralized Compute Company</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></span></div>
+      <div class="foot-bottom">
+        <span>© 2026 The Decentralized Compute Company</span>
+        <span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></span>
+      </div>
     </div>
   </footer>
 
   <script>
-    (() => {
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    /* nav */
+    const nav = document.getElementById('nav');
+    const menuBtn = document.getElementById('menu-btn');
+    const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 24);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    menuBtn.addEventListener('click', () => {
+      const open = nav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', String(open));
+    });
+    document.querySelectorAll('.nav-links a, .nav-cta a').forEach(a => a.addEventListener('click', () => {
+      nav.classList.remove('open');
+      menuBtn.setAttribute('aria-expanded', 'false');
+    }));
 
-      /* nav */
-      const nav = document.getElementById('nav');
-      const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 24);
-      onScroll();
-      window.addEventListener('scroll', onScroll, { passive: true });
-      const menuBtn = document.getElementById('menu-btn');
-      const links = document.getElementById('nav-links');
-      menuBtn.addEventListener('click', () => {
-        const open = links.classList.toggle('open');
-        menuBtn.setAttribute('aria-expanded', String(open));
+    /* reveal on scroll */
+    const revealEls = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      }, { rootMargin: '0px 0px -8% 0px' });
+      revealEls.forEach(el => io.observe(el));
+    } else {
+      revealEls.forEach(el => el.classList.add('in'));
+    }
+
+    /* code tabs */
+    const tabs = document.querySelectorAll('.tabs [role="tab"]');
+    tabs.forEach(tab => tab.addEventListener('click', () => {
+      tabs.forEach(t => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
       });
-      links.addEventListener('click', (e) => {
-        if (e.target.closest('a')) { links.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); }
-      });
-
-      /* reveal */
-      const items = document.querySelectorAll('.reveal');
-      if ('IntersectionObserver' in window && !reduce) {
-        const io = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) { entry.target.classList.add('in'); io.unobserve(entry.target); }
-          });
-        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-        items.forEach((el) => io.observe(el));
-      } else {
-        items.forEach((el) => el.classList.add('in'));
-      }
-
-      /* typed terminal */
-      const typed = document.getElementById('typed');
-      const commands = ['tdcc jobs submit ./job.yaml --watch', 'tdcc hosts list --min-vram 48', 'tdcc receipts show job_8fq1za --verify'];
-      if (!reduce) {
-        let ci = 0, i = commands[0].length, dir = -1;
-        const tick = () => {
-          const cmd = commands[ci];
-          i += dir;
-          typed.textContent = cmd.slice(0, i);
-          let wait = dir > 0 ? 55 : 22;
-          if (dir > 0 && i >= cmd.length) { dir = -1; wait = 2600; }
-          else if (dir < 0 && i <= 0) { ci = (ci + 1) % commands.length; dir = 1; wait = 400; }
-          setTimeout(tick, wait);
-        };
-        setTimeout(tick, 2600);
-      }
-
-      /* code tabs */
-      const tabs = document.querySelectorAll('.tabs [role="tab"]');
-      tabs.forEach((tab) => {
-        tab.addEventListener('click', () => {
-          tabs.forEach((t) => {
-            const on = t === tab;
-            t.setAttribute('aria-selected', String(on));
-            t.tabIndex = on ? 0 : -1;
-            document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
-          });
-        });
-        tab.addEventListener('keydown', (e) => {
-          if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-          const list = [...tabs];
-          const next = list[(list.indexOf(tab) + (e.key === 'ArrowRight' ? 1 : list.length - 1)) % list.length];
-          next.focus(); next.click();
-        });
-      });
-
-
-
-
-
-      /* exact core: chip tilts toward the pointer */
-      const stage = document.getElementById('chip-stage');
-      const tiltEl = document.getElementById('chip-tilt');
-      if (stage && !reduce) {
-        stage.addEventListener('pointermove', (e) => {
-          const r = stage.getBoundingClientRect();
-          const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
-          tiltEl.style.setProperty('--rx', `${52 - y * 22}deg`);
-          tiltEl.style.setProperty('--rz', `${-38 + x * 28}deg`);
-        });
-        stage.addEventListener('pointerleave', () => {
-          tiltEl.style.removeProperty('--rx');
-          tiltEl.style.removeProperty('--rz');
-        });
-      }
-
-      /* marketplace: mode + filter */
-      const market = document.querySelector('.market');
-      if (market) {
-        market.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => {
-          market.querySelectorAll('.seg button').forEach((o) => o.setAttribute('aria-selected', String(o === b)));
-          market.classList.toggle('job', b.dataset.mode === 'job');
-        }));
-        market.querySelectorAll('.filters button').forEach((b) => b.addEventListener('click', () => {
-          market.querySelectorAll('.filters button').forEach((o) => o.classList.toggle('on', o === b));
-          market.querySelectorAll('.listing').forEach((l) => { l.hidden = b.dataset.f !== 'all' && l.dataset.f !== b.dataset.f; });
-        }));
-        const exactCard = market.querySelector('.listing.exact');
-        exactCard.style.cursor = 'pointer';
-        exactCard.addEventListener('click', () => document.getElementById('exact-core').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }));
-      }
-
-      /* hero globe: the logo's lattice dome as a living compute network */
-      const canvas = document.getElementById('globe');
-      const ctx = canvas.getContext('2d');
-      let W = 0, H = 0, R = 0, cx = 0, cy = 0, dpr = 1;
-      const dots = [];
-      for (let lat = 0; lat <= 88; lat += 4) {
-        const ring = Math.max(6, Math.round(Math.cos(lat * Math.PI / 180) * 90));
-        for (let k = 0; k < ring; k++) {
-          const lon = (k / ring) * Math.PI * 2;
-          const grid = lat % 20 === 0 || k % Math.round(ring / 12) === 0;
-          dots.push({ lat: lat * Math.PI / 180, lon, grid });
-        }
-      }
-      const base = [];
-      for (let r = 1.05; r <= 1.75; r += 0.11) {
-        const n = Math.round(r * 70);
-        for (let k = 0; k < n; k++) base.push({ r, a: (k / n) * Math.PI * 2 });
-      }
-      const nodes = [];
-      for (let i = 0; i < 22; i++) {
-        nodes.push({ lat: (8 + Math.random() * 70) * Math.PI / 180, lon: Math.random() * Math.PI * 2, pulse: Math.random() });
-      }
-      const arcs = [];
-      const spawnArc = () => {
-        const a = Math.floor(Math.random() * nodes.length);
-        let b = Math.floor(Math.random() * nodes.length);
-        if (b === a) b = (a + 1) % nodes.length;
-        arcs.push({ a, b, t: 0, speed: 0.004 + Math.random() * 0.004 });
-      };
-      for (let i = 0; i < 7; i++) { spawnArc(); arcs[i].t = Math.random(); }
-
-      let tilt = 0.42, tiltTarget = 0.42, rotOff = 0, rotOffTarget = 0, grow = reduce ? 1 : 0, scan = 0;
-      const toVec = (lat, lon) => [Math.cos(lat) * Math.cos(lon), Math.sin(lat), Math.cos(lat) * Math.sin(lon)];
-      const project = (v, rot, scale = 1) => {
-        const x0 = v[0] * Math.cos(rot) - v[2] * Math.sin(rot);
-        const z0 = v[0] * Math.sin(rot) + v[2] * Math.cos(rot);
-        const y1 = v[1] * Math.cos(tilt) - z0 * Math.sin(tilt);
-        const z1 = v[1] * Math.sin(tilt) + z0 * Math.cos(tilt);
-        const k = R * scale * (0.6 + 0.4 * grow);
-        return { x: cx + x0 * k, y: cy - y1 * k, z: z1 };
-      };
-      const slerp = (p, q, t) => {
-        const d = Math.min(1, Math.max(-1, p[0] * q[0] + p[1] * q[1] + p[2] * q[2]));
-        const w = Math.acos(d);
-        if (w < 1e-4) return p;
-        const s = Math.sin(w);
-        const k1 = Math.sin((1 - t) * w) / s, k2 = Math.sin(t * w) / s;
-        return [p[0] * k1 + q[0] * k2, p[1] * k1 + q[1] * k2, p[2] * k1 + q[2] * k2];
-      };
-
-      const resize = () => {
-        dpr = Math.min(window.devicePixelRatio || 1, 2);
-        W = canvas.clientWidth; H = canvas.clientHeight;
-        canvas.width = W * dpr; canvas.height = H * dpr;
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        const mobile = W < 860;
-        R = Math.min(W * (mobile ? 0.46 : 0.32), H * (mobile ? 0.27 : 0.42));
-        cx = mobile ? W * 0.5 : W * 0.64;
-        cy = mobile ? H * 0.36 : H * 0.52;
-      };
-
-      let rot = 0.6, visible = true, raf = 0;
-      const sand = '216,191,148';
-      const draw = () => {
-        ctx.clearRect(0, 0, W, H);
-        ctx.globalAlpha = Math.min(1, grow * 1.4);
-        const halo = ctx.createRadialGradient(cx, cy - R * 0.45, R * 0.1, cx, cy - R * 0.3, R * 1.6);
-        halo.addColorStop(0, 'rgba(216,191,148,.13)');
-        halo.addColorStop(1, 'rgba(216,191,148,0)');
-        ctx.fillStyle = halo;
-        ctx.fillRect(0, 0, W, H);
-        // cloud base rings
-        for (const p of base) {
-          const v = [Math.cos(p.a) * p.r, -0.02, Math.sin(p.a) * p.r];
-          const s = project(v, rot * 0.5);
-          const fade = 1 - (p.r - 1.05) / 0.8;
-          ctx.fillStyle = `rgba(${sand},${(0.08 + 0.18 * fade) * (0.55 + 0.45 * (s.z + 1) / 2)})`;
-          ctx.fillRect(s.x, s.y, 1.2, 1.2);
-        }
-        // dome dots
-        for (const d of dots) {
-          const s = project(toVec(d.lat, d.lon), rot);
-          const front = (s.z + 1) / 2;
-          const band = Math.max(0, 1 - Math.abs(d.lat - scan) / 0.09);
-          const a = Math.min(1, (d.grid ? 0.14 + 0.72 * front : 0.05 + 0.26 * front) + band * 0.7 * front);
-          const size = (d.grid ? 1.6 : 1.1) + band * 0.9;
-          ctx.fillStyle = `rgba(${sand},${a})`;
-          ctx.fillRect(s.x - size / 2, s.y - size / 2, size, size);
-        }
-        // arcs
-        ctx.globalCompositeOperation = 'lighter';
-        for (let i = arcs.length - 1; i >= 0; i--) {
-          const arc = arcs[i];
-          const p = toVec(nodes[arc.a].lat, nodes[arc.a].lon), q = toVec(nodes[arc.b].lat, nodes[arc.b].lon);
-          const head = Math.min(arc.t, 1), tail = Math.max(0, arc.t - 0.35);
-          ctx.beginPath();
-          let pen = false;
-          for (let j = 0; j <= 24; j++) {
-            const t = tail + (head - tail) * (j / 24);
-            const lift = 1 + 0.22 * Math.sin(Math.PI * t);
-            const s = project(slerp(p, q, t), rot, lift);
-            if (s.z < -0.12) { pen = false; continue; }
-            pen ? ctx.lineTo(s.x, s.y) : ctx.moveTo(s.x, s.y);
-            pen = true;
-          }
-          const fadeOut = arc.t > 1 ? Math.max(0, 1 - (arc.t - 1) / 0.35) : 1;
-          ctx.strokeStyle = `rgba(245,238,228,${0.55 * fadeOut})`;
-          ctx.lineWidth = 1;
-          ctx.stroke();
-          const hs = project(slerp(p, q, head), rot, 1 + 0.22 * Math.sin(Math.PI * head));
-          if (arc.t <= 1 && hs.z >= -0.12) {
-            const s = hs;
-            ctx.fillStyle = 'rgba(245,238,228,.95)';
-            ctx.fillRect(s.x - 1.5, s.y - 1.5, 3, 3);
-          }
-          arc.t += arc.speed;
-          if (arc.t > 1.35) { nodes[arc.b].pulse = 1; arcs.splice(i, 1); spawnArc(); }
-        }
-        // nodes
-        for (const n of nodes) {
-          const s = project(toVec(n.lat, n.lon), rot);
-          if (s.z < -0.15) continue;
-          const front = (s.z + 1) / 2;
-          const size = 4.5;
-          ctx.fillStyle = `rgba(${sand},${0.35 + 0.65 * front})`;
-          ctx.fillRect(s.x - size / 2, s.y - size / 2, size, size);
-          const glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, 14);
-          glow.addColorStop(0, `rgba(${sand},${0.28 * front})`);
-          glow.addColorStop(1, `rgba(${sand},0)`);
-          ctx.fillStyle = glow;
-          ctx.fillRect(s.x - 14, s.y - 14, 28, 28);
-          if (n.pulse > 0.01) {
-            const r = (1 - n.pulse) * 22 + 4;
-            ctx.strokeStyle = `rgba(${sand},${n.pulse * 0.7})`;
-            ctx.strokeRect(s.x - r / 2, s.y - r / 2, r, r);
-            n.pulse *= 0.96;
-          }
-        }
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.globalAlpha = 1;
-      };
-      const loop = () => {
-        rot += 0.0018;
-        grow += (1 - grow) * 0.035;
-        tilt += (tiltTarget - tilt) * 0.05;
-        rotOff += (rotOffTarget - rotOff) * 0.05;
-        scan = (scan + 0.006) % 1.9;
-        const keep = rot;
-        rot += rotOff;
-        draw();
-        rot = keep;
-        if (visible) raf = requestAnimationFrame(loop);
-      };
-      resize();
-      window.addEventListener('resize', () => { resize(); if (reduce) draw(); });
-      window.addEventListener('pointermove', (e) => {
-        if (e.pointerType !== 'mouse') return;
-        tiltTarget = 0.42 + ((e.clientY / window.innerHeight) - 0.5) * 0.28;
-        rotOffTarget = ((e.clientX / window.innerWidth) - 0.5) * 0.6;
-      }, { passive: true });
-      if (reduce) {
-        draw();
-      } else {
-        new IntersectionObserver(([e]) => {
-          visible = e.isIntersecting;
-          cancelAnimationFrame(raf);
-          if (visible) raf = requestAnimationFrame(loop);
-        }).observe(canvas);
-      }
-    })();
+    }));
 
     /* early access */
     const earlyAccessForm = document.querySelector('#early-access-form');
