@@ -9,7 +9,7 @@ is also the base unit of USDC (6 decimals), so on-chain amounts map 1:1.
 | Name | Kind | Meaning |
 |---|---|---|
 | `SOLANA_TREASURY` | var | Wallet address (owner) that receives USDC top-ups. Required for top-ups. |
-| `SOLANA_RPC_URL` | secret | Solana JSON-RPC endpoint (e.g. Helius). Required for top-ups. |
+| `SOLANA_RPC_URL` | secret | Solana JSON-RPC endpoint (e.g. Helius). Required for top-ups. The public `api.*.solana.com` endpoints answer 403 to requests from Cloudflare Workers, so use a provider URL. |
 | `SOLANA_USDC_MINT` | var | Defaults to mainnet USDC `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`. |
 | `SOLANA_CLUSTER` | var | Label shown to users, default `mainnet-beta`. |
 | `UPSTREAM_BASE_URL` | var | OpenAI-compatible provider base URL. |

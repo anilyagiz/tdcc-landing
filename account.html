@@ -88,6 +88,70 @@
     .codes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; font-family: var(--mono); font-size: 13px; }
     .payout { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; padding: 16px 20px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); font-size: 14px; color: var(--body); }
     .payout b { color: var(--text); }
+    /* Balance & API tab */
+    .bill { display: grid; gap: 36px; }
+    .bill > *, .bill-top > * { min-width: 0; }
+    .bill h3 { color: var(--text); font-size: 20px; font-weight: 600; letter-spacing: -.02em; }
+    .bill-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 16px; align-items: start; }
+    @media (max-width: 900px) { .bill-top { grid-template-columns: minmax(0, 1fr); } }
+    .sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; margin-bottom: 12px; }
+    .card .sec-head { margin-bottom: 0; }
+    .sec-head p { color: var(--muted); font-size: 13.5px; }
+    .bal-card { background: radial-gradient(ellipse 70% 90% at 100% 0%, rgba(185,255,120,.16), transparent 70%), #fff; }
+    .bal-card .eyebrow { margin: 0; }
+    .bal-n { font-family: var(--serif); font-weight: 700; color: var(--heading); font-size: clamp(46px, 6vw, 68px); line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; cursor: default; }
+    .bal-l { color: var(--body); font-size: 14px; }
+    .bal-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .bal-stats b { display: block; color: var(--text); font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .bal-stats span { color: var(--muted); font-size: 12.5px; }
+    .topup { display: grid; gap: 14px; }
+    .amt-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .amt-chip { min-height: 34px; padding: 0 14px; border: 1px solid var(--line-2); border-radius: 999px; background: #fff; color: var(--text); font-family: var(--sans); font-size: 14px; font-weight: 500; cursor: pointer; font-variant-numeric: tabular-nums; }
+    .amt-chip:hover { border-color: #b9c6d4; }
+    .amt-chip[aria-pressed="true"] { border-color: var(--text); background: var(--text); color: #fff; }
+    .pay { display: grid; grid-template-columns: 196px minmax(0, 1fr); gap: 20px; align-items: start; }
+    .pay.no-qr { grid-template-columns: minmax(0, 1fr); }
+    @media (max-width: 600px) { .pay { grid-template-columns: minmax(0, 1fr); } .pay-qr { justify-self: center; } }
+    .pay-qr { width: 196px; max-width: 100%; padding: 6px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+    .pay-qr svg { display: block; width: 100%; height: auto; }
+    .pay-fields { display: grid; gap: 12px; min-width: 0; }
+    .pay-fields > b { color: var(--text); font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+    .pay-field { display: grid; gap: 4px; min-width: 0; }
+    .pay-field > span { color: var(--muted); font-size: 12.5px; font-weight: 500; }
+    .cmd.light code { border: 1px solid var(--line); background: var(--panel); color: var(--text); white-space: normal; overflow-wrap: anywhere; }
+    .pay-net { color: var(--muted); font-size: 12.5px; overflow-wrap: anywhere; }
+    .pay-net code { font-family: var(--mono); font-size: 11.5px; }
+    .warn-box { display: grid; gap: 4px; padding: 12px 14px; border: 1px solid #fde2c3; border-radius: 12px; background: #fff7ed; color: #9a3412; font-size: 13.5px; line-height: 1.5; }
+    .warn-box b { color: #9a3412; font-weight: 600; }
+    .warn-box a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+    .pay-status { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--body); font-size: 14px; }
+    .pay-status::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: #d97706; animation: pulse 1.6s ease-in-out infinite; }
+    .pay-status.bad { border-color: #fecaca; background: #fef2f2; color: #b91c1c; }
+    .pay-status.bad::before { background: #b91c1c; animation: none; }
+    .pay-status.stopped::before { background: var(--muted); animation: none; }
+    @keyframes pulse { 50% { opacity: .25; } }
+    @media (prefers-reduced-motion: reduce) { .pay-status::before { animation: none; } }
+    .st.confirmed, .st.api { border-color: #c7f0d6; background: #ecfdf3; color: #11733a; }
+    .st.chat { border-color: #d4e4fd; background: #eff6ff; color: #1d4ed8; }
+    .st.expired { color: var(--muted); }
+    .bill .table-wrap { position: relative; box-shadow: none; }
+    .bill table.data td { white-space: nowrap; }
+    .bill table.data td code { font-family: var(--mono); font-size: 12.5px; }
+    .bill table.data td small { display: block; color: var(--muted); font-size: 12px; }
+    .bill table.data a { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
+    .key-form { display: grid; gap: 10px; margin-bottom: 12px; }
+    .key-box { margin-bottom: 12px; border-color: #b7e4c7; box-shadow: 0 0 0 4px rgba(185,255,120,.25); }
+    #api-docs { scroll-margin-top: 96px; }
+    .docs-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 16px; align-items: start; }
+    @media (max-width: 900px) { .docs-grid { grid-template-columns: minmax(0, 1fr); } }
+    .docs-grid > * { min-width: 0; }
+    .docs-note { margin-top: 12px; color: var(--body); font-size: 14px; }
+    .docs-note code { padding: 1px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--text); font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
+    .qs .fig { align-items: center; padding: 8px 10px 8px 8px; }
+    .seg { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); }
+    .seg button { padding: 5px 12px; border: 0; border-radius: 999px; background: none; color: var(--muted); font-family: var(--sans); font-size: 13px; font-weight: 500; cursor: pointer; }
+    .seg button[aria-pressed="true"] { background: #fff; color: var(--text); box-shadow: var(--shadow); }
+    .qs pre.code { font-size: 12.5px; line-height: 1.7; }
   </style>
 </head>
 <body>
@@ -120,6 +184,7 @@
         <span class="brand-name">tdcc</span>
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
+        <a href="/chat.html">Chat</a>
         <a href="/marketplace.html">Marketplace</a>
         <a href="/app.html">App</a>
         <a href="/exact-core.html">Exact Core</a>
@@ -148,6 +213,7 @@
           <a href="#rentals" data-tab="rentals">My rentals</a>
           <a href="#requests" data-tab="requests">Requests on my GPUs<span class="badge" id="req-badge" hidden></span></a>
           <a href="#listings" data-tab="listings">My GPUs</a>
+          <a href="#billing" data-tab="billing">Balance &amp; API</a>
           <a href="#settings" data-tab="settings">Settings</a>
         </nav>
       </div>
@@ -168,7 +234,7 @@
         </div>
         <div>
           <h4>Product</h4>
-          <ul><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
+          <ul><li><a href="/chat.html">TDCC Chat</a></li><li><a href="/account.html#billing">Balance &amp; API keys</a></li><li><a href="/marketplace.html">GPU marketplace</a></li><li><a href="/account.html">My account</a></li><li><a href="/exact-core.html">Exact Core chip</a></li><li><a href="/app.html">TDCC App</a></li><li><a href="/app.html#downloads">Desktop beta</a></li><li><a href="/#developers">Developers</a></li></ul>
         </div>
         <div>
           <h4>Company</h4>
@@ -185,6 +251,7 @@
   </footer>
   <!-- /chrome:footer -->
 
+  <script src="/js/qr.js"></script>
   <script src="/js/market.js"></script>
   <script src="/js/site.js"></script>
   <script>
@@ -255,7 +322,7 @@
       };
       let user = null, current = null;
 
-      const tabOf = () => (['rentals', 'requests', 'listings', 'settings'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'rentals');
+      const tabOf = () => (['rentals', 'requests', 'listings', 'billing', 'settings'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'rentals');
       const status = (s) => `<span class="st ${esc(s)}">${esc(STATUS[s] || s)}</span>`;
       const act = async (fn, okMsg) => {
         try { await fn(); if (okMsg) toast(okMsg); show(current, true); }
@@ -406,15 +473,323 @@
         </div>`;
       }
 
-      const VIEWS = { rentals, requests, listings, settings };
+      // ---------- balance & API (billing) ----------
+      // Money arrives as decimal strings ("12.345678"); format by slicing, never with float math.
+      let bill = null, dep = null;
+      const poll = { timer: null, id: null, delay: 5000, busy: false };
+      const POLL_MS = 5000, POLL_MAX_MS = 60000;
+      const DEP = { pending: 'Pending', confirmed: 'Confirmed', expired: 'Expired' };
+      const nowS = () => Math.floor(Date.now() / 1000);
+      const num = (n) => Number(n || 0).toLocaleString('en-US');
+      const short = (s, a = 6, b = 6) => (s && s.length > a + b + 1 ? `${s.slice(0, a)}…${s.slice(-b)}` : s || '');
+      const usdParts = (s) => {
+        const m = /^(-?)(\d+)(?:\.(\d+))?$/.exec(String(s ?? '').trim());
+        return m && { neg: m[1], int: m[2].replace(/^0+(?=\d)/, '').replace(/\B(?=(\d{3})+(?!\d))/g, ','), frac: m[3] || '' };
+      };
+      // $12.34 (truncated, never shows more than there is)
+      const usd2 = (s) => { const p = usdParts(s); return p ? `${p.neg}$${p.int}.${(p.frac + '00').slice(0, 2)}` : '—'; };
+      // $0.000041 (trailing zeros trimmed to at least 2 decimals), or every digit with all = true
+      const usdFull = (s, all = false) => {
+        const p = usdParts(s);
+        if (!p) return '—';
+        let f = all ? p.frac : p.frac.replace(/0+$/, '');
+        if (f.length < 2) f = (f + '00').slice(0, 2);
+        return `${p.neg}$${p.int}.${f}`;
+      };
+      // Like usd2, but a small non-zero amount reads "< $0.01" instead of "$0.00".
+      const usdSmart = (s) => { const p = usdParts(s); return p && p.int === '0' && (p.frac + '00').startsWith('00') && /[1-9]/.test(p.frac) ? '< $0.01' : usd2(s); };
+      const depStatus = (s) => `<span class="st ${esc(s)}">${esc(DEP[s] || s)}</span>`;
+      const cluster = () => (bill && bill.payments && bill.payments.cluster) || 'mainnet-beta';
+      const txUrl = (sig) => `https://solscan.io/tx/${encodeURIComponent(sig)}${cluster() !== 'mainnet-beta' ? `?cluster=${encodeURIComponent(cluster())}` : ''}`;
+      const livePending = (d) => d.status === 'pending' && (!d.expires_at || d.expires_at > nowS());
+      // Recipient and mint come from the Solana Pay URL itself: solana:<recipient>?amount=…&spl-token=<mint>&reference=…
+      const payParts = (url) => {
+        const out = { to: '', mint: '' };
+        if (!/^solana:/i.test(url || '')) return out;
+        const [addr, query = ''] = url.slice(7).split('?');
+        try { out.to = decodeURIComponent(addr); out.mint = new URLSearchParams(query).get('spl-token') || ''; } catch { /* malformed: fall back below */ }
+        return out;
+      };
+
+      function balCard(b) {
+        const t = b.totals || {};
+        return `<p class="eyebrow">Prepaid balance</p>
+          <div class="bal-n" id="bal-usd" title="${esc(usdFull(b.balance && b.balance.usd, true))}">${esc(usd2(b.balance && b.balance.usd))}</div>
+          <p class="bal-l">Spent per token in TDCC Chat and through your API keys. Top up with USDC on Solana from $${esc(b.min_topup_usd || 5)}.</p>
+          <div class="bal-stats" aria-label="Last 30 days">
+            <div><b id="bal-req">${esc(num(t.requests_30d))}</b><span>Requests, 30 days</span></div>
+            <div><b id="bal-tok">${esc(num(t.tokens_30d))}</b><span>Tokens, 30 days</span></div>
+            <div><b id="bal-spent" title="${esc(usdFull(t.spent_30d_usd, true))}">${esc(usdSmart(t.spent_30d_usd || '0'))}</b><span>Spent, 30 days</span></div>
+          </div>
+          <div class="card-actions"><a class="btn solid sm" href="/chat.html">Open TDCC Chat</a><a class="btn sm" href="#billing" data-jump="api-docs">API quickstart</a></div>`;
+      }
+
+      function topupBox(b) {
+        const min = Number(b.min_topup_usd || 5);
+        const head = '<div class="sec-head"><h3>Top up with USDC</h3><p>On Solana · from wallets like Phantom, Solflare, Backpack</p></div>';
+        if (!b.payments || !b.payments.configured) {
+          return `${head}<div class="empty" id="topup-off">Top-ups are not available yet. They open here as soon as payments are switched on.</div><div id="pay-panel" hidden></div>`;
+        }
+        return `${head}<form id="topup-form" class="topup" novalidate>
+            <div class="form-err" role="alert"></div>
+            <label class="fl">Amount in USD<input class="inp" id="topup-amt" name="amount" type="number" inputmode="decimal" min="${min}" max="10000" step="0.01" value="20" required />
+              <small>From $${esc(min)} to $10,000. Each USDC you send adds $1 to your balance.</small></label>
+            <div class="amt-row" role="group" aria-label="Quick amounts">${[5, 20, 50, 100].filter((v) => v >= min).map((v) => `<button class="amt-chip" type="button" data-amt="${v}" aria-pressed="${v === 20}">$${v}</button>`).join('')}</div>
+            <div class="card-actions"><button class="btn solid" type="submit" id="topup-submit">Create payment</button></div>
+          </form><div id="pay-panel" hidden></div>`;
+      }
+
+      function payPanel(d) {
+        const pay = (bill && bill.payments) || {};
+        const pp = payParts(d.pay_url);
+        const to = pp.to || pay.treasury || '', mint = pp.mint || pay.mint || '';
+        const amount = String(d.amount_usd || '');
+        const field = (label, shown, copy) => `<div class="pay-field"><span>${label}</span><div class="cmd light"><code>${esc(shown)}</code><button class="btn sm" type="button" data-copy="${esc(copy)}" aria-label="Copy ${label.toLowerCase()}">Copy</button></div></div>`;
+        return `<div class="pay" id="pay-box">
+            <div class="pay-qr" id="pay-qr"></div>
+            <div class="pay-fields">
+              <div class="sec-head"><b>Send ${esc(usdFull(amount))} in USDC</b><span id="pay-pill">${depStatus(d.status)}</span></div>
+              <div class="card-actions"><a class="btn solid sm" id="pay-open" href="${esc(d.pay_url)}">Open in wallet</a><button class="btn sm" type="button" data-pay-close>Close</button></div>
+              ${field('Recipient address', to, to)}
+              ${field('Amount (USDC)', amount, amount)}
+              ${field('Reference', d.reference || '', d.reference || '')}
+              <p class="pay-net">USDC on Solana${cluster() !== 'mainnet-beta' ? ` (${esc(cluster())})` : ''}${mint ? ` · token mint <code title="${esc(mint)}">${esc(short(mint, 6, 4))}</code>` : ''}</p>
+              <div class="warn-box"><b>Send only USDC on the Solana network.</b><span>Other tokens or networks cannot be credited. Scan the QR code or use “Open in wallet” so the transfer carries the reference above; that is how we match it to your account.</span></div>
+              <p class="meta">${d.expires_at ? `Expires ${esc(when(d.expires_at))}` : ''}</p>
+              <p class="pay-status" id="pay-status" role="status" aria-live="polite">Waiting for your payment…</p>
+            </div>
+          </div>`;
+      }
+
+      function depositsTable(b) {
+        const list = b.deposits || [];
+        if (!list.length) return '<div class="empty">No top-ups yet. Your USDC deposits show up here.</div>';
+        return `<div class="table-wrap"><table class="data"><thead><tr><th class="num">Amount</th><th>Status</th><th>Created</th><th>Transaction</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody>${list.map((d) => {
+          const live = livePending(d);
+          const s = d.status === 'pending' && !live ? 'expired' : d.status;
+          const credited = d.credited_usd && usdFull(d.credited_usd) !== usdFull(d.amount_usd) ? `<small>credited ${esc(usdFull(d.credited_usd))}</small>` : '';
+          return `<tr>
+            <td class="num" title="${esc(usdFull(d.amount_usd, true))}">${esc(usdFull(d.amount_usd))}${credited}</td>
+            <td>${depStatus(s)}</td>
+            <td title="${d.created_at ? esc(when(d.created_at)) : ''}">${d.created_at ? esc(ago(d.created_at)) : '—'}</td>
+            <td>${d.signature ? `<a href="${esc(txUrl(d.signature))}" target="_blank" rel="noopener noreferrer" title="${esc(d.signature)}"><code>${esc(short(d.signature))}</code></a>` : '—'}</td>
+            <td>${live ? `<button class="btn sm" type="button" data-pay-show="${esc(d.id)}">Show payment</button>` : ''}</td></tr>`;
+        }).join('')}</tbody></table></div>`;
+      }
+
+      function keysTable(b) {
+        const list = b.keys || [];
+        if (!list.length) return '<div class="empty">No API keys yet. Create one above to call the API from your own code.</div>';
+        return `<div class="table-wrap"><table class="data"><thead><tr><th>Name</th><th>Key</th><th>Created</th><th>Last used</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody>${list.map((k) => `<tr>
+            <td><b>${esc(k.name)}</b>${k.rpm ? `<small>${esc(num(k.rpm))} requests / min</small>` : ''}</td>
+            <td><code>${esc(k.prefix)}</code></td>
+            <td title="${k.created_at ? esc(when(k.created_at)) : ''}">${k.created_at ? esc(ago(k.created_at)) : '—'}</td>
+            <td title="${k.last_used_at ? esc(when(k.last_used_at)) : ''}">${k.last_used_at ? esc(ago(k.last_used_at)) : 'Never'}</td>
+            <td><button class="btn sm danger-btn" type="button" data-key-revoke="${esc(k.id)}" data-key-name="${esc(k.name)}">Revoke</button></td></tr>`).join('')}</tbody></table></div>`;
+      }
+
+      function usageTable(b) {
+        const list = (b.usage || []).slice(0, 100);
+        if (!list.length) return '<div class="empty">No requests yet. Usage from TDCC Chat and your API keys shows up here. <a href="/chat.html">Try TDCC Chat →</a></div>';
+        return `<div class="table-wrap"><table class="data"><thead><tr><th>Time</th><th>Source</th><th>Key</th><th class="num">Tokens in</th><th class="num">Tokens out</th><th class="num">Cost</th></tr></thead><tbody>${list.map((u) => `<tr>
+            <td title="${u.created_at ? esc(when(u.created_at)) : ''}">${u.created_at ? esc(ago(u.created_at)) : '—'}</td>
+            <td><span class="st ${u.source === 'api' ? 'api' : 'chat'}">${u.source === 'api' ? 'API' : 'Chat'}</span></td>
+            <td>${u.key_prefix ? `<code>${esc(u.key_prefix)}</code>` : '—'}</td>
+            <td class="num">${esc(num(u.prompt_tokens))}</td>
+            <td class="num">${esc(num(u.completion_tokens))}</td>
+            <td class="num" title="${esc(usdFull(u.cost_usd, true))}">${esc(usdFull(u.cost_usd))}</td></tr>`).join('')}</tbody></table></div>`;
+      }
+
+      function docsBlock(b) {
+        const base = b.api_base || 'https://decentralizedcompute.company/v1';
+        const curl = `curl ${base}/chat/completions \\\n  -H "Authorization: Bearer $TDCC_API_KEY" \\\n  -H "Content-Type: application/json" \\\n  -d '{"model": "tdcc-chat", "messages": [{"role": "user", "content": "Hello!"}]}'`;
+        const py = `# pip install openai\nimport os\nfrom openai import OpenAI\n\nclient = OpenAI(base_url="${base}", api_key=os.environ["TDCC_API_KEY"])\nresp = client.chat.completions.create(\n    model="tdcc-chat",\n    messages=[{"role": "user", "content": "Hello!"}],\n)\nprint(resp.choices[0].message.content)`;
+        const pricing = b.pricing || [];
+        const ctx = (n) => (n ? (n >= 1000 ? `${Math.round(n / 1000)}K` : String(n)) : '—');
+        return `<div class="docs-grid">
+            <div>
+              <div class="sec-head"><h3>Pricing</h3><p>USD per 1M tokens</p></div>
+              ${pricing.length ? `<div class="table-wrap"><table class="data"><thead><tr><th>Model</th><th class="num">Context</th><th class="num">Input</th><th class="num">Output</th></tr></thead><tbody>${pricing.map((m) => `<tr>
+                <td><b>${esc(m.name || m.id)}</b><small><code>${esc(m.id)}</code></small></td>
+                <td class="num">${esc(ctx(m.context_length))}</td>
+                <td class="num">${esc(usdFull(m.input_per_m_usd))}</td>
+                <td class="num">${esc(usdFull(m.output_per_m_usd))}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">Pricing is not published yet.</div>'}
+              <p class="docs-note">Chat and API share one balance and are billed per token actually used. When the balance cannot cover a request the API answers <code>402</code> with <code>insufficient_balance</code>.</p>
+            </div>
+            <div>
+              <div class="sec-head"><h3>Quickstart</h3><p>OpenAI-compatible</p></div>
+              <div class="panel qs">
+                <div class="fig"><div class="seg" role="group" aria-label="Snippet language"><button type="button" data-qs="curl" aria-pressed="true">cURL</button><button type="button" data-qs="python" aria-pressed="false">Python</button></div><button class="btn sm" type="button" id="qs-copy" data-copy="${esc(curl)}">Copy</button></div>
+                <pre class="code" data-qs-code="curl">${esc(curl)}</pre>
+                <pre class="code" data-qs-code="python" hidden>${esc(py)}</pre>
+              </div>
+              <p class="docs-note">Base URL <code>${esc(base)}</code>, model <code>tdcc-chat</code>, and one of your keys as the bearer token (set it as <code>TDCC_API_KEY</code>). Streaming works too; <code>GET /v1/models</code> lists the models.</p>
+            </div>
+          </div>`;
+      }
+
+      async function billing() {
+        let b;
+        try { b = await api('GET', '/api/billing'); }
+        catch (err) {
+          if (err.status === 404) throw Object.assign(new Error('Balance and API keys are not available on this deployment yet.'), { status: 404 });
+          throw err;
+        }
+        bill = b;
+        return `<div class="bill">
+          <div class="bill-top">
+            <article class="card bal-card" id="bal-card">${balCard(b)}</article>
+            <article class="card" id="topup">${topupBox(b)}</article>
+          </div>
+          <section id="deposits-sec" aria-labelledby="deposits-h"><div class="sec-head"><h3 id="deposits-h">Recent deposits</h3></div><div id="deposits">${depositsTable(b)}</div></section>
+          <section id="keys-sec" aria-labelledby="keys-h">
+            <div class="sec-head"><h3 id="keys-h">API keys</h3><p>Each key bills this account’s balance. Revoke a key you no longer use.</p></div>
+            <form id="key-form" class="key-form" novalidate>
+              <div class="form-err" role="alert"></div>
+              <div class="card-actions"><input class="inp" name="key_name" maxlength="60" placeholder="Key name, e.g. My app" aria-label="Key name" autocomplete="off" required /><button class="btn sm solid" type="submit">Create key</button></div>
+            </form>
+            <div id="key-reveal"></div>
+            <div id="keys">${keysTable(b)}</div>
+          </section>
+          <section id="usage-sec" aria-labelledby="usage-h"><div class="sec-head"><h3 id="usage-h">Usage</h3><p>Most recent requests</p></div><div id="usage">${usageTable(b)}</div></section>
+          <section id="api-docs" aria-label="Pricing and API quickstart">${docsBlock(b)}</section>
+        </div>`;
+      }
+
+      // Re-draws the data parts of the tab; leaves the payment panel and a freshly shown key alone.
+      async function refreshBilling() {
+        try {
+          const b = await api('GET', '/api/billing');
+          if (current !== 'billing' || !$('bal-card')) return;
+          bill = b;
+          $('bal-card').innerHTML = balCard(b);
+          $('deposits').innerHTML = depositsTable(b);
+          $('keys').innerHTML = keysTable(b);
+          $('usage').innerHTML = usageTable(b);
+        } catch (err) {
+          if (err.status === 401) return signedOut();
+          toast(err.message, true);
+        }
+      }
+
+      const setPayStatus = (text, kind = '') => {
+        const el = $('pay-status');
+        if (el) { el.className = `pay-status${kind ? ' ' + kind : ''}`; el.textContent = text; }
+      };
+      const pendingStatus = (d) => setPayStatus(`${d.signature ? 'Payment seen on Solana, waiting for it to be finalized…' : 'Waiting for your payment…'} This updates by itself; last checked ${new Date().toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' })}.`);
+
+      function openPanel(d, immediate = false) {
+        const panel = $('pay-panel');
+        if (!panel) return;
+        dep = d;
+        if ($('topup-form')) $('topup-form').hidden = true;
+        if ($('topup-off')) $('topup-off').hidden = true;
+        panel.hidden = false;
+        if (d.status === 'confirmed') return panelDone(d);
+        if (d.status === 'expired') return panelExpired(d);
+        panel.innerHTML = payPanel(d);
+        const qr = $('pay-qr');
+        let drawn = false;
+        if (window.TDCCQR && typeof window.TDCCQR.svg === 'function' && d.pay_url) {
+          try { qr.innerHTML = window.TDCCQR.svg(d.pay_url, { ecc: 'M', margin: 4, title: 'QR code for this USDC payment' }); drawn = !!qr.querySelector('svg'); } catch { drawn = false; }
+        }
+        if (!drawn) { qr.hidden = true; qr.innerHTML = ''; $('pay-box').classList.add('no-qr'); }
+        startPoll(d.id, immediate ? 0 : POLL_MS);
+      }
+
+      function closePanel() {
+        stopPoll(); dep = null;
+        const panel = $('pay-panel');
+        if (panel) { panel.hidden = true; panel.innerHTML = ''; }
+        if ($('topup-form')) $('topup-form').hidden = false;
+        if ($('topup-off')) $('topup-off').hidden = false;
+      }
+
+      function panelDone(d) {
+        const panel = $('pay-panel');
+        if (!panel) return;
+        panel.innerHTML = `<div class="reveal-box" id="pay-done"><b>Payment received</b><span>${esc(usdFull(d.credited_usd || d.amount_usd))} was added to your balance.</span>${d.signature ? `<span><a href="${esc(txUrl(d.signature))}" target="_blank" rel="noopener noreferrer">View the transaction on Solscan →</a></span>` : ''}<span class="card-actions"><button class="btn sm" type="button" data-pay-close>Done</button><a class="btn sm solid" href="/chat.html">Open TDCC Chat</a></span></div>`;
+      }
+
+      function panelExpired(d) {
+        const panel = $('pay-panel');
+        if (!panel) return;
+        panel.innerHTML = `<div class="warn-box" id="pay-expired"><b>This payment request expired.</b><span>Nothing was matched to it before ${d.expires_at ? esc(when(d.expires_at)) : 'it expired'}. If you already sent USDC for it, email <a href="mailto:anil@decentralizedcompute.company">anil@decentralizedcompute.company</a> with the transaction signature.</span></div>
+          <div class="card-actions" style="margin-top:12px"><button class="btn sm" type="button" data-pay-close>Create a new payment</button></div>`;
+      }
+
+      // Polling: one check every 5 s while the panel is open, the tab is current and the page is visible.
+      // Errors double the delay (up to 60 s); confirmed, expired or past expires_at stops it.
+      function stopPoll() { clearTimeout(poll.timer); poll.timer = null; poll.id = null; }
+      function startPoll(id, delay = POLL_MS) {
+        stopPoll();
+        poll.id = id; poll.delay = POLL_MS;
+        poll.timer = setTimeout(checkDeposit, delay);
+      }
+      async function checkDeposit() {
+        poll.timer = null;
+        const id = poll.id;
+        if (!id || !dep || dep.id !== id || current !== 'billing') return stopPoll();
+        if (document.hidden || poll.busy) return; // visibilitychange resumes it
+        const late = !!dep.expires_at && nowS() >= dep.expires_at;
+        poll.busy = true;
+        try {
+          const r = await api('POST', `/api/billing/deposits/${encodeURIComponent(id)}/check`, {});
+          if (poll.id !== id || !dep || dep.id !== id) return;
+          if (r.deposit) dep = r.deposit;
+          if (r.balance && bill) { bill.balance = r.balance; const el = $('bal-usd'); if (el) { el.textContent = usd2(r.balance.usd); el.title = usdFull(r.balance.usd, true); } }
+          poll.delay = POLL_MS;
+          if (dep.status === 'confirmed') {
+            stopPoll(); panelDone(dep);
+            toast(`Payment received: ${usdFull(dep.credited_usd || dep.amount_usd)} added to your balance`);
+            refreshBilling();
+            return;
+          }
+          if (dep.status === 'expired' || late) { stopPoll(); panelExpired(dep); refreshBilling(); return; }
+          const pill = $('pay-pill'); if (pill) pill.innerHTML = depStatus(dep.status);
+          pendingStatus(dep);
+        } catch (err) {
+          if (poll.id !== id) return;
+          if (err.status === 401) { stopPoll(); return signedOut(); }
+          if (late) { stopPoll(); panelExpired(dep); return; }
+          if (err.status === 404) { stopPoll(); setPayStatus(`${err.message} Reload the page to see your deposits.`, 'bad'); return; }
+          poll.delay = Math.min(poll.delay * 2, POLL_MAX_MS);
+          setPayStatus(`Could not check the payment just now (${err.message.replace(/\.$/, '')}). Trying again in ${Math.round(poll.delay / 1000)} s. Your payment is safe either way.`, 'bad');
+        } finally {
+          poll.busy = false;
+        }
+        if (poll.id === id) poll.timer = setTimeout(checkDeposit, poll.delay);
+      }
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && poll.id && !poll.timer && !poll.busy) poll.timer = setTimeout(checkDeposit, 0);
+      });
+
+      function showKey(key, rec) {
+        const box = $('key-reveal');
+        if (!box) return;
+        box.innerHTML = `<div class="reveal-box key-box" role="status"><b>Your new API key${rec && rec.name ? ` “${esc(rec.name)}”` : ''}</b>
+          <div class="cmd"><code>${esc(key)}</code><button class="btn sm" type="button" data-copy="${esc(key)}">Copy</button></div>
+          <span><b>Copy it now and keep it secret.</b> It will not be shown again; if you lose it, revoke it and create a new one.</span>
+          <span><button class="btn sm" type="button" data-key-done>I saved it</button></span></div>`;
+      }
+      const syncChips = () => {
+        const v = $('topup-amt') ? $('topup-amt').value.trim() : '';
+        pane.querySelectorAll('[data-amt]').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.amt === v)));
+      };
+
+      const VIEWS = { rentals, requests, listings, billing, settings };
       let listingCache = [];
       async function show(tab, quiet = false) {
+        // Leaving (or re-drawing) the billing tab: stop polling; the re-render also drops any shown API key.
+        stopPoll();
+        if (tab !== 'billing') dep = null;
         current = tab;
         document.querySelectorAll('#tabs a').forEach((a) => a.setAttribute('aria-current', a.dataset.tab === tab ? 'page' : 'false'));
         if (!quiet) pane.innerHTML = '<p class="loading">Loading…</p>';
         try {
           if (tab === 'listings') listingCache = (await api('GET', '/api/my/listings')).listings;
           pane.innerHTML = await VIEWS[tab]();
+          if (tab === 'billing' && dep && current === 'billing') openPanel(dep, true);
         } catch (err) {
           if (err.status === 401) return signedOut();
           pane.innerHTML = `<div class="empty">${esc(err.message)}</div>`;
@@ -424,10 +799,11 @@
 
       function signedOut() {
         user = null;
+        stopPoll(); dep = null; bill = null;
         $('tabs').hidden = true; $('head-actions').hidden = true; $('verify-banner').classList.remove('show');
         $('hello').textContent = 'Your marketplace'; $('who').textContent = '';
         pane.innerHTML = `<div class="signin-grid">
-          <div class="signin"><p class="eyebrow">One account, both sides</p><h2>Sign in to rent or list GPUs.</h2><p>One free account for both: rent GPUs from hosts, or list your own and answer requests.</p>
+          <div class="signin"><p class="eyebrow">One account, both sides</p>${tabOf() === 'billing' ? '<h2>Sign in to see your balance and API keys.</h2><p>Top up with USDC on Solana, then use TDCC Chat or call the API with your own keys. The same free account also rents and lists GPUs.</p>' : '<h2>Sign in to rent or list GPUs.</h2><p>One free account for both: rent GPUs from hosts, or list your own and answer requests.</p>'}
           <div class="actions"><button class="btn solid" type="button" data-auth="signup">Create account</button><button class="btn" type="button" data-auth="login">Sign in</button></div></div>
           <ol class="perks">
             <li><span>01</span><div><b>Rent</b><p>Send a request to any listed GPU. You get SSH, Jupyter, or API access once the host accepts.</p></div></li>
@@ -459,6 +835,40 @@
         const copy = e.target.closest('[data-copy]');
         if (copy) {
           try { await navigator.clipboard.writeText(copy.dataset.copy); toast('Copied'); } catch { toast('Copy failed. Select the text and copy it manually.', true); }
+          return;
+        }
+        // ----- Balance & API tab -----
+        const jump = e.target.closest('[data-jump]');
+        if (jump) {
+          e.preventDefault(); // keep #billing in the address bar
+          const t = $(jump.dataset.jump);
+          if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+        const amt = e.target.closest('[data-amt]');
+        if (amt) { if ($('topup-amt')) { $('topup-amt').value = amt.dataset.amt; syncChips(); } return; }
+        const payShow = e.target.closest('[data-pay-show]');
+        if (payShow) {
+          const d = bill && (bill.deposits || []).find((x) => x.id === payShow.dataset.payShow);
+          if (d) { openPanel(d, true); $('topup').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+          return;
+        }
+        if (e.target.closest('[data-pay-close]')) { closePanel(); return; }
+        if (e.target.closest('[data-key-done]')) { $('key-reveal').innerHTML = ''; return; }
+        const qs = e.target.closest('[data-qs]');
+        if (qs) {
+          const box = qs.closest('.qs');
+          box.querySelectorAll('[data-qs]').forEach((x) => x.setAttribute('aria-pressed', String(x === qs)));
+          box.querySelectorAll('[data-qs-code]').forEach((x) => { x.hidden = x.dataset.qsCode !== qs.dataset.qs; });
+          $('qs-copy').dataset.copy = box.querySelector(`[data-qs-code="${qs.dataset.qs}"]`).textContent;
+          return;
+        }
+        const kr = e.target.closest('[data-key-revoke]');
+        if (kr) {
+          if (!confirm(`Revoke the key “${kr.dataset.keyName || 'API key'}”? Apps using it stop working right away.`)) return;
+          kr.disabled = true;
+          try { await api('DELETE', `/api/billing/keys/${encodeURIComponent(kr.dataset.keyRevoke)}`); toast('Key revoked'); await refreshBilling(); }
+          catch (err) { if (err.status === 401) return signedOut(); toast(err.message, true); kr.disabled = false; }
           return;
         }
         const edit = e.target.closest('[data-edit]');
@@ -567,6 +977,8 @@
         }
       });
 
+      pane.addEventListener('input', (e) => { if (e.target.id === 'topup-amt') syncChips(); });
+
       async function loadThread(slot, id) {
         try {
           const { messages } = await api('GET', `/api/rentals/${id}/messages`);
@@ -616,6 +1028,22 @@
                 <div class="codes">${d.recovery_codes.map((c) => `<span>${esc(c)}</span>`).join('')}</div>
                 <button class="btn" type="button" data-copy="${esc(d.recovery_codes.join('\n'))}">Copy codes</button>`;
             }
+          } else if (f.id === 'topup-form') {
+            const raw = f.elements.amount.value.trim();
+            const min = Number((bill && bill.min_topup_usd) || 5);
+            if (!/^\d+(\.\d{1,2})?$/.test(raw) || Number(raw) < min || Number(raw) > 10000) return fail(`Enter an amount from $${min} to $10,000, with at most two decimals.`);
+            const { deposit } = await api('POST', '/api/billing/deposits', { amount_usd: Number(raw) });
+            err.classList.remove('show');
+            openPanel(deposit);
+            refreshBilling();
+          } else if (f.id === 'key-form') {
+            const name = f.elements.key_name.value.trim();
+            if (!name) return fail('Give the key a name, for example the app that will use it.');
+            const d = await api('POST', '/api/billing/keys', { name });
+            f.reset(); err.classList.remove('show');
+            showKey(d.key, d.record);
+            toast('API key created');
+            await refreshBilling();
           } else if (f.id === 'del-form') {
             if (!confirm('Delete your account permanently?')) return;
             await api('DELETE', '/api/me', { password: f.password.value });
