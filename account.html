@@ -799,6 +799,9 @@
       };
 
       const VIEWS = { rentals, requests, listings, billing, settings };
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && show.cloudWaiting && current === 'rentals') show('rentals', true);
+      });
       let listingCache = [];
       async function show(tab, quiet = false) {
         // Leaving (or re-drawing) the billing tab: stop polling; the re-render also drops any shown API key.
@@ -813,8 +816,13 @@
           if (tab === 'billing' && dep && current === 'billing') openPanel(dep, true);
           // A cloud machine is starting: redraw quietly until its SSH line is there.
           clearTimeout(show.cloudTimer);
+          show.cloudWaiting = false;
           if (tab === 'rentals' && pane.querySelector('[data-cloud-poll]')) {
-            show.cloudTimer = setTimeout(() => { if (current === 'rentals' && !document.hidden) show('rentals', true); }, 10_000);
+            show.cloudTimer = setTimeout(() => {
+              if (current !== 'rentals') return;
+              // Hidden tab: catch up when it is shown again (visibilitychange below).
+              if (document.hidden) show.cloudWaiting = true; else show('rentals', true);
+            }, 10_000);
           }
         } catch (err) {
           if (err.status === 401) return signedOut();

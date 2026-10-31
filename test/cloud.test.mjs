@@ -36,12 +36,20 @@ function fakeRunpod() {
       const id = `pod_${++state.n}`;
       const pod = { id, name: body.name, status: "PROVISIONING", ssh: { proxy: null, direct: null }, env: body.env };
       state.pods.set(id, pod);
-      return res(201, pod);
+      return res(201, state.replyWithoutId ? { name: pod.name } : pod);
     }
-    if (path === "/pods" && init.method === "GET") return res(200, { pods: [...state.pods.values()] });
+    if (path === "/pods" && init.method === "GET") {
+      // Pages of state.pageSize, continued with pagination.nextCursor.
+      const all = [...state.pods.values()];
+      const start = Number(u.searchParams.get("cursor") || 0);
+      const size = state.pageSize || Number(u.searchParams.get("limit")) || 1000;
+      const next = state.endlessPages ? String(start) : start + size < all.length ? String(start + size) : null;
+      return res(200, { pods: all.slice(start, start + size), pagination: { nextCursor: next } });
+    }
     const m = path.match(/^\/pods\/([^/]+)$/);
     if (m) {
       const pod = state.pods.get(decodeURIComponent(m[1]));
+      if (init.method === "GET" && state.getStatus) return res(state.getStatus, { detail: "provider trouble" });
       if (init.method === "DELETE") {
         if (state.deleteFails) return res(503, { detail: "try later" });
         if (!pod) return res(404, { detail: "not found" });
@@ -262,4 +270,121 @@ test("price changes and limits are enforced, and the account cannot be deleted w
   for (let i = 0; i < 3; i++) assert.equal((await rent(user, { hours: 1 })).status, 201);
   assert.equal((await rent(user, { hours: 1 })).status, 409, "at most three at a time");
   assert.equal((await user.call("DELETE", "/api/me", { password: "a long enough password" })).status, 409);
+});
+
+// ---------- found in review ----------
+
+test("a refund that fails to write leaves the machine open, so ending can be retried", async () => {
+  const { env, rp, user } = await setup();
+  await fund(env, user.id, 10);
+  const id = (await rent(user, { hours: 4 })).body.rental.id;
+  rp.run((await row(env, id)).pod_id);
+  await cloudSweep(env, false);
+  const realBatch = env.DB.batch;
+  env.DB.batch = async (stmts) => { if (stmts.length === 4) throw new Error("D1 overloaded"); return realBatch(stmts); };
+  assert.equal((await user.call("POST", `/api/cloud/rentals/${id}/end`, {})).status, 500);
+  let db = await row(env, id);
+  assert.deepEqual([db.status, db.refunded_micro], ["running", 0], "nothing half-done");
+  env.DB.batch = realBatch;
+  assert.equal((await user.call("POST", `/api/cloud/rentals/${id}/end`, {})).status, 200);
+  db = await row(env, id);
+  assert.deepEqual([db.status, db.refunded_micro], ["ended", 3 * 870_000]);
+  // A second close (say the sweep seeing the pod gone) refunds nothing more.
+  await env.DB.prepare("UPDATE cloud_rentals SET status = 'running' WHERE id = ?").bind(id).run();
+  await cloudSweep(env, false);
+  assert.equal((await row(env, id)).refunded_micro, 3 * 870_000);
+  const n = await env.DB.prepare("SELECT COUNT(*) AS n, SUM(micro) AS s FROM ledger WHERE ref = ?").bind(`cloudrefund:${id}`).first();
+  assert.deepEqual([n.n, n.s], [1, 3 * 870_000]);
+  assert.equal(await balance(env, user.id), 10_000_000 - 4 * 870_000 + 3 * 870_000);
+});
+
+test("lost creates are found on later pages, and an unfinished pod list never refunds", async () => {
+  const { env, rp, user } = await setup();
+  await fund(env, user.id, 10);
+  for (let i = 0; i < 3; i++) rp.state.pods.set(`pod_x${i}`, { id: `pod_x${i}`, name: `someone-else-${i}`, status: "RUNNING", ssh: {} });
+  rp.state.pageSize = 2;
+  rp.state.createStatus = 500;
+  rp.state.createdButLost = true;
+  const a = (await rent(user)).body.rental.id;
+  await age(env, "cloud_rentals", "created_at", 6 * 60);
+  await cloudSweep(env, false);
+  assert.equal((await row(env, a)).status, "provisioning", "pod on page 2 adopted");
+
+  rp.state.createdButLost = false;
+  const b = (await rent(user)).body.rental.id;
+  await age(env, "cloud_rentals", "created_at", 6 * 60, `id = '${b}'`);
+  rp.state.endlessPages = true;
+  await assert.rejects(cloudSweep(env, false), /incomplete/);
+  assert.equal((await row(env, b)).status, "creating", "not refunded while the list is unfinished");
+  rp.state.endlessPages = false;
+  await cloudSweep(env, false);
+  assert.equal((await row(env, b)).status, "failed");
+});
+
+test("expired machines are stopped even when the provider cannot report their status", async () => {
+  const { env, rp, user } = await setup();
+  await fund(env, user.id, 10);
+  const id = (await rent(user)).body.rental.id;
+  rp.run((await row(env, id)).pod_id);
+  await cloudSweep(env, false);
+  await age(env, "cloud_rentals", "expires_at", 3 * 3600);
+  rp.state.getStatus = 500;
+  await cloudSweep(env, false);
+  assert.equal((await row(env, id)).status, "ended");
+  assert.equal(rp.state.pods.size, 0);
+});
+
+test("suspending an account stops its machines without a refund", async () => {
+  const { env, rp, user } = await setup();
+  await fund(env, user.id, 10);
+  const id = (await rent(user)).body.rental.id;
+  rp.run((await row(env, id)).pod_id);
+  await cloudSweep(env, false);
+  const admin = await account(env, "Boss");
+  await env.DB.prepare("UPDATE users SET email = 'boss@example.com', email_verified_at = 1 WHERE id = ?").bind(admin.id).run();
+  assert.equal((await admin.call("POST", `/api/admin/users/${user.id}/suspend`, {})).status, 200);
+  const db = await row(env, id);
+  assert.equal(db.status, "ended");
+  assert.equal(db.refunded_micro, 0);
+  assert.equal(rp.state.pods.size, 0);
+});
+
+test("provider refusals reach the logs and the admins, at most once an hour", async () => {
+  const { env, rp, user } = await setup({ RESEND_API_KEY: "x", EMAIL_OUTBOX: [] });
+  await env.DB.prepare("UPDATE users SET email_verified_at = 1").run();
+  await fund(env, user.id, 10);
+  const id = (await rent(user)).body.rental.id;
+  rp.state.getStatus = 401;
+  await assert.rejects(cloudSweep(env, false), /401/);
+  await age(env, "cloud_rentals", "checked_at", 600);
+  await assert.rejects(cloudSweep(env, false), /401/);
+  assert.equal(env.EMAIL_OUTBOX.filter((m) => /refusing/.test(m.subject)).length, 1);
+  assert.equal((await row(env, id)).status, "provisioning");
+});
+
+test("a create reply without a pod id is tracked down by name", async () => {
+  const { env, rp, user } = await setup();
+  await fund(env, user.id, 10);
+  rp.state.replyWithoutId = true;
+  const r = await rent(user);
+  assert.equal(r.status, 201);
+  assert.equal(r.body.rental.status, "creating");
+  await age(env, "cloud_rentals", "created_at", 6 * 60);
+  await cloudSweep(env, false);
+  const db = await row(env, r.body.rental.id);
+  assert.equal(db.status, "provisioning");
+  assert.ok(db.pod_id);
+});
+
+test("page loads are rate limited and ask the provider once per rental", async () => {
+  const { env, rp, user } = await setup();
+  await fund(env, user.id, 10);
+  await rent(user);
+  await age(env, "cloud_rentals", "checked_at", 60);
+  const before = rp.calls.filter((c) => c.method === "GET" && c.path.startsWith("/pods/")).length;
+  await Promise.all(Array.from({ length: 5 }, () => user.call("GET", "/api/cloud/rentals")));
+  assert.equal(rp.calls.filter((c) => c.method === "GET" && c.path.startsWith("/pods/")).length - before, 1);
+  let last;
+  for (let i = 0; i < 30; i++) last = await user.call("GET", "/api/cloud/rentals");
+  assert.equal(last.status, 429);
 });

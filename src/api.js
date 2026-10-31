@@ -18,7 +18,7 @@
 
 import { emailEnabled, sendEmail, siteUrl, templates } from "./email.js";
 import { billingOverview, createDeposit, checkDeposit, createKey, revokeKey, webChat, watchDeposits, cleanupHolds } from "./billing.js";
-import { handleCloud, cloudSweep, openCloudRentals } from "./cloud.js";
+import { handleCloud, cloudSweep, openCloudRentals, endAllForUser } from "./cloud.js";
 
 const SESSION_COOKIE = "__Host-tdcc_sid";
 const SESSION_TTL = 30 * 24 * 3600;
@@ -2034,6 +2034,8 @@ async function adminUser(request, env, id, action) {
       env.DB.prepare("UPDATE listings SET status = 'hidden', moderation_note = 'Account suspended.', node_token_hash = NULL, updated_at = ? WHERE owner_id = ? AND status IN ('active', 'paused')").bind(t, id),
       env.DB.prepare("UPDATE rentals SET status = 'cancelled', updated_at = ? WHERE status = 'pending' AND (renter_id = ? OR listing_id IN (SELECT id FROM listings WHERE owner_id = ?))").bind(t, id, id),
     ]);
+    // Cloud machines run on our provider account: stop them now.
+    await endAllForUser(env, id);
   } else {
     await env.DB.prepare("UPDATE users SET suspended_at = NULL WHERE id = ?").bind(id).run();
   }

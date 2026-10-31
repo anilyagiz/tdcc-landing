@@ -914,8 +914,17 @@
         } catch (err) {
           $('cd-err').innerHTML = esc(err.message) + (err.status === 402 ? ' <a href="/account.html#billing">Top up →</a>' : '');
           $('cd-err').hidden = false;
+          // Price or stock changed: load the current offer so the next try can succeed.
+          if (err.status === 409 && err.field === 'gpu_id') {
+            try {
+              const fresh = await api('GET', '/api/cloud/gpus?fresh=' + Date.now());
+              const g = fresh.gpus.find((x) => x.id === gpu.id);
+              if (g) { data.gpus = data.gpus.map((x) => (x.id === g.id ? g : x)); gpu = g; total(); }
+              else data.gpus = data.gpus.filter((x) => x.id !== gpu.id);
+            } catch { /* keep the message */ }
+          }
         } finally {
-          go.disabled = false;
+          if (!gpu || data.gpus.some((x) => x.id === gpu.id)) go.disabled = false;
         }
       });
     })();

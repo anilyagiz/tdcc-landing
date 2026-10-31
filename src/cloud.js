@@ -88,7 +88,7 @@ async function gpus(env, fresh = false) {
         max_count: Math.max(1, Math.min(MAX_GPUS, Number(g.maxCount && g.maxCount.secure) || 1)),
         cost_micro: cost,
         // Rounded up to whole cents per GPU-hour.
-        price_micro: Math.ceil((cost * c.markup) / 10_000) * 10_000,
+        price_micro: Math.ceil(Math.round(cost * c.markup) / 10_000) * 10_000,
       };
     })
     .sort((a, b) => a.price_micro - b.price_micro);
@@ -136,27 +136,41 @@ async function chargeAndInsert(env, r) {
   return !!(await env.DB.prepare("SELECT 1 FROM cloud_rentals WHERE id = ?").bind(r.id).first());
 }
 
-// Gives `micro` back once per rental (the ledger ref is unique, so a second
-// call rolls the whole batch back and returns 0).
-async function refund(env, r, micro, reason) {
+// Moves a rental from one of `from` to its final status `to` and gives back
+// `micro`, all in one D1 batch: a crash can never leave a closed rental
+// without its refund. The refund rows only apply when this very batch closed
+// the rental (status + ended_at marker) and nothing was refunded before, so a
+// second, concurrent close changes nothing. Returns whether it closed it.
+async function close(env, r, from, to, { error = null, micro = 0, reason = "" } = {}) {
   micro = Math.max(0, Math.min(micro, r.total_micro - (r.refunded_micro || 0)));
-  if (micro <= 0) return 0;
   const t = now();
-  try {
-    await env.DB.batch([
-      env.DB.prepare("INSERT INTO ledger (user_id, micro, kind, ref, detail, created_at) VALUES (?, ?, 'cloud_refund', ?, ?, ?)")
-        .bind(r.user_id, micro, `cloudrefund:${r.id}`, reason.slice(0, 200), t),
+  const ref = `cloudrefund:${r.id}`;
+  const mine = "EXISTS (SELECT 1 FROM cloud_rentals WHERE id = ?1 AND status = ?2 AND ended_at = ?3 AND refunded_micro = 0)";
+  const stmts = [
+    env.DB.prepare(
+      `UPDATE cloud_rentals SET status = ?, ended_at = ?, error = COALESCE(?, error), expires_at = COALESCE(expires_at, ?)
+       WHERE id = ? AND status IN (${from.map(() => "?").join(", ")})`
+    ).bind(to, t, error, t, r.id, ...from),
+  ];
+  if (micro > 0) {
+    stmts.push(
       env.DB.prepare(
-        `INSERT INTO balances (user_id, micro, updated_at) VALUES (?1, ?2, ?3)
-         ON CONFLICT(user_id) DO UPDATE SET micro = micro + ?2, updated_at = ?3`
-      ).bind(r.user_id, micro, t),
-      env.DB.prepare("UPDATE cloud_rentals SET refunded_micro = refunded_micro + ? WHERE id = ?").bind(micro, r.id),
-    ]);
-    return micro;
-  } catch (err) {
-    if (/UNIQUE/i.test(String(err && err.message))) return 0;
-    throw err;
+        `INSERT INTO ledger (user_id, micro, kind, ref, detail, created_at)
+         SELECT ?4, ?5, 'cloud_refund', ?6, ?7, ?3 WHERE ${mine} AND NOT EXISTS (SELECT 1 FROM ledger WHERE ref = ?6)`
+      ).bind(r.id, to, t, r.user_id, micro, ref, reason.slice(0, 200)),
+      env.DB.prepare(
+        `INSERT INTO balances (user_id, micro, updated_at)
+         SELECT ?4, ?5, ?3 WHERE ${mine} AND EXISTS (SELECT 1 FROM ledger WHERE ref = ?6 AND created_at = ?3)
+         ON CONFLICT(user_id) DO UPDATE SET micro = micro + ?5, updated_at = ?3`
+      ).bind(r.id, to, t, r.user_id, micro, ref),
+      env.DB.prepare(
+        `UPDATE cloud_rentals SET refunded_micro = ?4
+         WHERE ${mine} AND EXISTS (SELECT 1 FROM ledger WHERE ref = ?5 AND created_at = ?3)`
+      ).bind(r.id, to, t, micro, ref),
+    );
   }
+  const [res] = await env.DB.batch(stmts);
+  return res.meta.changes > 0;
 }
 
 // Hours not yet begun, at the price paid.
@@ -167,12 +181,8 @@ function unusedMicro(r, t) {
   return Math.max(0, r.hours - used) * r.gpu_count * r.price_micro;
 }
 
-async function fail(env, r, reason, refundAll = true) {
-  const t = now();
-  const res = await env.DB.prepare("UPDATE cloud_rentals SET status = 'failed', error = ?, ended_at = ? WHERE id = ? AND status IN ('creating', 'provisioning')")
-    .bind(reason.slice(0, 300), t, r.id).run();
-  if (res.meta.changes && refundAll) await refund(env, r, r.total_micro, `Refund: ${reason}`);
-}
+const fail = (env, r, reason) =>
+  close(env, r, ["creating", "provisioning"], "failed", { error: reason.slice(0, 300), micro: r.total_micro, reason: `Refund: ${reason}` });
 
 async function terminate(env, podId) {
   try {
@@ -182,9 +192,13 @@ async function terminate(env, podId) {
   }
 }
 
-async function alertAdmins(env, subject, text) {
+// `kind` limits repeats to one email an hour (cron problems recur every minute).
+async function alertAdmins(env, subject, text, kind = null) {
   console.error(subject, text);
   if (!emailEnabled(env) || !env.ADMIN_EMAILS) return;
+  if (kind) {
+    try { await limit(env, "cloudalert:" + kind, 1, 3600); } catch { return; }
+  }
   await Promise.all(env.ADMIN_EMAILS.split(",").map((x) => x.trim()).filter(Boolean)
     .map((to) => sendEmail(env, { to, subject, text }).catch(() => {})));
 }
@@ -215,7 +229,6 @@ async function createRental(request, env, ctx) {
   const user = await requireUser(request, env);
   requireVerified(env, user);
   if (!cloudEnabled(env)) throw new HttpError(503, "Instant cloud GPUs are not available on this deployment yet.");
-  await limit(env, "cloud:" + user.id, 10, 3600);
   const body = await readJson(request);
   const list = await gpus(env, true).catch(() => { throw new HttpError(503, "The GPU provider cannot be reached right now. Nothing was charged; please try again in a minute."); });
   const g = list.find((x) => x.id === body.gpu_id);
@@ -230,6 +243,8 @@ async function createRental(request, env, ctx) {
   }
   const open = await env.DB.prepare(`SELECT COUNT(*) AS n FROM cloud_rentals WHERE user_id = ? AND status IN ('creating', 'provisioning', 'running')`).bind(user.id).first();
   if (open.n >= MAX_ACTIVE) throw new HttpError(409, `You can run up to ${MAX_ACTIVE} cloud GPUs at a time. End one first.`);
+  // Counted only once the request is valid, so a price change does not use it up.
+  await limit(env, "cloud:" + user.id, 10, 3600);
 
   const c = cfg(env);
   const r = {
@@ -267,8 +282,11 @@ async function createRental(request, env, ctx) {
     }
     throw new HttpError(409, "No machine with that GPU could be started right now. You were refunded in full; try another GPU or a smaller count.");
   }
-  await env.DB.prepare("UPDATE cloud_rentals SET pod_id = ?, status = 'provisioning', checked_at = ? WHERE id = ? AND status = 'creating'")
-    .bind(pod && pod.id, now(), r.id).run();
+  // Without an id the pod cannot be tracked here; the sweep finds it by name.
+  if (pod && pod.id) {
+    await env.DB.prepare("UPDATE cloud_rentals SET pod_id = ?, status = 'provisioning', checked_at = ? WHERE id = ? AND status = 'creating'")
+      .bind(String(pod.id), now(), r.id).run();
+  }
   const row = await env.DB.prepare("SELECT * FROM cloud_rentals WHERE id = ?").bind(r.id).first();
   return json(201, { rental: rentalOut(row) });
 }
@@ -279,16 +297,26 @@ async function sync(env, r) {
   const t = now();
   if (r.status === "creating") {
     if (t - r.created_at < LOST_CREATE_GRACE) return;
-    // The create reply was lost: look for the pod by name.
-    const found = (await listOurPods(env)).find((p) => p.name === POD_PREFIX + r.id);
+    // The create reply was lost: look for the pod by name. Refund only when
+    // the whole list was read; otherwise the pod may be on a page not seen.
+    const { pods, complete } = await listOurPods(env);
+    const found = pods.find((p) => p.name === POD_PREFIX + r.id);
     if (found) {
       await env.DB.prepare("UPDATE cloud_rentals SET pod_id = ?, status = 'provisioning' WHERE id = ? AND status = 'creating'").bind(found.id, r.id).run();
-    } else {
+    } else if (complete) {
       await fail(env, r, "the machine could not be started");
+    } else {
+      throw new Error("pod list incomplete; will retry");
     }
     return;
   }
   if (!r.pod_id) return;
+  if (r.status === "running" && r.expires_at <= t) {
+    // Hours up: stop the meter without waiting on a status read.
+    await terminate(env, r.pod_id);
+    await close(env, r, ["running"], "ended");
+    return;
+  }
   let pod;
   try {
     pod = await runpod(env, "GET", `/pods/${encodeURIComponent(r.pod_id)}`);
@@ -312,14 +340,10 @@ async function sync(env, r) {
     return;
   }
   if (r.status === "running") {
-    if (r.expires_at <= t) {
-      await terminate(env, r.pod_id);
-      await env.DB.prepare("UPDATE cloud_rentals SET status = 'ended', ended_at = ? WHERE id = ? AND status = 'running'").bind(t, r.id).run();
-    } else if (["ERROR", "EXITED", "TERMINATED"].includes(pod.status)) {
+    if (["ERROR", "EXITED", "TERMINATED"].includes(pod.status)) {
       // Lost on the provider's side: end it and give back the hours not begun.
       await terminate(env, r.pod_id);
-      const res = await env.DB.prepare("UPDATE cloud_rentals SET status = 'ended', ended_at = ?, error = 'The machine stopped on the provider side.' WHERE id = ? AND status = 'running'").bind(t, r.id).run();
-      if (res.meta.changes) await refund(env, r, unusedMicro(r, t), "Refund: machine stopped by the provider");
+      await close(env, r, ["running"], "ended", { error: "The machine stopped on the provider side.", micro: unusedMicro(r, t), reason: "Refund: machine stopped by the provider" });
     } else {
       // Ports can change after a provider-side restart.
       if (direct && direct.port && (direct.port !== r.ssh_port || direct.host !== r.ssh_host)) {
@@ -330,16 +354,19 @@ async function sync(env, r) {
   }
 }
 
+// Our pods on the provider account. GET /v2/pods pages with `limit` (max
+// 1000) and `cursor` = the previous page's `pagination.nextCursor`.
+// `complete` is false when the page cap stopped the walk.
 async function listOurPods(env) {
-  const out = [];
+  const pods = [];
   let cursor = "";
   for (let page = 0; page < 20; page++) {
-    const data = await runpod(env, "GET", `/pods${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`);
-    for (const p of (data && data.pods) || []) if (p && typeof p.name === "string" && p.name.startsWith(POD_PREFIX)) out.push(p);
-    cursor = data && (data.nextCursor || data.next_cursor || data.cursor);
-    if (!cursor) break;
+    const data = await runpod(env, "GET", `/pods?limit=1000${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`);
+    for (const p of (data && data.pods) || []) if (p && typeof p.name === "string" && p.name.startsWith(POD_PREFIX)) pods.push(p);
+    cursor = data && data.pagination && data.pagination.nextCursor;
+    if (!cursor) return { pods, complete: true };
   }
-  return out;
+  return { pods, complete: false };
 }
 
 // Cron (every minute): sync open rentals, then (every 10 minutes by default)
@@ -347,36 +374,72 @@ async function listOurPods(env) {
 export async function cloudSweep(env, orphans = Math.floor(now() / 60) % 10 === 0) {
   if (!cloudEnabled(env)) return;
   const t = now();
+  let first = null;
+  const failed = async (what, err) => {
+    console.error(what, err && err.message);
+    first = first || err;
+    if (err instanceof ProviderError && [401, 402, 403].includes(err.status)) {
+      await alertAdmins(env, "RunPod is refusing the marketplace's requests", `${what}: ${err.message}. Check the RunPod API key and balance; expired machines cannot be stopped until this is fixed.`, "auth");
+    }
+  };
+  // Expired machines first (they cost money every minute), then the rest.
   const { results } = await env.DB.prepare(
-    `SELECT * FROM cloud_rentals WHERE status IN ('creating', 'provisioning', 'running')
-       AND (status != 'running' OR expires_at <= ?1 OR checked_at IS NULL OR checked_at < ?1 - 240)
-     ORDER BY created_at LIMIT 50`
+    `SELECT r.*, u.suspended_at FROM cloud_rentals r JOIN users u ON u.id = r.user_id
+     WHERE r.status IN ('creating', 'provisioning', 'running')
+       AND (r.status != 'running' OR r.expires_at <= ?1 OR r.checked_at IS NULL OR r.checked_at < ?1 - 240 OR u.suspended_at IS NOT NULL)
+     ORDER BY (r.status = 'running' AND r.expires_at <= ?1) DESC, u.suspended_at IS NOT NULL DESC, COALESCE(r.checked_at, 0), r.created_at
+     LIMIT 200`
   ).bind(t).all();
   for (const r of results) {
-    try { await sync(env, r); } catch (err) { console.error("cloud sync failed", r.id, err.message); }
+    try {
+      if (r.suspended_at && r.status !== "creating") await endForSuspension(env, r);
+      else await sync(env, r);
+    } catch (err) { await failed(`cloud sync ${r.id}`, err); }
   }
-  if (!orphans) return;
-  let pods;
-  try { pods = await listOurPods(env); } catch (err) { console.error("cloud orphan scan failed", err.message); return; }
-  for (const p of pods) {
+  if (orphans) {
+    let list = null;
+    try { list = await listOurPods(env); } catch (err) { await failed("cloud orphan scan", err); }
+    if (list && !list.complete) await alertAdmins(env, "RunPod pod list too long", "The orphan scan stopped after 20 pages; some pods were not checked.", "pages");
+    for (const p of (list && list.pods) || []) {
     const id = p.name.slice(POD_PREFIX.length);
     const r = await env.DB.prepare("SELECT status FROM cloud_rentals WHERE id = ?").bind(id).first();
-    // Open rentals own their pod ('creating' ones are adopted by sync above);
-    // a pod of an ended or failed rental, or of no rental, is unpaid.
-    if (r && ACTIVE.includes(r.status)) continue;
-    try {
-      await terminate(env, p.id);
-      await alertAdmins(env, "Terminated an orphaned RunPod pod", `Pod ${p.id} (${p.name}) had no live rental (${r ? r.status : "no row"}) and was terminated.`);
-    } catch (err) { console.error("orphan terminate failed", p.id, err.message); }
+      // Open rentals own their pod ('creating' ones are adopted by sync above);
+      // a pod of an ended or failed rental, or of no rental, is unpaid.
+      if (r && ACTIVE.includes(r.status)) continue;
+      try {
+        await terminate(env, p.id);
+        await alertAdmins(env, "Terminated an orphaned RunPod pod", `Pod ${p.id} (${p.name}) had no live rental (${r ? r.status : "no row"}) and was terminated.`);
+      } catch (err) { await failed(`orphan terminate ${p.id}`, err); }
+    }
   }
+  // Reported by the worker (logs and Sentry) once everything else has run.
+  if (first) throw first;
+}
+
+// Suspended accounts lose their machines at once, without a refund (terms,
+// "Instant cloud GPUs").
+async function endForSuspension(env, r) {
+  if (r.pod_id) await terminate(env, r.pod_id);
+  await close(env, r, ["provisioning", "running"], "ended", { error: "Ended by TDCC: the account was suspended." });
+}
+
+// Called when an admin suspends an account; the sweep retries what fails here.
+export async function endAllForUser(env, userId) {
+  if (!cloudEnabled(env)) return;
+  const { results } = await env.DB.prepare("SELECT * FROM cloud_rentals WHERE user_id = ? AND status IN ('provisioning', 'running')").bind(userId).all();
+  for (const r of results) await endForSuspension(env, r).catch((err) => console.error("cloud end on suspend failed", r.id, err.message));
 }
 
 async function myRentals(request, env) {
   const user = await requireUser(request, env);
+  await limit(env, "cloudpoll:" + user.id, 30, 60);
   const { results } = await env.DB.prepare("SELECT * FROM cloud_rentals WHERE user_id = ? ORDER BY created_at DESC LIMIT 50").bind(user.id).all();
   // Fresh state for machines still starting, so the SSH line appears quickly.
+  // Claiming the check first means parallel page loads ask the provider once.
   const t = now();
-  for (const r of results.filter((x) => x.status === "provisioning" && (!x.checked_at || t - x.checked_at >= 10)).slice(0, 3)) {
+  for (const r of results.filter((x) => x.status === "provisioning").slice(0, 3)) {
+    const claim = await env.DB.prepare("UPDATE cloud_rentals SET checked_at = ?1 WHERE id = ?2 AND status = 'provisioning' AND (checked_at IS NULL OR checked_at <= ?1 - 10)").bind(t, r.id).run();
+    if (!claim.meta.changes) continue;
     try { await sync(env, r); } catch (err) { console.warn("cloud sync on load failed", r.id, err.message); }
   }
   const fresh = (await env.DB.prepare("SELECT * FROM cloud_rentals WHERE user_id = ? ORDER BY created_at DESC LIMIT 50").bind(user.id).all()).results;
@@ -399,10 +462,7 @@ async function endRental(request, env, id) {
     console.error("cloud terminate failed", id, err.message);
     throw new HttpError(502, "The machine could not be stopped right now. Please try again in a minute.");
   }
-  const t = now();
-  const res = await env.DB.prepare("UPDATE cloud_rentals SET status = 'ended', ended_at = ?, expires_at = COALESCE(expires_at, ?) WHERE id = ? AND status IN ('provisioning', 'running')")
-    .bind(t, t, id).run();
-  if (res.meta.changes) await refund(env, r, unusedMicro(r, t), "Refund: ended early by the renter");
+  await close(env, r, ["provisioning", "running"], "ended", { micro: unusedMicro(r, now()), reason: "Refund: ended early by the renter" });
   const row = await env.DB.prepare("SELECT * FROM cloud_rentals WHERE id = ?").bind(id).first();
   return json(200, { rental: rentalOut(row) });
 }
