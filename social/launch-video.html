@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>TDCC Marketplace launch video</title>
+<!--
+  Frame-exact launch video. Nothing animates by itself: window.render(t) draws
+  the frame at t seconds, so social/render-launch-video.mjs can capture every
+  frame at a fixed rate and pair it with social/launch-audio.mjs (128 BPM).
+  Open the file in a browser and add #play to watch it in real time.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,500;1,8..60,600&display=block" rel="stylesheet" />
+<style>
+  :root {
+    --navy: #0e2e47; --ink: #06122a; --lime: #b9ff78; --lime-d: #7fd64a; --amber: #f2b45a;
+    --warm: #f4ecdc; --paper: #fbf8f2; --body: #334457; --muted: #66768a;
+    --serif: "Source Serif 4", Georgia, serif; --sans: Inter, system-ui, sans-serif; --mono: "JetBrains Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+  #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #03070e; font-family: var(--sans); color: #fff; }
+  .layer, .scene { position: absolute; inset: 0; }
+  .scene { opacity: 0; will-change: opacity, transform; }
+  canvas { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+
+  /* light world */
+  #light { opacity: 0; background: linear-gradient(180deg, #fbf3e3 0%, #fbf8f2 55%, #f3efe6 100%); }
+  #light .photo { position: absolute; inset: -60px; background: url(../assets/hero-landscape.jpg) center 70% / cover no-repeat; opacity: .9; }
+  #light .wash { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(251,248,242,.97) 0%, rgba(251,248,242,.86) 42%, rgba(251,248,242,.35) 75%, rgba(251,248,242,.15) 100%); }
+  #light .sun { position: absolute; width: 1400px; height: 1400px; right: -380px; top: -520px; border-radius: 50%; background: radial-gradient(circle, rgba(255,226,160,.85) 0%, rgba(255,214,140,.35) 30%, rgba(255,214,140,0) 65%); }
+
+  .grain { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: overlay; opacity: .11; image-rendering: pixelated; }
+  .vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%); }
+  #flash { position: absolute; inset: 0; background: #fffdf6; opacity: 0; pointer-events: none; }
+  #bars .bar { position: absolute; left: 0; right: 0; height: 0; background: #000; }
+
+  .eyebrow { font: 600 22px/1 var(--mono); letter-spacing: .32em; text-transform: uppercase; }
+  .w { display: inline-block; white-space: pre; will-change: transform, opacity, filter; }
+
+  /* dark kinetic lines */
+  .dline { position: absolute; left: 0; right: 0; text-align: center; font: 600 76px/1.08 var(--serif); letter-spacing: -.01em; color: #f6f1e6; }
+  .dline em { font-style: italic; color: var(--lime); }
+  .dsub { position: absolute; left: 0; right: 0; text-align: center; font: 500 26px/1.4 var(--mono); letter-spacing: .28em; text-transform: uppercase; color: rgba(246,241,230,.6); }
+
+  /* title */
+  .logo { display: inline-flex; align-items: center; gap: 18px; font: 800 44px/1 var(--sans); letter-spacing: -.02em; color: var(--navy); }
+  .logo svg { width: 64px; height: 44px; }
+  .title { font: 700 168px/.95 var(--serif); letter-spacing: -.035em; color: var(--navy); }
+  .title em { font-style: italic; font-weight: 600; color: var(--navy); position: relative; }
+  .live-dot { display: inline-block; width: 26px; height: 26px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 0 rgba(34,197,94,.5); vertical-align: middle; }
+  .pill { display: inline-flex; align-items: center; gap: 14px; padding: 16px 28px; border-radius: 999px; font: 600 26px/1 var(--sans); background: rgba(255,255,255,.85); color: var(--navy); border: 1px solid rgba(14,46,71,.12); box-shadow: 0 10px 30px -14px rgba(6,18,42,.35); }
+  .pill.dark { background: var(--ink); color: #fff; border-color: transparent; }
+  .pill.lime { background: var(--lime); color: #143a19; border-color: transparent; }
+
+  /* headline left column */
+  .head { position: absolute; left: 130px; top: 250px; width: 760px; }
+  .head .kicker { font: 600 22px/1 var(--mono); letter-spacing: .3em; text-transform: uppercase; color: #3f7d1d; margin-bottom: 30px; }
+  .head h2 { font: 700 104px/.98 var(--serif); letter-spacing: -.03em; color: var(--navy); }
+  .head h2 em { font-style: italic; font-weight: 600; }
+  .head p { margin-top: 34px; font: 500 30px/1.45 var(--sans); color: var(--body); max-width: 640px; }
+
+  /* panels */
+  .term { position: absolute; border-radius: 26px; background: #071425; color: #dfe8f3; box-shadow: 0 50px 120px -40px rgba(6,18,42,.6), 0 0 0 1px rgba(255,255,255,.06) inset; overflow: hidden; }
+  .term .tb { height: 58px; display: flex; align-items: center; gap: 12px; padding: 0 24px; background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.06); font: 500 20px var(--mono); color: rgba(223,232,243,.5); }
+  .term .tb i { width: 15px; height: 15px; border-radius: 50%; background: #2a3a52; }
+  .term .tb i:nth-child(1) { background: #ff6b6b; } .term .tb i:nth-child(2) { background: #ffcc4d; } .term .tb i:nth-child(3) { background: #4ade80; }
+  .term .tb span { margin-left: 14px; }
+  .term pre { padding: 34px 38px; font: 500 29px/1.6 var(--mono); white-space: pre-wrap; }
+  .term .p { color: var(--lime); } .term .ok { color: #4ade80; } .term .dim { color: rgba(223,232,243,.45); } .term .hl { color: #fff; font-weight: 700; }
+  .caret { display: inline-block; width: 15px; height: 32px; background: var(--lime); vertical-align: -5px; margin-left: 3px; }
+
+  .card { position: absolute; border-radius: 28px; background: #fff; box-shadow: 0 40px 100px -40px rgba(6,18,42,.45), 0 0 0 1px rgba(14,46,71,.08); color: var(--ink); }
+  .listing { padding: 36px 40px; width: 640px; }
+  .listing .top { display: flex; justify-content: space-between; align-items: baseline; }
+  .listing b { font: 700 40px/1 var(--sans); letter-spacing: -.02em; color: var(--navy); }
+  .listing .price { font: 700 38px/1 var(--sans); color: var(--navy); }
+  .listing .price small { font: 500 22px var(--sans); color: var(--muted); }
+  .listing .meta { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .tag { display: inline-flex; align-items: center; gap: 9px; padding: 10px 16px; border-radius: 999px; font: 600 21px/1 var(--sans); background: #f1f5f9; color: #334457; }
+  .tag.on { background: #e8fbe0; color: #1f6b12; } .tag.on::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #22c55e; }
+  .tag.chk { background: #e9f1ff; color: #1d4ed8; }
+
+  .table { position: absolute; left: 960px; top: 150px; width: 840px; border-radius: 28px; background: rgba(255,255,255,.96); box-shadow: 0 40px 100px -40px rgba(6,18,42,.45), 0 0 0 1px rgba(14,46,71,.08); overflow: hidden; color: var(--ink); }
+  .table .chips { display: flex; gap: 12px; padding: 26px 30px; border-bottom: 1px solid #e8edf3; }
+  .chip { padding: 11px 20px; border-radius: 999px; font: 600 21px/1 var(--sans); border: 1px solid #d6dee8; color: #334457; background: #fff; }
+  .chip.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .row { display: grid; grid-template-columns: 1.6fr 1fr 1fr auto; align-items: center; gap: 18px; padding: 22px 30px; border-bottom: 1px solid #eef2f6; font: 500 24px/1.2 var(--sans); }
+  .row b { font: 700 27px/1.15 var(--sans); color: var(--navy); display: block; }
+  .row span.s { color: var(--muted); font-size: 20px; }
+  .row .pr { font: 700 27px var(--sans); color: var(--navy); }
+  .row .btn { padding: 12px 22px; border-radius: 999px; background: var(--navy); color: #fff; font: 600 21px/1 var(--sans); }
+  .row.sel { background: #f2fbea; }
+  .cursor { position: absolute; width: 44px; height: 44px; left: 0; top: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,.3)); }
+  .req { position: absolute; left: 1020px; top: 640px; width: 720px; padding: 30px 260px 30px 34px; }
+  .req .l1 { font: 600 22px/1 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+  .req .l2 { margin-top: 16px; font: 700 34px/1.2 var(--sans); color: var(--navy); }
+  .stamp { position: absolute; right: 30px; top: 50%; margin-top: -30px; padding: 12px 22px; border-radius: 14px; border: 4px solid #16a34a; color: #16a34a; font: 800 30px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; transform: rotate(-8deg); }
+
+  /* trust rapid fire */
+  .big { position: absolute; left: 0; right: 0; top: 50%; text-align: center; font: 800 210px/1 var(--sans); letter-spacing: -.055em; transform: translateY(-50%); }
+  .big small { display: block; margin-top: 26px; font: 500 34px/1.3 var(--sans); letter-spacing: 0; opacity: .75; }
+
+  /* release */
+  .ver { position: absolute; left: 0; right: 0; top: 170px; text-align: center; }
+  .ver .num { font: 800 380px/1 var(--sans); letter-spacing: -.06em; color: var(--navy); display: inline-flex; overflow: hidden; height: 380px; }
+  .ver .num .roll { display: inline-block; }
+  .ver .num .col { display: inline-flex; flex-direction: column; height: 380px; }
+  .ver .lab { font: 600 26px/1 var(--mono); letter-spacing: .32em; text-transform: uppercase; color: #3f7d1d; margin-bottom: 18px; }
+  .ver .out { margin-top: 12px; font: 700 64px/1.1 var(--serif); color: var(--navy); letter-spacing: -.02em; }
+  .ver .chips2 { margin-top: 40px; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+
+  /* token */
+  .tok-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 48% at 50% 50%, rgba(2,6,12,.82) 0%, rgba(2,6,12,.45) 60%, rgba(2,6,12,0) 100%); }
+  .tok-line1 { position: absolute; left: 0; right: 0; top: 250px; text-align: center; font: 500 58px/1.1 var(--serif); color: rgba(246,241,230,.88); }
+  .tok-big { position: absolute; left: 0; right: 0; top: 345px; text-align: center; font: 900 220px/1 var(--sans); letter-spacing: -.05em; color: var(--lime); text-shadow: 0 0 90px rgba(185,255,120,.4); white-space: nowrap; }
+  .tok-has { position: absolute; left: 0; right: 0; top: 580px; text-align: center; font: italic 600 96px/1 var(--serif); color: #f6f1e6; }
+  .tok-products { position: absolute; left: 0; right: 0; top: 740px; display: flex; justify-content: center; gap: 18px; }
+  .tok-products .pp { padding: 16px 26px; border-radius: 999px; border: 1px solid rgba(185,255,120,.35); color: #e9f7dc; font: 600 26px/1 var(--sans); background: rgba(185,255,120,.06); }
+  .tok-safe { position: absolute; left: 50%; bottom: 60px; transform: translateX(-50%); white-space: nowrap; padding: 12px 26px; border-radius: 999px; background: rgba(2,6,12,.78); text-align: center; font: 500 21px/1.4 var(--mono); color: rgba(246,241,230,.7); letter-spacing: .04em; }
+
+  /* end */
+  .end-wrap { position: absolute; left: 0; right: 0; top: 280px; text-align: center; }
+  .end-wrap .slogan { margin-top: 46px; font: 700 112px/1.02 var(--serif); letter-spacing: -.03em; color: var(--navy); }
+  .end-wrap .slogan em { font-style: italic; font-weight: 600; }
+  .end-wrap .url { margin-top: 56px; display: inline-flex; gap: 18px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="space" width="1920" height="1080"></canvas>
+
+  <!-- 1 cold open -->
+  <div class="scene" id="s1">
+    <div class="dline" style="top:700px" data-words>Somewhere, a GPU is sitting idle.</div>
+  </div>
+  <!-- 2 globe -->
+  <div class="scene" id="s2">
+    <div class="dline" style="top:120px" data-words>Millions of them.</div>
+    <div class="dsub" style="top:228px" data-words>Waiting for work</div>
+  </div>
+  <!-- 3 riser -->
+  <div class="scene" id="s3">
+    <div class="dline" style="top:880px; font-size:88px" data-words>Today, they <em>go to work.</em></div>
+  </div>
+
+  <!-- light world (scenes 4-9, 11) -->
+  <div class="layer" id="light"><div class="photo"></div><div class="sun"></div><div class="wash"></div></div>
+
+  <!-- 4 title -->
+  <div class="scene" id="s4">
+    <div style="position:absolute;left:130px;top:150px">
+      <div class="logo"><svg viewBox="0 0 64 44" fill="none" stroke="#0e2e47" stroke-width="2.6" stroke-linecap="round"><path d="M6 38 Q32 -6 58 38"/><path d="M14 38 Q32 4 50 38"/><path d="M23 38 Q32 14 41 38"/><path d="M32 4 V38"/><path d="M9 28 H55"/><path d="M15 18 H49"/><path d="M2 39 H62"/></svg>tdcc</div>
+    </div>
+    <div style="position:absolute;left:130px;top:330px">
+      <div class="eyebrow" style="color:#3f7d1d;margin-bottom:34px" data-words>Now open · Version 0.74.0</div>
+      <div class="title"><div data-words>The GPU</div><div data-words>marketplace</div><div><span data-words><em>is live.</em></span> <span class="live-dot" id="livedot"></span></div></div>
+    </div>
+    <div style="position:absolute;left:130px;top:900px;display:flex;gap:16px" id="s4pills">
+      <span class="pill">Rent GPUs</span><span class="pill">List your own</span><span class="pill dark">decentralizedcompute.company</span>
+    </div>
+  </div>
+
+  <!-- 5 list -->
+  <div class="scene" id="s5">
+    <div class="head">
+      <div class="kicker" data-words>For GPU owners</div>
+      <h2><div data-words>List your GPU</div><div data-words><em>in two minutes.</em></div></h2>
+      <p data-words>Set your own hourly price. Link the machine and it shows up online, with the hardware it reports.</p>
+    </div>
+    <div class="term" id="term1" style="left:960px;top:200px;width:840px;height:380px">
+      <div class="tb"><i></i><i></i><i></i><span>host — tdcc</span></div>
+      <pre id="term1pre"></pre>
+    </div>
+    <div class="card listing" id="listing" style="left:1060px;top:640px">
+      <div class="top"><b>2 × RTX 4090 · 24GB</b><span class="price">$0.35 <small>/ GPU·h</small></span></div>
+      <div class="meta"><span class="tag on">Machine online</span><span class="tag chk">Hardware checked</span><span class="tag">eu-central</span><span class="tag">Independent</span></div>
+    </div>
+  </div>
+
+  <!-- 6 rent -->
+  <div class="scene" id="s6">
+    <div class="head">
+      <div class="kicker" data-words>For builders</div>
+      <h2><div data-words>Rent one</div><div data-words><em>in seconds.</em></div></h2>
+      <p data-words>Filter by memory, region and price. Send a request; the host accepts and you are in.</p>
+    </div>
+    <div class="table" id="table">
+      <div class="chips"><span class="chip" id="c-all">All</span><span class="chip" id="c-80">80GB+</span><span class="chip">40–79GB</span><span class="chip">24–39GB</span><span class="chip">Online only</span></div>
+      <div id="rows"></div>
+    </div>
+    <div class="card req" id="req"><div class="l1">Request</div><div class="l2">1 × H100 80GB · 4 h · SSH</div><div class="stamp" id="stamp">Accepted</div></div>
+    <svg class="cursor" id="cursor" viewBox="0 0 24 24"><path d="M4 2 L20 13 L12.5 14.2 L16.5 22 L13.4 23.3 L9.6 15.4 L4 20 Z" fill="#fff" stroke="#06122a" stroke-width="1.6" stroke-linejoin="round"/></svg>
+  </div>
+
+  <!-- 7 machines -->
+  <div class="scene" id="s7">
+    <div class="head" style="top:270px">
+      <div class="kicker" data-words>Instant machines</div>
+      <h2><div data-words>Your own box.</div><div data-words><em>Root, SSH, GPU.</em></div></h2>
+      <p data-words>The host's node starts an isolated container for your rental, and removes it when the hours are up.</p>
+    </div>
+    <div class="term" id="term2" style="left:960px;top:190px;width:840px;height:700px">
+      <div class="tb"><i></i><i></i><i></i><span>renter — ssh</span></div>
+      <pre id="term2pre"></pre>
+    </div>
+  </div>
+
+  <!-- 8 trust -->
+  <div class="scene" id="s8"><div class="big" id="bigword"></div></div>
+
+  <!-- 8b breath -->
+  <div class="scene" id="s8b"><div class="dline" style="top:470px;color:#0e2e47;font-size:84px" data-words>One more <em style="color:#0e2e47">thing.</em></div></div>
+
+  <!-- 9 release -->
+  <div class="scene" id="s9">
+    <div class="ver">
+      <div class="lab" data-words>New release · Out now</div>
+      <div class="num"><span>0.</span><span class="col" id="col1"><span>7</span><span>7</span></span><span class="col" id="col2"><span>3</span><span>4</span></span></div>
+      <div class="out" data-words>tdcc 0.74.0 is here.</div>
+      <div class="chips2" id="relchips"><span class="pill">Rent out your GPUs from the terminal</span><span class="pill">CLI · Linux x64 &amp; ARM64</span><span class="pill">Instant machines</span><span class="pill dark">Windows desktop beta</span></div>
+    </div>
+  </div>
+
+  <!-- 10 token -->
+  <div class="scene" id="s10">
+    <div class="tok-shade"></div>
+    <div class="tok-line1" data-words>Most tokens are looking for a product.</div>
+    <div class="tok-big" id="tokbig">$COMPUTE</div>
+    <div class="tok-has" data-words>has one.</div>
+    <div class="tok-products" id="tokprod"><span class="pp">GPU marketplace</span><span class="pp">TDCC Chat</span><span class="pp">Metered API</span><span class="pp">Desktop app</span><span class="pp">Exact Core research</span></div>
+    <div class="tok-safe">The only official $COMPUTE contract address is the one posted by @computecompany · Not financial advice</div>
+  </div>
+
+  <!-- 11 end -->
+  <div class="scene" id="s11">
+    <div class="end-wrap">
+      <div class="logo" style="font-size:52px"><svg viewBox="0 0 64 44" fill="none" stroke="#0e2e47" stroke-width="2.6" stroke-linecap="round" style="width:76px;height:52px"><path d="M6 38 Q32 -6 58 38"/><path d="M14 38 Q32 4 50 38"/><path d="M23 38 Q32 14 41 38"/><path d="M32 4 V38"/><path d="M9 28 H55"/><path d="M15 18 H49"/><path d="M2 39 H62"/></svg>tdcc</div>
+      <div class="slogan"><div data-words>Every GPU on Earth,</div><div data-words><em>working as one.</em></div></div>
+      <div class="url" id="endurl"><span class="pill lime">GPU marketplace is live</span><span class="pill dark">decentralizedcompute.company</span><span class="pill">@computecompany</span></div>
+    </div>
+  </div>
+
+  <canvas id="grain" class="grain" width="480" height="270"></canvas>
+  <div class="vignette" id="vig"></div>
+  <div id="flash"></div>
+</div>
+
+<script>
+// ---------- timeline (seconds; 128 BPM, matches social/launch-audio.mjs) ----------
+const BEAT = 60 / 128, BAR = BEAT * 4;
+const T = {
+  s1: 0, s2: 2 * BAR, s3: 4 * BAR, drop: 6 * BAR, list: 8 * BAR, rent: 11 * BAR, machines: 14 * BAR,
+  trust: 16 * BAR, breath: 18 * BAR - 2 * BEAT, release: 18 * BAR, token: 21 * BAR, end: 23 * BAR, total: 50,
+};
+window.DURATION = T.total;
+
+// ---------- helpers ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, p) => a + (b - a) * p;
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const eOut = (p) => 1 - Math.pow(1 - p, 3);
+const eOutX = (p) => (p >= 1 ? 1 : 1 - Math.pow(2, -10 * p));
+const eInOut = (p) => (p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+const eBack = (p) => { const c = 1.70158, c3 = c + 1; return 1 + c3 * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); };
+const $ = (id) => document.getElementById(id);
+let rs = 7;
+const rand = () => ((rs = (rs * 16807) % 2147483647) / 2147483647);
+
+// Split [data-words] text into word spans once, keeping inner markup (em).
+document.querySelectorAll('[data-words]').forEach((el) => {
+  const walk = (node) => {
+    [...node.childNodes].forEach((n) => {
+      if (n.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach((part) => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+          const s = document.createElement('span'); s.className = 'w'; s.textContent = part; frag.appendChild(s);
+        });
+        n.replaceWith(frag);
+      } else if (n.nodeType === 1 && !n.classList.contains('w')) walk(n);
+    });
+  };
+  walk(el);
+});
+
+// Word-by-word reveal: rise, unblur, fade; out = fade up.
+function words(root, t, t0, { stagger = .07, dur = .55, rise = 40, blur = 14, tout = Infinity, outDur = .35 } = {}) {
+  const ws = root.matches('[data-words]') ? root.querySelectorAll('.w') : root.querySelectorAll('.w');
+  ws.forEach((w, i) => {
+    const p = eOut(seg(t, t0 + i * stagger, t0 + i * stagger + dur));
+    const o = Number.isFinite(tout) ? seg(t, tout, tout + outDur) : 0;
+    w.style.opacity = (p * (1 - o)).toFixed(3);
+    w.style.transform = `translateY(${((1 - p) * rise - o * rise * .6).toFixed(1)}px)`;
+    w.style.filter = blur && p < 1 ? `blur(${((1 - p) * blur).toFixed(1)}px)` : 'none';
+  });
+}
+const show = (el, o) => { el.style.opacity = o.toFixed(3); el.style.visibility = o > .001 ? 'visible' : 'hidden'; };
+const fadeWin = (t, a, b, fi = .25, fo = .25) => Math.min(seg(t, a, a + fi), 1 - seg(t, b - fo, b));
+
+// ---------- space canvas: dot globe with GPU nodes ----------
+const cv = $('space'), cx = cv.getContext('2d');
+const SPHERE = [];
+const NPTS = 2200;
+for (let i = 0; i < NPTS; i++) {
+  const y = 1 - (i / (NPTS - 1)) * 2, r = Math.sqrt(1 - y * y), th = i * Math.PI * (3 - Math.sqrt(5));
+  SPHERE.push([Math.cos(th) * r, y, Math.sin(th) * r]);
+}
+const NODES = [];
+rs = 42;
+for (let i = 0; i < 190; i++) {
+  const u = rand() * 2 - 1, th = rand() * Math.PI * 2, r = Math.sqrt(1 - u * u);
+  NODES.push({ p: [Math.cos(th) * r, u * .82, Math.sin(th) * r], wake: rand(), appear: rand() });
+}
+const ARCS = [];
+for (let i = 0; i < 70; i++) ARCS.push([Math.floor(rand() * NODES.length), Math.floor(rand() * NODES.length), rand()]);
+const STARS = [];
+for (let i = 0; i < 420; i++) STARS.push([rand() * 1920, rand() * 1080, rand() * 1.4 + .3, rand()]);
+
+function rot([x, y, z], a, tilt) {
+  const ca = Math.cos(a), sa = Math.sin(a);
+  let X = x * ca + z * sa, Z = -x * sa + z * ca;
+  const ct = Math.cos(tilt), st = Math.sin(tilt);
+  const Y = y * ct - Z * st; Z = y * st + Z * ct;
+  return [X, Y, Z];
+}
+function slerp(a, b, p) {
+  const d = Math.acos(clamp(a[0] * b[0] + a[1] * b[1] + a[2] * b[2], -1, 1));
+  if (d < 1e-4) return a;
+  const s1 = Math.sin((1 - p) * d) / Math.sin(d), s2 = Math.sin(p * d) / Math.sin(d);
+  const lift = 1 + Math.sin(p * Math.PI) * .18 * d;
+  return [(a[0] * s1 + b[0] * s2) * lift, (a[1] * s1 + b[1] * s2) * lift, (a[2] * s1 + b[2] * s2) * lift];
+}
+
+function drawSpace(t) {
+  cx.clearRect(0, 0, 1920, 1080);
+  // visible in the dark acts only
+  const dark1 = 1 - seg(t, T.drop - .02, T.drop + .05);
+  const darkTok = fadeWin(t, T.token - .05, T.end + .02, .1, .35);
+  const vis = Math.max(dark1, darkTok);
+  if (vis <= 0) return;
+  const g = cx.createRadialGradient(960, 600, 100, 960, 600, 1300);
+  g.addColorStop(0, '#0a1a2c'); g.addColorStop(1, '#02050b');
+  cx.fillStyle = g; cx.globalAlpha = vis; cx.fillRect(0, 0, 1920, 1080);
+  // stars drift
+  STARS.forEach(([x, y, r, k]) => {
+    const tw = .45 + .55 * Math.sin(t * (1 + k * 2) + k * 20);
+    cx.globalAlpha = vis * .5 * tw;
+    cx.fillStyle = '#cfe0ff';
+    cx.fillRect((x - t * 6 * (k + .2)) % 1920 + (x - t * 6 * (k + .2) < 0 ? 1920 : 0), y, r, r);
+  });
+
+  let R, cxp, cyp, ang, tilt, wakeP, appearP, zoomFlash = 0;
+  if (dark1 > 0 && t < T.drop) {
+    // act 1: a single dot -> globe -> nodes wake -> rush in
+    const zIn = eInOut(seg(t, T.s2 - .3, T.s2 + 2.4));
+    const rush = Math.pow(seg(t, T.drop - 1.2, T.drop), 2.4);
+    R = lerp(26, 380, zIn) * (1 + rush * 5.5);
+    cxp = 960; cyp = lerp(470, 560, zIn);
+    ang = t * .16 + rush * 2.4; tilt = -.32;
+    appearP = seg(t, T.s2 + .2, T.s3 - .2);
+    wakeP = seg(t, T.s3 + .1, T.drop - .5);
+    zoomFlash = rush;
+  } else {
+    // token act: globe fully awake, behind the type
+    R = 620; cxp = 960; cyp = 600; ang = t * .12; tilt = -.3; appearP = 1; wakeP = 1;
+  }
+
+  // the lone dot of the cold open
+  if (t < T.s2 + .6) {
+    const beat = Math.max(0, ...[0, 1, 2, 3, 4].map((k) => { const bt = .3 + k * BEAT * 2; return t >= bt ? Math.exp(-(t - bt) * 5) : 0; }));
+    const a = seg(t, .2, 1.1) * (1 - seg(t, T.s2 + .2, T.s2 + .6));
+    const r = 7 + beat * 9;
+    const gl = cx.createRadialGradient(960, 470, 0, 960, 470, 90 + beat * 70);
+    gl.addColorStop(0, `rgba(242,180,90,${.55 * a})`); gl.addColorStop(1, 'rgba(242,180,90,0)');
+    cx.globalAlpha = 1; cx.fillStyle = gl; cx.fillRect(760, 270, 400, 400);
+    cx.fillStyle = `rgba(255,214,150,${a})`; cx.beginPath(); cx.arc(960, 470, r, 0, Math.PI * 2); cx.fill();
+  }
+
+  const sphereA = vis * (t < T.drop ? seg(t, T.s2 - .2, T.s2 + 1) : 1);
+  if (sphereA > 0) {
+    cx.globalAlpha = 1;
+    for (const p of SPHERE) {
+      const [x, y, z] = rot(p, ang, tilt);
+      if (z < -0.15) continue;
+      const sx = cxp + x * R, sy = cyp + y * R;
+      if (sx < -10 || sx > 1930 || sy < -10 || sy > 1090) continue;
+      const depth = (z + 1) / 2;
+      cx.fillStyle = `rgba(150,180,215,${(.08 + .32 * depth) * sphereA})`;
+      const s = 1.2 + depth * 1.6;
+      cx.fillRect(sx - s / 2, sy - s / 2, s, s);
+    }
+    cx.globalCompositeOperation = 'lighter';
+    // arcs between awake nodes
+    ARCS.forEach(([i, j, k]) => {
+      const a = NODES[i], b = NODES[j];
+      const on = Math.min(seg(wakeP, a.wake, a.wake + .15), seg(wakeP, b.wake, b.wake + .15));
+      const grow = eOut(seg(t, (t < T.drop ? T.s3 + .4 : T.token) + k * 2.2, (t < T.drop ? T.s3 + .4 : T.token) + k * 2.2 + .7));
+      if (on <= 0 || grow <= 0) return;
+      cx.beginPath();
+      let started = false;
+      for (let q = 0; q <= 24 * grow; q++) {
+        const pt = rot(slerp(a.p, b.p, q / 24), ang, tilt);
+        if (pt[2] < -0.05) { started = false; continue; }
+        const sx = cxp + pt[0] * R, sy = cyp + pt[1] * R;
+        if (!started) { cx.moveTo(sx, sy); started = true; } else cx.lineTo(sx, sy);
+      }
+      cx.strokeStyle = `rgba(185,255,120,${.55 * on * vis})`; cx.lineWidth = 2.2; cx.stroke();
+      cx.strokeStyle = `rgba(185,255,120,${.12 * on * vis})`; cx.lineWidth = 7; cx.stroke();
+    });
+    // nodes: amber (idle) -> lime (working)
+    NODES.forEach((n) => {
+      const ap = seg(appearP, n.appear * .8, n.appear * .8 + .2);
+      if (ap <= 0) return;
+      const [x, y, z] = rot(n.p, ang, tilt);
+      if (z < -0.1) return;
+      const sx = cxp + x * R, sy = cyp + y * R;
+      const w = seg(wakeP, n.wake, n.wake + .08);
+      const pulse = w > 0 && w < 1 ? 1.8 : 1;
+      const col = w > 0 ? [185, 255, 120] : [242, 180, 90];
+      const a = ap * vis * (.5 + .5 * (z + 1) / 2);
+      const rr = (3 + w * 2.5) * pulse * (R > 600 ? R / 600 : 1);
+      const gl = cx.createRadialGradient(sx, sy, 0, sx, sy, rr * 6);
+      gl.addColorStop(0, `rgba(${col},${.5 * a})`); gl.addColorStop(1, `rgba(${col},0)`);
+      cx.fillStyle = gl; cx.fillRect(sx - rr * 6, sy - rr * 6, rr * 12, rr * 12);
+      cx.fillStyle = `rgba(${col},${a})`; cx.beginPath(); cx.arc(sx, sy, rr, 0, Math.PI * 2); cx.fill();
+    });
+    cx.globalCompositeOperation = 'source-over';
+  }
+  if (zoomFlash > 0) {
+    // warm white bloom from the centre, full white on the downbeat
+    const bl = cx.createRadialGradient(960, 560, 0, 960, 560, 1400);
+    bl.addColorStop(0, `rgba(255,250,235,${Math.min(1, zoomFlash * 1.6)})`);
+    bl.addColorStop(1, `rgba(255,236,200,${zoomFlash * .9})`);
+    cx.globalAlpha = 1; cx.fillStyle = bl; cx.fillRect(0, 0, 1920, 1080);
+  }
+  cx.globalAlpha = 1;
+}
+
+// ---------- film grain (precomputed tiles) ----------
+const grain = $('grain'), gx = grain.getContext('2d');
+const TILES = [];
+rs = 99;
+for (let k = 0; k < 8; k++) {
+  const img = gx.createImageData(480, 270);
+  for (let i = 0; i < img.data.length; i += 4) { const v = rand() * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
+  TILES.push(img);
+}
+
+// ---------- terminal typing ----------
+function typed(text, t, t0, cps) { return text.slice(0, Math.max(0, Math.floor((t - t0) * cps))); }
+const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+function caretOn(t) { return Math.floor(t * 2.2) % 2 === 0; }
+
+// ---------- marketplace rows ----------
+const ROWS = [
+  ['H100 80GB', 'eu-central · Data center', '8 free', '$2.10'],
+  ['A100 80GB', 'us-east · Micro-cluster', '4 free', '$1.35'],
+  ['L40S 48GB', 'eu-west · Data center', '6 free', '$0.85'],
+  ['RTX 4090 24GB', 'ap-east · Independent', '2 free', '$0.35'],
+  ['RTX 3090 24GB', 'sa-east · Independent', '1 free', '$0.22'],
+];
+$('rows').innerHTML = ROWS.map((r, i) => `<div class="row" data-r="${i}"><div><b>${r[0]}</b><span class="s">${r[1]}</span></div><span class="s">${r[2]}</span><span class="pr">${r[3]}<span class="s"> /h</span></span><span class="btn">Rent</span></div>`).join('');
+const rowEls = [...document.querySelectorAll('.row')];
+
+// ---------- render ----------
+const trustWords = [
+  ['Reviews.', 'Both sides rate every rental.', '#0e2e47', '#b9ff78'],
+  ['Uptime.', '7-day uptime from the machine itself.', '#fbf8f2', '#0e2e47'],
+  ['Verified.', 'Hardware checked against what the node reports.', '#b9ff78', '#0e2e47'],
+];
+
+window.render = function render(t) {
+  drawSpace(t);
+
+  // grain + vignette
+  gx.putImageData(TILES[Math.floor(t * 24) % TILES.length], 0, 0);
+  const darkNow = t < T.drop || (t >= T.token && t < T.end);
+  $('grain').style.opacity = darkNow ? .16 : .07;
+  $('vig').style.opacity = darkNow ? 1 : .35;
+
+  // flash on the drop, the release and the end card
+  const fl = Math.max(
+    Math.exp(-Math.max(0, t - T.drop) * 5) * (t >= T.drop - .02 ? 1 : 0),
+    t >= T.release ? Math.exp(-(t - T.release) * 7) * .6 : 0,
+    t >= T.token ? Math.exp(-(t - T.token) * 8) * .35 : 0,
+    t >= T.end ? Math.exp(-(t - T.end) * 6) * .8 : 0,
+  );
+  $('flash').style.opacity = clamp(fl).toFixed(3);
+
+  // light world: on from the drop, off for the token act
+  const lightA = Math.max(fadeWin(t, T.drop - .01, T.token + .02, .02, .02), seg(t, T.end - .02, T.end));
+  show($('light'), lightA);
+  const kb = (t - T.drop) / 40;
+  $('light').querySelector('.photo').style.transform = `scale(${1.08 + kb * .12}) translate(${-kb * 60}px, ${kb * 20}px)`;
+  $('light').querySelector('.sun').style.transform = `translateY(${Math.sin(t * .3) * 20}px) scale(${1 + Math.sin(t * .5) * .03})`;
+
+  // 1 cold open
+  { const a = fadeWin(t, T.s1, T.s2, .1, .4); show($('s1'), a); if (a) words($('s1'), t, .5, { stagger: .14, dur: .8, blur: 18 }); }
+  // 2 globe
+  { const a = fadeWin(t, T.s2 + .3, T.s3 + .1, .2, .45); show($('s2'), a); if (a) { words($('s2').children[0], t, T.s2 + .6, { stagger: .12 }); words($('s2').children[1], t, T.s2 + 1.4, { stagger: .1, blur: 6 }); } }
+  // 3 riser
+  { const a = fadeWin(t, T.s3 + .2, T.drop - .9, .2, .3); show($('s3'), a); if (a) words($('s3'), t, T.s3 + .5, { stagger: .16, dur: .6, blur: 16 }); }
+
+  // 4 title (drop)
+  { const a = fadeWin(t, T.drop, T.list, .01, .35); show($('s4'), a);
+    if (a) {
+      const s4 = $('s4');
+      words(s4.querySelector('.eyebrow'), t, T.drop + .15, { stagger: .05, rise: 20, blur: 0 });
+      const lines = s4.querySelectorAll('.title [data-words]');
+      lines.forEach((l, i) => words(l, t, T.drop + .05 + i * BEAT * .5, { stagger: .08, dur: .5, rise: 120, blur: 20 }));
+      const push = eOut(seg(t, T.drop, T.list));
+      s4.style.transform = `scale(${1 + push * .035}) translateX(${-push * 16}px)`;
+      const dp = seg(t, T.drop + .9, T.drop + 1.2);
+      const ring = ((t - T.drop) % BEAT) / BEAT;
+      $('livedot').style.transform = `scale(${eBack(dp)})`;
+      $('livedot').style.boxShadow = `0 0 0 ${ring * 26}px rgba(34,197,94,${.45 * (1 - ring)})`;
+      [...$('s4pills').children].forEach((p, i) => { const q = eBack(seg(t, T.drop + 1.6 + i * .12, T.drop + 2.1 + i * .12)); p.style.opacity = clamp(q); p.style.transform = `translateY(${(1 - q) * 40}px)`; });
+    }
+  }
+
+  // 5 list
+  { const a = fadeWin(t, T.list, T.rent, .3, .3); show($('s5'), a);
+    if (a) {
+      const s5 = $('s5');
+      words(s5.querySelector('.kicker'), t, T.list + .1, { rise: 20, blur: 0 });
+      s5.querySelectorAll('h2 [data-words]').forEach((l, i) => words(l, t, T.list + .2 + i * .3, { stagger: .07, rise: 70 }));
+      words(s5.querySelector('p'), t, T.list + .9, { stagger: .025, rise: 16, blur: 4 });
+      const tp = eOut(seg(t, T.list + .1, T.list + .7));
+      $('term1').style.transform = `translateY(${(1 - tp) * 80}px) rotateX(${(1 - tp) * 12}deg)`; $('term1').style.opacity = tp;
+      const cmd = 'tdcc market link tdcc_node_7Hq2…';
+      let out = `<span class="p">$</span> ${esc(typed(cmd, t, T.list + .6, 1 / .045))}`;
+      if (t < T.list + 2.4) out += caretOn(t) ? '<span class="caret"></span>' : '';
+      if (t >= T.list + 2.2) out += `\n<span class="dim">  checking GPUs… 2 × NVIDIA GeForce RTX 4090</span>`;
+      if (t >= T.list + 2.6) out += `\n<span class="ok">✓ Linked</span> <span class="hl">listing gpu_8fK2</span>\n<span class="ok">●</span> online · hardware matches the listing`;
+      $('term1pre').innerHTML = out;
+      const lp = eBack(seg(t, T.list + 3.0, T.list + 3.6));
+      $('listing').style.opacity = clamp(lp); $('listing').style.transform = `translateY(${(1 - lp) * 70}px) scale(${.92 + .08 * lp})`;
+      s5.style.transform = `translateX(${-eOut(seg(t, T.list, T.rent)) * 14}px)`;
+    }
+  }
+
+  // 6 rent
+  { const a = fadeWin(t, T.rent, T.machines, .3, .3); show($('s6'), a);
+    if (a) {
+      const s6 = $('s6');
+      words(s6.querySelector('.kicker'), t, T.rent + .1, { rise: 20, blur: 0 });
+      s6.querySelectorAll('h2 [data-words]').forEach((l, i) => words(l, t, T.rent + .2 + i * .3, { stagger: .07, rise: 70 }));
+      words(s6.querySelector('p'), t, T.rent + .9, { stagger: .025, rise: 16, blur: 4 });
+      const tp = eOut(seg(t, T.rent + .1, T.rent + .7));
+      $('table').style.opacity = tp; $('table').style.transform = `translateY(${(1 - tp) * 60}px)`;
+      rowEls.forEach((r, i) => { const q = eOut(seg(t, T.rent + .4 + i * .09, T.rent + .9 + i * .09)); r.style.opacity = q; r.style.transform = `translateX(${(1 - q) * 60}px)`; });
+      const on80 = t >= T.rent + 1.3;
+      $('c-80').classList.toggle('on', on80); $('c-all').classList.toggle('on', !on80);
+      rowEls.forEach((r, i) => { const keep = i < 2 || !on80; const q = keep ? 1 : 1 - seg(t, T.rent + 1.3, T.rent + 1.6); r.style.opacity = Math.min(parseFloat(r.style.opacity), q); r.style.height = keep ? '' : `${(1 - seg(t, T.rent + 1.3, T.rent + 1.7)) * 88}px`; r.style.overflow = 'hidden'; r.style.paddingTop = r.style.paddingBottom = keep ? '' : `${(1 - seg(t, T.rent + 1.3, T.rent + 1.7)) * 22}px`; });
+      rowEls[0].classList.toggle('sel', t >= T.rent + 2.2);
+      // cursor path to the first row's Rent button
+      const btn = rowEls[0].querySelector('.btn').getBoundingClientRect();
+      const tx = btn.left + btn.width * .55, ty = btn.top + btn.height * .6;
+      const cp = eInOut(seg(t, T.rent + 1.5, T.rent + 2.15));
+      const press = t >= T.rent + 2.2 && t < T.rent + 2.35 ? .85 : 1;
+      $('cursor').style.transform = `translate(${lerp(1500, tx, cp)}px, ${lerp(1000, ty, cp)}px) scale(${press})`;
+      $('cursor').style.opacity = seg(t, T.rent + 1.4, T.rent + 1.6) * (1 - seg(t, T.rent + 4.6, T.rent + 4.9));
+      const rq = eBack(seg(t, T.rent + 2.4, T.rent + 2.9));
+      $('req').style.opacity = clamp(rq); $('req').style.transform = `translateY(${(1 - rq) * 60}px)`;
+      const st = seg(t, T.rent + 3.4, T.rent + 3.6);
+      $('stamp').style.opacity = st; $('stamp').style.transform = `rotate(-8deg) scale(${lerp(2.2, 1, eOutX(st))})`;
+    }
+  }
+
+  // 7 machines
+  { const a = fadeWin(t, T.machines, T.trust, .3, .2); show($('s7'), a);
+    if (a) {
+      const s7 = $('s7');
+      words(s7.querySelector('.kicker'), t, T.machines + .1, { rise: 20, blur: 0 });
+      s7.querySelectorAll('h2 [data-words]').forEach((l, i) => words(l, t, T.machines + .2 + i * .3, { stagger: .07, rise: 70 }));
+      words(s7.querySelector('p'), t, T.machines + .9, { stagger: .025, rise: 16, blur: 4 });
+      const tp = eOut(seg(t, T.machines + .05, T.machines + .55));
+      $('term2').style.opacity = tp; $('term2').style.transform = `translateY(${(1 - tp) * 60}px)`;
+      const cmd = 'ssh -p 40122 root@203.0.113.7';
+      let out = `<span class="p">$</span> ${esc(typed(cmd, t, T.machines + .5, 25))}`;
+      const t1 = T.machines + 1.6;
+      if (t >= t1) out += `\n<span class="dim">Welcome to your TDCC machine · rental rnt_4Lq9</span>`;
+      if (t >= t1 + .35) out += `\n<span class="p">root@tdcc:~#</span> nvidia-smi --query-gpu=name,memory.total --format=csv`;
+      if (t >= t1 + .7) out += `\n<span class="hl">NVIDIA H100 80GB HBM3, 81559 MiB</span>`;
+      if (t >= t1 + 1.0) out += `\n<span class="p">root@tdcc:~#</span> python train.py`;
+      if (t >= t1 + 1.3) out += `\n<span class="ok">epoch 1/10 ━━━━━━━━━━━━━━━━━━ ${Math.min(100, Math.floor((t - t1 - 1.3) * 90))}%</span>`;
+      if (t >= t1 + 1.3 || t < T.machines + 1.6) out += caretOn(t) ? '<span class="caret"></span>' : '';
+      $('term2pre').innerHTML = out;
+    }
+  }
+
+  // 8 trust: one word per two beats, background colour flips with it
+  { const a = fadeWin(t, T.trust, T.breath, .02, .15); show($('s8'), a);
+    if (a) {
+      const i = clamp(Math.floor((t - T.trust) / (BEAT * 2)), 0, trustWords.length - 1);
+      const [w, sub, bg, fg] = trustWords[i];
+      const lt = t - (T.trust + i * BEAT * 2);
+      $('s8').style.background = bg;
+      const big = $('bigword');
+      big.style.color = fg;
+      big.innerHTML = `${w}<small style="color:${fg}">${sub}</small>`;
+      const p = eOutX(clamp(lt / .35));
+      big.style.transform = `translateY(-50%) scale(${lerp(1.35, 1, p)})`;
+      big.style.letterSpacing = `${lerp(-.12, -.055, p)}em`;
+      big.style.opacity = clamp(lt / .08);
+    }
+  }
+  // breath before the release
+  { const a = fadeWin(t, T.breath, T.release, .05, .05); show($('s8b'), a); if (a) words($('s8b'), t, T.breath + .02, { stagger: .12, dur: .35, rise: 30, blur: 10 }); }
+
+  // 9 release
+  { const a = fadeWin(t, T.release, T.token, .02, .2); show($('s9'), a);
+    if (a) {
+      const s9 = $('s9');
+      words(s9.querySelector('.lab'), t, T.release + .1, { rise: 20, blur: 0 });
+      const roll = eOutX(seg(t, T.release + .35, T.release + 1.05));
+      $('col2').style.transform = `translateY(${-roll * 380}px)`;
+      $('col1').style.transform = 'translateY(0)';
+      const num = s9.querySelector('.num');
+      const pop = eBack(seg(t, T.release, T.release + .45));
+      num.style.transform = `scale(${lerp(.6, 1, pop)})`; num.style.opacity = clamp(pop * 1.2);
+      words(s9.querySelector('.out'), t, T.release + 1.1, { stagger: .07, rise: 40 });
+      [...$('relchips').children].forEach((p, i) => { const q = eBack(seg(t, T.release + 1.8 + i * .14, T.release + 2.3 + i * .14)); p.style.opacity = clamp(q); p.style.transform = `translateY(${(1 - q) * 40}px)`; });
+      s9.style.transform = `scale(${1 + eOut(seg(t, T.release, T.token)) * .04})`;
+    }
+  }
+
+  // 10 token
+  { const a = fadeWin(t, T.token, T.end, .02, .3); show($('s10'), a);
+    if (a) {
+      const s10 = $('s10');
+      words(s10.querySelector('.tok-line1'), t, T.token + .1, { stagger: .06, dur: .4, rise: 30 });
+      const bp = eOutX(seg(t, T.token + 1.3, T.token + 1.75));
+      const big = $('tokbig');
+      big.style.opacity = clamp(bp * 1.4);
+      big.style.transform = `scale(${lerp(1.6, 1, bp)})`;
+      big.style.filter = bp < 1 ? `blur(${(1 - bp) * 18}px)` : 'none';
+      big.style.letterSpacing = `${lerp(.05, -.05, bp)}em`;
+      words(s10.querySelector('.tok-has'), t, T.token + 1.75, { stagger: .1, dur: .45, rise: 40, blur: 12 });
+      [...$('tokprod').children].forEach((p, i) => { const q = eBack(seg(t, T.token + 2.0 + i * .1, T.token + 2.4 + i * .1)); p.style.opacity = clamp(q); p.style.transform = `translateY(${(1 - q) * 30}px)`; });
+      s10.querySelector('.tok-safe').style.opacity = seg(t, T.token + 2.2, T.token + 2.6) * .9;
+    }
+  }
+
+  // 11 end
+  { const a = seg(t, T.end, T.end + .05) * (1 - seg(t, T.total - 1.4, T.total - .2)); show($('s11'), a);
+    if (a) {
+      const s11 = $('s11');
+      const lp = eBack(seg(t, T.end + .1, T.end + .6));
+      s11.querySelector('.logo').style.transform = `scale(${lerp(.7, 1, lp)})`; s11.querySelector('.logo').style.opacity = clamp(lp);
+      s11.querySelectorAll('.slogan [data-words]').forEach((l, i) => words(l, t, T.end + .35 + i * .35, { stagger: .09, dur: .6, rise: 60, blur: 16 }));
+      [...$('endurl').children].forEach((p, i) => { const q = eBack(seg(t, T.end + 1.6 + i * .15, T.end + 2.1 + i * .15)); p.style.opacity = clamp(q); p.style.transform = `translateY(${(1 - q) * 30}px)`; });
+      s11.style.transform = `scale(${1 + eOut(seg(t, T.end, T.total)) * .03})`;
+    }
+  }
+  // fade to black at the very end
+  const outA = seg(t, T.total - 1.2, T.total - .1);
+  $('stage').style.filter = outA > 0 ? `brightness(${1 - outA})` : 'none';
+};
+
+// Real-time preview: open launch-video.html#play
+if (location.hash === '#play') {
+  document.fonts.ready.then(() => { const st = performance.now(); const loop = () => { const t = (performance.now() - st) / 1000; render(t % T.total); requestAnimationFrame(loop); }; loop(); });
+} else {
+  render(0);
+}
+</script>
+</body>
+</html>
