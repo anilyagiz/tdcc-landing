@@ -12,7 +12,7 @@ const BASE = process.env.BASE || "http://localhost:8787";
 const SHOTS = require("path").join(require("os").tmpdir(), "tdcc-marketplace-e2e");
 require("fs").mkdirSync(SHOTS, { recursive: true });
 
-const sql = (q) => execSync(`WRANGLER_SEND_METRICS=false npx wrangler d1 execute tdcc-market --local --json --command ${JSON.stringify(q)}`, { encoding: "utf8", cwd: require("path").join(__dirname, "..") });
+const sql = (q) => execSync(`npx wrangler d1 execute tdcc-market --local --json --command ${JSON.stringify(q)}`, { encoding: "utf8", cwd: require("path").join(__dirname, ".."), env: { ...process.env, WRANGLER_SEND_METRICS: "false" } });
 const plantToken = (email, purpose) => {
   const token = crypto.randomBytes(32).toString("base64url");
   const hash = crypto.createHash("sha256").update(token).digest("base64url");

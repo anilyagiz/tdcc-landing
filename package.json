@@ -7,7 +7,7 @@
     "test": "node --test --no-warnings test/*.test.mjs",
     "db:migrate": "wrangler d1 migrations apply tdcc-market --remote",
     "deploy": "npm test && wrangler d1 migrations apply tdcc-market --remote && wrangler deploy",
-    "dev:e2e": "rm -rf .wrangler/state && wrangler d1 migrations apply tdcc-market --local && wrangler dev --local --var ADMIN_EMAILS:admin@example.com --var SITE_URL:http://localhost:8787 --var RESEND_API_KEY:test-only",
+    "dev:e2e": "node -e \"require('fs').rmSync('.wrangler/state', { recursive: true, force: true })\" && wrangler d1 migrations apply tdcc-market --local && wrangler dev --local --var ADMIN_EMAILS:admin@example.com --var SITE_URL:http://localhost:8787 --var RESEND_API_KEY:test-only",
     "test:e2e": "node test/e2e-marketplace.cjs",
     "keygen": "node scripts/keygen.mjs",
     "db:backup": "node scripts/backup.mjs"
