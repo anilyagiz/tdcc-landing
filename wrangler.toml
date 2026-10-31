@@ -1,6 +1,9 @@
 name = "tdcc-landing"
 main = "src/worker.js"
 compatibility_date = "2025-07-21"
+# Keep plain variables set in the dashboard (e.g. SOLANA_TREASURY,
+# UPSTREAM_BASE_URL) when deploying; without this every deploy removes them.
+keep_vars = true
 
 [assets]
 directory = "."
