@@ -10,7 +10,7 @@
     "dev:e2e": "rm -rf .wrangler/state && wrangler d1 migrations apply tdcc-market --local && wrangler dev --local --var ADMIN_EMAILS:admin@example.com --var SITE_URL:http://localhost:8787 --var RESEND_API_KEY:test-only",
     "test:e2e": "node test/e2e-marketplace.cjs",
     "keygen": "node scripts/keygen.mjs",
-    "db:backup": "mkdir -p backups && wrangler d1 export tdcc-market --remote --output backups/tdcc-market-$(date -u +%Y%m%dT%H%M%SZ).sql"
+    "db:backup": "node scripts/backup.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.0.0",
