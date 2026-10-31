@@ -96,6 +96,35 @@ async function balanceOf(env, userId) {
 
 const balanceJson = (micro) => ({ micro, usd: microToUsd(micro) });
 
+// Reservations for requests in flight (migrations/0010_balance_holds.sql).
+// Longer than any request can run: Workers stop a stream after 15 minutes
+// without the client, and the upstream timeout is far below that.
+const HOLD_TTL = 30 * 60;
+
+// Reserve `micro` of the balance in one statement, so two concurrent requests
+// can never both pass the balance check. Returns the hold id, or null when the
+// balance minus live holds does not cover it.
+async function reserve(env, userId, micro) {
+  const id = newId("hold");
+  const t = now();
+  const r = await env.DB.prepare(
+    `INSERT INTO holds (id, user_id, micro, created_at, expires_at)
+     SELECT ?1, ?2, ?3, ?4, ?5
+     WHERE COALESCE((SELECT micro FROM balances WHERE user_id = ?2), 0)
+         - COALESCE((SELECT SUM(micro) FROM holds WHERE user_id = ?2 AND expires_at > ?4), 0) >= ?3`
+  ).bind(id, userId, micro, t, t + HOLD_TTL).run();
+  return r.meta.changes ? id : null;
+}
+
+const releaseHold = (env, holdId) => holdId
+  ? env.DB.prepare("DELETE FROM holds WHERE id = ?").bind(holdId).run().catch((err) => console.error("hold release failed", err && err.message))
+  : null;
+
+// Cron: holds of requests that never settled.
+export async function cleanupHolds(env) {
+  await env.DB.prepare("DELETE FROM holds WHERE expires_at < ?").bind(now()).run();
+}
+
 // Apply a ledger entry and the balance change atomically. Returns false when
 // `ref` was already applied (the batch rolls back on the unique violation).
 async function applyLedger(env, userId, micro, kind, ref, detail = "") {
@@ -251,8 +280,9 @@ export async function billingOverview(request, env) {
   const user = await requireUser(request, env);
   const c = cfg(env);
   const t = now();
-  const [bal, keys, deps, use, totals] = await Promise.all([
+  const [bal, held, keys, deps, use, totals] = await Promise.all([
     balanceOf(env, user.id),
+    env.DB.prepare("SELECT COALESCE(SUM(micro), 0) AS n FROM holds WHERE user_id = ? AND expires_at > ?").bind(user.id, t).first(),
     env.DB.prepare("SELECT * FROM api_keys WHERE user_id = ? AND revoked_at IS NULL ORDER BY created_at DESC").bind(user.id).all(),
     env.DB.prepare("SELECT * FROM deposits WHERE user_id = ? ORDER BY created_at DESC LIMIT 20").bind(user.id).all(),
     env.DB.prepare(
@@ -266,6 +296,8 @@ export async function billingOverview(request, env) {
   ]);
   return json(200, {
     balance: balanceJson(bal),
+    // Reserved by requests that are running right now.
+    reserved: balanceJson(Number(held.n)),
     min_topup_usd: MIN_TOPUP / MICRO,
     payments: { method: "solana-usdc", configured: paymentsReady(c), cluster: c.cluster, treasury: c.treasury || null, mint: c.mint },
     pricing: models(env).filter(priced).map((m) => ({ id: m.id, name: m.name, context_length: m.context_length, input_per_m_usd: perMillion(m.in), output_per_m_usd: perMillion(m.out) })),
@@ -349,19 +381,40 @@ const identityPrompt = (m) =>
   `You are ${m.name} (model id: ${m.id}), a large language model developed by The Decentralized Compute Company (TDCC). ` +
   `If asked who you are or which model you are, answer that you are ${m.name}. Do not claim to be any other model.`;
 
+// How long the provider may take to start answering (headers), per key.
+const UPSTREAM_TIMEOUT_MS = 60_000;
+
 let rr = 0;
 async function callUpstream(c, payload, signal) {
   let last = null;
   for (let i = 0; i < c.upstreamKeys.length; i++) {
+    if (signal.aborted) break;
     const key = c.upstreamKeys[rr++ % c.upstreamKeys.length];
-    const res = await fetch(c.upstreamBase + "/chat/completions", {
-      method: "POST",
-      headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
-      body: JSON.stringify(payload),
-      signal,
-    });
+    // Only the wait for headers is limited; a stream may run longer.
+    // The caller's abort (client gone) stays wired to the chosen attempt.
+    const attempt = new AbortController();
+    const onAbort = () => attempt.abort();
+    signal.addEventListener("abort", onAbort, { once: true });
+    const timer = setTimeout(() => attempt.abort(), UPSTREAM_TIMEOUT_MS);
+    let res;
+    try {
+      res = await fetch(c.upstreamBase + "/chat/completions", {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
+        body: JSON.stringify(payload),
+        signal: attempt.signal,
+      });
+    } catch (err) {
+      // Network error or timeout on this key: try the next one.
+      console.warn("upstream fetch failed", err && err.message);
+      signal.removeEventListener("abort", onAbort);
+      continue;
+    } finally {
+      clearTimeout(timer);
+    }
     // Fail over to the next key on auth, quota and server errors.
     if ([401, 402, 403, 429].includes(res.status) || res.status >= 500) {
+      signal.removeEventListener("abort", onAbort);
       last = res;
       await res.body?.cancel().catch(() => {});
       continue;
@@ -370,6 +423,14 @@ async function callUpstream(c, payload, signal) {
   }
   return last;
 }
+
+// OpenAI chat parameters forwarded to the provider. Everything else is dropped
+// so a client cannot change what it is billed for (e.g. `n`) or reach
+// provider-specific features.
+const PASSTHROUGH = [
+  "temperature", "top_p", "stop", "presence_penalty", "frequency_penalty", "seed", "logit_bias",
+  "logprobs", "top_logprobs", "tools", "tool_choice", "parallel_tool_calls", "response_format", "user",
+];
 
 const pick = (o, ks) => Object.fromEntries(ks.filter((k) => o[k] !== undefined).map((k) => [k, o[k]]));
 
@@ -402,16 +463,34 @@ class ApiError extends Error {
 }
 const oaiError = (e) => json(e.status, { error: { message: e.message, type: e.type, code: e.code } });
 
-const estimateTokens = (messages) => Math.ceil(JSON.stringify(messages).length / 3);
-const costOf = (m, usage) => Math.ceil((usage.prompt_tokens || 0) * m.in + (usage.completion_tokens || 0) * m.out);
+// Conservative prompt size: ~3 characters per token over everything the
+// provider will read (messages and tool definitions).
+const estimateTokens = (...parts) => Math.ceil(parts.reduce((n, p) => n + (p === undefined ? 0 : JSON.stringify(p).length), 0) / 3);
+const tokenCount = (v) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Math.min(Math.floor(Number(v)), 10_000_000) : 0);
+const costOf = (m, usage) => Math.ceil(tokenCount(usage.prompt_tokens) * m.in + tokenCount(usage.completion_tokens) * m.out);
 
-async function charge(env, who, m, usage) {
+// Records the usage, charges it and drops the request's hold in one batch, so
+// a request is either fully billed or not at all.
+async function charge(env, who, m, usage, holdId) {
   const cost = costOf(m, usage);
   const id = newId("use");
   const t = now();
-  await env.DB.prepare("INSERT INTO usage (id, user_id, key_id, source, model, prompt_tokens, completion_tokens, cost_micro, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-    .bind(id, who.userId, who.keyId || null, who.source, m.id, usage.prompt_tokens || 0, usage.completion_tokens || 0, cost, t).run();
-  if (cost > 0) await applyLedger(env, who.userId, -cost, "usage", `use:${id}`, `${who.source} ${m.id}`);
+  const stmts = [
+    env.DB.prepare("INSERT INTO usage (id, user_id, key_id, source, model, prompt_tokens, completion_tokens, cost_micro, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+      .bind(id, who.userId, who.keyId || null, who.source, m.id, tokenCount(usage.prompt_tokens), tokenCount(usage.completion_tokens), cost, t),
+  ];
+  if (cost > 0) {
+    stmts.push(
+      env.DB.prepare("INSERT INTO ledger (user_id, micro, kind, ref, detail, created_at) VALUES (?, ?, 'usage', ?, ?, ?)")
+        .bind(who.userId, -cost, `use:${id}`, `${who.source} ${m.id}`, t),
+      env.DB.prepare(
+        `INSERT INTO balances (user_id, micro, updated_at) VALUES (?1, ?2, ?3)
+         ON CONFLICT(user_id) DO UPDATE SET micro = micro + ?2, updated_at = ?3`
+      ).bind(who.userId, -cost, t),
+    );
+  }
+  if (holdId) stmts.push(env.DB.prepare("DELETE FROM holds WHERE id = ?").bind(holdId));
+  await env.DB.batch(stmts);
   return cost;
 }
 
@@ -424,40 +503,57 @@ async function meteredCompletion(env, ctx, request, who, body) {
   if (!Array.isArray(body.messages) || body.messages.length === 0) throw new ApiError(400, "'messages' must be a non-empty array.");
   if (!priced(m) || !m.upstream || !c.upstreamBase || !c.upstreamKeys.length) throw new ApiError(503, ERR.unavailable, "api_error", "service_unavailable");
 
-  const maxTokens = Math.min(Number(body.max_tokens) > 0 ? Number(body.max_tokens) : c.maxTokens, c.maxTokens);
+  if (body.n !== undefined && body.n !== null && Number(body.n) !== 1) throw new ApiError(400, "Only n = 1 is supported.", "invalid_request_error", "unsupported_parameter");
+  // Newer clients send max_completion_tokens instead of max_tokens.
+  const asked = Number(body.max_completion_tokens ?? body.max_tokens);
+  const maxTokens = Math.floor(Math.min(asked > 0 ? asked : c.maxTokens, c.maxTokens));
   const messages = [{ role: "system", content: identityPrompt(m) }, ...body.messages];
-  const worst = Math.ceil(estimateTokens(messages) * m.in + maxTokens * m.out);
-  const balance = await balanceOf(env, who.userId);
-  if (balance < worst) {
-    throw new ApiError(402, `Your balance ($${usd2(balance)}) is too low for this request. Top up at ${c.site}/account.html#billing.`, "insufficient_balance", "insufficient_balance");
-  }
+  const promptEstimate = estimateTokens(messages, body.tools);
+  const worst = Math.ceil(promptEstimate * m.in + maxTokens * m.out);
 
   const stream = !!body.stream;
   const wantsUsage = !!body.stream_options?.include_usage;
-  const payload = { ...body, model: m.upstream, messages, max_tokens: maxTokens };
-  if (stream) payload.stream_options = { ...(body.stream_options || {}), include_usage: true };
+  const payload = { ...pick(body, PASSTHROUGH), model: m.upstream, messages, max_tokens: maxTokens, stream, n: 1 };
+  if (stream) payload.stream_options = { include_usage: true };
+
+  // Reserve the worst case now; the real cost is charged when the answer is in.
+  const holdId = await reserve(env, who.userId, worst);
+  if (!holdId) {
+    const balance = await balanceOf(env, who.userId);
+    throw new ApiError(402, `Your balance ($${usd2(balance)}) is too low for this request, or is reserved by requests still running. Top up at ${c.site}/account.html#billing.`, "insufficient_balance", "insufficient_balance");
+  }
 
   const ac = new AbortController();
+  // Hard stop so a stuck provider cannot keep a request (and its hold) open.
+  const deadline = setTimeout(() => ac.abort(), stream ? 14 * 60_000 : 5 * 60_000);
+  const fail = async (e) => { clearTimeout(deadline); await releaseHold(env, holdId); throw e; };
+
   let up;
   try {
     up = await callUpstream(c, payload, ac.signal);
   } catch {
-    throw new ApiError(503, ERR.unavailable, "api_error", "service_unavailable");
+    return fail(new ApiError(503, ERR.unavailable, "api_error", "service_unavailable"));
   }
-  if (!up) throw new ApiError(503, ERR.overloaded, "api_error", "service_overloaded");
+  if (!up) return fail(new ApiError(503, ERR.overloaded, "api_error", "service_overloaded"));
 
   if (!up.ok) {
     const txt = await up.text().catch(() => "");
     console.warn(`[upstream ${up.status}] ${txt.slice(0, 300)}`);
-    if (up.status === 413) throw new ApiError(413, ERR.tooLarge, "invalid_request_error", "context_length_exceeded");
-    if (up.status === 400 || up.status === 422) throw new ApiError(400, ERR.badRequest, "invalid_request_error", "invalid_request");
-    throw new ApiError(503, ERR.unavailable, "api_error", "service_unavailable");
+    if (up.status === 413) return fail(new ApiError(413, ERR.tooLarge, "invalid_request_error", "context_length_exceeded"));
+    if (up.status === 400 || up.status === 422) return fail(new ApiError(400, ERR.badRequest, "invalid_request_error", "invalid_request"));
+    return fail(new ApiError(503, ERR.unavailable, "api_error", "service_unavailable"));
   }
 
   if (!stream) {
-    const data = clean(await up.json(), m);
-    const usage = data.usage || { prompt_tokens: estimateTokens(messages), completion_tokens: Math.ceil(JSON.stringify(data.choices || []).length / 4) };
-    await charge(env, who, m, usage);
+    let data;
+    try {
+      data = clean(await up.json(), m);
+    } catch {
+      return fail(new ApiError(503, ERR.unavailable, "api_error", "service_unavailable"));
+    }
+    clearTimeout(deadline);
+    const usage = data.usage || { prompt_tokens: promptEstimate, completion_tokens: Math.ceil(JSON.stringify(data.choices || []).length / 4) };
+    await charge(env, who, m, usage, holdId);
     return json(200, data);
   }
 
@@ -468,7 +564,7 @@ async function meteredCompletion(env, ctx, request, who, body) {
   const pump = async () => {
     const reader = up.body.getReader();
     const dec = new TextDecoder();
-    let buf = "", usage = null, chars = 0, clientGone = false;
+    let buf = "", usage = null, chars = 0, clientGone = false, upstreamFailed = false;
     try {
       for (;;) {
         const { value, done } = await reader.read();
@@ -481,8 +577,11 @@ async function meteredCompletion(env, ctx, request, who, body) {
           if (!line.startsWith("data:")) continue; // drop comments and provider events
           const data = line.slice(5).trim();
           if (data === "[DONE]") continue;
-          let obj;
-          try { obj = clean(JSON.parse(data), m); } catch { continue; }
+          let raw, obj;
+          try { raw = JSON.parse(data); obj = clean(raw, m); } catch { continue; }
+          // A provider error in the middle of a stream: end the answer here
+          // without passing the provider's message on.
+          if (raw && raw.error && !Array.isArray(raw.choices)) { console.warn("upstream stream error", JSON.stringify(raw.error).slice(0, 300)); upstreamFailed = true; break; }
           if (obj.usage) usage = obj.usage;
           for (const ch of obj.choices || []) chars += (ch.delta?.content || "").length + (ch.delta?.reasoning_content || "").length;
           if (obj.usage && (!obj.choices || obj.choices.length === 0) && !wantsUsage) continue;
@@ -490,12 +589,19 @@ async function meteredCompletion(env, ctx, request, who, body) {
           if (!clientGone) await send(`data: ${JSON.stringify(obj)}\n\n`).catch(() => { clientGone = true; ac.abort(); });
           if (clientGone) break;
         }
-        if (clientGone) break;
+        if (clientGone || upstreamFailed) break;
       }
     } catch { /* upstream or client went away */ }
-    const final = usage || { prompt_tokens: estimateTokens(messages), completion_tokens: Math.ceil(chars / 4) };
+    clearTimeout(deadline);
+    if (upstreamFailed) ac.abort();
+    const final = usage || { prompt_tokens: promptEstimate, completion_tokens: Math.ceil(chars / 4) };
     let cost = 0;
-    try { cost = await charge(env, who, m, final); } catch (err) { console.error("charge failed", err && err.message); }
+    try {
+      cost = await charge(env, who, m, final, holdId);
+    } catch (err) {
+      console.error("charge failed", err && err.message);
+      await releaseHold(env, holdId);
+    }
     if (!clientGone) {
       try {
         if (who.source === "chat") {
@@ -538,6 +644,9 @@ async function keyFromRequest(request, env) {
 
 export const isApiPath = (p) => p === "/v1" || p.startsWith("/v1/");
 
+// Well above a full 128k-token context.
+const MAX_API_BODY = 4 * 1024 * 1024;
+
 export async function handleV1(request, env, ctx) {
   const p = new URL(request.url).pathname.replace(/\/+$/, "");
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
@@ -560,9 +669,12 @@ export async function handleV1(request, env, ctx) {
         if (err instanceof HttpError && err.status === 429) throw new ApiError(429, `Rate limit exceeded (${key.rpm} requests per minute).`, "rate_limit_error", "rate_limit_exceeded");
         throw err;
       }
+      if (Number(request.headers.get("content-length") || 0) > MAX_API_BODY) throw new ApiError(413, ERR.tooLarge, "invalid_request_error", "request_too_large");
+      const raw = await request.text();
+      if (raw.length > MAX_API_BODY) throw new ApiError(413, ERR.tooLarge, "invalid_request_error", "request_too_large");
       let body;
-      try { body = await request.json(); } catch { throw new ApiError(400, "The request body is not valid JSON."); }
-      if (!body || typeof body !== "object") throw new ApiError(400, "The request body is not valid JSON.");
+      try { body = JSON.parse(raw); } catch { throw new ApiError(400, "The request body is not valid JSON."); }
+      if (!body || typeof body !== "object" || Array.isArray(body)) throw new ApiError(400, "The request body is not valid JSON.");
       return withCors(await meteredCompletion(env, ctx, request, { userId: key.user_id, keyId: key.id, source: "api" }, body));
     }
     throw new ApiError(404, `Unknown endpoint ${request.method} ${p}`);

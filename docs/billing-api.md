@@ -26,6 +26,7 @@ is also the base unit of USDC (6 decimals), so on-chain amounts map 1:1.
 ```json
 {
   "balance": { "micro": 12345678, "usd": "12.345678" },
+  "reserved": { "micro": 14800, "usd": "0.014800" },
   "min_topup_usd": 5,
   "payments": { "method": "solana-usdc", "configured": true, "cluster": "mainnet-beta", "treasury": "…", "mint": "…" },
   "pricing": [{ "id": "tdcc-chat", "name": "TDCC Chat", "context_length": 128000, "input_per_m_usd": "0.45", "output_per_m_usd": "1.80" }],
@@ -64,5 +65,17 @@ is also the base unit of USDC (6 decimals), so on-chain amounts map 1:1.
 
 - `GET /v1/models`
 - `POST /v1/chat/completions`: OpenAI-compatible, streaming or not. Before calling the provider the worker
-  checks that the balance covers the worst case (prompt estimate + `max_tokens`); afterwards it charges the
-  real usage. Insufficient balance answers `402` with `code: "insufficient_balance"`.
+  reserves the worst case (prompt estimate over `messages` and `tools` + `max_tokens`) in the `holds` table, in
+  one statement, so concurrent requests cannot spend the same balance twice. When the answer is in, the real
+  usage is charged and the hold dropped in one D1 batch; a failed provider call drops the hold and charges
+  nothing. Holds of requests that never finished stop counting after 30 minutes (cron deletes them).
+  `reserved` in `GET /api/billing` is what running requests hold right now. Insufficient balance (after
+  holds) answers `402` with `code: "insufficient_balance"`.
+- Only these parameters are forwarded: `temperature`, `top_p`, `stop`, `presence_penalty`,
+  `frequency_penalty`, `seed`, `logit_bias`, `logprobs`, `top_logprobs`, `tools`, `tool_choice`,
+  `parallel_tool_calls`, `response_format`, `user` (plus `messages`, `stream`). `max_tokens` or
+  `max_completion_tokens` is capped at `MAX_TOKENS_CAP`; `n` other than 1 answers `400`. Bodies over 4 MB
+  answer `413`.
+- Each provider key gets 60 s to start answering; network errors, timeouts, 401/402/403/429 and 5xx fail
+  over to the next key. Non-streamed requests stop after 5 minutes, streams after 14. A provider error in the
+  middle of a stream ends the stream (with `[DONE]`) and bills what was sent.

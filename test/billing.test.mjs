@@ -293,3 +293,102 @@ test("the web chat needs a session, bills the account and reports the cost", asy
   assert.equal(billing.balance_usd, microToUsd(20_000_000 - Math.ceil(10 * 0.45 + 5 * 1.8)));
   assert.ok(!upstreamCalls[0].body.messages.some((m) => m.role === "tool"));
 });
+
+// ---------- holds, parameters and provider failures ----------
+
+const setBalance = (env, userId, micro) => env.DB.prepare(
+  "INSERT INTO balances (user_id, micro, updated_at) VALUES (?1, ?2, 0) ON CONFLICT(user_id) DO UPDATE SET micro = ?2"
+).bind(userId, micro).run();
+
+test("concurrent requests cannot spend the same balance twice", async () => {
+  const env = billingEnv();
+  const c = await account(env, "Racer");
+  const k = (await c.call("POST", "/api/billing/keys", { name: "x" })).body.key;
+  // Worst case of one request (8192 output tokens at $1.80/M) is ~$0.0148.
+  await setBalance(env, c.id, 20_000);
+  let release;
+  const gate = new Promise((r) => { release = r; });
+  provider = async () => { await gate; return okCompletion({ prompt_tokens: 100, completion_tokens: 100 })(); };
+  const body = { messages: [{ role: "user", content: "hi" }] };
+  const first = v1(env, "/v1/chat/completions", { key: k, body });
+  await new Promise((r) => setTimeout(r, 5));
+  const second = await v1(env, "/v1/chat/completions", { key: k, body });
+  assert.equal(second.status, 402, "the first request's reservation blocks the second");
+  assert.equal((await c.call("GET", "/api/billing")).body.reserved.micro > 0, true);
+  release();
+  assert.equal((await first).status, 200);
+  const o = (await c.call("GET", "/api/billing")).body;
+  assert.equal(o.reserved.micro, 0, "the hold is gone once charged");
+  assert.equal(o.balance.micro, 20_000 - Math.ceil(100 * 0.45 + 100 * 1.8));
+  assert.equal(upstreamCalls.length, 1);
+});
+
+test("a failed provider call releases the reservation and charges nothing", async () => {
+  const env = billingEnv();
+  const c = await funded(env);
+  const k = (await c.call("POST", "/api/billing/keys", { name: "x" })).body.key;
+  provider = () => new Response("boom", { status: 500 });
+  const res = await v1(env, "/v1/chat/completions", { key: k, body: { messages: [{ role: "user", content: "hi" }] } });
+  assert.equal(res.status, 503);
+  const o = (await c.call("GET", "/api/billing")).body;
+  assert.equal(o.reserved.micro, 0);
+  assert.equal(o.balance.micro, 20_000_000);
+});
+
+test("a network error on one provider key fails over to the next", async () => {
+  const env = billingEnv({ UPSTREAM_API_KEYS: "up-a,up-b" });
+  const c = await funded(env);
+  const k = (await c.call("POST", "/api/billing/keys", { name: "x" })).body.key;
+  let calls = 0;
+  provider = () => { if (++calls === 1) throw new TypeError("connection reset"); return okCompletion({ prompt_tokens: 1, completion_tokens: 1 })(); };
+  const res = await v1(env, "/v1/chat/completions", { key: k, body: { messages: [{ role: "user", content: "hi" }] } });
+  assert.equal(res.status, 200);
+  assert.equal(calls, 2);
+});
+
+test("only known parameters reach the provider and output is capped", async () => {
+  const env = billingEnv();
+  const c = await funded(env);
+  const k = (await c.call("POST", "/api/billing/keys", { name: "x" })).body.key;
+  provider = okCompletion({ prompt_tokens: 1, completion_tokens: 1 });
+  const msgs = [{ role: "user", content: "hi" }];
+  assert.equal((await v1(env, "/v1/chat/completions", { key: k, body: { messages: msgs, n: 3 } })).status, 400);
+  const res = await v1(env, "/v1/chat/completions", { key: k, body: { messages: msgs, max_completion_tokens: 1_000_000, temperature: 0.2, provider: { order: ["x"] }, models: ["other"], tools: [{ type: "function", function: { name: "f" } }] } });
+  assert.equal(res.status, 200);
+  const sent = upstreamCalls.at(-1).body;
+  assert.equal(sent.max_tokens, 8192);
+  assert.equal(sent.max_completion_tokens, undefined);
+  assert.equal(sent.n, 1);
+  assert.equal(sent.temperature, 0.2);
+  assert.equal(sent.provider, undefined);
+  assert.equal(sent.models, undefined);
+  assert.equal(sent.tools.length, 1);
+});
+
+test("a provider error in the middle of a stream ends it and bills what was sent", async () => {
+  const env = billingEnv();
+  const c = await funded(env);
+  const k = (await c.call("POST", "/api/billing/keys", { name: "x" })).body.key;
+  provider = () => new Response([
+    `data: ${JSON.stringify({ id: "c", object: "chat.completion.chunk", created: 1, choices: [{ index: 0, delta: { content: "abcd" } }] })}`,
+    `data: ${JSON.stringify({ error: { message: "secret provider quota text" } })}`,
+    `data: ${JSON.stringify({ id: "c", object: "chat.completion.chunk", created: 1, choices: [{ index: 0, delta: { content: "never" } }] })}`,
+  ].map((l) => l + "\n\n").join(""), { headers: { "content-type": "text/event-stream" } });
+  const res = await v1(env, "/v1/chat/completions", { key: k, body: { stream: true, messages: [{ role: "user", content: "hi" }] } });
+  const text = await res.text();
+  assert.ok(text.includes("abcd") && !text.includes("never") && !text.includes("secret provider"));
+  assert.ok(text.trimEnd().endsWith("data: [DONE]"));
+  await new Promise((r) => setTimeout(r, 10));
+  const o = (await c.call("GET", "/api/billing")).body;
+  assert.equal(o.reserved.micro, 0);
+  assert.equal(o.usage[0].completion_tokens, 1);
+});
+
+test("oversized API bodies are refused", async () => {
+  const env = billingEnv();
+  const c = await funded(env);
+  const k = (await c.call("POST", "/api/billing/keys", { name: "x" })).body.key;
+  const res = await v1(env, "/v1/chat/completions", { key: k, body: { messages: [{ role: "user", content: "x".repeat(4_300_000) }] } });
+  assert.equal(res.status, 413);
+  assert.equal(upstreamCalls.length, 0);
+});

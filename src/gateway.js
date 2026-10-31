@@ -18,6 +18,14 @@ const HOP_BY_HOP = new Set([
   "cf-connecting-ip", "cf-ipcountry", "cf-ray", "cf-visitor", "x-forwarded-proto", "x-real-ip",
 ]);
 
+// Only these upstream endpoints are reachable. Each one takes a JSON body
+// with a `model`, which must be in ALLOWED_MODELS; anything else (other
+// endpoints, multipart uploads, bodies without a model) would let callers
+// spend our key on paid models.
+const POST_PATHS = new Set(["/api/v1/chat/completions", "/api/v1/completions", "/api/v1/responses", "/api/anthropic/v1/messages", "/api/anthropic/v1/messages/count_tokens"]);
+const GET_PATHS = new Set(["/api/v1/models", "/api/anthropic/v1/models"]);
+const MAX_GATEWAY_BODY = 2 * 1024 * 1024;
+
 export const isGatewayPath = (pathname) =>
   pathname === "/api/v1" || pathname.startsWith("/api/v1/") ||
   pathname === "/api/anthropic" || pathname.startsWith("/api/anthropic/");
@@ -59,12 +67,23 @@ export async function handleGateway(request, env, upstreamFetch = fetch) {
 
   if (!env.ZENMUX_API_KEY) return text(503, "The gateway is not configured on this deployment.", head);
 
+  const path = url.pathname.replace(/\/+$/, "");
+  const isRead = request.method === "GET" || request.method === "HEAD";
+  if (isRead ? !GET_PATHS.has(path) : request.method !== "POST" || !POST_PATHS.has(path)) {
+    return text(404, `${request.method} ${path} is not available on this gateway.`, head);
+  }
+
   let body;
-  if (request.method !== "GET" && request.method !== "HEAD") {
+  if (!isRead) {
+    if (Number(request.headers.get("content-length") || 0) > MAX_GATEWAY_BODY) return text(413, "Request body is too large.", head);
     body = await request.arrayBuffer();
+    if (body.byteLength > MAX_GATEWAY_BODY) return text(413, "Request body is too large.", head);
     let parsed = null;
     try { parsed = JSON.parse(new TextDecoder().decode(body)); } catch { /* not JSON */ }
-    if (parsed && typeof parsed.model === "string" && !ALLOWED_MODELS.has(parsed.model)) {
+    if (!parsed || typeof parsed !== "object" || typeof parsed.model !== "string") {
+      return text(400, `Send a JSON body with a "model". Allowed: ${[...ALLOWED_MODELS].join(", ")}`, head);
+    }
+    if (!ALLOWED_MODELS.has(parsed.model)) {
       return text(403, `Model '${parsed.model}' is not available on this gateway. Allowed: ${[...ALLOWED_MODELS].join(", ")}`, head);
     }
   }
@@ -76,11 +95,22 @@ export async function handleGateway(request, env, upstreamFetch = fetch) {
     headers.set(name, value);
   }
 
-  const upstream = await upstreamFetch(UPSTREAM_BASE + url.pathname + url.search, {
-    method: request.method,
-    headers,
-    body: body && body.byteLength ? body : undefined,
-  });
+  // Limit only the wait for headers; streamed answers may run longer.
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), 120_000);
+  let upstream;
+  try {
+    upstream = await upstreamFetch(UPSTREAM_BASE + path + url.search, {
+      method: request.method,
+      headers,
+      body: body && body.byteLength ? body : undefined,
+      signal: ac.signal,
+    });
+  } catch {
+    return text(502, "The upstream did not answer. Please try again.", head);
+  } finally {
+    clearTimeout(timer);
+  }
 
   const out = new Headers(head);
   upstream.headers.forEach((value, name) => { if (!HOP_BY_HOP.has(name.toLowerCase())) out.set(name, value); });

@@ -79,3 +79,20 @@ test("the worker routes gateway paths before the marketplace API", async () => {
     globalThis.fetch = realFetch;
   }
 });
+
+test("bodies without an allowed model and unknown endpoints never reach the upstream", async () => {
+  const up = upstream();
+  const post = (path, body, headers = {}) => handleGateway(req(path, { method: "POST", headers, body }), ENV, up);
+  // No model: the free-model check would otherwise be skipped.
+  assert.equal((await post("/api/v1/chat/completions", JSON.stringify({ messages: [] }))).status, 400);
+  // Multipart (not JSON) upload naming a paid model.
+  const form = new FormData(); form.set("model", "openai/gpt-image-1"); form.set("prompt", "x");
+  assert.equal((await handleGateway(req("/api/v1/images/generations", { method: "POST", body: form }), ENV, up)).status, 404);
+  assert.equal((await post("/api/v1/embeddings", JSON.stringify({ model: "deepseek/deepseek-v4-flash-free", input: "x" }))).status, 404);
+  assert.equal((await handleGateway(req("/api/v1/generation?id=1"), ENV, up)).status, 404);
+  assert.equal((await handleGateway(req("/api/v1/chat/completions", { method: "PUT", body: "{}" }), ENV, up)).status, 404);
+  assert.equal(up.calls.length, 0);
+  // The Anthropic surface still works for the free model.
+  assert.equal((await post("/api/anthropic/v1/messages", JSON.stringify({ model: "deepseek/deepseek-v4-flash-free", messages: [] }))).status, 200);
+  assert.equal(up.calls[0].url, "https://zenmux.ai/api/anthropic/v1/messages");
+});

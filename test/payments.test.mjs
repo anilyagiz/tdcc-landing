@@ -8,7 +8,9 @@ const WEBHOOK_SECRET = "whsec_test";
 // A tiny fake of the Stripe endpoints the marketplace uses.
 function fakeStripe() {
   const calls = [];
-  const state = { failCapture: false, n: 0 };
+  // sessions: checkout session id -> { status, payment_intent } for GETs.
+  // lostCapture: the capture went through but the reply was lost (500).
+  const state = { failCapture: false, lostCapture: false, failRefund: false, failCancel: false, sessions: new Map(), n: 0 };
   const fetch = async (url, init) => {
     const path = new URL(url).pathname.replace("/v1/", "");
     const params = Object.fromEntries(new URLSearchParams(init.body || new URL(url).search));
@@ -19,13 +21,20 @@ function fakeStripe() {
     if (path.startsWith("accounts/") && path.endsWith("login_links")) return ok({ url: "https://connect.stripe.test/express" });
     if (path.startsWith("accounts/")) return ok({ id: path.split("/")[1], charges_enabled: true, payouts_enabled: true, details_submitted: true });
     if (path === "account_links") return ok({ url: "https://connect.stripe.test/onboard" });
+    const fail = (status, message) => new Response(JSON.stringify({ error: { message } }), { status });
     if (path === "checkout/sessions") return ok({ id: id("cs"), url: "https://checkout.stripe.test/pay" });
+    if (path.startsWith("checkout/sessions/") && path.endsWith("/expire")) return ok({ id: path.split("/")[2], status: "expired" });
+    if (path.startsWith("checkout/sessions/") && init.method === "GET") return ok({ id: path.split("/")[2], status: "open", ...state.sessions.get(path.split("/")[2]) });
     if (path.endsWith("/capture")) {
       if (state.failCapture) return new Response(JSON.stringify({ error: { message: "card declined", code: "card_declined" } }), { status: 402 });
+      if (state.lostCapture) return fail(500, "lost reply");
       return ok({ id: path.split("/")[1], latest_charge: id("ch") });
     }
-    if (path.endsWith("/cancel")) return ok({ id: path.split("/")[1], status: "canceled" });
-    if (path === "refunds") return ok({ id: id("re") });
+    if (path.startsWith("payment_intents/") && init.method === "GET") {
+      return ok({ id: path.split("/")[1], status: state.lostCapture ? "succeeded" : "requires_capture", latest_charge: "ch_lost" });
+    }
+    if (path.endsWith("/cancel")) return state.failCancel ? fail(500, "try later") : ok({ id: path.split("/")[1], status: "canceled" });
+    if (path === "refunds") return state.failRefund ? fail(500, "try later") : ok({ id: id("re") });
     if (path === "transfers") return ok({ id: id("tr") });
     return new Response(JSON.stringify({ error: { message: "unexpected " + path } }), { status: 400 });
   };
@@ -205,4 +214,133 @@ test("unpaid checkouts are cancelled and do not block capacity", async () => {
   await webhook(ctx.env, paid(late.id, late.session, "pi_l"));
   await ctx.renter.call("POST", `/api/rentals/${late.id}/cancel`, {});
   assert.ok(ctx.stripe.calls.some((c) => c.path === "payment_intents/pi_l/cancel"));
+});
+
+// ---------- recovering from failed or missed Stripe calls ----------
+
+async function acceptedRental(ctx, pi, extra = {}) {
+  const b = await book(ctx, extra);
+  await webhook(ctx.env, paid(b.id, b.session, pi));
+  assert.equal((await ctx.host.call("POST", `/api/rentals/${b.id}/accept`, {})).status, 200);
+  return b;
+}
+
+test("a failed refund changes nothing, so the cancel can be retried", async () => {
+  const ctx = await setup();
+  await readyHost(ctx);
+  const b = await acceptedRental(ctx, "pi_rf", { hours: 4 });
+  ctx.stripe.state.failRefund = true;
+  assert.equal((await ctx.renter.call("POST", `/api/rentals/${b.id}/cancel`, {})).status, 502);
+  let row = await ctx.env.DB.prepare("SELECT status, refunded_cents FROM rentals WHERE id = ?").bind(b.id).first();
+  assert.deepEqual({ ...row }, { status: "accepted", refunded_cents: 0 }, "still running, nothing lost");
+  ctx.stripe.state.failRefund = false;
+  assert.equal((await ctx.renter.call("POST", `/api/rentals/${b.id}/cancel`, {})).status, 200);
+  row = await ctx.env.DB.prepare("SELECT status, refunded_cents FROM rentals WHERE id = ?").bind(b.id).first();
+  assert.deepEqual({ ...row }, { status: "cancelled", refunded_cents: 800 });
+});
+
+test("a capture whose reply was lost is confirmed with Stripe instead of cancelled", async () => {
+  const ctx = await setup();
+  await readyHost(ctx);
+  const b = await book(ctx);
+  await webhook(ctx.env, paid(b.id, b.session, "pi_lost"));
+  ctx.stripe.state.lostCapture = true;
+  assert.equal((await ctx.host.call("POST", `/api/rentals/${b.id}/accept`, {})).status, 200);
+  const row = await ctx.env.DB.prepare("SELECT status, payment_status, payout_status, charge_id FROM rentals WHERE id = ?").bind(b.id).first();
+  assert.deepEqual({ ...row }, { status: "accepted", payment_status: "captured", payout_status: "held", charge_id: "ch_lost" });
+});
+
+test("a paid rental cannot be finished early by the host, only cancelled with a refund", async () => {
+  const ctx = await setup();
+  await readyHost(ctx);
+  const b = await acceptedRental(ctx, "pi_early");
+  assert.equal((await ctx.host.call("POST", `/api/rentals/${b.id}/complete`, {})).status, 409);
+  // Once the hours are up the host may close it.
+  await age(ctx.env, "rentals", "access_expires_at", 3 * 3600, `id = '${b.id}'`);
+  await ctx.env.DB.prepare("UPDATE rentals SET status = 'accepted' WHERE id = ?").bind(b.id).run();
+  assert.equal((await ctx.host.call("POST", `/api/rentals/${b.id}/complete`, {})).status, 200);
+});
+
+test("checkouts whose webhook never arrived are picked up from Stripe", async () => {
+  const ctx = await setup();
+  await readyHost(ctx);
+  const b = await book(ctx);
+  ctx.stripe.state.sessions.set(b.session, { status: "complete", payment_intent: "pi_missed" });
+  // The renter comes back from Checkout before the webhook: their page finds it.
+  const mine = (await ctx.renter.call("GET", "/api/my/rentals")).body.rentals[0];
+  assert.equal(mine.status, "pending");
+  assert.equal(mine.payment_status, "authorized");
+  assert.equal(ctx.env.EMAIL_OUTBOX.at(-1).to, ctx.host.email);
+
+  // The cron does the same for anyone who never came back.
+  const c = await book(ctx);
+  ctx.stripe.state.sessions.set(c.session, { status: "complete", payment_intent: "pi_cron" });
+  await age(ctx.env, "rentals", "created_at", 300, `id = '${c.id}'`);
+  await scheduled(ctx.env);
+  const row = await ctx.env.DB.prepare("SELECT status, payment_intent_id FROM rentals WHERE id = ?").bind(c.id).first();
+  assert.deepEqual({ ...row }, { status: "pending", payment_intent_id: "pi_cron" });
+  // A late webhook for the same checkout changes nothing.
+  await webhook(ctx.env, paid(c.id, c.session, "pi_cron"));
+  assert.equal(ctx.stripe.calls.filter((x) => x.path === "payment_intents/pi_cron/cancel").length, 0);
+});
+
+test("a card hold that could not be released is released by the cron", async () => {
+  const ctx = await setup();
+  await readyHost(ctx);
+  const b = await book(ctx);
+  await webhook(ctx.env, paid(b.id, b.session, "pi_hold"));
+  ctx.stripe.state.failCancel = true;
+  assert.equal((await ctx.host.call("POST", `/api/rentals/${b.id}/decline`, {})).status, 200, "the host's answer does not fail");
+  let row = await ctx.env.DB.prepare("SELECT status, payment_status FROM rentals WHERE id = ?").bind(b.id).first();
+  assert.deepEqual({ ...row }, { status: "declined", payment_status: "authorized" });
+  ctx.stripe.state.failCancel = false;
+  await scheduled(ctx.env);
+  row = await ctx.env.DB.prepare("SELECT payment_status FROM rentals WHERE id = ?").bind(b.id).first();
+  assert.equal(row.payment_status, "released");
+});
+
+test("a webhook that fails halfway is handled again on Stripe's retry", async () => {
+  const ctx = await setup();
+  await readyHost(ctx);
+  const b = await book(ctx);
+  // Cancelled while paying; the database fails while the webhook handles it.
+  await ctx.renter.call("POST", `/api/rentals/${b.id}/cancel`, {});
+  assert.ok(ctx.stripe.calls.some((c) => c.path === `checkout/sessions/${b.session}/expire`), "checkout closed on cancel");
+  const realPrepare = ctx.env.DB.prepare;
+  let broken = true;
+  ctx.env.DB.prepare = (sql) => {
+    if (broken && sql.startsWith("UPDATE rentals SET payment_intent_id")) throw new Error("D1 went away");
+    return realPrepare(sql);
+  };
+  const event = paid(b.id, b.session, "pi_retry");
+  assert.equal((await webhook(ctx.env, event)).status, 500);
+  broken = false;
+  const again = await webhook(ctx.env, event);
+  assert.equal(again.status, 200);
+  assert.equal(again.body.duplicate, undefined, "the retry is processed, not skipped");
+  assert.ok(ctx.stripe.calls.some((c) => c.path === "payment_intents/pi_retry/cancel"));
+});
+
+test("suspended hosts are not paid out", async () => {
+  const ctx = await setup();
+  await readyHost(ctx);
+  const b = await acceptedRental(ctx, "pi_sus");
+  await ctx.renter.call("POST", `/api/rentals/${b.id}/complete`, {});
+  await ctx.env.DB.prepare("UPDATE users SET suspended_at = 1 WHERE id = ?").bind(ctx.host.id).run();
+  await age(ctx.env, "rentals", "updated_at", 25 * 3600);
+  await scheduled(ctx.env);
+  assert.ok(!ctx.stripe.calls.some((c) => c.path === "transfers"));
+  await ctx.env.DB.prepare("UPDATE users SET suspended_at = NULL WHERE id = ?").bind(ctx.host.id).run();
+  await scheduled(ctx.env);
+  assert.equal(ctx.stripe.calls.filter((c) => c.path === "transfers").length, 1);
+});
+
+test("checkout is card-only and totals above Stripe's limit are refused", async () => {
+  const ctx = await setup();
+  await readyHost(ctx);
+  await book(ctx);
+  assert.equal(ctx.stripe.calls.find((c) => c.path === "checkout/sessions").params["payment_method_types[0]"], "card");
+  await ctx.host.call("PATCH", `/api/listings/${ctx.listing.id}`, { price: 1000, gpu_count: 512 });
+  const r = await ctx.renter.call("POST", "/api/rentals", { ...RENT, listing_id: ctx.listing.id, gpu_count: 512, hours: 2000 });
+  assert.equal(r.status, 400);
 });

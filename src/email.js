@@ -10,7 +10,8 @@ export function emailEnabled(env) {
 }
 
 export function siteUrl(env, request) {
-  return (env.SITE_URL || new URL(request.url).origin).replace(/\/+$/, "");
+  // The cron has no request; it relies on SITE_URL (set in wrangler.toml).
+  return (env.SITE_URL || (request ? new URL(request.url).origin : "https://decentralizedcompute.company")).replace(/\/+$/, "");
 }
 
 export async function sendEmail(env, { to, subject, text }) {
