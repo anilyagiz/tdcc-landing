@@ -229,6 +229,8 @@ test("a failed refund changes nothing, so the cancel can be retried", async () =
   const ctx = await setup();
   await readyHost(ctx);
   const b = await acceptedRental(ctx, "pi_rf", { hours: 4 });
+  // Not started yet, so the refund is the full amount whatever the clock says.
+  await age(ctx.env, "rentals", "access_starts_at", -3600, `id = '${b.id}'`);
   ctx.stripe.state.failRefund = true;
   assert.equal((await ctx.renter.call("POST", `/api/rentals/${b.id}/cancel`, {})).status, 502);
   let row = await ctx.env.DB.prepare("SELECT status, refunded_cents FROM rentals WHERE id = ?").bind(b.id).first();

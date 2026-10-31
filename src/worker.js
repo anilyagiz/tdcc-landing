@@ -1,6 +1,9 @@
-import { handleApi, scheduled, reportError } from "./api.js";
+import { handleApi, scheduled, scheduledMinute, reportError } from "./api.js";
 import { handleGateway, isGatewayPath } from "./gateway.js";
 import { handleV1, isApiPath } from "./billing.js";
+
+// wrangler.toml [triggers]: the 10-minute jobs plus a cheap every-minute one.
+const MINUTE_CRON = "* * * * *";
 
 export default {
   async fetch(request, env, ctx) {
@@ -36,9 +39,10 @@ export default {
   },
 
   // Expires rentals, cleans up old rows, and pays hosts (wrangler.toml [triggers]).
-  async scheduled(_event, env, ctx) {
+  async scheduled(event, env, ctx) {
     if (!env.DB) return;
-    ctx.waitUntil(scheduled(env).catch((err) => {
+    const job = event && event.cron === MINUTE_CRON ? scheduledMinute : scheduled;
+    ctx.waitUntil(job(env).catch((err) => {
       console.error("scheduled job failed", err && err.stack ? err.stack : err);
       return reportError(env, err);
     }));

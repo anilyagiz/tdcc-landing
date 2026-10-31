@@ -22,9 +22,11 @@ database_id = "29f61381-4d0b-491e-9bcb-dedc3d012699"
 migrations_dir = "migrations"
 
 # Expires finished rentals and unanswered requests, cleans up old rows, and
-# pays hosts once the dispute window has passed.
+# pays hosts once the dispute window has passed. The every-minute trigger
+# starts and ends cloud GPU pods (src/cloud.js); it does nothing without
+# RUNPOD_API_KEY or open cloud rentals.
 [triggers]
-crons = ["*/10 * * * *"]
+crons = ["*/10 * * * *", "* * * * *"]
 
 # Optional settings. Each feature turns on when its secret is set:
 #   npx wrangler secret put RESEND_API_KEY        # email (https://resend.com)
@@ -33,6 +35,8 @@ crons = ["*/10 * * * *"]
 #   npx wrangler secret put MARKET_SIGNING_KEY    # signs tdcc access grants (npm run keygen)
 #   npx wrangler secret put TURNSTILE_SECRET      # robot check on sign-up (+ TURNSTILE_SITE_KEY below)
 #   npx wrangler secret put SENTRY_DSN            # error reports
+#   npx wrangler secret put RUNPOD_API_KEY        # instant cloud GPUs resold from RunPod
+#     GPU_MARKUP (default 1.25), RUNPOD_IMAGE, RUNPOD_DISK_GB are optional vars
 # Without email, password reset says it is unavailable and email
 # verification is not required. Without Stripe, host and renter settle
 # payment between themselves.

@@ -18,6 +18,7 @@
 
 import { emailEnabled, sendEmail, siteUrl, templates } from "./email.js";
 import { billingOverview, createDeposit, checkDeposit, createKey, revokeKey, webChat, watchDeposits, cleanupHolds } from "./billing.js";
+import { handleCloud, cloudSweep, openCloudRentals } from "./cloud.js";
 
 const SESSION_COOKIE = "__Host-tdcc_sid";
 const SESSION_TTL = 30 * 24 * 3600;
@@ -720,6 +721,7 @@ async function exportData(request, env) {
     reviews_written: await q("SELECT rental_id, role, rating, comment, created_at FROM reviews WHERE author_id = ?", user.id),
     reviews_about_you: await q("SELECT rental_id, role, rating, comment, created_at FROM reviews WHERE subject_id = ?", user.id),
     reports_filed: await q("SELECT listing_id, reason, created_at, resolved_at FROM reports WHERE reporter_id = ?", user.id),
+    cloud_gpus: await q("SELECT id, gpu_name, gpu_count, hours, price_micro, total_micro, refunded_micro, status, created_at, started_at, expires_at, ended_at FROM cloud_rentals WHERE user_id = ?", user.id),
     disputes_opened: await q("SELECT rental_id, reason, created_at, resolved_at, resolution FROM disputes WHERE opened_by = ?", user.id),
     sessions: await q("SELECT user_agent, created_at, last_seen_at, expires_at FROM sessions WHERE user_id = ?", user.id),
     activity: await q("SELECT event, detail, ip, created_at FROM audit_log WHERE user_id = ? ORDER BY id", user.id),
@@ -782,6 +784,7 @@ async function deleteAccount(request, env) {
      WHERE l.owner_id = ? AND r.payout_status IN ('held', 'paying')`
   ).bind(user.id).first();
   if (owed.n > 0) throw new HttpError(409, "Payouts for your finished rentals are still on their way. You can delete your account once they are paid (about a day after each rental ends).");
+  if (await openCloudRentals(env, user.id)) throw new HttpError(409, "You have cloud GPUs running. End them first; unused hours go back to your balance.");
   await releaseAll(env, "status IN ('pending', 'awaiting_payment') AND (renter_id = ?1 OR listing_id IN (SELECT id FROM listings WHERE owner_id = ?1))", user.id);
   await env.DB.prepare("DELETE FROM users WHERE id = ?").bind(user.id).run();
   return json(200, { ok: true }, { "set-cookie": sessionCookie("", 0) });
@@ -2066,6 +2069,11 @@ export async function reportError(env, err, request) {
   } catch { /* reporting must never fail the request */ }
 }
 
+// Every-minute cron: cloud GPU pods start, end and are billed by the minute.
+export async function scheduledMinute(env) {
+  await cloudSweep(env);
+}
+
 // Cron trigger entry (see wrangler.toml).
 export async function scheduled(env) {
   // Each job runs even if an earlier one fails; the first error is rethrown
@@ -2106,9 +2114,14 @@ export async function handleApi(request, env, ctx) {
     }
 
     const seg = path.split("/").slice(2); // ["listings", ":id", ...]
-    const isId = (x) => /^(gpu|rnt|usr|rpt|dsp|dep|key)_[A-Za-z0-9_-]{1,40}$/.test(x);
+    const isId = (x) => /^(gpu|rnt|usr|rpt|dsp|dep|key|cgr)_[A-Za-z0-9_-]{1,40}$/.test(x);
     const route = `${method} /${seg.map((x) => (isId(x) ? ":id" : x)).join("/")}`;
     const id = seg.find(isId);
+
+    if (route.startsWith("GET /cloud/") || route.startsWith("POST /cloud/")) {
+      const res = await handleCloud(route, request, env, ctx, id);
+      if (res) return res;
+    }
 
     switch (route) {
       case "GET /health": return json(200, { ok: true });
@@ -2184,4 +2197,4 @@ export async function handleApi(request, env, ctx) {
 }
 
 // Shared with src/billing.js.
-export { HttpError, json, readJson, requireUser, limit, newId, randomToken, sha256, now };
+export { HttpError, json, readJson, requireUser, requireVerified, limit, newId, randomToken, sha256, now, int, sshKey };
