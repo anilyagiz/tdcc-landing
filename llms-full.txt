@@ -31,6 +31,9 @@ The product surface of the network: a web console, a CLI, Python and TypeScript 
 Submit a job with constraints, the router matches hardware, execution runs in an approved isolated runtime,
 results are verified against acceptance criteria, and only accepted work is billed and paid out.
 Version 1.0 ships in staged early-access cohorts with the pilot network.
+Current download: TDCC desktop 0.74.0 for Windows x64 (beta, per-user, not code-signed yet), bundling the tdcc 0.74.0 runtime and CLI:
+https://github.com/anilyagiz/tdcc-landing/releases/tag/desktop-v0.74.0
+Linux and macOS builds of 0.74.0 are coming.
 
 ## Canonical pages
 - Home: https://decentralizedcompute.company/

@@ -26,7 +26,7 @@ does it in that order. Take a backup first: `npm run db:backup`.
 | Both | `RESEND_API_KEY` | secret | strongly recommended (verification, reset, notices) |
 | Both | `SENTRY_DSN` | secret | recommended |
 | Both | `TURNSTILE_SITE_KEY` (var) + `TURNSTILE_SECRET` | | recommended against sign-up abuse |
-| Free gateway | `ZENMUX_API_KEY`; `PROXY_KEY` to require a key | secrets | see §5 |
+| Free gateway | `ZENMUX_API_KEY`; `PROXY_KEY` to require a key; `GATEWAY_IP_DAILY_CAP` (500), `GATEWAY_DAILY_CAP` (20000) vars | secrets / vars | see §5 |
 
 Check `PRICE_MARKUP` (default 1.5) against the provider's current prices; check that the treasury wallet
 is the one you control and has a USDC token account.
@@ -56,9 +56,13 @@ Inference, on devnet or with a small mainnet amount:
 
 ## 5. Known limits (not fixed here)
 
-- **Free gateway `/api/v1`, `/api/anthropic`**: per-IP limit is per Worker isolate (in memory). Endpoints
-  and model are now locked down, but without `PROXY_KEY` it is an open proxy for the free model. Add a
-  Cloudflare WAF rate-limiting rule on `/api/v1/*` and `/api/anthropic/*` or set `PROXY_KEY`.
+- **Free gateway `/api/v1`, `/api/anthropic`**: with the D1 binding, limits are shared across isolates
+  in `rate_limits`: 30 requests/minute per IP (429 + Retry-After), `GATEWAY_IP_DAILY_CAP` per IP per UTC
+  day (429) and `GATEWAY_DAILY_CAP` in total per UTC day (503 "at capacity for today"). Daily caps count
+  only requests that would reach the upstream. Without D1 (or if D1 errors) only the per-isolate
+  in-memory 30/minute limit applies. Without `PROXY_KEY` it is still an open proxy for the free model
+  within those caps; the IP comes from `cf-connecting-ip`, and IPv6 clients are counted per /64 prefix
+  so rotating addresses inside one allocation does not reset their limits.
 - **`tdcc-chat/`** (separate Vercel app with self-serve free keys) has no billing; it spends provider
   credit for free. Keep `ALLOW_SELF_SERVE_KEYS=false` there or retire it in favour of `/v1` here.
 - **Rate limits and holds live in D1**: every API request does a few writes. Fine for thousands of

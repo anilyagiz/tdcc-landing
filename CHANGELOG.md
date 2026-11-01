@@ -4,6 +4,33 @@ All notable landing-site and public desktop-release changes are documented here.
 
 ## [Unreleased]
 
+## [desktop 0.74.0] — Windows x64 desktop beta
+
+### Deploy order
+
+Publish the `desktop-v0.74.0` release on the public `anilyagiz/tdcc-landing`
+repository, with `TDCC_0.74.0_x64-setup.exe` and its `.sha256`, before
+deploying: the App page links to both. `tdcc-mesh` is private, so the site no
+longer links to its releases or install script.
+
+### Added
+
+- **Marketplace screen** in the desktop app: link this machine to a GPU
+  listing.
+- **Midnight theme.**
+- `app.html` downloads: the Windows x64 installer (per-user, no admin), which
+  bundles the tdcc 0.74.0 runtime and CLI (`tdcc.exe`), with its SHA-256 and
+  the SmartScreen note (not code-signed yet: More info, then Run anyway).
+  Linux and macOS are shown as coming soon, without links.
+
+### Fixed
+
+- Opening an external link no longer freezes the desktop app.
+- Idle plugin fix.
+- Release statements on `app.html`, `index.html`, `facts.html`, and the llms
+  files no longer point to private `tdcc-mesh` releases or claim public Linux
+  x64 / ARM64 CLI builds.
+
 ## [0.74.0] — 2026-10-18
 
 ### Deploy order

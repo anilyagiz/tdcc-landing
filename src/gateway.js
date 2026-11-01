@@ -1,8 +1,13 @@
 // OpenAI- and Anthropic-compatible gateway, the Worker twin of
 // api/[[...path]].js on Vercel: /api/v1/* and /api/anthropic/* are forwarded
 // to the upstream with our key, limited to the free model and to 30 requests a
-// minute per IP. Needs the ZENMUX_API_KEY secret; PROXY_KEY, when set, is
-// required from callers.
+// minute per IP (per /64 for IPv6). Needs the ZENMUX_API_KEY secret;
+// PROXY_KEY, when set, is required from callers. With the D1 binding the limits are shared by every
+// isolate (rate_limits table): 30/minute and GATEWAY_IP_DAILY_CAP a day per
+// IP, plus GATEWAY_DAILY_CAP a day in total. Without it, an in-memory
+// per-isolate counter is the only limit.
+
+import { limit } from "./api.js";
 
 const UPSTREAM_BASE = "https://zenmux.ai";
 export const ALLOWED_MODELS = new Set(["deepseek/deepseek-v4-flash-free"]);
@@ -10,6 +15,9 @@ export const ALLOWED_MODELS = new Set(["deepseek/deepseek-v4-flash-free"]);
 const RATE_WINDOW_MS = 60_000;
 const RATE_MAX = 30;
 const hits = new Map();
+const DAY_SEC = 86_400;
+const IP_DAILY_CAP = 500;
+const DAILY_CAP = 20_000;
 
 const HOP_BY_HOP = new Set([
   "host", "connection", "content-length", "content-encoding", "transfer-encoding", "keep-alive",
@@ -49,6 +57,41 @@ function limited(ip, now = Date.now()) {
   return e.count > RATE_MAX;
 }
 
+const cap = (v, fallback) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Math.floor(Number(v)) : fallback);
+
+// Shared counter via the API's limit(): null when allowed, else seconds to wait.
+// Database errors are rethrown so the caller can fall back.
+async function dbLimited(env, key, max, windowSec) {
+  try {
+    await limit(env, key, max, windowSec);
+    return null;
+  } catch (e) {
+    if (e && e.status === 429) return e.extra?.retryAfter || windowSec;
+    throw e;
+  }
+}
+
+// The address the limits count against. IPv4 stays as-is; an IPv6 client
+// usually holds a whole /64 and could rotate through it for fresh buckets, so
+// IPv6 is cut to its /64 prefix (IPv4-mapped addresses count as IPv4).
+export function limitKey(ip) {
+  if (!ip.includes(":")) return ip;
+  let addr = ip.toLowerCase().replace(/^\[|\]$/g, "").split("%")[0];
+  const v4 = addr.match(/^(.*:)(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
+  if (v4) {
+    const [a, b, c, d] = v4.slice(2).map(Number);
+    addr = v4[1] + ((a << 8) | b).toString(16) + ":" + ((c << 8) | d).toString(16);
+  }
+  const [left, right, extra] = addr.split("::");
+  const l = left ? left.split(":") : [];
+  const r = right ? right.split(":") : [];
+  const groups = right === undefined ? l : [...l, ...Array(Math.max(0, 8 - l.length - r.length)).fill("0"), ...r];
+  if (extra !== undefined || groups.length !== 8 || !groups.every((g) => /^[0-9a-f]{1,4}$/.test(g))) return addr;
+  const n = groups.map((g) => parseInt(g, 16));
+  if (n.slice(0, 5).every((x) => x === 0) && n[5] === 0xffff) return [n[6] >> 8, n[6] & 255, n[7] >> 8, n[7] & 255].join(".");
+  return n.slice(0, 4).map((x) => x.toString(16)).join(":") + "::/64";
+}
+
 const text = (status, body, headers) => new Response(body, { status, headers: { ...headers, "content-type": "text/plain; charset=utf-8" } });
 
 export async function handleGateway(request, env, upstreamFetch = fetch) {
@@ -57,8 +100,18 @@ export async function handleGateway(request, env, upstreamFetch = fetch) {
 
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: head });
 
-  const ip = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
-  if (limited(ip)) return text(429, "Too many requests. Try again in a minute.", { ...head, "retry-after": "60" });
+  const ip = limitKey(request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown");
+  const tooMany = (retry) => text(429, "Too many requests. Try again in a minute.", { ...head, "retry-after": String(retry) });
+  let useDb = Boolean(env.DB);
+  if (useDb) {
+    try {
+      const retry = await dbLimited(env, `gw:min:${ip}`, RATE_MAX, RATE_WINDOW_MS / 1000);
+      if (retry) return tooMany(retry);
+    } catch {
+      useDb = false;
+    }
+  }
+  if (!useDb && limited(ip)) return tooMany(60);
 
   if (env.PROXY_KEY) {
     const sent = request.headers.get("x-proxy-key") || (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
@@ -86,6 +139,21 @@ export async function handleGateway(request, env, upstreamFetch = fetch) {
     if (!ALLOWED_MODELS.has(parsed.model)) {
       return text(403, `Model '${parsed.model}' is not available on this gateway. Allowed: ${[...ALLOWED_MODELS].join(", ")}`, head);
     }
+  }
+
+  // Daily caps count only requests that would reach the upstream. The UTC date
+  // in the key makes them reset at midnight.
+  if (useDb) {
+    const day = new Date().toISOString().slice(0, 10);
+    const untilMidnight = Math.max(1, Math.ceil((Date.parse(day) + DAY_SEC * 1000 - Date.now()) / 1000));
+    try {
+      if (await dbLimited(env, `gw:day:${day}:${ip}`, cap(env.GATEWAY_IP_DAILY_CAP, IP_DAILY_CAP), DAY_SEC)) {
+        return text(429, "Daily request limit reached for this address. Try again tomorrow.", { ...head, "retry-after": String(untilMidnight) });
+      }
+      if (await dbLimited(env, `gw:day:${day}`, cap(env.GATEWAY_DAILY_CAP, DAILY_CAP), DAY_SEC)) {
+        return text(503, "The free gateway is at capacity for today. Please try again tomorrow.", head);
+      }
+    } catch { /* database unavailable: the per-minute check above still applied */ }
   }
 
   const headers = new Headers({ authorization: `Bearer ${env.ZENMUX_API_KEY}` });

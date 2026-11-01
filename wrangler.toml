@@ -37,6 +37,8 @@ crons = ["*/10 * * * *", "* * * * *"]
 #   npx wrangler secret put SENTRY_DSN            # error reports
 #   npx wrangler secret put RUNPOD_API_KEY        # instant cloud GPUs resold from RunPod
 #     GPU_MARKUP (default 1.25), RUNPOD_IMAGE, RUNPOD_DISK_GB are optional vars
+#   npx wrangler secret put ZENMUX_API_KEY        # free gateway /api/v1, /api/anthropic (PROXY_KEY to require a key)
+#     GATEWAY_IP_DAILY_CAP (default 500), GATEWAY_DAILY_CAP (default 20000) are optional vars
 # Without email, password reset says it is unavailable and email
 # verification is not required. Without Stripe, host and renter settle
 # payment between themselves.
