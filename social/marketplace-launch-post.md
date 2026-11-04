@@ -108,3 +108,60 @@ Do not add: price targets or return promises, made-up user/GPU counts,
 "pay with $COMPUTE" (payments are USDC/card or between host and renter),
 instant cloud GPUs or card payments (not live yet), or Linux/macOS downloads
 (not published yet).
+
+---
+
+## "We shipped" thread (X, with `tdcc-launch-x.mp4`)
+
+Encode the share copy from the render with
+`ffmpeg -i tdcc-marketplace-launch-1080p60.mp4 -c:v libx264 -preset slow -crf 22 -pix_fmt yuv420p -movflags +faststart -c:a aac -b:a 160k tdcc-launch-x.mp4`.
+
+Post only after Solana top-ups are configured (`SOLANA_TREASURY`, `SOLANA_RPC_URL`).
+
+**1/5** (attach the video)
+```
+We shipped. 🚢
+
+The TDCC GPU marketplace is live, and the TDCC desktop app 0.74 is out for Windows.
+
+List your GPU in two minutes. Rent one in seconds.
+
+decentralizedcompute.company/marketplace
+```
+
+**2/5**
+```
+What's coming:
+
+🟣 Tonight: Solana payments. Top up with USDC on Solana and pay for inference and GPUs.
+⭐ Next week: Stellar
+🔺 Next week: Avalanche
+
+Shipping every week.
+```
+
+**3/5**
+```
+For GPU owners:
+· list it for free, set your own hourly price
+· in the desktop app, Marketplace → paste your link token
+· your machine shows up online with the hardware it reports
+
+⬇️ github.com/anilyagiz/tdcc-landing/releases/tag/desktop-v0.74.0
+```
+
+**4/5**
+```
+Trust is built in:
+· reviews from both sides
+· 7-day uptime measured by the machine itself
+· a "hardware checked" badge
+· messages and problem reports on every rental
+```
+
+**5/5**
+```
+Most tokens are looking for a product. $COMPUTE has one, and it ships.
+
+Not financial advice. The only official contract address is the one posted by @computecompany.
+```
