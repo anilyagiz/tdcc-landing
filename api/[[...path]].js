@@ -3,6 +3,10 @@ import { Readable } from "node:stream";
 const UPSTREAM_BASE = "https://zenmux.ai";
 const ALLOWED_MODELS = new Set(["deepseek/deepseek-v4-flash-free"]);
 
+const POST_PATHS = new Set(["/api/v1/chat/completions", "/api/v1/completions", "/api/v1/responses", "/api/anthropic/v1/messages", "/api/anthropic/v1/messages/count_tokens"]);
+const GET_PATHS = new Set(["/api/v1/models", "/api/anthropic/v1/models"]);
+const MAX_BODY = 2 * 1024 * 1024;
+
 const RATE_WINDOW_MS = 60_000;
 const RATE_MAX = 30;
 const hitCounts = new Map();
@@ -106,36 +110,66 @@ export default async function handler(req, res) {
     return;
   }
 
-  let rawBody = null;
+  // Same rules as src/gateway.js: fixed endpoints, JSON bodies with an
+  // allowed model, so callers cannot spend our key on paid models.
+  const path = p.replace(/\/+$/, "");
   const hasBody = req.method !== "GET" && req.method !== "HEAD";
+  if (hasBody ? req.method !== "POST" || !POST_PATHS.has(path) : !GET_PATHS.has(path)) {
+    res.writeHead(404, { ...cors, "Content-Type": "text/plain" });
+    res.end(`${req.method} ${path} is not available on this gateway.`);
+    return;
+  }
+
+  let rawBody = null;
   if (hasBody) {
     const chunks = [];
-    for await (const chunk of req) chunks.push(chunk);
+    let size = 0;
+    for await (const chunk of req) {
+      size += chunk.length;
+      if (size > MAX_BODY) {
+        res.writeHead(413, { ...cors, "Content-Type": "text/plain" });
+        res.end("Request body is too large.");
+        return;
+      }
+      chunks.push(chunk);
+    }
     rawBody = Buffer.concat(chunks);
 
     const parsed = tryParseJson(rawBody);
-    if (parsed && typeof parsed.model === "string" && !ALLOWED_MODELS.has(parsed.model)) {
+    if (!parsed || typeof parsed !== "object" || typeof parsed.model !== "string" || !ALLOWED_MODELS.has(parsed.model)) {
       res.writeHead(403, { ...cors, "Content-Type": "text/plain" });
-      res.end(`Model '${parsed.model}' is not available on this gateway. Allowed: ${[...ALLOWED_MODELS].join(", ")}`);
+      res.end(`Model '${parsed && parsed.model}' is not available on this gateway. Allowed: ${[...ALLOWED_MODELS].join(", ")}`);
       return;
     }
   }
 
-  const upstreamUrl = UPSTREAM_BASE + url.pathname + url.search;
+  const upstreamUrl = UPSTREAM_BASE + path + url.search;
 
   const headers = { authorization: `Bearer ${apiKey}` };
   for (const [name, value] of Object.entries(req.headers)) {
-    if (!value || HOP_BY_HOP.has(name.toLowerCase())) continue;
-    if (name.toLowerCase() === "authorization") continue;
-    if (name.toLowerCase() === "x-proxy-key") continue;
+    const n = name.toLowerCase();
+    if (!value || HOP_BY_HOP.has(n)) continue;
+    if (n === "authorization" || n === "x-proxy-key" || n === "cookie" || n.startsWith("x-vercel-") || n.startsWith("x-forwarded-")) continue;
     headers[name] = value;
   }
 
-  const upstream = await fetch(upstreamUrl, {
-    method: req.method,
-    headers,
-    body: rawBody && rawBody.length ? rawBody : undefined,
-  });
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), 120_000);
+  let upstream;
+  try {
+    upstream = await fetch(upstreamUrl, {
+      method: req.method,
+      headers,
+      body: rawBody && rawBody.length ? rawBody : undefined,
+      signal: ac.signal,
+    });
+  } catch {
+    res.writeHead(502, { ...cors, "Content-Type": "text/plain" });
+    res.end("The upstream did not answer. Please try again.");
+    return;
+  } finally {
+    clearTimeout(timer);
+  }
 
   const responseHeaders = { ...cors };
   upstream.headers.forEach((value, name) => {

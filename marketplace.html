@@ -101,6 +101,35 @@
     .empty { padding: 40px 20px; text-align: center; color: var(--muted); border-top: 1px solid var(--line); }
     .cell-label { display: none; }
 
+    /* ---------- instant cloud GPUs ---------- */
+    .cloud { padding: clamp(36px, 6vw, 64px) 0 0; }
+    .cloud-head { margin-bottom: 22px; }
+    .cloud-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+    .cloud-card { display: grid; gap: 10px; padding: 20px; border: 1px solid var(--line); border-radius: 18px; background: #fff; box-shadow: var(--shadow); }
+    .cloud-card b { color: var(--text); font-size: 17px; }
+    .cloud-card .cc-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; color: var(--muted); font-size: 13.5px; }
+    .cloud-card .cc-price { font-size: 22px; font-weight: 600; color: var(--text); }
+    .cloud-card .cc-price small { font-size: 13px; font-weight: 400; color: var(--muted); }
+    .cc-stock { display: inline-flex; align-items: center; gap: 6px; }
+    .cc-stock i { width: 8px; height: 8px; border-radius: 50%; background: #22a55a; }
+    .cc-stock.low i { background: #e0a100; }
+    .cloud-dlg { width: min(480px, calc(100% - 32px)); border: 1px solid var(--line); border-radius: 22px; padding: 0; box-shadow: var(--shadow-lg); }
+    .cloud-dlg::backdrop { background: rgba(10, 20, 30, .35); }
+    .cloud-dlg form { display: grid; gap: 14px; padding: 24px; }
+    .cloud-dlg h3 { margin: 0; color: var(--text); font-size: 20px; }
+    .cloud-dlg .fl { display: grid; gap: 6px; font-size: 14px; color: var(--text); }
+    .cloud-dlg select, .cloud-dlg input, .cloud-dlg textarea { width: 100%; box-sizing: border-box; border: 1px solid var(--line-2); border-radius: 12px; padding: 10px 12px; font: 14px var(--sans); color: var(--text); background: #fff; }
+    .cloud-dlg textarea { font-family: var(--mono); font-size: 12.5px; resize: vertical; }
+    .cloud-dlg small { color: var(--muted); font-size: 12.5px; }
+    .cd-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .cd-total { margin: 0; color: var(--body); }
+    .cd-total b { color: var(--text); font-size: 18px; }
+    .cd-err { margin: 0; padding: 10px 12px; border-radius: 12px; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; font-size: 14px; }
+    .cd-err a { color: inherit; text-decoration: underline; }
+    .cd-actions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+    .cd-note { margin: 0; color: var(--muted); font-size: 12.5px; }
+    .cd-note a { color: inherit; text-decoration: underline; }
+
     /* ---------- rent drawer ---------- */
     .scrim { position: fixed; inset: 0; z-index: 150; background: rgba(6,18,42,.38); backdrop-filter: blur(3px); opacity: 0; pointer-events: none; transition: opacity .25s ease; }
     .drawer { position: fixed; top: 0; right: 0; bottom: 0; z-index: 160; width: min(520px, 100%); display: flex; flex-direction: column; background: #fff; border-left: 1px solid var(--line); box-shadow: var(--shadow-lg); transform: translateX(105%); transition: transform .35s cubic-bezier(.2, .7, .1, 1); }
@@ -316,10 +345,36 @@
             <div class="gpu-chip c5"><b>$0.35</b> / GPU·h</div>
           </div>
         </div>
-        <div class="notice" role="note"><b id="notice-tag">EARLY ACCESS</b><span id="notice-text">No card is needed and nothing is charged on this site. When a host accepts your request, you both see each other's email and agree on payment and start time directly. Hosts with a linked TDCC node show as <span class="online">online</span> with hardware reported by the machine itself.</span></div>
+        <div class="notice" role="note"><b id="notice-tag">DIRECT PAYMENT</b><span id="notice-text">No card is needed and nothing is charged on this site. When a host accepts your request, you both see each other's email and agree on payment and start time directly. Hosts with a linked TDCC node show as <span class="online">online</span> with hardware reported by the machine itself.</span></div>
       </div>
     </section>
     <div class="ticker" data-ticker hidden aria-label="GPUs listed right now"><div class="ticker-track"></div></div>
+
+    <section class="cloud" id="cloud" aria-labelledby="cloud-title" hidden>
+      <div class="wrap">
+        <div class="cloud-head">
+          <p class="eyebrow">Instant cloud GPUs</p>
+          <h2 class="h2" id="cloud-title">Rent a GPU now, no host to wait for.</h2>
+          <p class="lede">Data-center GPUs that start in minutes with SSH access. Paid by the hour from your TDCC balance; your hours begin once the machine is ready, and hours you do not use go back to your balance when you end it early.</p>
+        </div>
+        <div class="cloud-grid" id="cloud-grid"></div>
+      </div>
+    </section>
+
+    <dialog class="cloud-dlg" id="cloud-dlg" aria-labelledby="cd-title">
+      <form method="dialog" id="cloud-form">
+        <h3 id="cd-title">Rent <span id="cd-gpu"></span></h3>
+        <div class="cd-row">
+          <label class="fl">GPUs <select name="gpu_count" id="cd-count"></select></label>
+          <label class="fl">Hours <input name="hours" id="cd-hours" type="number" min="1" value="1" required /></label>
+        </div>
+        <label class="fl">Your SSH public key <textarea name="ssh_key" id="cd-key" rows="3" required placeholder="ssh-ed25519 AAAA… you@laptop" spellcheck="false"></textarea><small>The single line from <code>~/.ssh/id_ed25519.pub</code>. You log in as root with it.</small></label>
+        <p class="cd-total">Total <b id="cd-total">–</b> from your balance</p>
+        <p class="cd-err" id="cd-err" role="alert" hidden></p>
+        <div class="cd-actions"><button class="btn" value="cancel" formnovalidate>Cancel</button><button class="btn solid" id="cd-go" value="go">Pay and start</button></div>
+        <p class="cd-note">By renting you agree to the <a href="/terms.html#cloud">acceptable use rules</a>. The machine and its disk are deleted when the hours are up.</p>
+      </form>
+    </dialog>
 
     <section class="market" id="market" aria-label="GPU listings">
       <div class="wrap">
@@ -804,6 +859,74 @@
         }
       });
       load();
+    })();
+  </script>
+  <script>
+    // Instant cloud GPUs (src/cloud.js). Hidden unless the deployment offers them.
+    (async () => {
+      const { api, esc, toast, requireUser } = window.TDCC;
+      const $ = (id) => document.getElementById(id);
+      let data;
+      try { data = await api('GET', '/api/cloud/gpus'); } catch { return; }
+      if (!data.enabled || !data.gpus.length) return;
+      const usd = (micro) => '$' + (micro / 1e6).toFixed(2);
+      $('cloud-grid').innerHTML = data.gpus.map((g) => `
+        <article class="cloud-card">
+          <b>${esc(g.name)}</b>
+          <div class="cc-meta">${g.vram_gb ? `<span>${g.vram_gb} GB</span>` : ''}<span>up to ${g.max_count} per machine</span><span class="cc-stock ${g.availability === 'LOW' ? 'low' : ''}"><i></i>${g.availability === 'LOW' ? 'Few left' : 'In stock'}</span></div>
+          <div class="cc-price">${usd(g.price_micro)} <small>/ GPU·h</small></div>
+          <button class="btn solid sm" type="button" data-cloud="${esc(g.id)}">Rent now</button>
+        </article>`).join('');
+      $('cloud').hidden = false;
+
+      const dlg = $('cloud-dlg');
+      let gpu = null;
+      const hours = () => Math.max(1, Math.min(data.max_hours, Math.floor(Number($('cd-hours').value) || 1)));
+      const total = () => { $('cd-total').textContent = usd(gpu.price_micro * (Number($('cd-count').value) || 1) * hours()); };
+      $('cloud-grid').addEventListener('click', async (e) => {
+        const b = e.target.closest('[data-cloud]');
+        if (!b) return;
+        if (!(await requireUser('Sign in to rent a cloud GPU.'))) return;
+        gpu = data.gpus.find((g) => g.id === b.dataset.cloud);
+        $('cd-gpu').textContent = gpu.name;
+        $('cd-count').innerHTML = Array.from({ length: gpu.max_count }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('');
+        $('cd-hours').max = data.max_hours;
+        $('cd-err').hidden = true;
+        try { $('cd-key').value = $('cd-key').value || localStorage.getItem('tdcc-ssh-key') || ''; } catch { /* storage blocked */ }
+        total();
+        dlg.showModal();
+      });
+      $('cd-count').addEventListener('change', total);
+      $('cd-hours').addEventListener('input', total);
+      $('cloud-form').addEventListener('submit', async (e) => {
+        if (e.submitter && e.submitter.value === 'cancel') return;
+        e.preventDefault();
+        const go = $('cd-go');
+        go.disabled = true;
+        $('cd-err').hidden = true;
+        const sshKey = $('cd-key').value.trim();
+        try {
+          await api('POST', '/api/cloud/rentals', { gpu_id: gpu.id, gpu_count: Number($('cd-count').value), hours: hours(), ssh_key: sshKey, quoted_price_micro: gpu.price_micro });
+          try { localStorage.setItem('tdcc-ssh-key', sshKey); } catch { /* storage blocked */ }
+          dlg.close();
+          toast('Paid. Your machine is starting.');
+          location.href = '/account.html#rentals';
+        } catch (err) {
+          $('cd-err').innerHTML = esc(err.message) + (err.status === 402 ? ' <a href="/account.html#billing">Top up →</a>' : '');
+          $('cd-err').hidden = false;
+          // Price or stock changed: load the current offer so the next try can succeed.
+          if (err.status === 409 && err.field === 'gpu_id') {
+            try {
+              const fresh = await api('GET', '/api/cloud/gpus?fresh=' + Date.now());
+              const g = fresh.gpus.find((x) => x.id === gpu.id);
+              if (g) { data.gpus = data.gpus.map((x) => (x.id === g.id ? g : x)); gpu = g; total(); }
+              else data.gpus = data.gpus.filter((x) => x.id !== gpu.id);
+            } catch { /* keep the message */ }
+          }
+        } finally {
+          if (!gpu || data.gpus.some((x) => x.id === gpu.id)) go.disabled = false;
+        }
+      });
     })();
   </script>
 </body>

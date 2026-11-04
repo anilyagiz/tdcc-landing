@@ -17,7 +17,8 @@
 //   suspend accounts that users report.
 
 import { emailEnabled, sendEmail, siteUrl, templates } from "./email.js";
-import { billingOverview, createDeposit, checkDeposit, createKey, revokeKey, webChat, watchDeposits } from "./billing.js";
+import { billingOverview, createDeposit, checkDeposit, createKey, revokeKey, webChat, watchDeposits, cleanupHolds } from "./billing.js";
+import { handleCloud, cloudSweep, openCloudRentals, endAllForUser } from "./cloud.js";
 
 const SESSION_COOKIE = "__Host-tdcc_sid";
 const SESSION_TTL = 30 * 24 * 3600;
@@ -720,6 +721,7 @@ async function exportData(request, env) {
     reviews_written: await q("SELECT rental_id, role, rating, comment, created_at FROM reviews WHERE author_id = ?", user.id),
     reviews_about_you: await q("SELECT rental_id, role, rating, comment, created_at FROM reviews WHERE subject_id = ?", user.id),
     reports_filed: await q("SELECT listing_id, reason, created_at, resolved_at FROM reports WHERE reporter_id = ?", user.id),
+    cloud_gpus: await q("SELECT id, gpu_name, gpu_count, hours, price_micro, total_micro, refunded_micro, status, created_at, started_at, expires_at, ended_at FROM cloud_rentals WHERE user_id = ?", user.id),
     disputes_opened: await q("SELECT rental_id, reason, created_at, resolved_at, resolution FROM disputes WHERE opened_by = ?", user.id),
     sessions: await q("SELECT user_agent, created_at, last_seen_at, expires_at FROM sessions WHERE user_id = ?", user.id),
     activity: await q("SELECT event, detail, ip, created_at FROM audit_log WHERE user_id = ? ORDER BY id", user.id),
@@ -782,6 +784,7 @@ async function deleteAccount(request, env) {
      WHERE l.owner_id = ? AND r.payout_status IN ('held', 'paying')`
   ).bind(user.id).first();
   if (owed.n > 0) throw new HttpError(409, "Payouts for your finished rentals are still on their way. You can delete your account once they are paid (about a day after each rental ends).");
+  if (await openCloudRentals(env, user.id)) throw new HttpError(409, "You have cloud GPUs running. End them first; unused hours go back to your balance.");
   await releaseAll(env, "status IN ('pending', 'awaiting_payment') AND (renter_id = ?1 OR listing_id IN (SELECT id FROM listings WHERE owner_id = ?1))", user.id);
   await env.DB.prepare("DELETE FROM users WHERE id = ?").bind(user.id).run();
   return json(200, { ok: true }, { "set-cookie": sessionCookie("", 0) });
@@ -1324,6 +1327,8 @@ async function createRental(request, env, ctx) {
   const t = now();
   const total = row.price_cents * count * hours;
   if (paid && total < 50) throw new HttpError(400, "The total must be at least $0.50 for card payment.", { field: "hours" });
+  // Stripe's largest single card charge.
+  if (paid && total > 99_999_999) throw new HttpError(400, "The total is above $999,999.99, the most one card payment can be. Book fewer GPUs or hours per request.", { field: "hours" });
   await env.DB.prepare(
     `INSERT INTO rentals (id, listing_id, renter_id, gpu_count, hours, environment, image, access, ssh_key, renter_owner_id, message, price_cents, total_cents, status, start_at, payment_status, fee_cents, created_at, updated_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
@@ -1343,9 +1348,11 @@ async function createRental(request, env, ctx) {
   return json(201, { rental: rentalOut(r, "renter") });
 }
 
-async function myRentals(request, env) {
+async function myRentals(request, env, ctx) {
   const user = await requireUser(request, env);
   await expireRentals(env);
+  // Back from Stripe Checkout before the webhook arrived: look it up now.
+  await reconcilePayments(env, request, ctx, user.id).catch((err) => console.error("reconcile failed", err && err.message));
   const rows = await env.DB.prepare(`${RENTAL_SELECT} WHERE r.renter_id = ? ORDER BY r.created_at DESC LIMIT 200`).bind(user.id).all();
   return json(200, { rentals: rows.results.map((r) => rentalOut(r, "renter")) });
 }
@@ -1378,10 +1385,23 @@ async function transitionRental(request, env, ctx, id, action) {
   if (rule.by === "host" && !isHost) throw new HttpError(403, "Only the host can do that.");
   if (!rule.from.includes(r.status)) throw new HttpError(409, `This request is already ${r.status}.`);
   const note = isHost ? text(body.note, "Note", { max: 1000, multiline: true }) : r.host_note;
+  const t = now();
+
+  // A paid rental ended early by the host would still pay the host in full,
+  // so before the end the host cancels instead (the renter is refunded).
+  if (action === "complete" && isHost && r.payment_intent_id && t < (r.access_expires_at || 0)) {
+    throw new HttpError(409, "A paid rental finishes on its own when the hours are up. To stop it early, cancel it; the renter is refunded.");
+  }
+
+  // Refund first: if Stripe fails, nothing changes and the user can retry.
+  // (Changing the status first could lose the refund while the host still
+  // got paid in full.) The idempotency key makes a retry safe.
+  if (action === "cancel" && r.status === "accepted" && r.payment_intent_id) {
+    await refundPayment(env, id, cancelRefund(r, isHost, t), isHost ? "Cancelled by the host" : "Cancelled by the renter");
+  }
 
   // Accepting starts the clock at the requested start (or now): access lasts
   // exactly the rented hours.
-  const t = now();
   const starts = action === "accept" ? Math.max(t, r.start_at || 0) : r.access_starts_at ?? null;
   const expires = action === "accept" ? starts + r.hours * 3600 : r.access_expires_at ?? null;
   let sql = `UPDATE rentals SET status = ?, host_note = ?, updated_at = ?, access_starts_at = ?, access_expires_at = ? WHERE id = ? AND status IN (${rule.from.map(() => "?").join(", ")})`;
@@ -1407,10 +1427,13 @@ async function transitionRental(request, env, ctx, id, action) {
         throw new HttpError(402, "The renter's card could not be charged, so the request was cancelled. Nothing was booked.");
       }
     } else if (action === "decline" || (action === "cancel" && r.status === "pending")) {
-      await releasePayment(env, id);
-    } else if (action === "cancel" && r.status === "accepted") {
-      await refundPayment(env, id, cancelRefund(r, isHost, t), isHost ? "Cancelled by the host" : "Cancelled by the renter");
+      // The request is closed either way; a failed release is retried by
+      // reconcilePayments, so the host's answer does not fail over it.
+      await releasePayment(env, id).catch((err) => console.error("release failed", id, err && err.message));
     }
+  } else if (action === "cancel" && r.status === "awaiting_payment" && r.checkout_session_id) {
+    // Close the checkout so the renter cannot pay for a cancelled request.
+    await stripe(env, "POST", `checkout/sessions/${r.checkout_session_id}/expire`, {}).catch(() => {});
   }
 
   const updated = await env.DB.prepare(`${RENTAL_SELECT} WHERE r.id = ?`).bind(id).first();
@@ -1605,6 +1628,9 @@ async function stripe(env, method, path, params, idempotencyKey) {
 async function startCheckout(env, site, r, renter) {
   const session = await stripe(env, "POST", "checkout/sessions", {
     mode: "payment",
+    // Manual capture needs a method that can be authorized now and captured
+    // later; delayed methods (bank debits) would never reach "authorized".
+    payment_method_types: { 0: "card" },
     customer_email: renter.email,
     client_reference_id: r.id,
     expires_at: now() + 31 * 60,
@@ -1620,12 +1646,20 @@ async function startCheckout(env, site, r, renter) {
 
 async function capturePayment(env, id) {
   const r = await env.DB.prepare("SELECT payment_intent_id FROM rentals WHERE id = ?").bind(id).first();
+  const captured = (pi) => env.DB.prepare("UPDATE rentals SET payment_status = 'captured', charge_id = ?, payout_status = 'held' WHERE id = ?").bind(pi.latest_charge || null, id).run().then(() => true);
   try {
-    const pi = await stripe(env, "POST", `payment_intents/${r.payment_intent_id}/capture`, {}, `capture-${id}`);
-    await env.DB.prepare("UPDATE rentals SET payment_status = 'captured', charge_id = ?, payout_status = 'held' WHERE id = ?").bind(pi.latest_charge || null, id).run();
-    return true;
+    return await captured(await stripe(env, "POST", `payment_intents/${r.payment_intent_id}/capture`, {}, `capture-${id}`));
   } catch (err) {
     console.error("capture failed", id, err.message);
+    // A timeout or a lost reply does not mean the card was not charged: ask
+    // Stripe before treating the payment as failed.
+    try {
+      const pi = await stripe(env, "GET", `payment_intents/${r.payment_intent_id}`);
+      if (pi.status === "succeeded") return await captured(pi);
+      if (pi.status === "requires_capture") await stripe(env, "POST", `payment_intents/${r.payment_intent_id}/cancel`, {}, `release-${id}`).catch(() => {});
+    } catch (check) {
+      console.error("capture check failed", id, check.message);
+    }
     await env.DB.prepare("UPDATE rentals SET payment_status = 'failed' WHERE id = ?").bind(id).run();
     return false;
   }
@@ -1690,16 +1724,70 @@ async function payHost(env, id) {
 }
 
 // Pays hosts for finished rentals once the dispute window has passed.
+// Suspended hosts are not paid until an admin lifts the suspension.
 async function runPayouts(env) {
   if (!paymentsEnabled(env)) return;
   const due = await env.DB.prepare(
-    `SELECT r.id FROM rentals r WHERE r.payout_status = 'held' AND r.status IN ('completed', 'cancelled')
+    `SELECT r.id FROM rentals r JOIN listings l ON l.id = r.listing_id JOIN users h ON h.id = l.owner_id
+     WHERE r.payout_status = 'held' AND r.status IN ('completed', 'cancelled') AND h.suspended_at IS NULL
        AND r.updated_at <= ? AND NOT EXISTS (SELECT 1 FROM disputes d WHERE d.rental_id = r.id AND d.resolved_at IS NULL) LIMIT 50`
   ).bind(now() - PAYOUT_HOLD).all();
   for (const r of due.results) await payHost(env, r.id);
 }
 
+// Brings the database in line with Stripe when a webhook or a Stripe call
+// was missed (cron, and the renter's own rentals when they load the page):
+// - finished checkouts whose webhook never arrived become requests;
+// - card holds on requests that are closed are released.
+async function reconcileCheckout(env, request, ctx, r) {
+  const s = await stripe(env, "GET", `checkout/sessions/${r.checkout_session_id}`);
+  if (s.status === "complete" && s.payment_intent) {
+    const pi = typeof s.payment_intent === "string" ? s.payment_intent : s.payment_intent.id;
+    const res = await env.DB.prepare(
+      "UPDATE rentals SET status = 'pending', payment_status = 'authorized', payment_intent_id = ?, updated_at = ? WHERE id = ? AND status = 'awaiting_payment'"
+    ).bind(pi, now(), r.id).run();
+    if (res.meta.changes) {
+      const row = await env.DB.prepare(`${RENTAL_SELECT} WHERE r.id = ?`).bind(r.id).first();
+      await notifyNewRequest(env, siteUrl(env, request), ctx, row);
+    }
+  } else if (s.status === "expired") {
+    await env.DB.prepare("UPDATE rentals SET status = 'cancelled', payment_status = 'none', host_note = 'Payment was not completed.', updated_at = ? WHERE id = ? AND status = 'awaiting_payment'")
+      .bind(now(), r.id).run();
+  }
+}
+
+async function reconcilePayments(env, request = null, ctx = null, renterId = null) {
+  if (!paymentsEnabled(env)) return;
+  const t = now();
+  const byRenter = renterId ? " AND renter_id = ?" : "";
+  const extra = renterId ? [renterId] : [];
+  const waiting = await env.DB.prepare(
+    `SELECT id, checkout_session_id FROM rentals WHERE status = 'awaiting_payment' AND checkout_session_id IS NOT NULL
+       AND created_at <= ? AND created_at > ?${byRenter} ORDER BY created_at LIMIT 25`
+  ).bind(renterId ? t : t - 120, t - 2 * 3600, ...extra).all();
+  for (const r of waiting.results) {
+    await reconcileCheckout(env, request, ctx, r).catch((err) => console.error("checkout reconcile failed", r.id, err && err.message));
+  }
+  if (renterId) return;
+  const stuck = await env.DB.prepare(
+    "SELECT id FROM rentals WHERE payment_status = 'authorized' AND status IN ('declined', 'cancelled', 'expired') LIMIT 25"
+  ).all();
+  for (const r of stuck.results) {
+    await releasePayment(env, r.id).catch((err) => console.error("release retry failed", r.id, err && err.message));
+  }
+}
+
 // ---------- host payout account ----------
+
+// A host can be paid once onboarding is done and transfers to the account
+// work (the only capability requested). Older accounts without the
+// capabilities field fall back to charges/payouts being enabled.
+function accountReady(acct) {
+  if (!acct || !acct.details_submitted) return false;
+  const transfers = acct.capabilities && acct.capabilities.transfers;
+  if (transfers) return transfers === "active";
+  return !!(acct.charges_enabled || acct.payouts_enabled);
+}
 
 async function payoutStatus(request, env) {
   const user = await requireUser(request, env);
@@ -1708,7 +1796,7 @@ async function payoutStatus(request, env) {
   let ready = !!row.payouts_enabled;
   if (row.payout_account_id && !ready) {
     const acct = await stripe(env, "GET", `accounts/${row.payout_account_id}`);
-    ready = !!(acct.charges_enabled || acct.payouts_enabled) && !!acct.details_submitted;
+    ready = accountReady(acct);
     if (ready) await env.DB.prepare("UPDATE users SET payouts_enabled = 1 WHERE id = ?").bind(user.id).run();
   }
   const earnings = await env.DB.prepare(
@@ -1771,6 +1859,18 @@ async function stripeWebhook(request, env, ctx) {
   // Stripe retries deliveries; handle each event once.
   const fresh = await env.DB.prepare("INSERT INTO stripe_events (id, type, created_at) VALUES (?, ?, ?) ON CONFLICT(id) DO NOTHING").bind(event.id, event.type, now()).run();
   if (!fresh.meta.changes) return json(200, { ok: true, duplicate: true });
+  try {
+    await handleStripeEvent(request, env, ctx, event);
+  } catch (err) {
+    // Forget the event so Stripe's retry is handled instead of skipped as a
+    // duplicate; the 500 makes Stripe retry.
+    await env.DB.prepare("DELETE FROM stripe_events WHERE id = ?").bind(event.id).run().catch(() => {});
+    throw err;
+  }
+  return json(200, { ok: true });
+}
+
+async function handleStripeEvent(request, env, ctx, event) {
   const obj = event.data && event.data.object || {};
   const t = now();
   if (event.type === "checkout.session.completed") {
@@ -1783,14 +1883,17 @@ async function stripeWebhook(request, env, ctx) {
       await notifyNewRequest(env, siteUrl(env, request), ctx, r);
     } else if (obj.payment_intent) {
       // The request was cancelled while the renter was paying: let the hold go.
-      await env.DB.prepare("UPDATE rentals SET payment_intent_id = ?, payment_status = 'authorized' WHERE id = ? AND payment_intent_id IS NULL").bind(obj.payment_intent, id).run();
-      await releasePayment(env, id).catch(() => {});
+      // (If reconcilePayments already turned it into a request, leave it.)
+      const closed = await env.DB.prepare(
+        "UPDATE rentals SET payment_intent_id = ?, payment_status = 'authorized' WHERE id = ? AND payment_intent_id IS NULL AND status IN ('cancelled', 'expired', 'declined')"
+      ).bind(obj.payment_intent, id).run();
+      if (closed.meta.changes) await releasePayment(env, id);
     }
   } else if (event.type === "checkout.session.expired") {
     await env.DB.prepare("UPDATE rentals SET status = 'cancelled', payment_status = 'none', host_note = 'Payment was not completed.', updated_at = ? WHERE checkout_session_id = ? AND status = 'awaiting_payment'")
       .bind(t, obj.id).run();
   } else if (event.type === "account.updated") {
-    const ready = !!(obj.charges_enabled || obj.payouts_enabled) && !!obj.details_submitted;
+    const ready = accountReady(obj);
     await env.DB.prepare("UPDATE users SET payouts_enabled = ? WHERE payout_account_id = ?").bind(ready ? 1 : 0, obj.id).run();
   } else if (event.type === "charge.dispute.created") {
     // A card chargeback freezes the host payout until an admin looks at it.
@@ -1801,7 +1904,6 @@ async function stripeWebhook(request, env, ctx) {
         .bind(newId("dsp"), id, renter, `Card chargeback opened with the bank (${obj.reason || "no reason given"}).`, t).run();
     }
   }
-  return json(200, { ok: true });
 }
 
 // ---------- reports and moderation ----------
@@ -1932,6 +2034,8 @@ async function adminUser(request, env, id, action) {
       env.DB.prepare("UPDATE listings SET status = 'hidden', moderation_note = 'Account suspended.', node_token_hash = NULL, updated_at = ? WHERE owner_id = ? AND status IN ('active', 'paused')").bind(t, id),
       env.DB.prepare("UPDATE rentals SET status = 'cancelled', updated_at = ? WHERE status = 'pending' AND (renter_id = ? OR listing_id IN (SELECT id FROM listings WHERE owner_id = ?))").bind(t, id, id),
     ]);
+    // Cloud machines run on our provider account: stop them now.
+    await endAllForUser(env, id);
   } else {
     await env.DB.prepare("UPDATE users SET suspended_at = NULL WHERE id = ?").bind(id).run();
   }
@@ -1967,11 +2071,20 @@ export async function reportError(env, err, request) {
   } catch { /* reporting must never fail the request */ }
 }
 
+// Every-minute cron: cloud GPU pods start, end and are billed by the minute.
+export async function scheduledMinute(env) {
+  await cloudSweep(env);
+}
+
 // Cron trigger entry (see wrangler.toml).
 export async function scheduled(env) {
-  await housekeeping(env);
-  await runPayouts(env);
-  await watchDeposits(env);
+  // Each job runs even if an earlier one fails; the first error is rethrown
+  // so it still reaches the logs and Sentry.
+  let first = null;
+  for (const job of [housekeeping, reconcilePayments, runPayouts, watchDeposits, cleanupHolds]) {
+    try { await job(env); } catch (err) { console.error(`scheduled ${job.name} failed`, err && err.stack ? err.stack : err); first = first || err; }
+  }
+  if (first) throw first;
 }
 
 // ---------- router ----------
@@ -2003,9 +2116,14 @@ export async function handleApi(request, env, ctx) {
     }
 
     const seg = path.split("/").slice(2); // ["listings", ":id", ...]
-    const isId = (x) => /^(gpu|rnt|usr|rpt|dsp|dep|key)_[A-Za-z0-9_-]{1,40}$/.test(x);
+    const isId = (x) => /^(gpu|rnt|usr|rpt|dsp|dep|key|cgr)_[A-Za-z0-9_-]{1,40}$/.test(x);
     const route = `${method} /${seg.map((x) => (isId(x) ? ":id" : x)).join("/")}`;
     const id = seg.find(isId);
+
+    if (route.startsWith("GET /cloud/") || route.startsWith("POST /cloud/")) {
+      const res = await handleCloud(route, request, env, ctx, id);
+      if (res) return res;
+    }
 
     switch (route) {
       case "GET /health": return json(200, { ok: true });
@@ -2051,7 +2169,7 @@ export async function handleApi(request, env, ctx) {
       case "POST /listings/:id/node-token": return await linkNode(request, env, id);
       case "DELETE /listings/:id/node-token": return await unlinkNode(request, env, id);
       case "GET /my/listings": return await myListings(request, env);
-      case "GET /my/rentals": return await myRentals(request, env);
+      case "GET /my/rentals": return await myRentals(request, env, ctx);
       case "GET /my/requests": return await myRequests(request, env);
       case "POST /rentals": return await createRental(request, env, ctx);
       case "POST /listings/:id/report": return await reportListing(request, env, ctx, id);
@@ -2081,4 +2199,4 @@ export async function handleApi(request, env, ctx) {
 }
 
 // Shared with src/billing.js.
-export { HttpError, json, readJson, requireUser, limit, newId, randomToken, sha256, now };
+export { HttpError, json, readJson, requireUser, requireVerified, limit, newId, randomToken, sha256, now, int, sshKey };

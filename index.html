@@ -366,14 +366,8 @@
 
     /* ---------- join ---------- */
     .join { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 56px); align-items: center; border: 1px solid var(--line); border-radius: 28px; padding: clamp(26px, 5vw, 52px); background: linear-gradient(140deg, #fbf5ea, #fff 55%, #f2f6e8); }
-    .join form { display: grid; gap: 12px; }
-    .join label { font-size: 14px; font-weight: 500; color: var(--ink); }
-    .join-row { display: flex; gap: 10px; }
-    .join input { flex: 1; min-width: 0; height: 46px; border: 1px solid var(--line-2); border-radius: 999px; padding: 0 18px; font: 15px var(--sans); color: var(--ink); background: #fff; }
-    .join input:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
-    .join .msg-box { font-size: 14.5px; padding: 12px 14px; border-radius: 14px; background: #ecfdf3; color: #11733a; border: 1px solid #c7f0d6; }
-    .join .msg-box.error { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
-    .link-btn { border: 0; background: none; padding: 0; font: 500 14px var(--sans); color: var(--ink); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; justify-self: start; }
+    .join-actions { display: grid; gap: 4px; justify-items: start; }
+    .join-actions .join-links { margin-top: 14px; }
     .join-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
 
     /* ---------- footer (shared chrome markup) ---------- */
@@ -616,7 +610,7 @@
         <a href="/exact-core.html">Exact Core</a>
         <a href="/cask-q.html">Research</a>
         <a href="/team.html">Company</a>
-        <a class="btn solid sm nav-cta" href="/#join">Get early access</a>
+        <a class="btn solid sm nav-cta" href="/#join">Get started</a>
       </nav>
       <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span></button>
     </div>
@@ -627,7 +621,7 @@
     <!-- ================= HERO ================= -->
     <section class="hero" aria-labelledby="hero-title">
       <div class="wrap hero-inner">
-        <a class="pill intro" style="--d:.05s" href="/launch.html"><b>NEW</b>Rebrand live · Desktop GA Oct 20 · Marketplace Oct 31</a>
+        <a class="pill intro" style="--d:.05s" href="/launch.html"><b>NEW</b>Rebrand live · Windows desktop beta 0.74.0 · Marketplace Oct 31</a>
         <h1 id="hero-title" class="display intro" style="--d:.15s">Every GPU on Earth, working as one.</h1>
         <p class="lede intro" style="--d:.28s">Chat, an OpenAI-compatible API, a GPU marketplace and verified jobs in one account. Top up once and pay only for the tokens and work you use.</p>
         <div class="hero-actions intro" style="--d:.4s">
@@ -953,7 +947,7 @@
             <div><b>REST API</b><p>Idempotency keys on creation, SSE per job.</p></div>
             <div><b>CLI</b><p>Submit from YAML, tail logs, verify receipts.</p></div>
             <div><b>SDKs</b><p>Python 3.10+ and TypeScript / Node 18+.</p></div>
-            <div><b>Release</b><p>CLI 0.74.0 for Linux x64 and ARM64 with marketplace rentals. Windows desktop beta.</p></div>
+            <div><b>Release</b><p>Desktop 0.74.0 beta for Windows x64, with the tdcc runtime and marketplace rentals. Linux and macOS coming.</p></div>
           </div>
           <div class="hero-actions" style="justify-content:flex-start">
             <a class="btn dark" href="/app.html">Read the docs <span class="arr">›</span></a>
@@ -1068,7 +1062,7 @@ tdcc receipts show job_8fq1za --verify</pre>
           <a class="note reveal" href="/two-laptops-80-tps.html"><span class="chip">Engineering note</span><h3>Two compact laptops. One 27B model. 80 tokens per second.</h3><p>A ~50 tok/s run moved to 80 without touching the weights.</p><span class="more">Read the note ›</span></a>
           <a class="note reveal" href="/cask-q.html"><span class="chip">Paper</span><h3>CASK-Q: 25% lower attention error at 2-bit, same size.</h3><p>Our research on KV-cache quantization.</p><span class="more">Read the paper ›</span></a>
           <a class="note reveal" href="/exact-core.html"><span class="chip">Chip</span><h3>Exact Core: an AI chip whose answers anyone can re-check.</h3><p>Bit-exact silicon and an on-chain dispute game.</p><span class="more">Read more ›</span></a>
-          <a class="note reveal" href="/launch.html"><span class="chip">Launch</span><h3>A new TDCC. Three launches in twelve days.</h3><p>The rebrand, Desktop GA on Oct 20 and the marketplace on Oct 31.</p><span class="more">Read the launch post ›</span></a>
+          <a class="note reveal" href="/launch.html"><span class="chip">Launch</span><h3>A new TDCC. Three launches in twelve days.</h3><p>The rebrand, the Windows desktop beta and the marketplace on Oct 31.</p><span class="more">Read the launch post ›</span></a>
         </div>
       </div>
     </section>
@@ -1094,23 +1088,22 @@ tdcc receipts show job_8fq1za --verify</pre>
       <div class="wrap">
         <div class="join reveal">
           <div>
-            <p class="eyebrow">Early network</p>
-            <h2 class="title">Get early access.</h2>
-            <p class="lede" style="margin:14px 0 0">Enter your early believer code to check access to the first TDCC cohort. We are also looking for AI companies, data centers, GPU operators and <a href="/team.html" style="text-decoration:underline;text-underline-offset:3px">new teammates</a>.</p>
+            <p class="eyebrow">Open to everyone</p>
+            <h2 class="title">Get started.</h2>
+            <p class="lede" style="margin:14px 0 0">Create a free account to use TDCC Chat, call the API with your own keys, and rent or list GPUs on the marketplace. We are also looking for AI companies, data centers, GPU operators and <a href="/team.html" style="text-decoration:underline;text-underline-offset:3px">new teammates</a>.</p>
             <div class="join-links">
-              <a class="btn light sm" href="mailto:anil@decentralizedcompute.company?subject=TDCC%20Early%20Network">Contact the founder</a>
+              <a class="btn light sm" href="mailto:anil@decentralizedcompute.company?subject=TDCC">Contact the founder</a>
               <a class="btn light sm" href="/litepaper.html">Read the litepaper</a>
             </div>
           </div>
-          <form id="early-access-form" novalidate>
-            <label for="early-access-code">Early access code</label>
-            <div class="join-row">
-              <input id="early-access-code" name="code" autocomplete="off" placeholder="e.g. TDCC…" />
-              <button class="btn dark" type="submit" style="border:0;cursor:pointer">Check access <span class="arr">›</span></button>
+          <div class="join-actions">
+            <a class="btn dark" href="/account.html">Create a free account <span class="arr">›</span></a>
+            <div class="join-links">
+              <a class="btn light sm" href="/chat.html">Open TDCC Chat</a>
+              <a class="btn light sm" href="/account.html#billing">Get an API key</a>
+              <a class="btn light sm" href="/marketplace.html">Rent a GPU</a>
             </div>
-            <button class="link-btn" type="button" id="copy-invite-link">Copy invite link</button>
-            <p class="msg-box" id="early-access-message" role="status" hidden></p>
-          </form>
+          </div>
         </div>
       </div>
     </section>
@@ -1168,45 +1161,6 @@ tdcc receipts show job_8fq1za --verify</pre>
         document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
       });
     }));
-
-    /* early access */
-    const earlyAccessForm = document.querySelector('#early-access-form');
-    const earlyAccessCode = document.querySelector('#early-access-code');
-    const earlyAccessMessage = document.querySelector('#early-access-message');
-    const copyInviteLink = document.querySelector('#copy-invite-link');
-    const inviteLink = 'https://decentralizedcompute.company/?code=TDCCBETA20';
-
-    const showEarlyAccessMessage = (message, isError = false) => {
-      earlyAccessMessage.hidden = false;
-      earlyAccessMessage.classList.toggle('error', isError);
-      earlyAccessMessage.textContent = message;
-    };
-
-    earlyAccessForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const isValidCode = earlyAccessCode.value.trim().toUpperCase() === 'TDCCBETA20';
-      showEarlyAccessMessage(isValidCode
-        ? 'Thank you for moving quickly and for being an early believer in TDCC. Unfortunately, the first access allocation is already full, so there is no capacity left in this cohort. We appreciate your support and will share the next opening as soon as possible.'
-        : 'That code does not match. Please check your code and try again.', !isValidCode);
-    });
-
-    copyInviteLink.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(inviteLink);
-        showEarlyAccessMessage('Invite link copied. Thank you for helping TDCC reach its early believers.');
-      } catch (error) {
-        earlyAccessCode.value = 'TDCCBETA20';
-        earlyAccessCode.focus();
-        showEarlyAccessMessage(`Copy failed. Share this link instead: ${inviteLink}`, true);
-      }
-    });
-
-    const codeFromLink = new URLSearchParams(window.location.search).get('code');
-    if (codeFromLink) {
-      earlyAccessCode.value = codeFromLink;
-      earlyAccessForm.requestSubmit();
-      document.getElementById('join').scrollIntoView();
-    }
   </script>
   <script src="/js/site.js"></script>
   <script src="/js/market.js"></script>

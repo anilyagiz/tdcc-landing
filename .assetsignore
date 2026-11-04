@@ -17,3 +17,9 @@ SOURCE-original-minimal.html
 scripts
 backups
 docs
+.claude
+.gitignore
+.assetsignore
+.dev.vars
+social
+PRODUCTION.md

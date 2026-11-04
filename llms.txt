@@ -32,6 +32,7 @@ $COMPUTE is the token of The Decentralized Compute Company. The official contrac
 ## Canonical pages
 - Home: https://decentralizedcompute.company/
 - App (console, CLI, SDKs, job API): https://decentralizedcompute.company/app.html
+- Desktop download (Windows x64 beta, 0.74.0; Linux and macOS coming): https://decentralizedcompute.company/app.html#downloads
 - Team (founder, team, advisors, hiring): https://decentralizedcompute.company/team.html
 - Litepaper: https://decentralizedcompute.company/litepaper.html
 - Research paper (CASK-Q, joint Q/K quantization): https://decentralizedcompute.company/cask-q.html

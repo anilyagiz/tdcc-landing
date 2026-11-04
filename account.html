@@ -27,6 +27,8 @@
     .pane-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
     .pane-head h2 { color: var(--text); font-size: 26px; font-weight: 600; letter-spacing: -.025em; }
     .cards { display: grid; gap: 14px; }
+    .sub-h { margin: 6px 0 12px; font-size: 15px; font-weight: 600; color: var(--text); }
+    .cards + .sub-h { margin-top: 28px; }
     .card { display: grid; gap: 12px; padding: 22px 24px; border: 1px solid var(--line); border-radius: 18px; background: #fff; box-shadow: var(--shadow); }
     .card-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 20px; align-items: baseline; }
     .card-top b { font-size: 17px; font-weight: 600; color: var(--text); letter-spacing: -.01em; }
@@ -339,10 +341,29 @@
       }
 
       // ---------- rentals (as renter) ----------
+      // ---------- cloud GPUs (instant, paid from the balance) ----------
+      const CLOUD_STATUS = { creating: 'Starting', provisioning: 'Starting', running: 'Running', ended: 'Ended', failed: 'Could not start' };
+      const left = (s) => (s >= 3600 ? `${Math.floor(s / 3600)} h ${Math.floor((s % 3600) / 60)} min left` : `${Math.max(1, Math.ceil(s / 60))} min left`);
+      async function cloudRentals() {
+        let data;
+        try { data = await api('GET', '/api/cloud/rentals'); } catch { return ''; }
+        if (!data.rentals.length) return '';
+        return `<h3 class="sub-h">Cloud GPUs</h3><div class="cards">${data.rentals.map((r) => `
+          <article class="card">
+            <div class="card-top"><b>${r.gpu_count} × ${esc(r.gpu_name)}${r.vram_gb ? ` · ${r.vram_gb}GB` : ''}</b><span class="price">$${esc(Number(r.total_usd).toFixed(2))}</span></div>
+            <div class="meta"><span class="st ${r.status === 'running' ? 'online' : r.status === 'failed' ? 'declined' : ''}">${esc(CLOUD_STATUS[r.status] || r.status)}</span><span>${r.hours} h · $${esc(r.price_per_gpu_hour_usd)} / GPU·h</span>${r.seconds_left !== null ? `<span>${esc(left(r.seconds_left))}</span>` : ''}${Number(r.refunded_usd) > 0 ? `<span>$${esc(Number(r.refunded_usd).toFixed(2))} refunded to your balance</span>` : ''}<span>Paid from balance ${ago(r.created_at)}</span></div>
+            ${r.ssh ? `<div class="reveal-box"><b>Connect with the SSH key you gave</b><div class="cmd"><code>${esc(r.ssh)}</code><button class="btn sm" data-copy="${esc(r.ssh)}">Copy</button></div><span>The machine and everything on it is deleted when the hours are up.</span></div>` : ''}
+            ${['creating', 'provisioning'].includes(r.status) ? '<p class="meta">Your machine is starting, usually in 1–5 minutes. Your hours begin once it is ready. If it cannot start, the full amount goes back to your balance.</p>' : ''}
+            ${r.error ? `<div class="quote">${esc(r.error)}</div>` : ''}
+            ${['provisioning', 'running'].includes(r.status) ? `<div class="card-actions"><button class="btn sm" data-do="cloud-end" data-id="${esc(r.id)}">End now</button></div>` : ''}
+          </article>`).join('')}</div>${data.rentals.some((r) => ['creating', 'provisioning'].includes(r.status)) ? '<span data-cloud-poll hidden></span>' : ''}`;
+      }
+
+      // ---------- rentals (as renter) ----------
       async function rentals() {
-        const { rentals } = await api('GET', '/api/my/rentals');
-        if (!rentals.length) return `<div class="empty">You have not rented anything yet. <a href="/marketplace.html">Find a GPU →</a></div>`;
-        return `<div class="cards">${rentals.map((r) => `
+        const [{ rentals }, cloud] = await Promise.all([api('GET', '/api/my/rentals'), cloudRentals()]);
+        if (!rentals.length) return cloud + (cloud ? '' : `<div class="empty">You have not rented anything yet. <a href="/marketplace.html">Find a GPU →</a></div>`);
+        return cloud + (cloud ? '<h3 class="sub-h">Marketplace rentals</h3>' : '') + `<div class="cards">${rentals.map((r) => `
           <article class="card">
             <div class="card-top"><b>${r.gpu_count} × ${esc(r.gpu_model)} · ${r.vram_gb}GB</b><span class="price">${money(r.total_cents)}</span></div>
             <div class="meta">${status(r.status)}<span>${r.hours} h</span>${startLine(r)}<span>${esc(r.region_label)}</span><span>${esc(ENV[r.environment])}${r.image ? ' · ' + esc(r.image) : ''}</span><span>${esc(ACCESS[r.access])}</span><span>Host: ${esc(r.host_name)}</span><span>Sent ${ago(r.created_at)}</span>${payLine(r, false)}</div>
@@ -371,7 +392,7 @@
             ${r.renter_email ? `<div class="reveal-box"><b>Renter contact</b><span><a href="mailto:${esc(r.renter_email)}">${esc(r.renter_email)}</a> — send them access details${r.payment_status === 'captured' ? '' : ' and agree on payment'}.</span>${r.ssh_key ? `<span>SSH key:</span><code>${esc(r.ssh_key)}</code><span><button class="btn sm" data-copy="${esc(r.ssh_key)}">Copy SSH key</button></span>` : ''}</div>` : ''}
             ${r.status === 'pending' ? `<div class="card-actions"><input class="inp" id="note-${esc(r.id)}" maxlength="1000" placeholder="Optional note to the renter, e.g. start time" />
               <button class="btn sm solid" data-do="accept" data-id="${esc(r.id)}">Accept</button><button class="btn sm" data-do="decline" data-id="${esc(r.id)}">Decline</button></div>` : ''}
-            ${r.status === 'accepted' ? `<div class="card-actions"><button class="btn sm" data-do="complete" data-id="${esc(r.id)}">Mark finished</button><button class="btn sm" data-do="cancel" data-id="${esc(r.id)}">Cancel rental</button></div>` : ''}
+            ${r.status === 'accepted' ? `<div class="card-actions">${r.payment_status === 'captured' && Date.now() / 1000 < (r.access_expires_at || 0) ? '' : `<button class="btn sm" data-do="complete" data-id="${esc(r.id)}">Mark finished</button>`}<button class="btn sm" data-do="cancel" data-id="${esc(r.id)}">Cancel rental</button></div>` : ''}
             ${extras(r)}
           </article>`).join('')}</div>`;
       }
@@ -515,7 +536,7 @@
         const t = b.totals || {};
         return `<p class="eyebrow">Prepaid balance</p>
           <div class="bal-n" id="bal-usd" title="${esc(usdFull(b.balance && b.balance.usd, true))}">${esc(usd2(b.balance && b.balance.usd))}</div>
-          <p class="bal-l">Spent per token in TDCC Chat and through your API keys. Top up with USDC on Solana from $${esc(b.min_topup_usd || 5)}.</p>
+          <p class="bal-l">Spent per token in TDCC Chat and through your API keys. Top up with USDC on Solana from $${esc(b.min_topup_usd || 5)}.${b.reserved && b.reserved.micro > 0 ? ` ${esc(usdFull(b.reserved.usd))} is reserved by requests running right now.` : ''}</p>
           <div class="bal-stats" aria-label="Last 30 days">
             <div><b id="bal-req">${esc(num(t.requests_30d))}</b><span>Requests, 30 days</span></div>
             <div><b id="bal-tok">${esc(num(t.tokens_30d))}</b><span>Tokens, 30 days</span></div>
@@ -778,6 +799,9 @@
       };
 
       const VIEWS = { rentals, requests, listings, billing, settings };
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && show.cloudWaiting && current === 'rentals') show('rentals', true);
+      });
       let listingCache = [];
       async function show(tab, quiet = false) {
         // Leaving (or re-drawing) the billing tab: stop polling; the re-render also drops any shown API key.
@@ -790,6 +814,16 @@
           if (tab === 'listings') listingCache = (await api('GET', '/api/my/listings')).listings;
           pane.innerHTML = await VIEWS[tab]();
           if (tab === 'billing' && dep && current === 'billing') openPanel(dep, true);
+          // A cloud machine is starting: redraw quietly until its SSH line is there.
+          clearTimeout(show.cloudTimer);
+          show.cloudWaiting = false;
+          if (tab === 'rentals' && pane.querySelector('[data-cloud-poll]')) {
+            show.cloudTimer = setTimeout(() => {
+              if (current !== 'rentals') return;
+              // Hidden tab: catch up when it is shown again (visibilitychange below).
+              if (document.hidden) show.cloudWaiting = true; else show('rentals', true);
+            }, 10_000);
+          }
         } catch (err) {
           if (err.status === 401) return signedOut();
           pane.innerHTML = `<div class="empty">${esc(err.message)}</div>`;
@@ -949,7 +983,10 @@
         const id = b.dataset.id, what = b.dataset.do;
         b.disabled = true;
         try {
-          if (['accept', 'decline', 'cancel', 'complete'].includes(what)) {
+          if (what === 'cloud-end') {
+            if (!confirm('End this machine now? It is deleted with everything on it, and the hours not yet begun go back to your balance.')) return;
+            await act(() => api('POST', `/api/cloud/rentals/${id}/end`, {}), 'Machine ended. Unused hours are back on your balance.');
+          } else if (['accept', 'decline', 'cancel', 'complete'].includes(what)) {
             if (what === 'cancel' && !confirm('Cancel this request?')) return;
             const note = $('note-' + id);
             await act(() => api('POST', `/api/rentals/${id}/${what}`, { note: note ? note.value.trim() : '' }),

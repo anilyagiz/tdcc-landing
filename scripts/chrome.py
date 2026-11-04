@@ -24,7 +24,7 @@ NAV = [
     ("/cask-q.html", "Research"),
     ("/team.html", "Company"),
 ]
-EARLY = ("Get early access", "/#join")
+EARLY = ("Get started", "/#join")
 HOST = ("List your GPU", "/marketplace.html#hosts")
 
 # page -> (nav entry marked current, call to action)
